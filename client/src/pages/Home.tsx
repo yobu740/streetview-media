@@ -172,7 +172,7 @@ export default function Home() {
                 </p>
               </div>
               <p className="text-body text-lg text-[#2a2a2a] leading-relaxed">
-                Asegure su espacio en las rutas clave de Puerto Rico.
+                
               </p>
             </div>
             <div className="relative">
