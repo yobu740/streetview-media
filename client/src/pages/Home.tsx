@@ -201,7 +201,7 @@ export default function Home() {
             </div>
             <div className="order-1 md:order-2">
               <p className="text-body text-lg text-[#2a2a2a] leading-relaxed mb-6">
-                Gestionamos las ubicaciones más codiciadas del área metropolitana, transformando simples puntos de espera en poderosos Mupis visuales. Nuestro objetivo es ofrecerle a su marca una presencia inevitable en las zonas de mayor tráfico.
+                En Puerto Rico, el trayecto es parte de la vida diaria. Aprovechamos esa rutina para generar una frecuencia de impacto inigualable. Al estar integrados naturalmente en el entorno urbano, logramos que su mensaje deje de ser solo un anuncio y se convierta en una referencia visual constante en la mente del consumidor.
               </p>
               <p className="text-body text-lg text-[#2a2a2a] leading-relaxed">
                 Asegure su espacio en las rutas clave de Puerto Rico.
