@@ -142,8 +142,8 @@ export default function Home() {
             </div>
             <div className="relative">
               <img 
-                src="https://private-us-east-1.manuscdn.com/sessionFile/hr87zNdaugqIp849vTw9bz/sandbox/ZJ16vX9yIumDJARemwBe53-img-3_1770039136000_na1fn_bXVwaS1kYXk.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvaHI4N3pOZGF1Z3FJcDg0OXZUdzliei9zYW5kYm94L1pKMTZ2WDl5SXVtREpBUmVtd0JlNTMtaW1nLTNfMTc3MDAzOTEzNjAwMF9uYTFmbl9iWFZ3YVMxa1lYay5qcGc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=JwYQwI8MmoAgGmoi65Z~ViGMHuVcBe4jSmr8NDpn3EWsV45jsoBSlapyOMM1KdxslArpg~RO0bFWuffY9CzoLIJq9eDheAt3eLwEbkX8niFMXjOJKyH-TzLPN9a-Zckc711j1SeF2DF4~aWH6U6lb-CR1C4RUw8cp3f4vfVaSoyT5R82w9atqqLxt~pQ5HB6nIME8Ec~pbAxqV-Wdi30WcXjicEzFdXGI6jLpvm6WOjwJK-akiBIwhDETH0XSEvDfHIJwK2BdsD7Ax5svBplFBXmG3rmF9jVNKvPf73nNvKBL6h2r03RZu1P3Qo0j-R8~vea~T~dg1t3yEGWC94Bew__"
-                alt="MUPI en San Juan"
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/akCQAUPPSFjmkLQn.png"
+                alt="Parada de guagua con MUPI"
                 className="w-full shadow-2xl border-8 border-[#1a4d3c]"
               />
               <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-[#ff6b35] -z-10"></div>
@@ -158,8 +158,8 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative order-2 md:order-1">
               <img 
-                src="https://private-us-east-1.manuscdn.com/sessionFile/hr87zNdaugqIp849vTw9bz/sandbox/ZJ16vX9yIumDJARemwBe53-img-2_1770039135000_na1fn_bXVwaS1uaWdodA.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvaHI4N3pOZGF1Z3FJcDg0OXZUdzliei9zYW5kYm94L1pKMTZ2WDl5SXVtREpBUmVtd0JlNTMtaW1nLTJfMTc3MDAzOTEzNTAwMF9uYTFmbl9iWFZ3YVMxdWFXZG9kQS5qcGc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=lla0FFS6cJf--3YI0Jk8ShI3wpq41g4UolY9Wtuoe0I2QdNNyE5bwGz8QFvuRAWNZ~2MNOXB5hPSlsgbG4PD4FUtOQI2sVk2K7uWWMxXPbBP4YJd3670EYD-VqZBsd~c3DTte3u-qDXvDrZzS3V-C8RykuLmwr4~XmUwyhm9pnJOKypUQLdi5NTPTkhOEjSIf7gtEfVqJc2jnim2w08QF3ghhdoOpCVz6yo--rGPk1xnJSZy3GOhMW8LQL0FVQU0tdGyr0ezmHb9lUIbsjGEHth3K~vrRkiqACHFFEO6celozdq2glIP5uBqUN6keDoTTyrkK~uCtBv~YuFjfktJ4w__"
-                alt="MUPI nocturno"
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/RdXjWiUfDHukhAsL.png"
+                alt="Parada de guagua con MUPI"
                 className="w-full shadow-2xl border-8 border-[#ff6b35]"
               />
               <div className="absolute -top-6 -left-6 w-48 h-48 bg-[#1a4d3c] -z-10"></div>
@@ -270,9 +270,9 @@ export default function Home() {
           
           <div className="bg-white border-8 border-[#1a4d3c] p-4 max-w-4xl mx-auto">
             <img 
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&h=800&fit=crop"
-              alt="Mapa de Puerto Rico con ubicaciones"
-              className="w-full h-[500px] object-cover"
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/BxAXZqPEOziuAcZC.png"
+              alt="Mapa de ubicaciones de MUPIs en San Juan"
+              className="w-full h-[500px] object-contain bg-white"
             />
           </div>
         </div>
