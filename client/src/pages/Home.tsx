@@ -105,8 +105,8 @@ export default function Home() {
         </div>
         <div className="relative h-full container flex items-center">
           <div className="max-w-2xl">
-            <h1 className="text-display text-7xl md:text-8xl text-white mb-6 leading-none">
-              Tu Marca<br/>en el Camino
+            <h1 className="text-display text-5xl md:text-6xl text-white mb-6 leading-tight">
+              Tu Marca en el Camino
             </h1>
             <p className="text-body text-xl text-white/90 mb-8 max-w-xl">
               La nueva red de publicidad exterior especializada en mobiliario urbano de alto impacto en Puerto Rico.
@@ -126,7 +126,7 @@ export default function Home() {
         <div className="container">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-display text-6xl text-[#1a4d3c] mb-6">
+              <h2 className="text-display text-4xl md:text-5xl text-[#1a4d3c] mb-6">
                 Tu Marca en el Camino
               </h2>
               <p className="text-body text-lg text-[#2a2a2a] leading-relaxed mb-6">
@@ -185,25 +185,25 @@ export default function Home() {
         <div className="container">
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <div className="text-display text-7xl text-[#ff6b35] mb-2">
-                {stats.zones}
-              </div>
+                <div className="text-display text-6xl text-[#ff6b35] mb-2">
+                  {stats.zones}
+                </div>
               <div className="text-body text-xl text-white uppercase tracking-wider">
                 Zonas Estratégicas
               </div>
             </div>
             <div className="text-center border-l-4 border-r-4 border-[#ff6b35]">
-              <div className="text-display text-7xl text-[#ff6b35] mb-2">
-                {stats.vehicles.toLocaleString()}K+
-              </div>
+                <div className="text-display text-6xl text-[#ff6b35] mb-2">
+                  {stats.vehicles.toLocaleString()}K+
+                </div>
               <div className="text-body text-xl text-white uppercase tracking-wider">
                 Vehículos Diarios
               </div>
             </div>
             <div className="text-center">
-              <div className="text-display text-7xl text-[#ff6b35] mb-2">
-                {stats.hours.toLocaleString()}
-              </div>
+                <div className="text-display text-6xl text-[#ff6b35] mb-2">
+                  {stats.hours.toLocaleString()}
+                </div>
               <div className="text-body text-xl text-white uppercase tracking-wider">
                 Horas de Visibilidad
               </div>
@@ -215,13 +215,13 @@ export default function Home() {
       {/* Formats Section */}
       <section id="servicios" className="py-24 bg-white relative">
         <div className="container">
-          <h2 className="text-display text-6xl text-[#1a4d3c] mb-4 text-center">
+          <h2 className="text-display text-4xl md:text-5xl text-[#1a4d3c] mb-4 text-center">
             Formatos:
           </h2>
           
           <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto mt-16">
             <Card className="border-4 border-[#1a4d3c] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
-              <h3 className="text-display text-4xl text-[#1a4d3c] mb-4">
+              <h3 className="text-display text-3xl text-[#1a4d3c] mb-4">
                 MUPI FIJO
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
@@ -230,7 +230,7 @@ export default function Home() {
             </Card>
             
             <Card className="border-4 border-[#ff6b35] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
-              <h3 className="text-display text-4xl text-[#ff6b35] mb-4">
+              <h3 className="text-display text-3xl text-[#ff6b35] mb-4">
                 MUPI DIGITAL
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
@@ -261,7 +261,7 @@ export default function Home() {
         ></div>
         <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-display text-6xl text-[#1a4d3c] mb-6">
+            <h2 className="text-display text-4xl md:text-5xl text-[#1a4d3c] mb-6">
               Nuestras Ubicaciones
             </h2>
             <p className="text-body text-lg text-[#2a2a2a]">
@@ -282,7 +282,7 @@ export default function Home() {
       {/* Contact Section */}
       <section id="contacto" className="py-24 bg-[#1a4d3c] relative texture-concrete">
         <div className="container max-w-4xl">
-          <h2 className="text-display text-6xl text-white mb-12 text-center">
+          <h2 className="text-display text-4xl md:text-5xl text-white mb-12 text-center">
             Contáctanos
           </h2>
           <div className="bg-white p-12 shadow-2xl">
