@@ -279,12 +279,12 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contacto" className="py-24 bg-white relative texture-concrete">
+      <section id="contacto" className="py-24 bg-[#1a4d3c] relative texture-concrete">
         <div className="container max-w-4xl">
-          <div className="bg-[#f5f5f5] border-8 border-[#1a4d3c] p-12">
-            <h2 className="text-display text-6xl text-[#1a4d3c] mb-8 text-center">
-              Contáctanos
-            </h2>
+          <h2 className="text-display text-6xl text-white mb-12 text-center">
+            Contáctanos
+          </h2>
+          <div className="bg-white p-12 shadow-2xl">
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
