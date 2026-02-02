@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b-4 border-[#1a4d3c]">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b-4 border-[#1a4d3c]" style={{backgroundColor: '#ffffff'}}>
         <div className="container flex items-center justify-between h-20">
           <img 
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
@@ -241,7 +241,7 @@ export default function Home() {
           <div className="text-center mt-12">
             <Button 
               size="lg"
-              className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#1a4d3c] hover:border-[#ff6b35] transition-all"
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#1a4d3c] hover:border-[#ff6b35] transition-all" style={{color: '#ffffff'}}
             >
               Ver Localizaciones
             </Button>
