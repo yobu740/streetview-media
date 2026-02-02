@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b-4 border-[#1a4d3c]" style={{backgroundColor: '#ffffff'}}>
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b-4 border-[#1a4d3c]" style={{backgroundColor: 'rgba(255, 255, 255, 0.85)'}}>
         <div className="container flex items-center justify-between h-20">
           <img 
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
