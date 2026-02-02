@@ -89,17 +89,18 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section - Video Placeholder */}
+      {/* Hero Section - Video */}
       <section id="inicio" className="relative h-screen mt-20">
         <div className="absolute inset-0 bg-[#1a4d3c]">
-          {/* Video will be inserted here */}
-          <div className="w-full h-full flex items-center justify-center">
-            <img 
-              src="https://private-us-east-1.manuscdn.com/sessionFile/hr87zNdaugqIp849vTw9bz/sandbox/ZJ16vX9yIumDJARemwBe53-img-1_1770039136000_na1fn_aGVyby1wbGFjZWhvbGRlcg.jpg?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvaHI4N3pOZGF1Z3FJcDg0OXZUdzliei9zYW5kYm94L1pKMTZ2WDl5SXVtREpBUmVtd0JlNTMtaW1nLTFfMTc3MDAzOTEzNjAwMF9uYTFmbl9hR1Z5Ynkxd2JHRmpaV2h2YkdSbGNnLmpwZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSx3XzE5MjAsaF8xOTIwL2Zvcm1hdCx3ZWJwL3F1YWxpdHkscV84MCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc5ODc2MTYwMH19fV19&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=CivEFgIJfni9T9TEp0FfliZPdHVhf7eplvaKHfHCh9DauE5MzZM2sT4SYFOABOM3gCx0zQKkzWgTPeZq73dCkyQNsM1H1oochu3PQVnAb6JSniwCPv3fGRO2K4CK1wqkQklWxiN0mskgaBthScC0aXcOAQlqtk1zQ~ds4oM9xy5J76qsh~dryMncciMSTse5cEsPBAbzVZjDXl3MfTxGSzi~IPBeDXd1q-ht5mYAJSdwH3Rlg58-vUaeBQhSCHTnMIrmxgnktAEVn8DYfCn10B4c~hY29QmASZqwFOrImTjHeEXY231fzeP5xnrK~deEAAioqQwJvDzeIXVI6SHNMQ__"
-              alt="San Juan Urban View"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/GnIjzAPVbfuLkxle.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a4d3c]/80 to-transparent"></div>
         </div>
         <div className="relative h-full container flex items-center">
