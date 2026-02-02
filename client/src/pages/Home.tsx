@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({
     zones: 0,
     vehicles: 0,
@@ -70,6 +72,15 @@ export default function Home() {
     alert("Formulario enviado. Nos pondremos en contacto pronto.");
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -80,13 +91,36 @@ export default function Home() {
             alt="Streetview Media" 
             className="h-12"
           />
+          
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#inicio" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Inicio</a>
-            <a href="#nosotros" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Nosotros</a>
-            <a href="#servicios" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Servicios</a>
-            <a href="#contacto" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Contacto</a>
+            <a href="#inicio" onClick={(e) => handleNavClick(e, '#inicio')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Inicio</a>
+            <a href="#nosotros" onClick={(e) => handleNavClick(e, '#nosotros')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Nosotros</a>
+            <a href="#servicios" onClick={(e) => handleNavClick(e, '#servicios')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Servicios</a>
+            <a href="#contacto" onClick={(e) => handleNavClick(e, '#contacto')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Contacto</a>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-[#1a4d3c] hover:text-[#ff6b35] transition-colors"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
         </div>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t-2 border-[#1a4d3c]">
+            <div className="container py-4 flex flex-col gap-4">
+              <a href="#inicio" onClick={(e) => handleNavClick(e, '#inicio')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Inicio</a>
+              <a href="#nosotros" onClick={(e) => handleNavClick(e, '#nosotros')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Nosotros</a>
+              <a href="#servicios" onClick={(e) => handleNavClick(e, '#servicios')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Servicios</a>
+              <a href="#contacto" onClick={(e) => handleNavClick(e, '#contacto')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Contacto</a>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section - Video */}
