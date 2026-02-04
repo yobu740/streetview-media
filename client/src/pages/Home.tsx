@@ -168,7 +168,7 @@ export default function Home() {
               </p>
               <div className="border-l-8 border-[#ff6b35] pl-6 mb-8">
                 <p className="text-body text-lg text-[#2a2a2a] leading-relaxed">
-                  Gestionamos las ubicaciones más codiciadas del área metropolitana, transformando simples puntos de espera en poderosos Mupis visuales. Nuestro objetivo es ofrecerle a su marca una presencia inevitable en las zonas de mayor tráfico.
+                  Gestionamos las ubicaciones más codiciadas del área metropolitana, transformando simples puntos de espera en poderosas Paradas de Guagua visuales. Nuestro objetivo es ofrecerle a su marca una presencia inevitable en las zonas de mayor tráfico.
                 </p>
               </div>
               <p className="text-body text-lg text-[#2a2a2a] leading-relaxed">
@@ -178,7 +178,7 @@ export default function Home() {
             <div className="relative">
               <img 
                 src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/akCQAUPPSFjmkLQn.png"
-                alt="Parada de guagua con MUPI"
+                alt="Parada de guagua con publicidad"
                 className="w-full shadow-2xl border-8 border-[#1a4d3c]"
               />
               <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-[#ff6b35] -z-10"></div>
@@ -194,7 +194,7 @@ export default function Home() {
             <div className="relative order-2 md:order-1">
               <img 
                 src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/RdXjWiUfDHukhAsL.png"
-                alt="Parada de guagua con MUPI"
+                alt="Parada de guagua con publicidad"
                 className="w-full shadow-2xl border-8 border-[#ff6b35]"
               />
               <div className="absolute -top-6 -left-6 w-48 h-48 bg-[#1a4d3c] -z-10"></div>
@@ -256,19 +256,19 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto mt-16">
             <Card className="border-4 border-[#1a4d3c] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
               <h3 className="text-display text-3xl text-[#1a4d3c] mb-4">
-                MUPI FIJO
+                PARADA FIJA
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
-                Descripción del formato MUPI Fijo. Ideal para campañas de largo plazo con alta visibilidad en puntos estratégicos del área metropolitana.
+                Descripción del formato de Parada Fija. Ideal para campañas de largo plazo con alta visibilidad en puntos estratégicos del área metropolitana.
               </p>
             </Card>
             
             <Card className="border-4 border-[#ff6b35] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
               <h3 className="text-display text-3xl text-[#ff6b35] mb-4">
-                MUPI DIGITAL
+                PARADA DIGITAL
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
-                Descripción del formato MUPI Digital. Contenido dinámico y rotativo que maximiza el impacto visual con tecnología de última generación.
+                Descripción del formato de Parada Digital. Contenido dinámico y rotativo que maximiza el impacto visual con tecnología de última generación.
               </p>
             </Card>
           </div>
@@ -306,7 +306,7 @@ export default function Home() {
           <div className="bg-white border-8 border-[#1a4d3c] p-4 max-w-4xl mx-auto">
             <img 
               src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/BxAXZqPEOziuAcZC.png"
-              alt="Mapa de ubicaciones de MUPIs en San Juan"
+              alt="Mapa de ubicaciones de Paradas en San Juan"
               className="w-full h-[500px] object-contain bg-white"
             />
           </div>
@@ -405,9 +405,9 @@ export default function Home() {
             <div>
               <h3 className="text-display text-2xl mb-4">Contacto</h3>
               <div className="space-y-2 text-body text-sm">
-                <p>📞 (787)708-5115</p>
-                <p>✉️ contacto@streetviewmediapr.com</p>
-                <p>📍 130 Ave. Winston Churchill<br/>PMB 167<br/>San Juan, PR 00926</p>
+                <p>(787)708-5115</p>
+                <p>contacto@streetviewmediapr.com</p>
+                <p>130 Ave. Winston Churchill<br/>PMB 167<br/>San Juan, PR 00926</p>
               </div>
             </div>
             
