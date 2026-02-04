@@ -128,6 +128,16 @@ export default function Admin() {
       toast.error(`Error: ${error.message}`);
     },
   });
+  
+  const uploadFoto = trpc.paradas.uploadFoto.useMutation({
+    onSuccess: () => {
+      toast.success("Foto actualizada exitosamente");
+      refetchParadas();
+    },
+    onError: (error) => {
+      toast.error(`Error al subir foto: ${error.message}`);
+    },
+  });
 
   if (authLoading) {
     return (
@@ -240,16 +250,6 @@ export default function Admin() {
       notas: anuncioForm.notas || undefined,
     });
   };
-  
-  const uploadFoto = trpc.paradas.uploadFoto.useMutation({
-    onSuccess: () => {
-      toast.success("Foto actualizada exitosamente");
-      refetchParadas();
-    },
-    onError: (error) => {
-      toast.error(`Error al subir foto: ${error.message}`);
-    },
-  });
   
   const handleCreateParada = async () => {
     // Primero crear la parada

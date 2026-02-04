@@ -97,3 +97,5 @@
 - [x] Implementar carga de fotos en modal "Agregar Parada"
 - [x] Agregar opción de cambiar foto en vista de detalles
 - [x] Configurar upload a S3 para imágenes de paradas
+
+- [x] Corregir error de React hooks moviendo uploadFoto.useMutation() al inicio del componente
