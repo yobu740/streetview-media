@@ -72,3 +72,13 @@
 - [x] Agregar columna "Ruta" en el listado de paradas
 - [x] Crear vista detallada de cada parada con foto genérica
 - [x] Botón para abrir detalles de parada desde el listado
+
+
+## Mejoras Solicitadas - Fase 3
+
+- [x] Implementar filtros avanzados (por ruta, zona, tipo, estado, fechas)
+- [x] Convertir estadísticas en botones de filtro clickeables
+- [x] Agregar paginación de 20 paradas por página
+- [x] Crear botón "Agregar Parada" para crear paradas manualmente
+- [x] Implementar función de eliminar parada con confirmación
+- [x] Agregar filtros en el modal de reportes antes de imprimir
