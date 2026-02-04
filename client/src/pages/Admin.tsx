@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -20,6 +20,7 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
   const [isAnuncioDialogOpen, setIsAnuncioDialogOpen] = useState(false);
+  const [isDetalleDialogOpen, setIsDetalleDialogOpen] = useState(false);
   const [anuncioForm, setAnuncioForm] = useState({
     cliente: "",
     tipo: "Fijo" as "Fijo" | "Bonificación",
@@ -94,7 +95,8 @@ export default function Admin() {
   const filteredParadas = paradas?.filter(p =>
     p.cobertizoId.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.localizacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.direccion.toLowerCase().includes(searchTerm.toLowerCase())
+    p.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
   const getParadaAnuncios = (paradaId: number) => {
@@ -128,10 +130,14 @@ export default function Admin() {
     });
   };
 
+  const handlePrintReport = () => {
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       {/* Header */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50">
+      <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
         <div className="container flex items-center justify-between h-20">
           <Link href="/">
             <img 
@@ -142,6 +148,10 @@ export default function Admin() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+            <Button variant="outline" onClick={handlePrintReport}>
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir Reporte
+            </Button>
             <Button variant="outline" asChild>
               <Link href="/">Ver Sitio Público</Link>
             </Button>
@@ -156,13 +166,13 @@ export default function Admin() {
         </div>
 
         {/* Search Bar */}
-        <Card className="mb-8">
+        <Card className="mb-8 print:hidden">
           <CardContent className="pt-6">
             <div className="flex gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <Input
-                  placeholder="Buscar por ID, localización o dirección..."
+                  placeholder="Buscar por ID, localización, dirección o ruta..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -218,11 +228,12 @@ export default function Admin() {
                     <TableRow>
                       <TableHead>ID Cobertizo</TableHead>
                       <TableHead>Localización</TableHead>
+                      <TableHead>Ruta</TableHead>
                       <TableHead>Dirección</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Anuncio Actual</TableHead>
-                      <TableHead>Acciones</TableHead>
+                      <TableHead className="print:hidden">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -232,10 +243,11 @@ export default function Admin() {
                         <TableRow key={parada.id}>
                           <TableCell className="font-medium">{parada.cobertizoId}</TableCell>
                           <TableCell>{parada.localizacion || "—"}</TableCell>
+                          <TableCell>{parada.ruta || "—"}</TableCell>
                           <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
                           <TableCell>
                             <Badge variant={parada.tipoFormato === "Digital" ? "default" : "secondary"}>
-                              {parada.tipoFormato}
+                              {parada.tipoFormato === "Digital" ? "B" : "F"}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -255,8 +267,100 @@ export default function Admin() {
                               "—"
                             )}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="print:hidden">
                             <div className="flex gap-2">
+                              <Dialog open={isDetalleDialogOpen && selectedParada?.id === parada.id} onOpenChange={(open) => {
+                                setIsDetalleDialogOpen(open);
+                                if (open) setSelectedParada(parada);
+                              }}>
+                                <DialogTrigger asChild>
+                                  <Button size="sm" variant="ghost">
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-2xl">
+                                  <DialogHeader>
+                                    <DialogTitle>Detalle de Parada</DialogTitle>
+                                    <DialogDescription>
+                                      ID: {parada.cobertizoId}
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="space-y-4">
+                                    <div className="aspect-video w-full overflow-hidden rounded-lg">
+                                      <img 
+                                        src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/IqmhOIoWLSiCKbXF.jpg"
+                                        alt="Parada de guagua"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-gray-500">ID Cobertizo</Label>
+                                        <p className="font-medium">{parada.cobertizoId}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-gray-500">Tipo</Label>
+                                        <p className="font-medium">{parada.tipoFormato === "Digital" ? "Bonificación" : "Fija"}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-gray-500">Localización</Label>
+                                        <p className="font-medium">{parada.localizacion || "—"}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-gray-500">Ruta</Label>
+                                        <p className="font-medium">{parada.ruta || "—"}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <Label className="text-gray-500">Dirección</Label>
+                                        <p className="font-medium">{parada.direccion}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-gray-500">Orientación</Label>
+                                        <p className="font-medium">{parada.orientacion || "—"}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-gray-500">Estado</Label>
+                                        <Badge variant={status === "Disponible" ? "outline" : "destructive"}>
+                                          {status}
+                                        </Badge>
+                                      </div>
+                                    </div>
+                                    {anuncio && (
+                                      <div className="border-t pt-4">
+                                        <h4 className="font-semibold mb-2">Anuncio Actual</h4>
+                                        <div className="space-y-2">
+                                          <div>
+                                            <Label className="text-gray-500">Cliente</Label>
+                                            <p className="font-medium">{anuncio.cliente}</p>
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                              <Label className="text-gray-500">Tipo</Label>
+                                              <p className="font-medium">{anuncio.tipo}</p>
+                                            </div>
+                                            <div>
+                                              <Label className="text-gray-500">Estado</Label>
+                                              <Badge>{anuncio.estado}</Badge>
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <Label className="text-gray-500">Período</Label>
+                                            <p className="font-medium">
+                                              {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
+                                            </p>
+                                          </div>
+                                          {anuncio.notas && (
+                                            <div>
+                                              <Label className="text-gray-500">Notas</Label>
+                                              <p className="text-sm">{anuncio.notas}</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                               <Dialog open={isAnuncioDialogOpen && selectedParada?.id === parada.id} onOpenChange={(open) => {
                                 setIsAnuncioDialogOpen(open);
                                 if (open) setSelectedParada(parada);
@@ -365,6 +469,18 @@ export default function Admin() {
           </CardContent>
         </Card>
       </div>
+      
+      <style>{`
+        @media print {
+          .print\\:hidden {
+            display: none !important;
+          }
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+        }
+      `}</style>
     </div>
   );
 }

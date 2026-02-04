@@ -63,3 +63,12 @@
 - [ ] Importar anuncios actuales desde Excel
 - [ ] Sistema de permisos por rol (admin/viewer)
 - [ ] Logs de auditoría de cambios
+
+## Mejoras Solicitadas - Fase 2
+
+- [x] Agregar botón para imprimir reportes
+- [x] Cambiar "Digital" a "Bonificación" (abreviado "B")
+- [x] Cambiar "Fija" a "Fija" (abreviado "F")
+- [x] Agregar columna "Ruta" en el listado de paradas
+- [x] Crear vista detallada de cada parada con foto genérica
+- [x] Botón para abrir detalles de parada desde el listado
