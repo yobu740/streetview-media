@@ -82,3 +82,18 @@
 - [x] Crear botón "Agregar Parada" para crear paradas manualmente
 - [x] Implementar función de eliminar parada con confirmación
 - [x] Agregar filtros en el modal de reportes antes de imprimir
+
+
+## Correcciones - Fase 4
+
+- [ ] Actualizar explicación de orientación: I=Inbound (dentro), O=Outbound (afuera), P=Peatonal (dirección acera)
+- [ ] Identificar paradas digitales automáticamente por letras múltiples en ID (123A, 123B, 123C = Digital)
+- [ ] Identificar paradas dobles por letras A/B solamente (123A, 123B = dos extremos de la misma parada)
+- [ ] Importar productos del Excel como anuncios activos
+- [ ] Generar fechas automáticas para anuncios importados
+- [ ] Actualizar interfaz para mostrar correctamente tipo Digital vs Fija según ID
+
+- [x] Agregar columna fotoUrl en tabla de paradas
+- [x] Implementar carga de fotos en modal "Agregar Parada"
+- [x] Agregar opción de cambiar foto en vista de detalles
+- [x] Configurar upload a S3 para imágenes de paradas

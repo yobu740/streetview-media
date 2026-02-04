@@ -57,6 +57,7 @@ export default function Admin() {
     ruta: "",
     tipoFormato: "Fija" as "Fija" | "Digital",
     orientacion: "",
+    fotoBase64: "",
   });
 
   // Queries
@@ -106,6 +107,7 @@ export default function Admin() {
         ruta: "",
         tipoFormato: "Fija",
         orientacion: "",
+        fotoBase64: "",
       });
       refetchParadas();
     },
@@ -239,8 +241,19 @@ export default function Admin() {
     });
   };
   
-  const handleCreateParada = () => {
-    createParada.mutate({
+  const uploadFoto = trpc.paradas.uploadFoto.useMutation({
+    onSuccess: () => {
+      toast.success("Foto actualizada exitosamente");
+      refetchParadas();
+    },
+    onError: (error) => {
+      toast.error(`Error al subir foto: ${error.message}`);
+    },
+  });
+  
+  const handleCreateParada = async () => {
+    // Primero crear la parada
+    const result = await createParada.mutateAsync({
       cobertizoId: paradaForm.cobertizoId,
       localizacion: paradaForm.localizacion,
       direccion: paradaForm.direccion,
@@ -248,6 +261,15 @@ export default function Admin() {
       tipoFormato: paradaForm.tipoFormato,
       orientacion: paradaForm.orientacion || undefined,
     });
+    
+    // Si hay foto, subirla
+    if (paradaForm.fotoBase64 && result.id) {
+      await uploadFoto.mutateAsync({
+        paradaId: result.id,
+        cobertizoId: paradaForm.cobertizoId,
+        fotoBase64: paradaForm.fotoBase64,
+      });
+    }
   };
   
   const handleDeleteParada = () => {
@@ -489,12 +511,40 @@ export default function Admin() {
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="space-y-4">
-                                      <div className="aspect-video w-full overflow-hidden rounded-lg">
+                                      <div className="aspect-video w-full overflow-hidden rounded-lg relative group">
                                         <img 
-                                          src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/IqmhOIoWLSiCKbXF.jpg"
+                                          src={parada.fotoUrl || "https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/IqmhOIoWLSiCKbXF.jpg"}
                                           alt="Parada de guagua"
                                           className="w-full h-full object-cover"
                                         />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                          <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={() => {
+                                              const input = document.createElement('input');
+                                              input.type = 'file';
+                                              input.accept = 'image/*';
+                                              input.onchange = (e: any) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                  const reader = new FileReader();
+                                                  reader.onloadend = async () => {
+                                                    await uploadFoto.mutateAsync({
+                                                      paradaId: parada.id,
+                                                      cobertizoId: parada.cobertizoId,
+                                                      fotoBase64: reader.result as string,
+                                                    });
+                                                  };
+                                                  reader.readAsDataURL(file);
+                                                }
+                                              };
+                                              input.click();
+                                            }}
+                                          >
+                                            Cambiar Foto
+                                          </Button>
+                                        </div>
                                       </div>
                                       <div className="grid grid-cols-2 gap-4">
                                         <div>
@@ -777,8 +827,28 @@ export default function Admin() {
               <Input
                 value={paradaForm.orientacion}
                 onChange={(e) => setParadaForm({ ...paradaForm, orientacion: e.target.value })}
-                placeholder="Ej: Inside, Outside"
+                placeholder="Ej: I (Inbound), O (Outbound), P (Peatonal)"
               />
+            </div>
+            <div>
+              <Label>Foto de la Parada</Label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setParadaForm({ ...paradaForm, fotoBase64: reader.result as string });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              {paradaForm.fotoBase64 && (
+                <img src={paradaForm.fotoBase64} alt="Preview" className="mt-2 w-full h-32 object-cover rounded" />
+              )}
             </div>
           </div>
           <DialogFooter>

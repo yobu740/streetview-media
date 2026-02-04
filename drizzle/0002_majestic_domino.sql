@@ -1,0 +1,1 @@
+ALTER TABLE `paradas` ADD `foto_url` text;
