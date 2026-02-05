@@ -19,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export default function Admin() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [clientSearch, setClientSearch] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
   const [isAnuncioDialogOpen, setIsAnuncioDialogOpen] = useState(false);
   const [isDetalleDialogOpen, setIsDetalleDialogOpen] = useState(false);
@@ -204,12 +205,19 @@ export default function Admin() {
 
   // Apply all filters
   const filteredParadas = paradas?.filter(p => {
-    // Search filter
-    const matchesSearch = 
+    // Search filter (general search)
+    const matchesSearch = !searchTerm || 
       p.cobertizoId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.localizacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // Client search filter (search by anuncio cliente)
+    const matchesClientSearch = !clientSearch || 
+      anuncios?.some(a => 
+        a.paradaId === p.id && 
+        a.cliente.toLowerCase().includes(clientSearch.toLowerCase())
+      );
     
     // Status filter
     const { status } = getParadaStatus(p.id);
@@ -225,7 +233,7 @@ export default function Admin() {
     // Ruta filter
     const matchesRuta = !filterRuta || (p.ruta && p.ruta.toLowerCase().includes(filterRuta.toLowerCase()));
     
-    return matchesSearch && matchesStatus && matchesTipo && matchesRuta;
+    return matchesSearch && matchesClientSearch && matchesStatus && matchesTipo && matchesRuta;
   }) || [];
   
   // Get paradas for printing with filters
@@ -461,8 +469,17 @@ export default function Admin() {
                   <Input
                     placeholder="Buscar por ID, localización, dirección o ruta..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => { setSearchTerm(e.target.value); setClientSearch(""); }}
                     className="pl-10"
+                  />
+                </div>
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff6b35]" size={20} />
+                  <Input
+                    placeholder="Buscar por nombre de cliente..."
+                    value={clientSearch}
+                    onChange={(e) => { setClientSearch(e.target.value); setSearchTerm(""); }}
+                    className="pl-10 border-[#ff6b35] focus:ring-[#ff6b35]"
                   />
                 </div>
               </div>

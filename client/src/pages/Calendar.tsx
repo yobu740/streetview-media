@@ -2,8 +2,14 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
@@ -11,6 +17,17 @@ import { Link } from "wouter";
 export default function Calendar() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isReservaDialogOpen, setIsReservaDialogOpen] = useState(false);
+  const [reservaForm, setReservaForm] = useState({
+    cliente: "",
+    fechaInicio: "",
+    fechaFin: "",
+    tipo: "Fijo" as "Fijo" | "Bonificación",
+    selectionMode: "paradas" as "paradas" | "rutas",
+    selectedParadas: [] as number[],
+    selectedRutas: [] as string[],
+  });
   
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
@@ -56,6 +73,27 @@ export default function Calendar() {
     }) || [];
   };
   
+  // Get paradas for selected date
+  const getParadasForSelectedDate = () => {
+    if (!selectedDate || !anuncios || !paradas) return [];
+    
+    const activeAnuncios = anuncios.filter(anuncio => {
+      const inicio = new Date(anuncio.fechaInicio);
+      const fin = new Date(anuncio.fechaFin);
+      return selectedDate >= inicio && selectedDate <= fin && anuncio.estado === "Activo";
+    });
+    
+    return activeAnuncios.map(anuncio => {
+      const parada = paradas.find(p => p.id === anuncio.paradaId);
+      return { parada, anuncio };
+    }).filter(item => item.parada);
+  };
+  
+  const handleDateClick = (day: number) => {
+    const date = new Date(year, month, day);
+    setSelectedDate(date);
+  };
+  
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
   };
@@ -95,6 +133,12 @@ export default function Calendar() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+            <Button 
+              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+              onClick={() => setIsReservaDialogOpen(true)}
+            >
+              Reservar
+            </Button>
             <Button variant="outline" asChild>
               <Link href="/admin">Volver al Panel</Link>
             </Button>
@@ -189,11 +233,16 @@ export default function Calendar() {
                 const anunciosToday = getAnunciosForDate(day);
                 const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
                 
+                const isSelected = selectedDate?.toDateString() === new Date(year, month, day).toDateString();
+                
                 return (
                   <div
                     key={day}
-                    className={`min-h-24 border rounded p-2 ${
-                      isToday ? 'border-[#ff6b35] border-2 bg-orange-50' : 'border-gray-300 bg-white'
+                    onClick={() => handleDateClick(day)}
+                    className={`min-h-24 border rounded p-2 cursor-pointer transition-all hover:shadow-md ${
+                      isSelected ? 'border-[#ff6b35] border-2 bg-orange-100' :
+                      isToday ? 'border-[#1a4d3c] border-2 bg-green-50' : 
+                      'border-gray-300 bg-white hover:border-gray-400'
                     }`}
                   >
                     <div className="font-semibold text-sm mb-1">{day}</div>
@@ -224,6 +273,64 @@ export default function Calendar() {
           </CardContent>
         </Card>
 
+        {/* Selected Date Listings */}
+        {selectedDate && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>
+                Paradas Ocupadas - {selectedDate.toLocaleDateString('es-PR', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {getParadasForSelectedDate().length === 0 ? (
+                <p className="text-gray-500 text-center py-8">
+                  No hay paradas ocupadas en esta fecha
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 px-4">ID</th>
+                        <th className="text-left py-2 px-4">Localización</th>
+                        <th className="text-left py-2 px-4">Ruta</th>
+                        <th className="text-left py-2 px-4">Cliente</th>
+                        <th className="text-left py-2 px-4">Tipo</th>
+                        <th className="text-left py-2 px-4">Período</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getParadasForSelectedDate().map(({ parada, anuncio }) => (
+                        <tr key={`${parada!.id}-${anuncio.id}`} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 font-medium">{parada!.cobertizoId}</td>
+                          <td className="py-3 px-4">{parada!.localizacion}</td>
+                          <td className="py-3 px-4">{parada!.ruta || '-'}</td>
+                          <td className="py-3 px-4">
+                            <Badge variant="secondary" className="bg-[#ff6b35] text-white">
+                              {anuncio.cliente}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant="outline">{anuncio.tipo}</Badge>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {new Date(anuncio.fechaInicio).toLocaleDateString('es-PR')} - {new Date(anuncio.fechaFin).toLocaleDateString('es-PR')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Legend */}
         <Card>
           <CardHeader>
@@ -232,8 +339,12 @@ export default function Calendar() {
           <CardContent>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-[#ff6b35] bg-orange-50 rounded"></div>
+                <div className="w-4 h-4 border-2 border-[#1a4d3c] bg-green-50 rounded"></div>
                 <span className="text-sm">Día actual</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-[#ff6b35] bg-orange-100 rounded"></div>
+                <span className="text-sm">Fecha seleccionada</span>
               </div>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="bg-[#1a4d3c] text-white">ID</Badge>
@@ -243,6 +354,207 @@ export default function Calendar() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Reservation Modal */}
+      <Dialog open={isReservaDialogOpen} onOpenChange={setIsReservaDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-[#1a4d3c]">Nueva Reserva</DialogTitle>
+            <DialogDescription>
+              Selecciona las fechas y paradas o rutas para crear una reserva
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Client Name */}
+            <div>
+              <Label htmlFor="cliente">Nombre del Cliente *</Label>
+              <Input
+                id="cliente"
+                value={reservaForm.cliente}
+                onChange={(e) => setReservaForm({ ...reservaForm, cliente: e.target.value })}
+                placeholder="Ej: Coca Cola, BPPR, etc."
+              />
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="fechaInicio">Fecha de Inicio *</Label>
+                <Input
+                  id="fechaInicio"
+                  type="date"
+                  value={reservaForm.fechaInicio}
+                  onChange={(e) => setReservaForm({ ...reservaForm, fechaInicio: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="fechaFin">Fecha de Fin *</Label>
+                <Input
+                  id="fechaFin"
+                  type="date"
+                  value={reservaForm.fechaFin}
+                  onChange={(e) => setReservaForm({ ...reservaForm, fechaFin: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Tipo */}
+            <div>
+              <Label htmlFor="tipo">Tipo de Anuncio</Label>
+              <Select value={reservaForm.tipo} onValueChange={(v: any) => setReservaForm({ ...reservaForm, tipo: v })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Fijo">Fijo</SelectItem>
+                  <SelectItem value="Bonificación">Bonificación</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Selection Mode */}
+            <div>
+              <Label>Seleccionar por:</Label>
+              <div className="flex gap-4 mt-2">
+                <Button
+                  type="button"
+                  variant={reservaForm.selectionMode === "paradas" ? "default" : "outline"}
+                  onClick={() => setReservaForm({ ...reservaForm, selectionMode: "paradas", selectedRutas: [] })}
+                  className={reservaForm.selectionMode === "paradas" ? "bg-[#1a4d3c] hover:bg-[#0f3a2a]" : ""}
+                >
+                  Paradas Específicas
+                </Button>
+                <Button
+                  type="button"
+                  variant={reservaForm.selectionMode === "rutas" ? "default" : "outline"}
+                  onClick={() => setReservaForm({ ...reservaForm, selectionMode: "rutas", selectedParadas: [] })}
+                  className={reservaForm.selectionMode === "rutas" ? "bg-[#1a4d3c] hover:bg-[#0f3a2a]" : ""}
+                >
+                  Por Rutas
+                </Button>
+              </div>
+            </div>
+
+            {/* Paradas Selection */}
+            {reservaForm.selectionMode === "paradas" && (
+              <div>
+                <Label>Seleccionar Paradas</Label>
+                <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                  {paradas?.map(parada => (
+                    <div key={parada.id} className="flex items-center space-x-2 py-2">
+                      <Checkbox
+                        id={`parada-${parada.id}`}
+                        checked={reservaForm.selectedParadas.includes(parada.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setReservaForm({
+                              ...reservaForm,
+                              selectedParadas: [...reservaForm.selectedParadas, parada.id]
+                            });
+                          } else {
+                            setReservaForm({
+                              ...reservaForm,
+                              selectedParadas: reservaForm.selectedParadas.filter(id => id !== parada.id)
+                            });
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`parada-${parada.id}`}
+                        className="text-sm cursor-pointer flex-1"
+                      >
+                        <span className="font-medium">{parada.cobertizoId}</span> - {parada.localizacion}
+                        {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  {reservaForm.selectedParadas.length} parada(s) seleccionada(s)
+                </p>
+              </div>
+            )}
+
+            {/* Rutas Selection */}
+            {reservaForm.selectionMode === "rutas" && (
+              <div>
+                <Label>Seleccionar Rutas</Label>
+                <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                  {Array.from(new Set(paradas?.map(p => p.ruta).filter(Boolean))).map(ruta => (
+                    <div key={ruta} className="flex items-center space-x-2 py-2">
+                      <Checkbox
+                        id={`ruta-${ruta}`}
+                        checked={reservaForm.selectedRutas.includes(ruta!)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setReservaForm({
+                              ...reservaForm,
+                              selectedRutas: [...reservaForm.selectedRutas, ruta!]
+                            });
+                          } else {
+                            setReservaForm({
+                              ...reservaForm,
+                              selectedRutas: reservaForm.selectedRutas.filter(r => r !== ruta)
+                            });
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`ruta-${ruta}`}
+                        className="text-sm cursor-pointer flex-1"
+                      >
+                        <span className="font-medium">Ruta {ruta}</span>
+                        <span className="text-gray-500 ml-2">
+                          ({paradas?.filter(p => p.ruta === ruta).length} paradas)
+                        </span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  {reservaForm.selectedRutas.length} ruta(s) seleccionada(s)
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsReservaDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="bg-[#ff6b35] hover:bg-[#e65a25]"
+              onClick={() => {
+                // Validate
+                if (!reservaForm.cliente || !reservaForm.fechaInicio || !reservaForm.fechaFin) {
+                  toast.error("Por favor completa todos los campos requeridos");
+                  return;
+                }
+                if (reservaForm.selectionMode === "paradas" && reservaForm.selectedParadas.length === 0) {
+                  toast.error("Por favor selecciona al menos una parada");
+                  return;
+                }
+                if (reservaForm.selectionMode === "rutas" && reservaForm.selectedRutas.length === 0) {
+                  toast.error("Por favor selecciona al menos una ruta");
+                  return;
+                }
+                
+                // Get paradas to reserve
+                const paradasToReserve = reservaForm.selectionMode === "paradas"
+                  ? reservaForm.selectedParadas
+                  : paradas?.filter(p => reservaForm.selectedRutas.includes(p.ruta!)).map(p => p.id) || [];
+                
+                toast.success(`Reserva creada para ${paradasToReserve.length} parada(s)`);
+                setIsReservaDialogOpen(false);
+                // TODO: Implement actual reservation creation
+              }}
+            >
+              Crear Reserva
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

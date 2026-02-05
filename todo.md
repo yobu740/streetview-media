@@ -150,3 +150,13 @@
 ## Bug Fixes
 
 - [x] Corregir búsqueda por nombre de cliente (ej: BPPR no aparece en resultados)
+
+## Mejoras de Búsqueda y Calendario
+
+- [x] Crear buscador de clientes separado del buscador general
+- [x] Hacer calendario interactivo - mostrar paradas al hacer clic en fecha
+- [x] Agregar área debajo del calendario para listar paradas de fecha seleccionada
+- [x] Crear botón "Reservar" con modal
+- [x] Modal de reserva: selección de fechas (inicio/fin)
+- [x] Modal de reserva: selección de rutas y/o paradas específicas
+- [x] Modal de reserva: validación de disponibilidad
