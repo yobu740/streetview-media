@@ -22,14 +22,48 @@ export async function searchParadas(searchTerm: string) {
   if (!db) return [];
   
   const searchPattern = `%${searchTerm}%`;
-  return await db.select().from(paradas).where(
+  
+  // First, search for paradas by ID, location, address, or route
+  const paradaResults = await db.select().from(paradas).where(
     or(
       like(paradas.cobertizoId, searchPattern),
       like(paradas.localizacion, searchPattern),
       like(paradas.direccion, searchPattern),
       like(paradas.ruta, searchPattern)
     )
-  ).orderBy(asc(paradas.localizacion));
+  );
+  
+  // Then, search for paradas that have anuncios matching the client name
+  const anuncioResults = await db.select({
+    id: paradas.id,
+    cobertizoId: paradas.cobertizoId,
+    localizacion: paradas.localizacion,
+    direccion: paradas.direccion,
+    orientacion: paradas.orientacion,
+    flowCat: paradas.flowCat,
+    ruta: paradas.ruta,
+    coordenadasLat: paradas.coordenadasLat,
+    coordenadasLng: paradas.coordenadasLng,
+    tipoFormato: paradas.tipoFormato,
+    fotoUrl: paradas.fotoUrl,
+    activa: paradas.activa,
+    createdAt: paradas.createdAt,
+    updatedAt: paradas.updatedAt,
+  })
+  .from(paradas)
+  .innerJoin(anuncios, eq(paradas.id, anuncios.paradaId))
+  .where(like(anuncios.cliente, searchPattern));
+  
+  // Combine results and remove duplicates
+  const allResults = [...paradaResults, ...anuncioResults];
+  const uniqueResults = Array.from(
+    new Map(allResults.map(p => [p.id, p])).values()
+  );
+  
+  // Sort by location
+  return uniqueResults.sort((a, b) => 
+    (a.localizacion || '').localeCompare(b.localizacion || '')
+  );
 }
 
 export async function createParada(data: InsertParada) {

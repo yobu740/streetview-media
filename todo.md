@@ -104,3 +104,7 @@
 
 - [x] Agregar enlace "Admin" al menú de navegación del sitio web
 - [x] Crear usuario demo para acceso al dashboard
+
+## Mejoras de Búsqueda
+
+- [x] Expandir búsqueda para incluir nombres de anuncios/clientes además de ID de parada y ruta
