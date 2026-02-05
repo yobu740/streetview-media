@@ -146,3 +146,7 @@
 - [x] Lista de clientes más frecuentes
 - [x] Cálculo y visualización de revenue proyectado por período
 - [x] Estadísticas generales del inventario
+
+## Bug Fixes
+
+- [x] Corregir búsqueda por nombre de cliente (ej: BPPR no aparece en resultados)

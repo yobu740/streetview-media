@@ -1,0 +1,22 @@
+{
+  "query": "SELECT * FROM anuncios WHERE cliente LIKE '%BPPR%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT * FROM anuncios WHERE cliente LIKE '%BPPR%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "30024",
+      "parada_id": "75",
+      "cliente": "BPPR",
+      "tipo": "Fijo",
+      "fecha_inicio": "2025-11-11 05:00:00",
+      "fecha_fin": "2026-04-11 04:00:00",
+      "estado": "Activo",
+      "notas": "Importado desde Excel",
+      "created_at": "2026-02-04 20:59:43",
+      "updated_at": "2026-02-04 20:59:43"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tparada_id\tcliente\ttipo\tfecha_inicio\tfecha_fin\testado\tnotas\tcreated_at\tupdated_at\n30024\t75\tBPPR\tFijo\t2025-11-11 05:00:00\t2026-04-11 04:00:00\tActivo\tImportado desde Excel\t2026-02-04 20:59:43\t2026-02-04 20:59:43\n",
+  "stderr": "",
+  "execution_time_ms": 417
+}

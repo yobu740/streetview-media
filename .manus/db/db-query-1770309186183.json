@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, parada_id, cliente, fecha_inicio, fecha_fin, estado FROM anuncios WHERE cliente LIKE '%BPPR%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, parada_id, cliente, fecha_inicio, fecha_fin, estado FROM anuncios WHERE cliente LIKE '%BPPR%';",
+  "rows": [
+    {
+      "id": "30024",
+      "parada_id": "75",
+      "cliente": "BPPR",
+      "fecha_inicio": "2025-11-11 05:00:00",
+      "fecha_fin": "2026-04-11 04:00:00",
+      "estado": "Activo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tparada_id\tcliente\tfecha_inicio\tfecha_fin\testado\n30024\t75\tBPPR\t2025-11-11 05:00:00\t2026-04-11 04:00:00\tActivo\n",
+  "stderr": "",
+  "execution_time_ms": 368
+}

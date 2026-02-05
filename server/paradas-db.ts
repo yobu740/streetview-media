@@ -1,4 +1,4 @@
-import { eq, and, gte, lte, desc, asc, like, or } from "drizzle-orm";
+import { eq, and, gte, lte, desc, asc, like, or, sql } from "drizzle-orm";
 import { paradas, anuncios, type Parada, type Anuncio, type InsertParada, type InsertAnuncio } from "../drizzle/schema";
 import { getDb } from "./db";
 
@@ -21,15 +21,15 @@ export async function searchParadas(searchTerm: string) {
   const db = await getDb();
   if (!db) return [];
   
-  const searchPattern = `%${searchTerm}%`;
+  const searchPattern = `%${searchTerm.toLowerCase()}%`;
   
-  // First, search for paradas by ID, location, address, or route
+  // First, search for paradas by ID, location, address, or route (case-insensitive)
   const paradaResults = await db.select().from(paradas).where(
     or(
-      like(paradas.cobertizoId, searchPattern),
-      like(paradas.localizacion, searchPattern),
-      like(paradas.direccion, searchPattern),
-      like(paradas.ruta, searchPattern)
+      sql`LOWER(${paradas.cobertizoId}) LIKE ${searchPattern}`,
+      sql`LOWER(${paradas.localizacion}) LIKE ${searchPattern}`,
+      sql`LOWER(${paradas.direccion}) LIKE ${searchPattern}`,
+      sql`LOWER(${paradas.ruta}) LIKE ${searchPattern}`
     )
   );
   
@@ -53,7 +53,7 @@ export async function searchParadas(searchTerm: string) {
   })
   .from(paradas)
   .innerJoin(anuncios, eq(paradas.id, anuncios.paradaId))
-  .where(like(anuncios.cliente, searchPattern));
+  .where(sql`LOWER(${anuncios.cliente}) LIKE ${searchPattern}`);
   
   // Mark paradas with match type
   const paradaResultsWithType = paradaResults.map(p => ({
