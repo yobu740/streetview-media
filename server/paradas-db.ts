@@ -49,16 +49,39 @@ export async function searchParadas(searchTerm: string) {
     activa: paradas.activa,
     createdAt: paradas.createdAt,
     updatedAt: paradas.updatedAt,
+    clienteNombre: anuncios.cliente,
   })
   .from(paradas)
   .innerJoin(anuncios, eq(paradas.id, anuncios.paradaId))
   .where(like(anuncios.cliente, searchPattern));
   
-  // Combine results and remove duplicates
-  const allResults = [...paradaResults, ...anuncioResults];
-  const uniqueResults = Array.from(
-    new Map(allResults.map(p => [p.id, p])).values()
-  );
+  // Mark paradas with match type
+  const paradaResultsWithType = paradaResults.map(p => ({
+    ...p,
+    matchType: 'parada' as const,
+    clienteNombre: null,
+  }));
+  
+  const anuncioResultsWithType = anuncioResults.map(p => ({
+    ...p,
+    matchType: 'cliente' as const,
+  }));
+  
+  // Combine results and handle duplicates (prefer cliente match if both exist)
+  const resultMap = new Map();
+  
+  for (const result of paradaResultsWithType) {
+    resultMap.set(result.id, result);
+  }
+  
+  for (const result of anuncioResultsWithType) {
+    const existing = resultMap.get(result.id);
+    if (!existing || existing.matchType === 'parada') {
+      resultMap.set(result.id, result);
+    }
+  }
+  
+  const uniqueResults = Array.from(resultMap.values());
   
   // Sort by location
   return uniqueResults.sort((a, b) => 

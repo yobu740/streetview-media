@@ -108,3 +108,7 @@
 ## Mejoras de Búsqueda
 
 - [x] Expandir búsqueda para incluir nombres de anuncios/clientes además de ID de parada y ruta
+
+## Indicadores Visuales de Búsqueda
+
+- [x] Agregar badge/indicador visual en resultados de búsqueda mostrando si el match fue por información de parada o por nombre de cliente

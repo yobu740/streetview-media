@@ -466,7 +466,16 @@ export default function Admin() {
                         const { status, anuncio } = getParadaStatus(parada.id);
                         return (
                           <TableRow key={parada.id}>
-                            <TableCell className="font-medium">{parada.cobertizoId}</TableCell>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <span>{parada.cobertizoId}</span>
+                                {(parada as any).matchType === 'cliente' && (
+                                  <Badge variant="default" className="bg-[#ff6b35] hover:bg-[#e65a25] text-xs">
+                                    Cliente: {(parada as any).clienteNombre}
+                                  </Badge>
+                                )}
+                              </div>
+                            </TableCell>
                             <TableCell>{parada.localizacion || "—"}</TableCell>
                             <TableCell>{parada.ruta || "—"}</TableCell>
                             <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
