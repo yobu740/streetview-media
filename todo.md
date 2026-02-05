@@ -112,3 +112,37 @@
 ## Indicadores Visuales de Búsqueda
 
 - [x] Agregar badge/indicador visual en resultados de búsqueda mostrando si el match fue por información de parada o por nombre de cliente
+
+## Sistema de Roles y Permisos
+
+- [x] Agregar campo 'role' a la tabla de usuarios (admin/vendedor)
+- [x] Implementar control de acceso basado en roles en el backend
+- [x] Adaptar UI para mostrar/ocultar funciones según rol del usuario
+- [x] Vendedor: puede ver todo, añadir anuncios, NO eliminar/editar paradas
+
+## Sistema de Reservas Inteligentes
+
+- [x] Permitir reservar paradas disponibles con fecha futura
+- [x] Permitir reservar paradas ocupadas mostrando fecha de disponibilidad
+- [x] Mostrar advertencia cuando parada está ocupada con fecha de liberación
+- [x] Validar que no haya conflictos de fechas en reservas
+
+## Exportación de Datos
+
+- [x] Implementar exportación a Excel del listado filtrado
+- [x] Incluir toda la información de paradas en el export
+- [x] Botón de descarga visible en la interfaz
+
+## Vista de Calendario
+
+- [x] Crear vista de calendario mensual
+- [x] Mostrar ocupación de paradas por mes
+- [x] Facilitar identificación de disponibilidad futura
+- [x] Navegación entre meses
+
+## Dashboard de Métricas
+
+- [x] Gráfico de ocupación por zona
+- [x] Lista de clientes más frecuentes
+- [x] Cálculo y visualización de revenue proyectado por período
+- [x] Estadísticas generales del inventario

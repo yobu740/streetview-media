@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
@@ -26,6 +26,7 @@ export default function Admin() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [paradaToDelete, setParadaToDelete] = useState<any>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,6 +64,25 @@ export default function Admin() {
   // Queries
   const { data: paradas, isLoading: paradasLoading, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: anuncios, refetch: refetchAnuncios } = trpc.anuncios.list.useQuery();
+  
+  // Check availability when dates change
+  const { data: checkAvailabilityData } = trpc.anuncios.checkDisponibilidad.useQuery(
+    {
+      paradaId: selectedParada?.id || 0,
+      fechaInicio: anuncioForm.fechaInicio ? new Date(anuncioForm.fechaInicio) : new Date(),
+      fechaFin: anuncioForm.fechaFin ? new Date(anuncioForm.fechaFin) : new Date(),
+    },
+    {
+      enabled: !!selectedParada && !!anuncioForm.fechaInicio && !!anuncioForm.fechaFin,
+    }
+  );
+  
+  // Update availability info when data changes
+  useEffect(() => {
+    if (checkAvailabilityData) {
+      setAvailabilityInfo(checkAvailabilityData);
+    }
+  }, [checkAvailabilityData]);
 
   // Mutations
   const createAnuncio = trpc.anuncios.create.useMutation({
@@ -277,6 +297,65 @@ export default function Admin() {
     deleteParada.mutate({ id: paradaToDelete.id });
   };
 
+  const handleExportToExcel = () => {
+    import('xlsx').then((XLSX) => {
+      // Prepare data for export
+      const exportData = filteredParadas.map(parada => {
+        const { status, anuncio } = getParadaStatus(parada.id);
+        return {
+          'ID': parada.cobertizoId,
+          'Localización': parada.localizacion || '',
+          'Ruta': parada.ruta || '',
+          'Dirección': parada.direccion || '',
+          'Orientación': parada.orientacion || '',
+          'Tipo': parada.tipoFormato === 'Digital' ? 'Digital (B)' : 'Fija (F)',
+          'Estado': status,
+          'Cliente Actual': anuncio ? anuncio.cliente : '',
+          'Fecha Inicio': anuncio ? new Date(anuncio.fechaInicio).toLocaleDateString() : '',
+          'Fecha Fin': anuncio ? new Date(anuncio.fechaFin).toLocaleDateString() : '',
+          'Tipo Anuncio': anuncio ? anuncio.tipo : '',
+          'Coordenadas': parada.coordenadasLat && parada.coordenadasLng ? `${parada.coordenadasLat}, ${parada.coordenadasLng}` : '',
+        };
+      });
+      
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      
+      // Set column widths
+      const colWidths = [
+        { wch: 10 },  // ID
+        { wch: 25 },  // Localización
+        { wch: 15 },  // Ruta
+        { wch: 40 },  // Dirección
+        { wch: 12 },  // Orientación
+        { wch: 15 },  // Tipo
+        { wch: 12 },  // Estado
+        { wch: 25 },  // Cliente
+        { wch: 12 },  // Fecha Inicio
+        { wch: 12 },  // Fecha Fin
+        { wch: 15 },  // Tipo Anuncio
+        { wch: 25 },  // Coordenadas
+      ];
+      ws['!cols'] = colWidths;
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Paradas');
+      
+      // Generate filename with date
+      const today = new Date().toISOString().split('T')[0];
+      const filename = `Paradas_Streetview_${today}.xlsx`;
+      
+      // Download file
+      XLSX.writeFile(wb, filename);
+      
+      toast.success('Archivo Excel descargado exitosamente');
+    }).catch(error => {
+      console.error('Error exporting to Excel:', error);
+      toast.error('Error al exportar a Excel');
+    });
+  };
+  
   const handlePrintReport = () => {
     setIsPrintDialogOpen(false);
     setTimeout(() => {
@@ -328,6 +407,22 @@ export default function Admin() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+            <Button variant="outline" asChild>
+              <Link href="/calendar">
+                <Calendar className="h-4 w-4 mr-2" />
+                Calendario
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/metrics">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Métricas
+              </Link>
+            </Button>
+            <Button variant="outline" onClick={handleExportToExcel}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exportar a Excel
+            </Button>
             <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
               <Printer className="h-4 w-4 mr-2" />
               Imprimir Reporte
@@ -345,13 +440,15 @@ export default function Admin() {
             <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Panel Administrativo</h1>
             <p className="text-body text-lg text-gray-600">Gestión de paradas y anuncios</p>
           </div>
-          <Button 
-            onClick={() => setIsAddParadaDialogOpen(true)}
-            className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Agregar Parada
-          </Button>
+          {user?.role === 'admin' && (
+            <Button 
+              onClick={() => setIsAddParadaDialogOpen(true)}
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Agregar Parada
+            </Button>
+          )}
         </div>
 
         {/* Search and Filters */}
@@ -639,16 +736,18 @@ export default function Admin() {
                                   <Plus className="h-4 w-4" />
                                 </Button>
                                 
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setParadaToDelete(parada);
-                                    setIsDeleteDialogOpen(true);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-600" />
-                                </Button>
+                                {user?.role === 'admin' && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setParadaToDelete(parada);
+                                      setIsDeleteDialogOpen(true);
+                                    }}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-600" />
+                                  </Button>
+                                )}
                               </div>
                             </TableCell>
                           </TableRow>
@@ -701,6 +800,26 @@ export default function Admin() {
               Parada: {selectedParada?.cobertizoId} - {selectedParada?.localizacion}
             </DialogDescription>
           </DialogHeader>
+          
+          {availabilityInfo && !availabilityInfo.disponible && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div className="flex">
+                <AlertTriangle className="h-5 w-5 text-yellow-400 mr-2" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-800">
+                    Parada ocupada
+                  </p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    Esta parada tiene un anuncio activo hasta el{' '}
+                    {availabilityInfo.proximaFechaDisponible && 
+                      new Date(availabilityInfo.proximaFechaDisponible).toLocaleDateString()}
+                    . Puedes reservarla a partir de esa fecha.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-4">
             <div>
               <Label>Cliente</Label>

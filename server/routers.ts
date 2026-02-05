@@ -1,7 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminProcedure, vendedorProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as paradasDb from "./paradas-db";
 import { uploadParadaFoto } from "./upload-foto";
@@ -38,7 +38,7 @@ export const appRouter = router({
         return await paradasDb.getParadaById(input.id);
       }),
     
-    create: protectedProcedure
+    create: adminProcedure
       .input(z.object({
         cobertizoId: z.string(),
         localizacion: z.string(),
@@ -56,7 +56,7 @@ export const appRouter = router({
         return { id };
       }),
     
-    update: protectedProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         data: z.object({
@@ -77,14 +77,14 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    delete: protectedProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await paradasDb.deleteParada(input.id);
         return { success: true };
       }),
     
-    uploadFoto: protectedProcedure
+    uploadFoto: adminProcedure
       .input(z.object({
         paradaId: z.number(),
         cobertizoId: z.string(),
@@ -122,7 +122,7 @@ export const appRouter = router({
       return await paradasDb.getActiveAnuncios();
     }),
     
-    create: protectedProcedure
+    create: vendedorProcedure
       .input(z.object({
         paradaId: z.number(),
         cliente: z.string(),
@@ -137,7 +137,7 @@ export const appRouter = router({
         return { id };
       }),
     
-    update: protectedProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         data: z.object({
@@ -154,7 +154,7 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    delete: protectedProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await paradasDb.deleteAnuncio(input.id);
@@ -168,12 +168,12 @@ export const appRouter = router({
         fechaFin: z.date(),
       }))
       .query(async ({ input }) => {
-        const disponible = await paradasDb.checkParadaDisponibilidad(
+        const result = await paradasDb.checkParadaDisponibilidad(
           input.paradaId,
           input.fechaInicio,
           input.fechaFin
         );
-        return { disponible };
+        return result;
       }),
   }),
 });

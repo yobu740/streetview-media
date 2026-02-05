@@ -214,7 +214,7 @@ export async function getParadasDisponibles(fechaInicio: Date, fechaFin: Date) {
 
 export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: Date, fechaFin: Date) {
   const db = await getDb();
-  if (!db) return true;
+  if (!db) return { disponible: true, proximaFechaDisponible: null, anuncioActual: null };
   
   // Check if there are any overlapping anuncios
   const overlapping = await db.select().from(anuncios).where(
@@ -226,9 +226,29 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
           gte(anuncios.fechaFin, fechaInicio)
         )
       ),
-      eq(anuncios.estado, "Activo")
+      or(
+        eq(anuncios.estado, "Activo"),
+        eq(anuncios.estado, "Programado")
+      )
     )
-  ).limit(1);
+  ).orderBy(anuncios.fechaFin);
   
-  return overlapping.length === 0;
+  if (overlapping.length === 0) {
+    return { disponible: true, proximaFechaDisponible: null, anuncioActual: null };
+  }
+  
+  // Find the latest end date among overlapping anuncios
+  const latestEndDate = overlapping.reduce((latest, anuncio) => {
+    return anuncio.fechaFin > latest ? anuncio.fechaFin : latest;
+  }, overlapping[0].fechaFin);
+  
+  // Add one day to get the next available date
+  const nextAvailable = new Date(latestEndDate);
+  nextAvailable.setDate(nextAvailable.getDate() + 1);
+  
+  return {
+    disponible: false,
+    proximaFechaDisponible: nextAvailable,
+    anuncioActual: overlapping[0]
+  };
 }
