@@ -99,3 +99,8 @@
 - [x] Configurar upload a S3 para imágenes de paradas
 
 - [x] Corregir error de React hooks moviendo uploadFoto.useMutation() al inicio del componente
+
+## Mejoras de Navegación y Acceso
+
+- [x] Agregar enlace "Admin" al menú de navegación del sitio web
+- [x] Crear usuario demo para acceso al dashboard
