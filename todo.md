@@ -255,3 +255,8 @@
 - [x] Fix status showing "Disponible" when parada has active anuncios
 - [x] Clean overlapping/duplicate anuncios in database
 - [x] Verify query joins anuncios table correctly
+
+## Bug - Cannot Create Anuncios Tipo "Fijo"
+- [x] Investigate why only "Bonificación" type works - Found mismatch in Select value
+- [x] Fix validation or schema for "Fijo" type - Changed "Fija" to "Fijo" in form
+- [x] Test both types work correctly

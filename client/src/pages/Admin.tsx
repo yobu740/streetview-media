@@ -1357,7 +1357,7 @@ export default function Admin() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Fija">Fija</SelectItem>
+                  <SelectItem value="Fijo">Fijo</SelectItem>
                   <SelectItem value="Bonificación">Bonificación</SelectItem>
                 </SelectContent>
               </Select>
