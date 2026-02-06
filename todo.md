@@ -267,3 +267,9 @@
 - [x] Update table headers to be clear
 - [x] Update form labels in parada creation
 - [x] Verify all labels are consistent throughout the app
+
+## Mis Reservas - Export and Access
+- [x] Verify vendedor role can access Mis Reservas page - Yes, all authenticated users can access
+- [x] Add Excel export functionality to Mis Reservas - CSV export with all reservation data
+- [x] Add print/PDF functionality to Mis Reservas - Print styles added, browser print dialog
+- [x] Test export features work correctly

@@ -3,11 +3,32 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Menu, X, Calendar, MapPin, User, Clock } from "lucide-react";
+import { Menu, X, Calendar, MapPin, User, Clock, FileDown, Printer } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 
 export default function MisReservas() {
+  // Add print styles
+  const printStyles = `
+    @media print {
+      nav, button { display: none !important; }
+      body { background: white !important; }
+      .container { max-width: 100% !important; padding: 20px !important; }
+      h1 { font-size: 24px !important; margin-bottom: 10px !important; }
+      .print\\:break-inside-avoid { break-inside: avoid; }
+    }
+  `;
+  
+  // Inject print styles
+  if (typeof document !== 'undefined') {
+    const styleElement = document.getElementById('mis-reservas-print-styles');
+    if (!styleElement) {
+      const style = document.createElement('style');
+      style.id = 'mis-reservas-print-styles';
+      style.textContent = printStyles;
+      document.head.appendChild(style);
+    }
+  }
   const { user, loading: authLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -40,6 +61,40 @@ export default function MisReservas() {
       </div>
     );
   }
+
+  const exportToExcel = () => {
+    if (!reservations || reservations.length === 0) return;
+
+    // Create CSV content
+    const headers = ["Cliente", "Parada", "Ruta", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Aprobación", "Creada"];
+    const rows = reservations.map((r: any) => [
+      r.cliente,
+      `#${r.paradaId}`,
+      r.parada?.ruta || "—",
+      r.tipo,
+      new Date(r.fechaInicio).toLocaleDateString(),
+      new Date(r.fechaFin).toLocaleDateString(),
+      r.estado,
+      r.approvalStatus === "approved" ? "Aprobada" : r.approvalStatus === "rejected" ? "Rechazada" : "Pendiente",
+      new Date(r.createdAt).toLocaleDateString()
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Create and download file
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mis-reservas-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -156,11 +211,33 @@ export default function MisReservas() {
 
       {/* Main Content */}
       <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Mis Reservas</h1>
-          <p className="text-body text-muted-foreground">
-            Aquí puedes ver todas tus reservas y su estado de aprobación
-          </p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Mis Reservas</h1>
+            <p className="text-body text-muted-foreground">
+              Aquí puedes ver todas tus reservas y su estado de aprobación
+            </p>
+          </div>
+          {reservations && reservations.length > 0 && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => exportToExcel()}
+                className="flex items-center gap-2"
+              >
+                <FileDown className="w-4 h-4" />
+                Exportar Excel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.print()}
+                className="flex items-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Imprimir
+              </Button>
+            </div>
+          )}
         </div>
 
         {!reservations || reservations.length === 0 ? (
@@ -177,7 +254,7 @@ export default function MisReservas() {
         ) : (
           <div className="grid gap-4">
             {reservations.map((reservation: any) => (
-              <Card key={reservation.id} className="p-6 hover:shadow-lg transition-shadow">
+              <Card key={reservation.id} className="p-6 hover:shadow-lg transition-shadow print:break-inside-avoid print:shadow-none print:border">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
