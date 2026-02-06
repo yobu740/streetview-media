@@ -7,8 +7,9 @@ const MICROSOFT_CLIENT_SECRET = process.env.MICROSOFT_CLIENT_SECRET!;
 const MICROSOFT_TENANT_ID = process.env.MICROSOFT_TENANT_ID!;
 
 // Dynamic redirect URI - will be set per request based on the origin
-// Using development URL as default for now
-let REDIRECT_URI = 'https://3000-iz2im7tr4j8m828oeo95c-5b794449.us1.manus.computer/api/auth/callback';
+// Use PUBLIC_URL if available, otherwise fall back to production domain
+const PUBLIC_URL = process.env.PUBLIC_URL || 'https://streetview-mediapr.manus.space';
+let REDIRECT_URI = `${PUBLIC_URL}/api/auth/callback`;
 
 if (!MICROSOFT_CLIENT_ID || !MICROSOFT_CLIENT_SECRET || !MICROSOFT_TENANT_ID) {
   throw new Error('Missing Microsoft OAuth configuration. Please set MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, and MICROSOFT_TENANT_ID');

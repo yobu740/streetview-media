@@ -172,3 +172,8 @@
 - [x] Fix redirect URI protocol (https)
 - [x] Fix returnPath redirect after login
 - [x] Fix session validation for tRPC requests after Microsoft login
+
+## Production Domain Fix
+- [x] Add PUBLIC_URL environment variable
+- [x] Update OAuth code to use PUBLIC_URL instead of req.get('host')
+- [ ] Test production login

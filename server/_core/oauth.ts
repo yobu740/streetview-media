@@ -15,8 +15,8 @@ export function registerOAuthRoutes(app: Express) {
   app.get("/api/auth/login", async (req: Request, res: Response) => {
     console.log("[OAuth Login] Received request to /api/auth/login");
     const state = getQueryParam(req, "state") || "";
-    // Always use https for redirect URI (Manus proxy handles SSL)
-    const origin = `https://${req.get('host')}`;
+    // Use PUBLIC_URL if set (production), otherwise detect from request (development)
+    const origin = process.env.PUBLIC_URL || `https://${req.get('host')}`;
     console.log("[OAuth Login] Origin:", origin);
     
     try {
@@ -48,8 +48,8 @@ export function registerOAuthRoutes(app: Express) {
     }
 
     try {
-      // Always use https for redirect URI (Manus proxy handles SSL)
-      const origin = `https://${req.get('host')}`;
+      // Use PUBLIC_URL if set (production), otherwise detect from request (development)
+      const origin = process.env.PUBLIC_URL || `https://${req.get('host')}`;
       console.log("[OAuth Callback] Origin:", origin);
       const tokenResponse = await microsoftOAuth.getTokenFromCode(code, origin);
       const userInfo = await microsoftOAuth.getUserInfo(tokenResponse.accessToken);
