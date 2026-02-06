@@ -220,3 +220,4 @@
 
 ## Bug Fixes
 - [x] Fix pending reservations not disappearing after approval/rejection
+- [x] Fix vendor reservations not appearing in admin notifications

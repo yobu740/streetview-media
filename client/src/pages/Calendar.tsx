@@ -32,6 +32,8 @@ export default function Calendar() {
   
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
+  const createAnuncio = trpc.anuncios.create.useMutation();
+  const utils = trpc.useUtils();
 
   if (authLoading) {
     return (
@@ -662,9 +664,47 @@ export default function Calendar() {
                   ? reservaForm.selectedParadas
                   : paradas?.filter(p => reservaForm.selectedRutas.includes(p.ruta!)).map(p => p.id) || [];
                 
-                toast.success(`Reserva creada para ${paradasToReserve.length} parada(s)`);
-                setIsReservaDialogOpen(false);
-                // TODO: Implement actual reservation creation
+                // Create reservations for each parada
+                let successCount = 0;
+                let errorCount = 0;
+                
+                Promise.all(
+                  paradasToReserve.map(paradaId =>
+                    createAnuncio.mutateAsync({
+                      paradaId,
+                      cliente: reservaForm.cliente,
+                      tipo: reservaForm.tipo,
+                      fechaInicio: new Date(reservaForm.fechaInicio),
+                      fechaFin: new Date(reservaForm.fechaFin),
+                      estado: "Programado",
+                      notas: "",
+                    }).then(() => {
+                      successCount++;
+                    }).catch(() => {
+                      errorCount++;
+                    })
+                  )
+                ).then(() => {
+                  if (successCount > 0) {
+                    toast.success(`${successCount} reserva(s) creada(s) exitosamente`);
+                    utils.anuncios.list.invalidate();
+                    utils.approvals.pending.invalidate();
+                  }
+                  if (errorCount > 0) {
+                    toast.error(`${errorCount} reserva(s) fallaron`);
+                  }
+                  setIsReservaDialogOpen(false);
+                  // Reset form
+                  setReservaForm({
+                    cliente: "",
+                    fechaInicio: "",
+                    fechaFin: "",
+                    tipo: "Fijo",
+                    selectionMode: "paradas",
+                    selectedParadas: [],
+                    selectedRutas: [],
+                  });
+                });
               }}
             >
               Crear Reserva
