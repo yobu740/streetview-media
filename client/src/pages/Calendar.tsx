@@ -650,19 +650,14 @@ export default function Calendar() {
                   toast.error("Por favor completa todos los campos requeridos");
                   return;
                 }
-                if (reservaForm.selectionMode === "paradas" && reservaForm.selectedParadas.length === 0) {
+                if (reservaForm.selectedParadas.length === 0) {
                   toast.error("Por favor selecciona al menos una parada");
-                  return;
-                }
-                if (reservaForm.selectionMode === "rutas" && reservaForm.selectedRutas.length === 0) {
-                  toast.error("Por favor selecciona al menos una ruta");
                   return;
                 }
                 
                 // Get paradas to reserve
-                const paradasToReserve = reservaForm.selectionMode === "paradas"
-                  ? reservaForm.selectedParadas
-                  : paradas?.filter(p => reservaForm.selectedRutas.includes(p.ruta!)).map(p => p.id) || [];
+                // Both modes now use selectedParadas since route mode also selects individual paradas
+                const paradasToReserve = reservaForm.selectedParadas;
                 
                 // Create reservations for each parada
                 let successCount = 0;
