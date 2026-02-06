@@ -170,18 +170,92 @@ export default function Admin() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f5f5f5]">
-        <Card className="max-w-md w-full">
-          <CardHeader>
-            <CardTitle>Acceso Restringido</CardTitle>
-            <CardDescription>Debes iniciar sesión para acceder al panel administrativo</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full bg-[#1a4d3c] hover:bg-[#0f3a2a]">
-              <a href={getLoginUrl()}>Iniciar Sesión</a>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex">
+        {/* Left side - Branding with bus stop image */}
+        <div className="hidden lg:flex lg:w-1/2 relative bg-[#1a4d3c] items-center justify-center overflow-hidden">
+          {/* Background image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{
+              backgroundImage: "url('https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/akCQAUPPSFjmkLQn.png')"
+            }}
+          />
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a4d3c] to-[#0f3a2a] opacity-80" />
+          
+          {/* Content */}
+          <div className="relative z-10 text-center px-8">
+            <img 
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
+              alt="Streetview Media" 
+              className="h-16 mx-auto mb-6 brightness-0 invert"
+            />
+            <h1 className="text-display text-4xl text-white mb-4 font-bold">
+              Panel Administrativo
+            </h1>
+            <p className="text-body text-xl text-white/90 max-w-md mx-auto">
+              Gestiona tu inventario de paradas de guagua y campañas publicitarias
+            </p>
+          </div>
+        </div>
+
+        {/* Right side - Login form */}
+        <div className="flex-1 flex items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full space-y-8">
+            {/* Mobile logo */}
+            <div className="lg:hidden text-center">
+              <img 
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
+                alt="Streetview Media" 
+                className="h-12 mx-auto mb-4"
+              />
+            </div>
+            
+            <div>
+              <h2 className="text-display text-3xl font-bold text-[#1a4d3c] text-center">
+                Iniciar Sesión
+              </h2>
+              <p className="mt-2 text-center text-body text-[#2a2a2a]">
+                Accede al panel administrativo con tu cuenta de Microsoft
+              </p>
+            </div>
+
+            <div className="mt-8 space-y-6">
+              {/* Microsoft Sign In Button */}
+              <Button 
+                asChild 
+                className="w-full h-12 bg-white hover:bg-gray-50 text-[#2a2a2a] border-2 border-gray-300 hover:border-[#ff6b35] transition-all shadow-md hover:shadow-lg"
+              >
+                <a href={getLoginUrl()} className="flex items-center justify-center gap-3">
+                  <svg className="w-5 h-5" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 0H0V11H11V0Z" fill="#F25022"/>
+                    <path d="M23 0H12V11H23V0Z" fill="#7FBA00"/>
+                    <path d="M11 12H0V23H11V12Z" fill="#00A4EF"/>
+                    <path d="M23 12H12V23H23V12Z" fill="#FFB900"/>
+                  </svg>
+                  <span className="text-body font-semibold">Iniciar sesión con Microsoft</span>
+                </a>
+              </Button>
+
+              {/* Info text */}
+              <div className="text-center">
+                <p className="text-sm text-[#2a2a2a]/60">
+                  Utiliza tu cuenta de Microsoft 365 para acceder
+                </p>
+              </div>
+
+              {/* Decorative element */}
+              <div className="pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-center gap-2 text-sm text-[#2a2a2a]/60">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Conexión segura</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

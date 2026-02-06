@@ -177,3 +177,9 @@
 - [x] Add PUBLIC_URL environment variable
 - [x] Update OAuth code to use PUBLIC_URL instead of req.get('host')
 - [ ] Test production login
+
+## Professional Login Page
+- [x] Design professional login page with Streetview Media branding
+- [x] Add Microsoft sign-in button with proper styling
+- [x] Include artistic banner with bus stop image
+- [ ] Test login flow
