@@ -183,3 +183,19 @@
 - [x] Add Microsoft sign-in button with proper styling
 - [x] Include artistic banner with bus stop image
 - [ ] Test login flow
+
+## Admin Notification System for Reservations
+- [x] Add approval status field to anuncios table (pending, approved, rejected)
+- [x] Add approvedBy and approvedAt fields to track who approved
+- [x] Create backend procedures for approval workflow
+- [x] Create notifications table for admin alerts
+- [x] Implement notification UI in admin dashboard
+- [ ] Add approval/rejection buttons for pending reservations
+- [x] Send notifications when vendors create reservations
+
+## Responsive Dashboard Design
+- [ ] Implement hamburger menu for mobile navigation
+- [ ] Make admin table responsive with horizontal scroll
+- [ ] Optimize form dialogs for mobile screens
+- [ ] Test on various mobile screen sizes
+- [x] Add "Nueva Búsqueda" button to clear all filters

@@ -59,6 +59,11 @@ export const anuncios = mysqlTable("anuncios", {
   fechaInicio: timestamp("fecha_inicio").notNull(), // Start date
   fechaFin: timestamp("fecha_fin").notNull(), // End date
   estado: mysqlEnum("estado", ["Activo", "Programado", "Finalizado"]).default("Activo").notNull(),
+  // Approval workflow fields
+  approvalStatus: mysqlEnum("approval_status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  createdBy: int("created_by"), // FK to users - who created the reservation
+  approvedBy: int("approved_by"), // FK to users - admin who approved/rejected
+  approvedAt: timestamp("approved_at"), // When it was approved/rejected
   notas: text("notas"), // Additional notes
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
@@ -66,3 +71,19 @@ export const anuncios = mysqlTable("anuncios", {
 
 export type Anuncio = typeof anuncios.$inferSelect;
 export type InsertAnuncio = typeof anuncios.$inferInsert;
+/**
+ * Notifications table for admin alerts
+ */
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(), // FK to users - recipient
+  type: mysqlEnum("type", ["reservation_pending", "reservation_approved", "reservation_rejected"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  relatedId: int("related_id"), // FK to anuncios or other entities
+  read: int("read").default(0).notNull(), // 0 = unread, 1 = read
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;

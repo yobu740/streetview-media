@@ -90,3 +90,100 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // TODO: add feature queries here as your schema grows.
+
+// Notification helpers
+import { notifications, InsertNotification, anuncios } from "../drizzle/schema";
+import { desc } from "drizzle-orm";
+
+export async function createNotification(notification: InsertNotification): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create notification: database not available");
+    return;
+  }
+
+  try {
+    await db.insert(notifications).values(notification);
+  } catch (error) {
+    console.error("[Database] Failed to create notification:", error);
+    throw error;
+  }
+}
+
+export async function getNotificationsByUserId(userId: number, limit: number = 50) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get notifications: database not available");
+    return [];
+  }
+
+  const result = await db
+    .select()
+    .from(notifications)
+    .where(eq(notifications.userId, userId))
+    .orderBy(desc(notifications.createdAt))
+    .limit(limit);
+
+  return result;
+}
+
+export async function markNotificationAsRead(notificationId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot mark notification as read: database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(notifications)
+      .set({ read: 1 })
+      .where(eq(notifications.id, notificationId));
+  } catch (error) {
+    console.error("[Database] Failed to mark notification as read:", error);
+    throw error;
+  }
+}
+
+export async function getUnreadNotificationCount(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get unread count: database not available");
+    return 0;
+  }
+
+  const { and } = await import("drizzle-orm");
+  const result = await db
+    .select()
+    .from(notifications)
+    .where(and(eq(notifications.userId, userId), eq(notifications.read, 0)));
+
+  return result.length;
+}
+
+// Anuncio approval helpers
+export async function updateAnuncioApprovalStatus(
+  anuncioId: number,
+  approvalStatus: "pending" | "approved" | "rejected",
+  approvedBy: number
+): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update approval status: database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(anuncios)
+      .set({
+        approvalStatus,
+        approvedBy,
+        approvedAt: new Date(),
+      })
+      .where(eq(anuncios.id, anuncioId));
+  } catch (error) {
+    console.error("[Database] Failed to update approval status:", error);
+    throw error;
+  }
+}

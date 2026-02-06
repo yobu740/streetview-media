@@ -252,3 +252,40 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
     anuncioActual: overlapping[0]
   };
 }
+
+// ========== APPROVAL WORKFLOW ==========
+
+export async function getAnuncioById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(anuncios).where(eq(anuncios.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function getPendingAnuncios() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(anuncios).where(eq(anuncios.approvalStatus, "pending")).orderBy(desc(anuncios.createdAt));
+}
+
+export async function notifyAdminsOfNewReservation(anuncioId: number, creatorName: string, clientName: string) {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Get all admin users
+  const { users } = await import("../drizzle/schema");
+  const admins = await db.select().from(users).where(eq(users.role, "admin"));
+  
+  // Create notification for each admin
+  const { createNotification } = await import("./db");
+  for (const admin of admins) {
+    await createNotification({
+      userId: admin.id,
+      type: "reservation_pending",
+      title: "Nueva Reserva Pendiente",
+      message: `${creatorName} ha creado una nueva reserva para ${clientName}. Requiere aprobación.`,
+      relatedId: anuncioId,
+      read: 0,
+    });
+  }
+}

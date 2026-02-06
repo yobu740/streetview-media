@@ -132,8 +132,15 @@ export const appRouter = router({
         estado: z.enum(["Activo", "Programado", "Finalizado"]).optional(),
         notas: z.string().optional(),
       }))
-      .mutation(async ({ input }) => {
-        const id = await paradasDb.createAnuncio(input);
+      .mutation(async ({ input, ctx }) => {
+        const id = await paradasDb.createAnuncio({
+          ...input,
+          createdBy: ctx.user.id,
+        });
+        
+        // Notify all admins about new pending reservation
+        await paradasDb.notifyAdminsOfNewReservation(id, ctx.user.name || 'Usuario', input.cliente);
+        
         return { id };
       }),
     
@@ -175,6 +182,83 @@ export const appRouter = router({
         );
         return result;
       }),
+  }),
+
+  // Notifications router
+  notifications: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const { getNotificationsByUserId } = await import("./db");
+      return await getNotificationsByUserId(ctx.user.id);
+    }),
+    
+    unreadCount: protectedProcedure.query(async ({ ctx }) => {
+      const { getUnreadNotificationCount } = await import("./db");
+      return await getUnreadNotificationCount(ctx.user.id);
+    }),
+    
+    markAsRead: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const { markNotificationAsRead } = await import("./db");
+        await markNotificationAsRead(input.id);
+        return { success: true };
+      }),
+  }),
+  
+  // Approval workflow router
+  approvals: router({
+    approve: adminProcedure
+      .input(z.object({ anuncioId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
+        const { getAnuncioById } = await import("./paradas-db");
+        
+        await updateAnuncioApprovalStatus(input.anuncioId, "approved", ctx.user.id);
+        
+        // Notify the creator
+        const anuncio = await getAnuncioById(input.anuncioId);
+        if (anuncio && anuncio.createdBy) {
+          await createNotification({
+            userId: anuncio.createdBy,
+            type: "reservation_approved",
+            title: "Reserva Aprobada",
+            message: `Tu reserva para ${anuncio.cliente} ha sido aprobada por ${ctx.user.name || 'Admin'}.`,
+            relatedId: input.anuncioId,
+            read: 0,
+          });
+        }
+        
+        return { success: true };
+      }),
+    
+    reject: adminProcedure
+      .input(z.object({ anuncioId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
+        const { getAnuncioById } = await import("./paradas-db");
+        
+        await updateAnuncioApprovalStatus(input.anuncioId, "rejected", ctx.user.id);
+        
+        // Notify the creator
+        const anuncio = await getAnuncioById(input.anuncioId);
+        if (anuncio && anuncio.createdBy) {
+          await createNotification({
+            userId: anuncio.createdBy,
+            type: "reservation_rejected",
+            title: "Reserva Rechazada",
+            message: `Tu reserva para ${anuncio.cliente} ha sido rechazada por ${ctx.user.name || 'Admin'}.`,
+            relatedId: input.anuncioId,
+            read: 0,
+          });
+        }
+        
+        return { success: true };
+      }),
+    
+    pending: adminProcedure.query(async () => {
+      const { getPendingAnuncios } = await import("./paradas-db");
+      return await getPendingAnuncios();
+    }),
   }),
 });
 

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3 } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -18,6 +18,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 export default function Admin() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  
+  // Notification queries
+  const { data: notifications } = trpc.notifications.list.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: pendingReservations } = trpc.approvals.pending.useQuery(undefined, { enabled: isAuthenticated && user?.role === 'admin' });
+  const markAsRead = trpc.notifications.markAsRead.useMutation();
+  const approveReservation = trpc.approvals.approve.useMutation();
+  const rejectReservation = trpc.approvals.reject.useMutation();
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearch, setClientSearch] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
@@ -28,6 +36,7 @@ export default function Admin() {
   const [paradaToDelete, setParadaToDelete] = useState<any>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -260,6 +269,20 @@ export default function Admin() {
     );
   }
 
+  // Clear all filters function
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setClientSearch("");
+    setFilterStatus("all");
+    setFilterTipo("all");
+    setFilterRuta("");
+    setCurrentPage(1);
+    toast.success("Filtros limpiados");
+  };
+  
+  // Check if any filter is active
+  const hasActiveFilters = searchTerm || clientSearch || filterStatus !== "all" || filterTipo !== "all" || filterRuta;
+  
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
   };
@@ -489,6 +512,26 @@ export default function Admin() {
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+            
+            {/* Notification Bell */}
+            {user?.role === 'admin' && (
+              <div className="relative">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                  className="relative"
+                >
+                  <Bell className="h-4 w-4" />
+                  {unreadCount && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </div>
+            )}
+            
             <Button variant="outline" asChild>
               <Link href="/calendar">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -515,6 +558,50 @@ export default function Admin() {
           </div>
         </div>
       </nav>
+
+      {/* Notification Panel */}
+      {isNotificationPanelOpen && user?.role === 'admin' && (
+        <div className="fixed top-20 right-4 w-96 bg-white border-2 border-[#1a4d3c] shadow-2xl z-50 max-h-[600px] overflow-y-auto">
+          <div className="p-4 border-b-2 border-[#1a4d3c] flex justify-between items-center">
+            <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
+            <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="divide-y">
+            {notifications && notifications.length > 0 ? (
+              notifications.map((notif) => (
+                <div 
+                  key={notif.id} 
+                  className={`p-4 hover:bg-gray-50 cursor-pointer ${
+                    notif.read === 0 ? 'bg-[#fff5f0]' : ''
+                  }`}
+                  onClick={() => {
+                    if (notif.read === 0) {
+                      markAsRead.mutate({ id: notif.id });
+                    }
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-[#1a4d3c]">{notif.title}</h4>
+                    {notif.read === 0 && (
+                      <span className="w-2 h-2 bg-[#ff6b35] rounded-full"></span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600">{notif.message}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {new Date(notif.createdAt).toLocaleString('es-PR')}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                No hay notificaciones
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="container py-12">
         <div className="mb-8 flex justify-between items-center">
@@ -556,6 +643,16 @@ export default function Admin() {
                     className="pl-10 border-[#ff6b35] focus:ring-[#ff6b35]"
                   />
                 </div>
+                {hasActiveFilters && (
+                  <Button 
+                    variant="outline" 
+                    onClick={clearAllFilters}
+                    className="border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Nueva Búsqueda
+                  </Button>
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
