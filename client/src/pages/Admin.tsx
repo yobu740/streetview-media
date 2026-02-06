@@ -309,17 +309,23 @@ export default function Admin() {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
   };
 
-  const getParadaStatus = (paradaId: number) => {
-    const paradaAnuncios = getParadaAnuncios(paradaId);
-    const now = new Date();
+  const getParadaStatus = (parada: any) => {
+    // Check if parada has an active anuncio from the joined data
+    if (parada.anuncioId && parada.anuncioCliente) {
+      return { 
+        status: "Ocupada", 
+        anuncio: {
+          id: parada.anuncioId,
+          cliente: parada.anuncioCliente,
+          tipo: parada.anuncioTipo,
+          fechaInicio: parada.anuncioFechaInicio,
+          fechaFin: parada.anuncioFechaFin,
+          estado: parada.anuncioEstado,
+        }
+      };
+    }
     
-    const activeAnuncio = paradaAnuncios.find(a => 
-      a.estado === "Activo" && 
-      new Date(a.fechaInicio) <= now && 
-      new Date(a.fechaFin) >= now
-    );
-    
-    return activeAnuncio ? { status: "Ocupada", anuncio: activeAnuncio } : { status: "Disponible", anuncio: null };
+    return { status: "Disponible", anuncio: null };
   };
 
   // Apply all filters
@@ -339,7 +345,7 @@ export default function Admin() {
       );
     
     // Status filter
-    const { status } = getParadaStatus(p.id);
+    const { status } = getParadaStatus(p);
     const matchesStatus = filterStatus === "all" || 
       (filterStatus === "disponible" && status === "Disponible") ||
       (filterStatus === "ocupada" && status === "Ocupada");
@@ -364,7 +370,7 @@ export default function Admin() {
   // Get paradas for printing with filters
   const getPrintParadas = () => {
     return paradas?.filter(p => {
-      const { status } = getParadaStatus(p.id);
+      const { status } = getParadaStatus(p);
       const matchesStatus = printFilterStatus === "all" || 
         (printFilterStatus === "disponible" && status === "Disponible") ||
         (printFilterStatus === "ocupada" && status === "Ocupada");
@@ -434,7 +440,7 @@ export default function Admin() {
     import('xlsx').then((XLSX) => {
       // Prepare data for export
       const exportData = filteredParadas.map(parada => {
-        const { status, anuncio } = getParadaStatus(parada.id);
+        const { status, anuncio } = getParadaStatus(parada);
         return {
           'ID': parada.cobertizoId,
           'Localización': parada.localizacion || '',
@@ -523,8 +529,8 @@ export default function Admin() {
     }, 100);
   };
   
-  const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p.id).status === "Disponible").length;
-  const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p.id).status === "Ocupada").length;
+  const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
+  const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
@@ -1049,7 +1055,7 @@ export default function Admin() {
                     </TableHeader>
                     <TableBody>
                       {paginatedParadas.map((parada) => {
-                        const { status, anuncio } = getParadaStatus(parada.id);
+                        const { status, anuncio } = getParadaStatus(parada);
                         return (
                           <TableRow key={parada.id}>
                             <TableCell className="font-medium">
@@ -1232,12 +1238,7 @@ export default function Admin() {
                                                 <p className="font-medium">{new Date(anuncio.fechaFin).toLocaleDateString()}</p>
                                               </div>
                                             </div>
-                                            {anuncio.notas && (
-                                              <div>
-                                                <Label className="text-gray-500">Notas</Label>
-                                                <p className="font-medium">{anuncio.notas}</p>
-                                              </div>
-                                            )}
+
                                           </div>
                                         </div>
                                       )}
@@ -1612,10 +1613,10 @@ export default function Admin() {
             <strong>Total:</strong> {getPrintParadas().length}
           </div>
           <div className="stat-card">
-            <strong>Disponibles:</strong> {getPrintParadas().filter(p => getParadaStatus(p.id).status === "Disponible").length}
+            <strong>Disponibles:</strong> {getPrintParadas().filter(p => getParadaStatus(p).status === "Disponible").length}
           </div>
           <div className="stat-card">
-            <strong>Ocupadas:</strong> {getPrintParadas().filter(p => getParadaStatus(p.id).status === "Ocupada").length}
+            <strong>Ocupadas:</strong> {getPrintParadas().filter(p => getParadaStatus(p).status === "Ocupada").length}
           </div>
         </div>
         <table>
@@ -1632,7 +1633,7 @@ export default function Admin() {
           </thead>
           <tbody>
             {getPrintParadas().map((parada) => {
-              const { status, anuncio } = getParadaStatus(parada.id);
+              const { status, anuncio } = getParadaStatus(parada);
               return (
                 <tr key={parada.id}>
                   <td>{parada.cobertizoId}</td>

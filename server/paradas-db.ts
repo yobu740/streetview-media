@@ -7,7 +7,48 @@ import { getDb } from "./db";
 export async function getAllParadas() {
   const db = await getDb();
   if (!db) return [];
-  return await db.select().from(paradas).orderBy(asc(paradas.localizacion));
+  
+  // Get all paradas with their current active/scheduled anuncio
+  const result = await db
+    .select({
+      // Parada fields
+      id: paradas.id,
+      cobertizoId: paradas.cobertizoId,
+      localizacion: paradas.localizacion,
+      direccion: paradas.direccion,
+      orientacion: paradas.orientacion,
+      flowCat: paradas.flowCat,
+      ruta: paradas.ruta,
+      coordenadasLat: paradas.coordenadasLat,
+      coordenadasLng: paradas.coordenadasLng,
+      tipoFormato: paradas.tipoFormato,
+      fotoUrl: paradas.fotoUrl,
+      activa: paradas.activa,
+      createdAt: paradas.createdAt,
+      updatedAt: paradas.updatedAt,
+      // Current anuncio fields
+      anuncioId: anuncios.id,
+      anuncioCliente: anuncios.cliente,
+      anuncioTipo: anuncios.tipo,
+      anuncioFechaInicio: anuncios.fechaInicio,
+      anuncioFechaFin: anuncios.fechaFin,
+      anuncioEstado: anuncios.estado,
+    })
+    .from(paradas)
+    .leftJoin(
+      anuncios,
+      and(
+        eq(paradas.id, anuncios.paradaId),
+        eq(anuncios.approvalStatus, "approved"),
+        or(
+          eq(anuncios.estado, "Activo"),
+          eq(anuncios.estado, "Programado")
+        )
+      )
+    )
+    .orderBy(asc(paradas.localizacion));
+  
+  return result;
 }
 
 export async function getParadaById(id: number) {

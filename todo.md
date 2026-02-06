@@ -249,3 +249,9 @@
 - [x] Allow changing between Disponible, Activo, Programado, Inactivo, Finalizado
 - [x] Update UI immediately after status change with query invalidation
 - [x] Admin-only feature with Select component
+
+## Main Listing Display Bugs
+- [x] Fix "Anuncio Actual" column not showing cliente name and dates
+- [x] Fix status showing "Disponible" when parada has active anuncios
+- [x] Clean overlapping/duplicate anuncios in database
+- [x] Verify query joins anuncios table correctly
