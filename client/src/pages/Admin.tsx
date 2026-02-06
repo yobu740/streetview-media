@@ -330,12 +330,19 @@ export default function Admin() {
 
   // Apply all filters
   const filteredParadas = paradas?.filter(p => {
-    // Search filter (general search)
-    const matchesSearch = !searchTerm || 
-      p.cobertizoId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.localizacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
+    // Search filter (general search with comma-separated IDs support)
+    const matchesSearch = !searchTerm || (() => {
+      // Check if search contains commas (multi-ID search)
+      if (searchTerm.includes(',')) {
+        const ids = searchTerm.split(',').map(id => id.trim().toLowerCase());
+        return ids.some(id => p.cobertizoId.toLowerCase().includes(id));
+      }
+      // Regular search
+      return p.cobertizoId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.localizacion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.direccion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
+    })();
     
     // Client search filter (search by anuncio cliente)
     const matchesClientSearch = !clientSearch || 
@@ -919,7 +926,7 @@ export default function Admin() {
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <Input
-                    placeholder="Buscar por ID, localización, dirección o ruta..."
+                    placeholder="Buscar por ID (separar con comas), localización, dirección o ruta..."
                     value={searchTerm}
                     onChange={(e) => { setSearchTerm(e.target.value); setClientSearch(""); }}
                     className="pl-10"

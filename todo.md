@@ -273,3 +273,10 @@
 - [x] Add Excel export functionality to Mis Reservas - CSV export with all reservation data
 - [x] Add print/PDF functionality to Mis Reservas - Print styles added, browser print dialog
 - [x] Test export features work correctly
+
+## Search and Reports Improvements
+- [x] Add comma-separated multi-ID search for cobertizo IDs (e.g., "186, 187, 188")
+- [x] Add date range filter to reports page
+- [x] Add print functionality to reservation reports
+- [x] Test multi-ID search works correctly
+- [x] Test date filtering in reports
