@@ -167,4 +167,8 @@
 - [x] Actualizar backend para usar Microsoft Graph API
 - [x] Actualizar frontend para login con Microsoft
 - [x] Configurar variables de entorno de Azure AD
-- [ ] Probar flujo completo de autenticación
+- [x] Probar flujo completo de autenticación
+- [x] Fix Microsoft OAuth callback 404 error
+- [x] Fix redirect URI protocol (https)
+- [x] Fix returnPath redirect after login
+- [x] Fix session validation for tRPC requests after Microsoft login

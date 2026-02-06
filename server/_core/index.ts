@@ -30,6 +30,16 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Global request logger - FIRST middleware
+  app.use((req, res, next) => {
+    if (req.url.includes('/api/auth')) {
+      console.log('[REQUEST] Method:', req.method, 'URL:', req.url);
+      console.log('[REQUEST] Query string:', req.url.split('?')[1] || 'none');
+    }
+    next();
+  });
+  
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
