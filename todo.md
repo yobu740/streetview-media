@@ -209,3 +209,11 @@
 - [x] Validate parada availability based on selected date range
 - [x] Fix route filter to show individual available paradas within route
 - [x] Prevent selection of occupied paradas for selected dates
+
+## Bulk Reservation Approval
+- [x] Add checkbox selection for individual pending reservations
+- [x] Add "Select All" checkbox for pending reservations
+- [x] Implement "Aprobar Todas" button for selected reservations
+- [x] Implement "Rechazar Todas" button for selected reservations
+- [x] Add backend support for bulk approval operations
+- [x] Add backend support for bulk rejection operations

@@ -26,6 +26,8 @@ export default function Admin() {
   const markAsRead = trpc.notifications.markAsRead.useMutation();
   const approveReservation = trpc.approvals.approve.useMutation();
   const rejectReservation = trpc.approvals.reject.useMutation();
+  const bulkApprove = trpc.approvals.bulkApprove.useMutation();
+  const bulkReject = trpc.approvals.bulkReject.useMutation();
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearch, setClientSearch] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
@@ -38,6 +40,7 @@ export default function Admin() {
   const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedReservations, setSelectedReservations] = useState<number[]>([]);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -707,22 +710,115 @@ export default function Admin() {
         {user?.role === 'admin' && pendingReservations && pendingReservations.length > 0 && (
           <Card className="mb-8 border-2 border-[#ff6b35] print:hidden">
             <CardHeader>
-              <CardTitle className="text-[#ff6b35] flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Reservas Pendientes de Aprobación ({pendingReservations.length})
-              </CardTitle>
-              <CardDescription>
-                Estas reservas requieren tu aprobación antes de ser confirmadas
-              </CardDescription>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <CardTitle className="text-[#ff6b35] flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5" />
+                    Reservas Pendientes de Aprobación ({pendingReservations.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Estas reservas requieren tu aprobación antes de ser confirmadas
+                  </CardDescription>
+                </div>
+                {selectedReservations.length > 0 && (
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => {
+                        bulkApprove.mutate(
+                          { anuncioIds: selectedReservations },
+                          {
+                            onSuccess: (data) => {
+                              toast.success(`${data.count} reserva(s) aprobada(s)`);
+                              refetchAnuncios();
+                              setSelectedReservations([]);
+                            },
+                            onError: (error) => {
+                              toast.error(`Error: ${error.message}`);
+                            },
+                          }
+                        );
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      size="sm"
+                      disabled={bulkApprove.isPending}
+                    >
+                      {bulkApprove.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Check className="h-4 w-4 mr-2" />
+                      )}
+                      Aprobar Todas ({selectedReservations.length})
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        bulkReject.mutate(
+                          { anuncioIds: selectedReservations },
+                          {
+                            onSuccess: (data) => {
+                              toast.success(`${data.count} reserva(s) rechazada(s)`);
+                              refetchAnuncios();
+                              setSelectedReservations([]);
+                            },
+                            onError: (error) => {
+                              toast.error(`Error: ${error.message}`);
+                            },
+                          }
+                        );
+                      }}
+                      variant="outline"
+                      className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                      size="sm"
+                      disabled={bulkReject.isPending}
+                    >
+                      {bulkReject.isPending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <X className="h-4 w-4 mr-2" />
+                      )}
+                      Rechazar Todas ({selectedReservations.length})
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
+              <div className="mb-4 flex items-center gap-2 pb-4 border-b">
+                <input
+                  type="checkbox"
+                  checked={selectedReservations.length === pendingReservations.length}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedReservations(pendingReservations.map(a => a.id));
+                    } else {
+                      setSelectedReservations([]);
+                    }
+                  }}
+                  className="h-4 w-4 rounded border-gray-300 text-[#ff6b35] focus:ring-[#ff6b35]"
+                />
+                <label className="text-sm font-medium text-gray-700">
+                  Seleccionar todas ({pendingReservations.length})
+                </label>
+              </div>
               <div className="space-y-4">
                 {pendingReservations.map((anuncio) => {
                   const parada = paradas?.find(p => p.id === anuncio.paradaId);
                   return (
                     <div key={anuncio.id} className="border-2 border-gray-200 p-4 rounded-lg hover:border-[#ff6b35] transition-colors">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex-1">
+                        <div className="flex items-start gap-3 flex-1">
+                          <input
+                            type="checkbox"
+                            checked={selectedReservations.includes(anuncio.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedReservations([...selectedReservations, anuncio.id]);
+                              } else {
+                                setSelectedReservations(selectedReservations.filter(id => id !== anuncio.id));
+                              }
+                            }}
+                            className="h-4 w-4 mt-1 rounded border-gray-300 text-[#ff6b35] focus:ring-[#ff6b35]"
+                          />
+                          <div className="flex-1">
                           <h4 className="font-semibold text-lg text-[#1a4d3c] mb-2">{anuncio.cliente}</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                             <div><span className="font-medium">Parada:</span> {parada?.cobertizoId} - {parada?.localizacion}</div>
@@ -735,6 +831,7 @@ export default function Admin() {
                               <span className="font-medium">Notas:</span> {anuncio.notas}
                             </div>
                           )}
+                          </div>
                         </div>
                         <div className="flex gap-2">
                           <Button

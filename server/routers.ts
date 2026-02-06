@@ -255,6 +255,58 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    bulkApprove: adminProcedure
+      .input(z.object({ anuncioIds: z.array(z.number()) }))
+      .mutation(async ({ input, ctx }) => {
+        const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
+        const { getAnuncioById } = await import("./paradas-db");
+        
+        for (const anuncioId of input.anuncioIds) {
+          await updateAnuncioApprovalStatus(anuncioId, "approved", ctx.user.id);
+          
+          // Notify the creator
+          const anuncio = await getAnuncioById(anuncioId);
+          if (anuncio && anuncio.createdBy) {
+            await createNotification({
+              userId: anuncio.createdBy,
+              type: "reservation_approved",
+              title: "Reserva Aprobada",
+              message: `Tu reserva para ${anuncio.cliente} ha sido aprobada por ${ctx.user.name || 'Admin'}.`,
+              relatedId: anuncioId,
+              read: 0,
+            });
+          }
+        }
+        
+        return { success: true, count: input.anuncioIds.length };
+      }),
+    
+    bulkReject: adminProcedure
+      .input(z.object({ anuncioIds: z.array(z.number()) }))
+      .mutation(async ({ input, ctx }) => {
+        const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
+        const { getAnuncioById } = await import("./paradas-db");
+        
+        for (const anuncioId of input.anuncioIds) {
+          await updateAnuncioApprovalStatus(anuncioId, "rejected", ctx.user.id);
+          
+          // Notify the creator
+          const anuncio = await getAnuncioById(anuncioId);
+          if (anuncio && anuncio.createdBy) {
+            await createNotification({
+              userId: anuncio.createdBy,
+              type: "reservation_rejected",
+              title: "Reserva Rechazada",
+              message: `Tu reserva para ${anuncio.cliente} ha sido rechazada por ${ctx.user.name || 'Admin'}.`,
+              relatedId: anuncioId,
+              read: 0,
+            });
+          }
+        }
+        
+        return { success: true, count: input.anuncioIds.length };
+      }),
+    
     pending: adminProcedure.query(async () => {
       const { getPendingAnuncios } = await import("./paradas-db");
       return await getPendingAnuncios();
