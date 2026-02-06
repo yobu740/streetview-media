@@ -222,3 +222,6 @@
 - [x] Fix pending reservations not disappearing after approval/rejection
 - [x] Fix vendor reservations not appearing in admin notifications
 - [x] Fix route filter selecting all paradas instead of individual selected paradas
+- [x] Fix reservation creation failing with error message (was permission issue)
+- [x] Allow regular users to create reservations (not just vendedores)
+- [x] Verify approved reservations appear as Programado in calendar

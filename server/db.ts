@@ -174,13 +174,20 @@ export async function updateAnuncioApprovalStatus(
   }
 
   try {
+    const updateData: any = {
+      approvalStatus,
+      approvedBy,
+      approvedAt: new Date(),
+    };
+    
+    // When approved, also set estado to Programado
+    if (approvalStatus === "approved") {
+      updateData.estado = "Programado";
+    }
+    
     await db
       .update(anuncios)
-      .set({
-        approvalStatus,
-        approvedBy,
-        approvedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(anuncios.id, anuncioId));
   } catch (error) {
     console.error("[Database] Failed to update approval status:", error);

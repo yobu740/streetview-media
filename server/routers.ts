@@ -122,7 +122,7 @@ export const appRouter = router({
       return await paradasDb.getActiveAnuncios();
     }),
     
-    create: vendedorProcedure
+    create: protectedProcedure
       .input(z.object({
         paradaId: z.number(),
         cliente: z.string(),
