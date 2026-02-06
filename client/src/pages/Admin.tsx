@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -37,6 +37,7 @@ export default function Admin() {
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +45,7 @@ export default function Admin() {
   
   // Filter state
   const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada">("all");
+  const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
   
@@ -274,6 +276,7 @@ export default function Admin() {
     setSearchTerm("");
     setClientSearch("");
     setFilterStatus("all");
+    setFilterApprovalStatus("all");
     setFilterTipo("all");
     setFilterRuta("");
     setCurrentPage(1);
@@ -281,7 +284,7 @@ export default function Admin() {
   };
   
   // Check if any filter is active
-  const hasActiveFilters = searchTerm || clientSearch || filterStatus !== "all" || filterTipo !== "all" || filterRuta;
+  const hasActiveFilters = searchTerm || clientSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta;
   
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
@@ -330,7 +333,13 @@ export default function Admin() {
     // Ruta filter
     const matchesRuta = !filterRuta || (p.ruta && p.ruta.toLowerCase().includes(filterRuta.toLowerCase()));
     
-    return matchesSearch && matchesClientSearch && matchesStatus && matchesTipo && matchesRuta;
+    // Approval status filter (check if any anuncio for this parada matches the approval status)
+    const matchesApprovalStatus = filterApprovalStatus === "all" || 
+      anuncios?.some(a => 
+        a.paradaId === p.id && a.approvalStatus === filterApprovalStatus
+      );
+    
+    return matchesSearch && matchesClientSearch && matchesStatus && matchesTipo && matchesRuta && matchesApprovalStatus;
   }) || [];
   
   // Get paradas for printing with filters
@@ -510,7 +519,8 @@ export default function Admin() {
               className="h-12 cursor-pointer"
             />
           </Link>
-          <div className="flex items-center gap-4">
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
             
             {/* Notification Bell */}
@@ -556,8 +566,81 @@ export default function Admin() {
               <Link href="/">Ver Sitio Público</Link>
             </Button>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Notification Bell - Mobile */}
+            {user?.role === 'admin' && (
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                className="relative"
+              >
+                <Bell className="h-4 w-4" />
+                {unreadCount && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                    {unreadCount}
+                  </span>
+                )}
+              </Button>
+            )}
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
+          <div className="container py-4 space-y-2">
+            <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/calendar" onClick={() => setIsMobileMenuOpen(false)}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Calendario
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/metrics" onClick={() => setIsMobileMenuOpen(false)}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Métricas
+              </Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start" 
+              onClick={() => {
+                handleExportToExcel();
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exportar a Excel
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start" 
+              onClick={() => {
+                setIsPrintDialogOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir Reporte
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Ver Sitio Público</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Notification Panel */}
       {isNotificationPanelOpen && user?.role === 'admin' && (
@@ -620,11 +703,96 @@ export default function Admin() {
           )}
         </div>
 
+        {/* Pending Reservations Section - Admin Only */}
+        {user?.role === 'admin' && pendingReservations && pendingReservations.length > 0 && (
+          <Card className="mb-8 border-2 border-[#ff6b35] print:hidden">
+            <CardHeader>
+              <CardTitle className="text-[#ff6b35] flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Reservas Pendientes de Aprobación ({pendingReservations.length})
+              </CardTitle>
+              <CardDescription>
+                Estas reservas requieren tu aprobación antes de ser confirmadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {pendingReservations.map((anuncio) => {
+                  const parada = paradas?.find(p => p.id === anuncio.paradaId);
+                  return (
+                    <div key={anuncio.id} className="border-2 border-gray-200 p-4 rounded-lg hover:border-[#ff6b35] transition-colors">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg text-[#1a4d3c] mb-2">{anuncio.cliente}</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                            <div><span className="font-medium">Parada:</span> {parada?.cobertizoId} - {parada?.localizacion}</div>
+                            <div><span className="font-medium">Tipo:</span> {anuncio.tipo}</div>
+                            <div><span className="font-medium">Inicio:</span> {new Date(anuncio.fechaInicio).toLocaleDateString('es-PR')}</div>
+                            <div><span className="font-medium">Fin:</span> {new Date(anuncio.fechaFin).toLocaleDateString('es-PR')}</div>
+                          </div>
+                          {anuncio.notas && (
+                            <div className="mt-2 text-sm text-gray-500">
+                              <span className="font-medium">Notas:</span> {anuncio.notas}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              approveReservation.mutate(
+                                { anuncioId: anuncio.id },
+                                {
+                                  onSuccess: () => {
+                                    toast.success("Reserva aprobada");
+                                    refetchAnuncios();
+                                  },
+                                  onError: (error) => {
+                                    toast.error(`Error: ${error.message}`);
+                                  },
+                                }
+                              );
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Check className="h-4 w-4 mr-2" />
+                            Aprobar
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              rejectReservation.mutate(
+                                { anuncioId: anuncio.id },
+                                {
+                                  onSuccess: () => {
+                                    toast.success("Reserva rechazada");
+                                    refetchAnuncios();
+                                  },
+                                  onError: (error) => {
+                                    toast.error(`Error: ${error.message}`);
+                                  },
+                                }
+                              );
+                            }}
+                            variant="outline"
+                            className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Rechazar
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Search and Filters */}
         <Card className="mb-8 print:hidden">
           <CardContent className="pt-6">
             <div className="space-y-4">
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <Input
@@ -654,7 +822,7 @@ export default function Admin() {
                   </Button>
                 )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <Label>Filtrar por Tipo</Label>
                   <Select value={filterTipo} onValueChange={(v: any) => { setFilterTipo(v); handleFilterChange(); }}>
@@ -676,6 +844,22 @@ export default function Admin() {
                     onChange={(e) => { setFilterRuta(e.target.value); handleFilterChange(); }}
                   />
                 </div>
+                {user?.role === 'admin' && (
+                  <div>
+                    <Label>Estado de Aprobación</Label>
+                    <Select value={filterApprovalStatus} onValueChange={(v: any) => { setFilterApprovalStatus(v); handleFilterChange(); }}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="approved">Aprobado</SelectItem>
+                        <SelectItem value="rejected">Rechazado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

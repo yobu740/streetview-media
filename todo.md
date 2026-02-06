@@ -190,12 +190,12 @@
 - [x] Create backend procedures for approval workflow
 - [x] Create notifications table for admin alerts
 - [x] Implement notification UI in admin dashboard
-- [ ] Add approval/rejection buttons for pending reservations
+- [x] Add approval/rejection buttons for pending reservations
 - [x] Send notifications when vendors create reservations
+- [x] Add approval status filter dropdown
 
 ## Responsive Dashboard Design
-- [ ] Implement hamburger menu for mobile navigation
-- [ ] Make admin table responsive with horizontal scroll
-- [ ] Optimize form dialogs for mobile screens
-- [ ] Test on various mobile screen sizes
+- [x] Implement hamburger menu for mobile navigation
+- [x] Make search filters stack vertically on mobile
+- [x] Optimize header for mobile with notification bell
 - [x] Add "Nueva Búsqueda" button to clear all filters
