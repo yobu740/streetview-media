@@ -231,3 +231,21 @@
 - [x] Fix admin dashboard anuncios not appearing when added (auto-approve for admins)
 - [x] Ensure approved reservations appear in calendar (show Activo and Programado)
 - [x] Clarify distinction between direct anuncio creation (admin) and reservations (users)
+
+## Critical Bugs - Availability Validation
+- [x] Fix availability calculation to consider approved anuncios (not just "Activo")
+- [x] Add server-side validation to prevent overlapping reservations
+- [x] Fix anuncios not appearing immediately after creation in admin dashboard
+- [x] Update parada status display to show occupied when has approved anuncios
+
+## New Feature - Cancel Anuncio
+- [x] Add ability to cancel/remove anuncios before end date
+- [x] Add backend cancel procedure
+- [x] Update estado to "Inactivo" when cancelled (keeps history)
+- [x] Ensure cancelled anuncios free up parada availability
+
+## Quick Status Management in Admin Panel
+- [x] Add dropdown to change anuncio status directly from parada details
+- [x] Allow changing between Disponible, Activo, Programado, Inactivo, Finalizado
+- [x] Update UI immediately after status change with query invalidation
+- [x] Admin-only feature with Select component

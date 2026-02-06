@@ -63,7 +63,7 @@ export default function Admin() {
     tipo: "Fijo" as "Fijo" | "Bonificación",
     fechaInicio: "",
     fechaFin: "",
-    estado: "Activo" as "Activo" | "Programado" | "Finalizado",
+    estado: "Activo" as "Disponible" | "Activo" | "Programado" | "Finalizado" | "Inactivo",
     notas: "",
   });
   
@@ -113,8 +113,10 @@ export default function Admin() {
         estado: "Activo",
         notas: "",
       });
-      refetchAnuncios();
-      refetchParadas();
+      // Invalidate all related queries for real-time updates
+      utils.anuncios.list.invalidate();
+      utils.paradas.list.invalidate();
+      utils.approvals.pending.invalidate();
     },
     onError: (error) => {
       toast.error(`Error: ${error.message}`);
@@ -172,6 +174,19 @@ export default function Admin() {
     },
     onError: (error) => {
       toast.error(`Error al subir foto: ${error.message}`);
+    },
+  });
+  
+  const updateAnuncioStatus = trpc.anuncios.updateStatus.useMutation();
+  
+  const cancelAnuncio = trpc.anuncios.cancel.useMutation({
+    onSuccess: () => {
+      toast.success("Anuncio cancelado exitosamente");
+      refetchAnuncios();
+      refetchParadas();
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error.message}`);
     },
   });
 
@@ -1173,7 +1188,38 @@ export default function Admin() {
                                               </div>
                                               <div>
                                                 <Label className="text-gray-500">Estado</Label>
-                                                <Badge>{anuncio.estado}</Badge>
+                                                {user?.role === 'admin' ? (
+                                                  <Select
+                                                    value={anuncio.estado}
+                                                    onValueChange={(newEstado) => {
+                                                      updateAnuncioStatus.mutate(
+                                                        { id: anuncio.id, estado: newEstado as any },
+                                                        {
+                                                          onSuccess: () => {
+                                                            toast.success('Estado actualizado');
+                                                            utils.paradas.list.invalidate();
+                                                          },
+                                                          onError: () => {
+                                                            toast.error('Error al actualizar estado');
+                                                          },
+                                                        }
+                                                      );
+                                                    }}
+                                                  >
+                                                    <SelectTrigger className="w-[180px]">
+                                                      <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                      <SelectItem value="Disponible">Disponible</SelectItem>
+                                                      <SelectItem value="Activo">Activo</SelectItem>
+                                                      <SelectItem value="Programado">Programado</SelectItem>
+                                                      <SelectItem value="Finalizado">Finalizado</SelectItem>
+                                                      <SelectItem value="Inactivo">Inactivo</SelectItem>
+                                                    </SelectContent>
+                                                  </Select>
+                                                ) : (
+                                                  <Badge>{anuncio.estado}</Badge>
+                                                )}
                                               </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
@@ -1340,9 +1386,11 @@ export default function Admin() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Disponible">Disponible</SelectItem>
                   <SelectItem value="Activo">Activo</SelectItem>
                   <SelectItem value="Programado">Programado</SelectItem>
                   <SelectItem value="Finalizado">Finalizado</SelectItem>
+                  <SelectItem value="Inactivo">Inactivo</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -134,11 +134,25 @@ export const appRouter = router({
         tipo: z.enum(["Fijo", "Bonificación"]),
         fechaInicio: z.date(),
         fechaFin: z.date(),
-        estado: z.enum(["Activo", "Programado", "Finalizado"]).optional(),
+        estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
         notas: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         const isAdmin = ctx.user.role === "admin";
+        
+        // CRITICAL: Check for overlapping reservations BEFORE creating
+        const availability = await paradasDb.checkParadaDisponibilidad(
+          input.paradaId,
+          input.fechaInicio,
+          input.fechaFin
+        );
+        
+        if (!availability.disponible) {
+          throw new Error(
+            `Esta parada ya está ocupada para las fechas seleccionadas. ` +
+            `Próxima fecha disponible: ${availability.proximaFechaDisponible?.toLocaleDateString('es-PR')}`
+          );
+        }
         
         const id = await paradasDb.createAnuncio({
           ...input,
@@ -164,7 +178,7 @@ export const appRouter = router({
           tipo: z.enum(["Fijo", "Bonificación"]).optional(),
           fechaInicio: z.date().optional(),
           fechaFin: z.date().optional(),
-          estado: z.enum(["Activo", "Programado", "Finalizado"]).optional(),
+          estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
           notas: z.string().optional(),
         }),
       }))
@@ -177,6 +191,25 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await paradasDb.deleteAnuncio(input.id);
+        return { success: true };
+      }),
+    
+    cancel: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        // Cancel anuncio by setting estado to "Inactivo"
+        // This frees up the parada while keeping history
+        await paradasDb.updateAnuncio(input.id, { estado: "Inactivo" });
+        return { success: true };
+      }),
+    
+    updateStatus: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        estado: z.enum(["Disponible", "Activo", "Programado", "Inactivo", "Finalizado"])
+      }))
+      .mutation(async ({ input }) => {
+        await paradasDb.updateAnuncio(input.id, { estado: input.estado });
         return { success: true };
       }),
     

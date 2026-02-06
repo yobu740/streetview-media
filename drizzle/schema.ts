@@ -58,7 +58,7 @@ export const anuncios = mysqlTable("anuncios", {
   tipo: mysqlEnum("tipo", ["Fijo", "Bonificación"]).notNull(), // F/B from Excel
   fechaInicio: timestamp("fecha_inicio").notNull(), // Start date
   fechaFin: timestamp("fecha_fin").notNull(), // End date
-  estado: mysqlEnum("estado", ["Activo", "Programado", "Finalizado"]).default("Activo").notNull(),
+  estado: mysqlEnum("estado", ["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).default("Activo").notNull(),
   // Approval workflow fields
   approvalStatus: mysqlEnum("approval_status", ["pending", "approved", "rejected"]).default("pending").notNull(),
   createdBy: int("created_by"), // FK to users - who created the reservation

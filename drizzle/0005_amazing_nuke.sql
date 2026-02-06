@@ -1,0 +1,1 @@
+ALTER TABLE `anuncios` MODIFY COLUMN `estado` enum('Disponible','Activo','Programado','Finalizado','Inactivo') NOT NULL DEFAULT 'Activo';

@@ -216,7 +216,7 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
   const db = await getDb();
   if (!db) return { disponible: true, proximaFechaDisponible: null, anuncioActual: null };
   
-  // Check if there are any overlapping anuncios
+  // Check if there are any overlapping APPROVED anuncios
   const overlapping = await db.select().from(anuncios).where(
     and(
       eq(anuncios.paradaId, paradaId),
@@ -229,7 +229,8 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
       or(
         eq(anuncios.estado, "Activo"),
         eq(anuncios.estado, "Programado")
-      )
+      ),
+      eq(anuncios.approvalStatus, "approved") // Only consider approved anuncios
     )
   ).orderBy(anuncios.fechaFin);
   
