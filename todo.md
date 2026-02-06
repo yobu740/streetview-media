@@ -199,3 +199,13 @@
 - [x] Make search filters stack vertically on mobile
 - [x] Optimize header for mobile with notification bell
 - [x] Add "Nueva Búsqueda" button to clear all filters
+
+## Calendar and Metrics Improvements
+- [x] Make Calendar page header responsive with hamburger menu
+- [x] Make Metrics page header responsive with hamburger menu
+- [x] Simplify calendar display - show only occupied/available count per day
+- [x] Show detailed parada list only when clicking on a specific date
+- [x] Implement date-first selection for reservations
+- [x] Validate parada availability based on selected date range
+- [x] Fix route filter to show individual available paradas within route
+- [x] Prevent selection of occupied paradas for selected dates

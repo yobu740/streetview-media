@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
@@ -19,6 +19,7 @@ export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isReservaDialogOpen, setIsReservaDialogOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [reservaForm, setReservaForm] = useState({
     cliente: "",
     fechaInicio: "",
@@ -94,6 +95,31 @@ export default function Calendar() {
     setSelectedDate(date);
   };
   
+  // Get available paradas for selected date range
+  const getAvailableParadas = () => {
+    if (!reservaForm.fechaInicio || !reservaForm.fechaFin || !paradas || !anuncios) {
+      return [];
+    }
+    
+    const inicio = new Date(reservaForm.fechaInicio);
+    const fin = new Date(reservaForm.fechaFin);
+    
+    return paradas.filter(parada => {
+      // Check if this parada has any conflicting anuncios in the date range
+      const hasConflict = anuncios.some(anuncio => {
+        if (anuncio.paradaId !== parada.id || anuncio.estado !== "Activo") return false;
+        
+        const anuncioInicio = new Date(anuncio.fechaInicio);
+        const anuncioFin = new Date(anuncio.fechaFin);
+        
+        // Check if date ranges overlap
+        return !(fin < anuncioInicio || inicio > anuncioFin);
+      });
+      
+      return !hasConflict;
+    });
+  };
+  
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
   };
@@ -131,7 +157,8 @@ export default function Calendar() {
               className="h-12 cursor-pointer"
             />
           </Link>
-          <div className="flex items-center gap-4">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
             <Button 
               className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
@@ -143,8 +170,39 @@ export default function Calendar() {
               <Link href="/admin">Volver al Panel</Link>
             </Button>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
         </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
+          <div className="container py-4 space-y-2">
+            <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
+            <Button 
+              className="w-full justify-start bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+              onClick={() => {
+                setIsReservaDialogOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Reservar
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>Volver al Panel</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="container py-12">
         <div className="mb-8">
@@ -245,26 +303,30 @@ export default function Calendar() {
                       'border-gray-300 bg-white hover:border-gray-400'
                     }`}
                   >
-                    <div className="font-semibold text-sm mb-1">{day}</div>
-                    <div className="space-y-1">
-                      {anunciosToday.slice(0, 3).map(anuncio => {
-                        const parada = paradas?.find(p => p.id === anuncio.paradaId);
-                        return (
-                          <Badge
-                            key={anuncio.id}
-                            variant="secondary"
-                            className="text-xs block truncate bg-[#1a4d3c] text-white hover:bg-[#0f3a2a]"
-                            title={`${parada?.cobertizoId} - ${anuncio.cliente}`}
-                          >
-                            {parada?.cobertizoId}
-                          </Badge>
-                        );
-                      })}
-                      {anunciosToday.length > 3 && (
-                        <div className="text-xs text-gray-500">
-                          +{anunciosToday.length - 3} más
+                    <div className="font-semibold text-sm mb-2">{day}</div>
+                    <div className="space-y-2">
+                      {/* Occupied count */}
+                      {anunciosToday.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-[#ff6b35]"></div>
+                          <span className="text-xs text-gray-700">
+                            {anunciosToday.length} ocupada{anunciosToday.length !== 1 ? 's' : ''}
+                          </span>
                         </div>
                       )}
+                      {/* Available count */}
+                      {(() => {
+                        const totalParadas = paradas?.length || 0;
+                        const available = totalParadas - anunciosToday.length;
+                        return available > 0 ? (
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full bg-[#1a4d3c]"></div>
+                            <span className="text-xs text-gray-700">
+                              {available} disponible{available !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
                 );
@@ -439,9 +501,18 @@ export default function Calendar() {
             {/* Paradas Selection */}
             {reservaForm.selectionMode === "paradas" && (
               <div>
-                <Label>Seleccionar Paradas</Label>
-                <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
-                  {paradas?.map(parada => (
+                <Label>Seleccionar Paradas Disponibles</Label>
+                {!reservaForm.fechaInicio || !reservaForm.fechaFin ? (
+                  <div className="border rounded-md p-4 mt-2 bg-yellow-50 text-yellow-800">
+                    <p className="text-sm">Por favor selecciona las fechas de inicio y fin primero para ver las paradas disponibles.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                      {getAvailableParadas().length === 0 ? (
+                        <p className="text-sm text-gray-500">No hay paradas disponibles para las fechas seleccionadas.</p>
+                      ) : (
+                        getAvailableParadas().map(parada => (
                     <div key={parada.id} className="flex items-center space-x-2 py-2">
                       <Checkbox
                         id={`parada-${parada.id}`}
@@ -468,53 +539,99 @@ export default function Calendar() {
                         {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
                       </label>
                     </div>
-                  ))}
-                </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  {reservaForm.selectedParadas.length} parada(s) seleccionada(s)
-                </p>
+                        ))
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                      {reservaForm.selectedParadas.length} parada(s) seleccionada(s)
+                    </p>
+                  </>
+                )}
               </div>
             )}
 
             {/* Rutas Selection */}
             {reservaForm.selectionMode === "rutas" && (
               <div>
-                <Label>Seleccionar Rutas</Label>
-                <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
-                  {Array.from(new Set(paradas?.map(p => p.ruta).filter(Boolean))).map(ruta => (
-                    <div key={ruta} className="flex items-center space-x-2 py-2">
-                      <Checkbox
-                        id={`ruta-${ruta}`}
-                        checked={reservaForm.selectedRutas.includes(ruta!)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setReservaForm({
-                              ...reservaForm,
-                              selectedRutas: [...reservaForm.selectedRutas, ruta!]
-                            });
-                          } else {
-                            setReservaForm({
-                              ...reservaForm,
-                              selectedRutas: reservaForm.selectedRutas.filter(r => r !== ruta)
-                            });
-                          }
-                        }}
-                      />
-                      <label
-                        htmlFor={`ruta-${ruta}`}
-                        className="text-sm cursor-pointer flex-1"
-                      >
-                        <span className="font-medium">Ruta {ruta}</span>
-                        <span className="text-gray-500 ml-2">
-                          ({paradas?.filter(p => p.ruta === ruta).length} paradas)
-                        </span>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-sm text-gray-500 mt-2">
-                  {reservaForm.selectedRutas.length} ruta(s) seleccionada(s)
-                </p>
+                <Label>Filtrar por Ruta</Label>
+                {!reservaForm.fechaInicio || !reservaForm.fechaFin ? (
+                  <div className="border rounded-md p-4 mt-2 bg-yellow-50 text-yellow-800">
+                    <p className="text-sm">Por favor selecciona las fechas de inicio y fin primero para ver las paradas disponibles.</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Route filter dropdown */}
+                    <Select 
+                      value={reservaForm.selectedRutas[0] || "all"} 
+                      onValueChange={(v) => {
+                        if (v === "all") {
+                          setReservaForm({ ...reservaForm, selectedRutas: [], selectedParadas: [] });
+                        } else {
+                          setReservaForm({ ...reservaForm, selectedRutas: [v], selectedParadas: [] });
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="mt-2">
+                        <SelectValue placeholder="Selecciona una ruta" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las rutas</SelectItem>
+                        {Array.from(new Set(paradas?.map(p => p.ruta).filter(Boolean))).map(ruta => (
+                          <SelectItem key={ruta} value={ruta!}>Ruta {ruta}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {/* Show available paradas in selected route */}
+                    {reservaForm.selectedRutas.length > 0 && (
+                      <div className="mt-4">
+                        <Label>Seleccionar Paradas Disponibles en Ruta {reservaForm.selectedRutas[0]}</Label>
+                        <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                          {(() => {
+                            const availableInRoute = getAvailableParadas().filter(
+                              p => p.ruta === reservaForm.selectedRutas[0]
+                            );
+                            
+                            if (availableInRoute.length === 0) {
+                              return <p className="text-sm text-gray-500">No hay paradas disponibles en esta ruta para las fechas seleccionadas.</p>;
+                            }
+                            
+                            return availableInRoute.map(parada => (
+                              <div key={parada.id} className="flex items-center space-x-2 py-2">
+                                <Checkbox
+                                  id={`parada-ruta-${parada.id}`}
+                                  checked={reservaForm.selectedParadas.includes(parada.id)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setReservaForm({
+                                        ...reservaForm,
+                                        selectedParadas: [...reservaForm.selectedParadas, parada.id]
+                                      });
+                                    } else {
+                                      setReservaForm({
+                                        ...reservaForm,
+                                        selectedParadas: reservaForm.selectedParadas.filter(id => id !== parada.id)
+                                      });
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`parada-ruta-${parada.id}`}
+                                  className="text-sm cursor-pointer flex-1"
+                                >
+                                  <span className="font-medium">{parada.cobertizoId}</span> - {parada.localizacion}
+                                </label>
+                              </div>
+                            ));
+                          })()}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-2">
+                          {reservaForm.selectedParadas.length} parada(s) seleccionada(s)
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -2,12 +2,14 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Loader2, TrendingUp, Users, DollarSign, MapPin } from "lucide-react";
+import { Loader2, TrendingUp, Users, DollarSign, MapPin, Menu } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
+import { useState } from "react";
 
 export default function Metrics() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
@@ -93,14 +95,37 @@ export default function Metrics() {
               className="h-12 cursor-pointer"
             />
           </Link>
-          <div className="flex items-center gap-4">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
             <Button variant="outline" asChild>
               <Link href="/admin">Volver al Panel</Link>
             </Button>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
         </div>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
+          <div className="container py-4 space-y-2">
+            <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>Volver al Panel</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="container py-12">
         <div className="mb-8">
