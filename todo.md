@@ -217,3 +217,6 @@
 - [x] Implement "Rechazar Todas" button for selected reservations
 - [x] Add backend support for bulk approval operations
 - [x] Add backend support for bulk rejection operations
+
+## Bug Fixes
+- [x] Fix pending reservations not disappearing after approval/rejection

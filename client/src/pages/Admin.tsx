@@ -28,6 +28,7 @@ export default function Admin() {
   const rejectReservation = trpc.approvals.reject.useMutation();
   const bulkApprove = trpc.approvals.bulkApprove.useMutation();
   const bulkReject = trpc.approvals.bulkReject.useMutation();
+  const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearch, setClientSearch] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
@@ -730,6 +731,7 @@ export default function Admin() {
                             onSuccess: (data) => {
                               toast.success(`${data.count} reserva(s) aprobada(s)`);
                               refetchAnuncios();
+                              utils.approvals.pending.invalidate();
                               setSelectedReservations([]);
                             },
                             onError: (error) => {
@@ -757,6 +759,7 @@ export default function Admin() {
                             onSuccess: (data) => {
                               toast.success(`${data.count} reserva(s) rechazada(s)`);
                               refetchAnuncios();
+                              utils.approvals.pending.invalidate();
                               setSelectedReservations([]);
                             },
                             onError: (error) => {
@@ -842,6 +845,7 @@ export default function Admin() {
                                   onSuccess: () => {
                                     toast.success("Reserva aprobada");
                                     refetchAnuncios();
+                                    utils.approvals.pending.invalidate();
                                   },
                                   onError: (error) => {
                                     toast.error(`Error: ${error.message}`);
@@ -862,6 +866,7 @@ export default function Admin() {
                                   onSuccess: () => {
                                     toast.success("Reserva rechazada");
                                     refetchAnuncios();
+                                    utils.approvals.pending.invalidate();
                                   },
                                   onError: (error) => {
                                     toast.error(`Error: ${error.message}`);
