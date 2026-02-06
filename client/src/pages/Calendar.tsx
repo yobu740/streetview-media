@@ -72,7 +72,7 @@ export default function Calendar() {
     return anuncios?.filter(anuncio => {
       const inicio = new Date(anuncio.fechaInicio);
       const fin = new Date(anuncio.fechaFin);
-      return date >= inicio && date <= fin && anuncio.estado === "Activo";
+      return date >= inicio && date <= fin && (anuncio.estado === "Activo" || anuncio.estado === "Programado");
     }) || [];
   };
   
@@ -83,7 +83,7 @@ export default function Calendar() {
     const activeAnuncios = anuncios.filter(anuncio => {
       const inicio = new Date(anuncio.fechaInicio);
       const fin = new Date(anuncio.fechaFin);
-      return selectedDate >= inicio && selectedDate <= fin && anuncio.estado === "Activo";
+      return selectedDate >= inicio && selectedDate <= fin && (anuncio.estado === "Activo" || anuncio.estado === "Programado");
     });
     
     return activeAnuncios.map(anuncio => {

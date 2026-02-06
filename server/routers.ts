@@ -122,6 +122,11 @@ export const appRouter = router({
       return await paradasDb.getActiveAnuncios();
     }),
     
+    /**
+     * Create anuncio/reservation
+     * - If created by ADMIN: Auto-approved, appears immediately in dashboard and calendar
+     * - If created by USER: Pending approval, appears in admin notifications, requires approval to show in calendar
+     */
     create: protectedProcedure
       .input(z.object({
         paradaId: z.number(),
@@ -133,13 +138,20 @@ export const appRouter = router({
         notas: z.string().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
+        const isAdmin = ctx.user.role === "admin";
+        
         const id = await paradasDb.createAnuncio({
           ...input,
           createdBy: ctx.user.id,
+          approvalStatus: isAdmin ? "approved" : "pending",
+          approvedBy: isAdmin ? ctx.user.id : undefined,
+          approvedAt: isAdmin ? new Date() : undefined,
         });
         
-        // Notify all admins about new pending reservation
-        await paradasDb.notifyAdminsOfNewReservation(id, ctx.user.name || 'Usuario', input.cliente);
+        // Only notify admins if created by non-admin (reservation)
+        if (!isAdmin) {
+          await paradasDb.notifyAdminsOfNewReservation(id, ctx.user.name || 'Usuario', input.cliente);
+        }
         
         return { id };
       }),
@@ -182,6 +194,10 @@ export const appRouter = router({
         );
         return result;
       }),
+    
+    myReservations: protectedProcedure.query(async ({ ctx }) => {
+      return await paradasDb.getAnunciosByUserId(ctx.user.id);
+    }),
   }),
 
   // Notifications router

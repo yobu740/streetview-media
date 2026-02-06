@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Calendar from "./pages/Calendar";
 import Metrics from "./pages/Metrics";
+import MisReservas from "./pages/MisReservas";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -17,6 +18,7 @@ function Router() {
       <Route path={"/admin"} component={Admin} />
       <Route path={"/calendar"} component={Calendar} />
       <Route path={"/metrics"} component={Metrics} />
+      <Route path={"/mis-reservas"} component={MisReservas} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -225,3 +225,9 @@
 - [x] Fix reservation creation failing with error message (was permission issue)
 - [x] Allow regular users to create reservations (not just vendedores)
 - [x] Verify approved reservations appear as Programado in calendar
+
+## Reservations Page and Workflow Fix
+- [x] Create "Mis Reservas" page to view all user reservations
+- [x] Fix admin dashboard anuncios not appearing when added (auto-approve for admins)
+- [x] Ensure approved reservations appear in calendar (show Activo and Programado)
+- [x] Clarify distinction between direct anuncio creation (admin) and reservations (users)

@@ -289,3 +289,28 @@ export async function notifyAdminsOfNewReservation(anuncioId: number, creatorNam
     });
   }
 }
+
+export async function getAnunciosByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get anuncios by user: database not available");
+    return [];
+  }
+
+  try {
+    const results = await db
+      .select()
+      .from(anuncios)
+      .leftJoin(paradas, eq(anuncios.paradaId, paradas.id))
+      .where(eq(anuncios.createdBy, userId))
+      .orderBy(desc(anuncios.createdAt));
+
+    return results.map((row) => ({
+      ...row.anuncios,
+      parada: row.paradas,
+    }));
+  } catch (error) {
+    console.error("[Database] Failed to get anuncios by user:", error);
+    return [];
+  }
+}
