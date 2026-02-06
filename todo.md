@@ -280,3 +280,10 @@
 - [x] Add print functionality to reservation reports
 - [x] Test multi-ID search works correctly
 - [x] Test date filtering in reports
+
+## Navigation and Reports Improvements
+- [x] Add "Ver Métricas" button/link in Admin panel header - Added to desktop and mobile menu
+- [x] Add client filter dropdown to Metrics reports - Dropdown with all unique clients
+- [x] Filter reservations table by selected client - Filters work with date filters
+- [x] Test navigation from Admin to Metrics
+- [x] Test client filtering works correctly

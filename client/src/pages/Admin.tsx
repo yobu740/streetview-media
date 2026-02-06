@@ -555,6 +555,13 @@ export default function Admin() {
           <div className="hidden lg:flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
             
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/metrics">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Ver Métricas
+              </Link>
+            </Button>
+            
             {/* Notification Bell */}
             {user?.role === 'admin' && (
               <div className="relative">
@@ -633,6 +640,12 @@ export default function Admin() {
         <div className="lg:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
           <div className="container py-4 space-y-2">
             <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/metrics" onClick={() => setIsMobileMenuOpen(false)}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Ver Métricas
+              </Link>
+            </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/calendar" onClick={() => setIsMobileMenuOpen(false)}>
                 <Calendar className="h-4 w-4 mr-2" />

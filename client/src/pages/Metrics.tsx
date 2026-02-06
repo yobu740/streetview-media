@@ -10,12 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Metrics() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [selectedClient, setSelectedClient] = useState<string>("all");
 
   // Add print styles
   const printStyles = `
@@ -113,8 +115,17 @@ export default function Metrics() {
   const potentialRevenue = totalParadas * pricePerMonth;
   const revenueGap = potentialRevenue - currentRevenue;
 
-  // Filter reservations by date range
+  // Get unique clients for filter dropdown
+  const uniqueClients = Array.from(new Set(anuncios?.map(a => a.cliente) || [])).sort();
+
+  // Filter reservations by date range and client
   const filteredReservations = anuncios?.filter(a => {
+    // Client filter
+    if (selectedClient !== "all" && a.cliente !== selectedClient) {
+      return false;
+    }
+    
+    // Date filter
     if (!dateFrom && !dateTo) return true;
     
     const inicio = new Date(a.fechaInicio);
@@ -156,7 +167,8 @@ export default function Metrics() {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    const filename = `reporte-reservas${dateFrom ? `-desde-${dateFrom}` : ""}${dateTo ? `-hasta-${dateTo}` : ""}-${new Date().toISOString().split('T')[0]}.csv`;
+    const clientSuffix = selectedClient !== "all" ? `-cliente-${selectedClient.replace(/\s+/g, '-')}` : "";
+    const filename = `reporte-reservas${clientSuffix}${dateFrom ? `-desde-${dateFrom}` : ""}${dateTo ? `-hasta-${dateTo}` : ""}-${new Date().toISOString().split('T')[0]}.csv`;
     link.setAttribute("download", filename);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
@@ -419,7 +431,21 @@ export default function Metrics() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div>
+                <Label htmlFor="clientFilter">Filtrar por Cliente</Label>
+                <Select value={selectedClient} onValueChange={setSelectedClient}>
+                  <SelectTrigger id="clientFilter">
+                    <SelectValue placeholder="Todos los clientes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos los clientes</SelectItem>
+                    {uniqueClients.map(cliente => (
+                      <SelectItem key={cliente} value={cliente}>{cliente}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label htmlFor="dateFrom">Fecha Desde</Label>
                 <Input
