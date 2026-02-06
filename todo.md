@@ -160,3 +160,11 @@
 - [x] Modal de reserva: selección de fechas (inicio/fin)
 - [x] Modal de reserva: selección de rutas y/o paradas específicas
 - [x] Modal de reserva: validación de disponibilidad
+
+## Autenticación con Microsoft
+
+- [x] Reemplazar Manus OAuth con Microsoft Azure AD OAuth
+- [x] Actualizar backend para usar Microsoft Graph API
+- [x] Actualizar frontend para login con Microsoft
+- [x] Configurar variables de entorno de Azure AD
+- [ ] Probar flujo completo de autenticación
