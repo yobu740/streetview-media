@@ -260,3 +260,10 @@
 - [x] Investigate why only "Bonificación" type works - Found mismatch in Select value
 - [x] Fix validation or schema for "Fijo" type - Changed "Fija" to "Fijo" in form
 - [x] Test both types work correctly
+
+## UI Labels - Clarify Tipo de Parada vs Tipo de Anuncio
+- [x] Update filter labels to say "Tipo de Parada" (Fija/Digital)
+- [x] Keep anuncio tipo as "Tipo de Anuncio" (Fijo/Bonificación)
+- [x] Update table headers to be clear
+- [x] Update form labels in parada creation
+- [x] Verify all labels are consistent throughout the app

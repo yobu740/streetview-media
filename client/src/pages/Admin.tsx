@@ -947,15 +947,15 @@ export default function Admin() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <Label>Filtrar por Tipo</Label>
+                  <Label>Tipo de Parada</Label>
                   <Select value={filterTipo} onValueChange={(v: any) => { setFilterTipo(v); handleFilterChange(); }}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="Fija">Fija (F)</SelectItem>
-                      <SelectItem value="Bonificación">Bonificación (B)</SelectItem>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="Fija">Fija</SelectItem>
+                      <SelectItem value="Bonificación">Digital</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1047,7 +1047,7 @@ export default function Admin() {
                         <TableHead>Localización</TableHead>
                         <TableHead>Ruta</TableHead>
                         <TableHead>Dirección</TableHead>
-                        <TableHead>Tipo</TableHead>
+                        <TableHead>Tipo Parada</TableHead>
                         <TableHead>Estado</TableHead>
                         <TableHead>Anuncio Actual</TableHead>
                         <TableHead className="print:hidden">Acciones</TableHead>
@@ -1073,7 +1073,7 @@ export default function Admin() {
                             <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
                             <TableCell>
                               <Badge variant={parada.tipoFormato === "Digital" ? "default" : "secondary"}>
-                                {parada.tipoFormato === "Digital" ? "B" : "F"}
+                                {parada.tipoFormato}
                               </Badge>
                             </TableCell>
                             <TableCell>
@@ -1153,8 +1153,8 @@ export default function Admin() {
                                           <p className="font-medium">{parada.cobertizoId}</p>
                                         </div>
                                         <div>
-                                          <Label className="text-gray-500">Tipo</Label>
-                                          <p className="font-medium">{parada.tipoFormato === "Digital" ? "Bonificación" : "Fija"}</p>
+                                          <Label className="text-gray-500">Tipo Parada</Label>
+                                          <p className="font-medium">{parada.tipoFormato}</p>
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Localización</Label>
@@ -1189,7 +1189,7 @@ export default function Admin() {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                               <div>
-                                                <Label className="text-gray-500">Tipo</Label>
+                                                <Label className="text-gray-500">Tipo Anuncio</Label>
                                                 <p className="font-medium">{anuncio.tipo}</p>
                                               </div>
                                               <div>
@@ -1351,7 +1351,7 @@ export default function Admin() {
               />
             </div>
             <div>
-              <Label>Tipo</Label>
+              <Label>Tipo de Anuncio</Label>
               <Select value={anuncioForm.tipo} onValueChange={(v: any) => setAnuncioForm({ ...anuncioForm, tipo: v })}>
                 <SelectTrigger>
                   <SelectValue />
@@ -1462,14 +1462,14 @@ export default function Admin() {
               />
             </div>
             <div>
-              <Label>Tipo de Formato *</Label>
+              <Label>Tipo de Parada *</Label>
               <Select value={paradaForm.tipoFormato} onValueChange={(v: any) => setParadaForm({ ...paradaForm, tipoFormato: v })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Fija">Fija</SelectItem>
-                  <SelectItem value="Digital">Bonificación (Digital)</SelectItem>
+                  <SelectItem value="Digital">Digital</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1566,15 +1566,15 @@ export default function Admin() {
               </Select>
             </div>
             <div>
-              <Label>Filtrar por Tipo</Label>
+              <Label>Tipo de Parada</Label>
               <Select value={printFilterTipo} onValueChange={(v: any) => setPrintFilterTipo(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="Fija">Fija (F)</SelectItem>
-                  <SelectItem value="Bonificación">Bonificación (B)</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
+                  <SelectItem value="Fija">Fija</SelectItem>
+                  <SelectItem value="Bonificación">Digital</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1626,7 +1626,7 @@ export default function Admin() {
               <th>Localización</th>
               <th>Ruta</th>
               <th>Dirección</th>
-              <th>Tipo</th>
+              <th>Tipo Parada</th>
               <th>Estado</th>
               <th>Cliente</th>
             </tr>
