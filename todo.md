@@ -287,3 +287,15 @@
 - [x] Filter reservations table by selected client - Filters work with date filters
 - [x] Test navigation from Admin to Metrics
 - [x] Test client filtering works correctly
+
+## Database Update and UI Changes
+- [x] Remove "Ver Métricas" button from Admin header (desktop and mobile)
+- [x] Add date range filter to print modal for filtered reports
+- [x] Read Excel file and analyze structure
+- [x] Add "producto" column to paradas table for anuncio/producto name
+- [x] Add "cliente" column to paradas table (can be empty)
+- [x] Import Excel data and update all paradas - 1,073 paradas updated
+- [x] Mark paradas as "Disponible" when producto is "Removida", "Apagado", or "No display" - 523 marked
+- [x] Change search label from "Cliente" to "Anuncio/Producto"
+- [x] Update search functionality to search by producto field
+- [x] Test all changes work correctly

@@ -40,6 +40,8 @@ export const paradas = mysqlTable("paradas", {
   coordenadasLng: varchar("coordenadas_lng", { length: 32 }), // Longitude
   tipoFormato: mysqlEnum("tipo_formato", ["Fija", "Digital"]).default("Fija").notNull(),
   fotoUrl: text("foto_url"), // URL de la foto de la parada
+  producto: varchar("producto", { length: 255 }), // PRODUCTO from Excel - current ad/product name
+  cliente: varchar("cliente", { length: 255 }), // CLIENTE from Excel - client name (can be empty)
   activa: int("activa").default(1).notNull(), // 1 = active, 0 = inactive
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),

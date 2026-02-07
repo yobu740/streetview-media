@@ -23,6 +23,8 @@ export async function getAllParadas() {
       coordenadasLng: paradas.coordenadasLng,
       tipoFormato: paradas.tipoFormato,
       fotoUrl: paradas.fotoUrl,
+      producto: paradas.producto,
+      cliente: paradas.cliente,
       activa: paradas.activa,
       createdAt: paradas.createdAt,
       updatedAt: paradas.updatedAt,

@@ -30,7 +30,7 @@ export default function Admin() {
   const bulkReject = trpc.approvals.bulkReject.useMutation();
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState("");
-  const [clientSearch, setClientSearch] = useState("");
+  const [productoSearch, setProductoSearch] = useState("");
   const [selectedParada, setSelectedParada] = useState<any>(null);
   const [isAnuncioDialogOpen, setIsAnuncioDialogOpen] = useState(false);
   const [isDetalleDialogOpen, setIsDetalleDialogOpen] = useState(false);
@@ -57,6 +57,8 @@ export default function Admin() {
   const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada">("all");
   const [printFilterTipo, setPrintFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [printFilterRuta, setPrintFilterRuta] = useState("");
+  const [printDateFrom, setPrintDateFrom] = useState("");
+  const [printDateTo, setPrintDateTo] = useState("");
   
   const [anuncioForm, setAnuncioForm] = useState({
     cliente: "",
@@ -293,7 +295,7 @@ export default function Admin() {
   // Clear all filters function
   const clearAllFilters = () => {
     setSearchTerm("");
-    setClientSearch("");
+    setProductoSearch("");
     setFilterStatus("all");
     setFilterApprovalStatus("all");
     setFilterTipo("all");
@@ -303,7 +305,7 @@ export default function Admin() {
   };
   
   // Check if any filter is active
-  const hasActiveFilters = searchTerm || clientSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta;
+  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta;
   
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
@@ -344,12 +346,9 @@ export default function Admin() {
         (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
     })();
     
-    // Client search filter (search by anuncio cliente)
-    const matchesClientSearch = !clientSearch || 
-      anuncios?.some(a => 
-        a.paradaId === p.id && 
-        a.cliente.toLowerCase().includes(clientSearch.toLowerCase())
-      );
+    // Producto search filter (search by parada producto field)
+    const matchesProductoSearch = !productoSearch || 
+      (p.producto && p.producto.toLowerCase().includes(productoSearch.toLowerCase()));
     
     // Status filter
     const { status } = getParadaStatus(p);
@@ -371,7 +370,7 @@ export default function Admin() {
         a.paradaId === p.id && a.approvalStatus === filterApprovalStatus
       );
     
-    return matchesSearch && matchesClientSearch && matchesStatus && matchesTipo && matchesRuta && matchesApprovalStatus;
+    return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesApprovalStatus;
   }) || [];
   
   // Get paradas for printing with filters
@@ -388,7 +387,26 @@ export default function Admin() {
       
       const matchesRuta = !printFilterRuta || (p.ruta && p.ruta.toLowerCase().includes(printFilterRuta.toLowerCase()));
       
-      return matchesStatus && matchesTipo && matchesRuta;
+      // Date range filter - check if parada is available in the date range
+      let matchesDateRange = true;
+      if (printDateFrom || printDateTo) {
+        // If status is "Disponible", it matches any date range
+        if (status === "Disponible") {
+          matchesDateRange = true;
+        } else if (p.anuncioFechaInicio && p.anuncioFechaFin) {
+          // If occupied, check if the date range overlaps with current anuncio
+          const anuncioStart = new Date(p.anuncioFechaInicio);
+          const anuncioEnd = new Date(p.anuncioFechaFin);
+          const filterStart = printDateFrom ? new Date(printDateFrom) : new Date(0);
+          const filterEnd = printDateTo ? new Date(printDateTo) : new Date(9999, 11, 31);
+          
+          // Parada is NOT available if anuncio overlaps with requested date range
+          const overlaps = (anuncioStart <= filterEnd && anuncioEnd >= filterStart);
+          matchesDateRange = !overlaps; // Available if no overlap
+        }
+      }
+      
+      return matchesStatus && matchesTipo && matchesRuta && matchesDateRange;
     }) || [];
   };
   
@@ -555,13 +573,6 @@ export default function Admin() {
           <div className="hidden lg:flex items-center gap-4">
             <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
             
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/metrics">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Ver Métricas
-              </Link>
-            </Button>
-            
             {/* Notification Bell */}
             {user?.role === 'admin' && (
               <div className="relative">
@@ -640,12 +651,6 @@ export default function Admin() {
         <div className="lg:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
           <div className="container py-4 space-y-2">
             <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/metrics" onClick={() => setIsMobileMenuOpen(false)}>
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Ver Métricas
-              </Link>
-            </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/calendar" onClick={() => setIsMobileMenuOpen(false)}>
                 <Calendar className="h-4 w-4 mr-2" />
@@ -941,16 +946,16 @@ export default function Admin() {
                   <Input
                     placeholder="Buscar por ID (separar con comas), localización, dirección o ruta..."
                     value={searchTerm}
-                    onChange={(e) => { setSearchTerm(e.target.value); setClientSearch(""); }}
+                    onChange={(e) => { setSearchTerm(e.target.value); setProductoSearch(""); }}
                     className="pl-10"
                   />
                 </div>
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff6b35]" size={20} />
                   <Input
-                    placeholder="Buscar por nombre de cliente..."
-                    value={clientSearch}
-                    onChange={(e) => { setClientSearch(e.target.value); setSearchTerm(""); }}
+                    placeholder="Buscar por anuncio/producto..."
+                    value={productoSearch}
+                    onChange={(e) => { setProductoSearch(e.target.value); setSearchTerm(""); }}
                     className="pl-10 border-[#ff6b35] focus:ring-[#ff6b35]"
                   />
                 </div>
@@ -1605,6 +1610,28 @@ export default function Admin() {
                 value={printFilterRuta}
                 onChange={(e) => setPrintFilterRuta(e.target.value)}
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="printDateFrom">Disponible Desde</Label>
+                <Input
+                  id="printDateFrom"
+                  type="date"
+                  value={printDateFrom}
+                  onChange={(e) => setPrintDateFrom(e.target.value)}
+                  placeholder="Fecha inicio"
+                />
+              </div>
+              <div>
+                <Label htmlFor="printDateTo">Disponible Hasta</Label>
+                <Input
+                  id="printDateTo"
+                  type="date"
+                  value={printDateTo}
+                  onChange={(e) => setPrintDateTo(e.target.value)}
+                  placeholder="Fecha fin"
+                />
+              </div>
             </div>
             <div className="border-t pt-4">
               <p className="text-sm text-gray-600">
