@@ -304,3 +304,8 @@
 - [x] Query database to find duplicate paradas (IDs 261, 121) - Found LEFT JOIN was creating duplicates
 - [x] Remove or merge duplicate entries - Fixed getAllParadas to return only ONE row per parada
 - [x] Verify React key errors are resolved - Server restarted successfully
+
+## Bug - Producto Search Not Finding Anuncios
+- [x] Investigate why search doesn't find paradas with current anuncios - Only searched p.producto
+- [x] Update search to check both `producto` field and `anuncioCliente` field
+- [x] Test search with known anuncio names

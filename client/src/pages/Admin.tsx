@@ -346,9 +346,10 @@ export default function Admin() {
         (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
     })();
     
-    // Producto search filter (search by parada producto field)
+    // Producto search filter (search by parada producto field OR anuncio cliente)
     const matchesProductoSearch = !productoSearch || 
-      (p.producto && p.producto.toLowerCase().includes(productoSearch.toLowerCase()));
+      (p.producto && p.producto.toLowerCase().includes(productoSearch.toLowerCase())) ||
+      (p.anuncioCliente && p.anuncioCliente.toLowerCase().includes(productoSearch.toLowerCase()));
     
     // Status filter
     const { status } = getParadaStatus(p);
