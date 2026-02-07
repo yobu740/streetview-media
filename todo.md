@@ -309,3 +309,9 @@
 - [x] Investigate why search doesn't find paradas with current anuncios - Only searched p.producto
 - [x] Update search to check both `producto` field and `anuncioCliente` field
 - [x] Test search with known anuncio names
+
+## Calendario and Search Issues
+- [x] Verify calendario page uses new schema (producto, cliente columns) - Calendar uses anuncios table which is correct
+- [x] Fix search returning paradas without search term (e.g., "Bluey" returns non-Bluey paradas) - Changed to exact match
+- [x] Test calendario displays correct current data - Calendar uses anuncios table correctly
+- [x] Test search only returns exact matches - Changed from .includes() to === for exact match
