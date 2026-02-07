@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, COUNT(*) as count \nFROM paradas \nWHERE id IN (261, 121)\nGROUP BY id, cobertizo_id, localizacion\nORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, COUNT(*) as count \nFROM paradas \nWHERE id IN (261, 121)\nGROUP BY id, cobertizo_id, localizacion\nORDER BY id;",
+  "rows": [
+    {
+      "id": "121",
+      "cobertizo_id": "025",
+      "localizacion": "",
+      "count": "1"
+    },
+    {
+      "id": "261",
+      "cobertizo_id": "222",
+      "localizacion": "",
+      "count": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tcount\n121\t025\t\t1\n261\t222\t\t1\n",
+  "stderr": "",
+  "execution_time_ms": 680
+}

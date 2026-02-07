@@ -299,3 +299,8 @@
 - [x] Change search label from "Cliente" to "Anuncio/Producto"
 - [x] Update search functionality to search by producto field
 - [x] Test all changes work correctly
+
+## Bug - Duplicate Parada IDs
+- [x] Query database to find duplicate paradas (IDs 261, 121) - Found LEFT JOIN was creating duplicates
+- [x] Remove or merge duplicate entries - Fixed getAllParadas to return only ONE row per parada
+- [x] Verify React key errors are resolved - Server restarted successfully

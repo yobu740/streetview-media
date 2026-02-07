@@ -8,47 +8,61 @@ export async function getAllParadas() {
   const db = await getDb();
   if (!db) return [];
   
-  // Get all paradas with their current active/scheduled anuncio
-  const result = await db
-    .select({
-      // Parada fields
-      id: paradas.id,
-      cobertizoId: paradas.cobertizoId,
-      localizacion: paradas.localizacion,
-      direccion: paradas.direccion,
-      orientacion: paradas.orientacion,
-      flowCat: paradas.flowCat,
-      ruta: paradas.ruta,
-      coordenadasLat: paradas.coordenadasLat,
-      coordenadasLng: paradas.coordenadasLng,
-      tipoFormato: paradas.tipoFormato,
-      fotoUrl: paradas.fotoUrl,
-      producto: paradas.producto,
-      cliente: paradas.cliente,
-      activa: paradas.activa,
-      createdAt: paradas.createdAt,
-      updatedAt: paradas.updatedAt,
-      // Current anuncio fields
-      anuncioId: anuncios.id,
-      anuncioCliente: anuncios.cliente,
-      anuncioTipo: anuncios.tipo,
-      anuncioFechaInicio: anuncios.fechaInicio,
-      anuncioFechaFin: anuncios.fechaFin,
-      anuncioEstado: anuncios.estado,
-    })
+  // Get all paradas first
+  const allParadas = await db
+    .select()
     .from(paradas)
-    .leftJoin(
-      anuncios,
-      and(
-        eq(paradas.id, anuncios.paradaId),
-        eq(anuncios.approvalStatus, "approved"),
-        or(
-          eq(anuncios.estado, "Activo"),
-          eq(anuncios.estado, "Programado")
-        )
-      )
-    )
     .orderBy(asc(paradas.localizacion));
+  
+  // For each parada, get the most recent active/scheduled anuncio
+  const result = await Promise.all(
+    allParadas.map(async (parada) => {
+      const anuncio = await db
+        .select()
+        .from(anuncios)
+        .where(
+          and(
+            eq(anuncios.paradaId, parada.id),
+            eq(anuncios.approvalStatus, "approved"),
+            or(
+              eq(anuncios.estado, "Activo"),
+              eq(anuncios.estado, "Programado")
+            )
+          )
+        )
+        .orderBy(desc(anuncios.fechaInicio))
+        .limit(1);
+      
+      const currentAnuncio = anuncio[0];
+      
+      return {
+        // Parada fields
+        id: parada.id,
+        cobertizoId: parada.cobertizoId,
+        localizacion: parada.localizacion,
+        direccion: parada.direccion,
+        orientacion: parada.orientacion,
+        flowCat: parada.flowCat,
+        ruta: parada.ruta,
+        coordenadasLat: parada.coordenadasLat,
+        coordenadasLng: parada.coordenadasLng,
+        tipoFormato: parada.tipoFormato,
+        fotoUrl: parada.fotoUrl,
+        producto: parada.producto,
+        cliente: parada.cliente,
+        activa: parada.activa,
+        createdAt: parada.createdAt,
+        updatedAt: parada.updatedAt,
+        // Current anuncio fields (null if no anuncio)
+        anuncioId: currentAnuncio?.id || null,
+        anuncioCliente: currentAnuncio?.cliente || null,
+        anuncioTipo: currentAnuncio?.tipo || null,
+        anuncioFechaInicio: currentAnuncio?.fechaInicio || null,
+        anuncioFechaFin: currentAnuncio?.fechaFin || null,
+        anuncioEstado: currentAnuncio?.estado || null,
+      };
+    })
+  );
   
   return result;
 }
