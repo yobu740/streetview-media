@@ -1,0 +1,20 @@
+{
+  "query": "\n-- First, mark all as available (activa=1)\nUPDATE paradas SET activa = 1;\n\n-- Then mark as occupied (activa=0) if producto is valid (not NULL and not in exclusion list)\nUPDATE paradas \nSET activa = 0 \nWHERE producto IS NOT NULL \n  AND UPPER(TRIM(producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '');\n\n-- Show summary\nSELECT \n  activa,\n  CASE WHEN activa = 1 THEN 'Disponible' ELSE 'Ocupada' END as estado,\n  COUNT(*) as cantidad\nFROM paradas\nGROUP BY activa\nORDER BY activa DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- First, mark all as available (activa=1)\nUPDATE paradas SET activa = 1;\n\n-- Then mark as occupied (activa=0) if producto is valid (not NULL and not in exclusion list)\nUPDATE paradas \nSET activa = 0 \nWHERE producto IS NOT NULL \n  AND UPPER(TRIM(producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '');\n\n-- Show summary\nSELECT \n  activa,\n  CASE WHEN activa = 1 THEN 'Disponible' ELSE 'Ocupada' END as estado,\n  COUNT(*) as cantidad\nFROM paradas\nGROUP BY activa\nORDER BY activa DESC;\n",
+  "rows": [
+    {
+      "activa": "1",
+      "estado": "Disponible",
+      "cantidad": "523"
+    },
+    {
+      "activa": "0",
+      "estado": "Ocupada",
+      "cantidad": "550"
+    }
+  ],
+  "messages": [],
+  "stdout": "activa\testado\tcantidad\n1\tDisponible\t523\n0\tOcupada\t550\n",
+  "stderr": "",
+  "execution_time_ms": 604
+}

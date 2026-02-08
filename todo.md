@@ -334,3 +334,15 @@
 - [x] Update database schema to allow multiple paradas with same cobertizo_id but different orientacion
 - [x] Import all 1,073 paradas from Excel
 - [x] Verify all changes are reflected in database
+
+## Update Parada Status Based on Producto
+- [x] Mark paradas as OCCUPIED (activa=0) if producto has a valid value (not NULL, NO DISPLAY, REMOVIDA, or APAGADO)
+- [x] Mark paradas as AVAILABLE (activa=1) if producto is NULL, NO DISPLAY, REMOVIDA, or APAGADO
+- [x] Create anuncios automatically for paradas with valid producto
+- [x] Verify status changes in admin panel
+
+## Calendar Data Verification
+- [x] Review calendar component code
+- [x] Identified old 2025 anuncios causing incorrect data display
+- [x] Deleted all 2025 anuncios to avoid confusion
+- [x] Calendar now shows only current 2026 anuncios (565 total)

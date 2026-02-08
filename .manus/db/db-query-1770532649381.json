@@ -1,0 +1,13 @@
+{
+  "query": "\n-- Create anuncios for paradas with valid producto\nINSERT INTO anuncios (parada_id, cliente, tipo, fecha_inicio, fecha_fin, estado, notas, created_at, updated_at)\nSELECT \n  p.id,\n  p.producto,\n  'Fijo',\n  CURDATE(),\n  DATE_ADD(CURDATE(), INTERVAL 1 YEAR),\n  'Activo',\n  'Anuncio creado automáticamente desde datos del Excel',\n  NOW(),\n  NOW()\nFROM paradas p\nWHERE p.producto IS NOT NULL \n  AND UPPER(TRIM(p.producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '')\n  AND NOT EXISTS (\n    SELECT 1 FROM anuncios a \n    WHERE a.parada_id = p.id \n    AND a.estado = 'Activo'\n  );\n\n-- Show summary\nSELECT COUNT(*) as anuncios_creados FROM anuncios WHERE notas LIKE '%automáticamente%';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Create anuncios for paradas with valid producto\nINSERT INTO anuncios (parada_id, cliente, tipo, fecha_inicio, fecha_fin, estado, notas, created_at, updated_at)\nSELECT \n  p.id,\n  p.producto,\n  'Fijo',\n  CURDATE(),\n  DATE_ADD(CURDATE(), INTERVAL 1 YEAR),\n  'Activo',\n  'Anuncio creado automáticamente desde datos del Excel',\n  NOW(),\n  NOW()\nFROM paradas p\nWHERE p.producto IS NOT NULL \n  AND UPPER(TRIM(p.producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '')\n  AND NOT EXISTS (\n    SELECT 1 FROM anuncios a \n    WHERE a.parada_id = p.id \n    AND a.estado = 'Activo'\n  );\n\n-- Show summary\nSELECT COUNT(*) as anuncios_creados FROM anuncios WHERE notas LIKE '%automáticamente%';\n",
+  "rows": [
+    {
+      "anuncios_creados": "550"
+    }
+  ],
+  "messages": [],
+  "stdout": "anuncios_creados\n550\n",
+  "stderr": "",
+  "execution_time_ms": 422
+}

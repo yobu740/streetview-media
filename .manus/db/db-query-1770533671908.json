@@ -1,0 +1,29 @@
+{
+  "query": "\n-- Delete all anuncios from 2025\nDELETE FROM anuncios \nWHERE YEAR(fecha_inicio) = 2025;\n\n-- Show summary of remaining anuncios\nSELECT \n  DATE_FORMAT(fecha_inicio, '%Y-%m') as mes,\n  COUNT(*) as cantidad\nFROM anuncios\nGROUP BY mes\nORDER BY mes;\n\n-- Total count\nSELECT COUNT(*) as total_anuncios FROM anuncios;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Delete all anuncios from 2025\nDELETE FROM anuncios \nWHERE YEAR(fecha_inicio) = 2025;\n\n-- Show summary of remaining anuncios\nSELECT \n  DATE_FORMAT(fecha_inicio, '%Y-%m') as mes,\n  COUNT(*) as cantidad\nFROM anuncios\nGROUP BY mes\nORDER BY mes;\n\n-- Total count\nSELECT COUNT(*) as total_anuncios FROM anuncios;\n",
+  "rows": [
+    {
+      "mes": "2026-02",
+      "cantidad": "561"
+    },
+    {
+      "mes": "2026-03",
+      "cantidad": "2"
+    },
+    {
+      "mes": "2026-05",
+      "cantidad": "1"
+    },
+    {
+      "mes": "2026-06",
+      "cantidad": "1"
+    }
+  ],
+  "messages": [
+    "total_anuncios",
+    "565"
+  ],
+  "stdout": "mes\tcantidad\n2026-02\t561\n2026-03\t2\n2026-05\t1\n2026-06\t1\ntotal_anuncios\n565\n",
+  "stderr": "",
+  "execution_time_ms": 629
+}

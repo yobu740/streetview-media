@@ -1,0 +1,80 @@
+{
+  "query": "\n-- Check how many have producto\nSELECT \n  CASE \n    WHEN producto IS NULL THEN 'NULL'\n    WHEN UPPER(TRIM(producto)) IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY') THEN 'Excluded'\n    ELSE 'Valid Product'\n  END as producto_status,\n  activa,\n  COUNT(*) as count\nFROM paradas\nGROUP BY producto_status, activa\nORDER BY producto_status, activa;\n\n-- Show some examples of paradas with valid producto\nSELECT cobertizo_id, producto, activa \nFROM paradas \nWHERE producto IS NOT NULL \n  AND UPPER(TRIM(producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '')\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Check how many have producto\nSELECT \n  CASE \n    WHEN producto IS NULL THEN 'NULL'\n    WHEN UPPER(TRIM(producto)) IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY') THEN 'Excluded'\n    ELSE 'Valid Product'\n  END as producto_status,\n  activa,\n  COUNT(*) as count\nFROM paradas\nGROUP BY producto_status, activa\nORDER BY producto_status, activa;\n\n-- Show some examples of paradas with valid producto\nSELECT cobertizo_id, producto, activa \nFROM paradas \nWHERE producto IS NOT NULL \n  AND UPPER(TRIM(producto)) NOT IN ('REMOVIDA', 'APAGADO', 'NO DISPLAY', '')\nLIMIT 10;\n",
+  "rows": [
+    {
+      "producto_status": "Excluded",
+      "activa": "1",
+      "count": "213"
+    },
+    {
+      "producto_status": "NULL",
+      "activa": "1",
+      "count": "310"
+    },
+    {
+      "producto_status": "Valid Product",
+      "activa": "0",
+      "count": "550"
+    },
+    {
+      "producto_status": "cobertizo_id",
+      "activa": "producto",
+      "count": "activa"
+    },
+    {
+      "producto_status": "257",
+      "activa": "OPIOIDES DIJERON",
+      "count": "0"
+    },
+    {
+      "producto_status": "257",
+      "activa": "PLN",
+      "count": "0"
+    },
+    {
+      "producto_status": "618",
+      "activa": "PIRAÑA",
+      "count": "0"
+    },
+    {
+      "producto_status": "620",
+      "activa": "OPIOIDES PASTILLA",
+      "count": "0"
+    },
+    {
+      "producto_status": "622",
+      "activa": "CHENCHO SOLO",
+      "count": "0"
+    },
+    {
+      "producto_status": "623",
+      "activa": "SERAFINA",
+      "count": "0"
+    },
+    {
+      "producto_status": "643",
+      "activa": "OYSTER SHACK",
+      "count": "0"
+    },
+    {
+      "producto_status": "643",
+      "activa": "FERIA",
+      "count": "0"
+    },
+    {
+      "producto_status": "675",
+      "activa": "OPIOIDES ESCONDER",
+      "count": "0"
+    },
+    {
+      "producto_status": "675",
+      "activa": "FERIA",
+      "count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "producto_status\tactiva\tcount\nExcluded\t1\t213\nNULL\t1\t310\nValid Product\t0\t550\ncobertizo_id\tproducto\tactiva\n257\tOPIOIDES DIJERON\t0\n257\tPLN\t0\n618\tPIRAÑA\t0\n620\tOPIOIDES PASTILLA\t0\n622\tCHENCHO SOLO\t0\n623\tSERAFINA\t0\n643\tOYSTER SHACK\t0\n643\tFERIA\t0\n675\tOPIOIDES ESCONDER\t0\n675\tFERIA\t0\n",
+  "stderr": "",
+  "execution_time_ms": 418
+}
