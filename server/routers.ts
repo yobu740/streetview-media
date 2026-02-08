@@ -213,6 +213,25 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    bulkUpdateDates: adminProcedure
+      .input(z.object({
+        searchCliente: z.string(),
+        operation: z.enum(["extend", "set"]),
+        months: z.number().optional(),
+        newFechaInicio: z.date().optional(),
+        newFechaFin: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const count = await paradasDb.bulkUpdateAnuncioDates(
+          input.searchCliente,
+          input.operation,
+          input.months,
+          input.newFechaInicio,
+          input.newFechaFin
+        );
+        return { success: true, count };
+      }),
+    
     checkDisponibilidad: publicProcedure
       .input(z.object({
         paradaId: z.number(),
@@ -252,6 +271,10 @@ export const appRouter = router({
         await markNotificationAsRead(input.id);
         return { success: true };
       }),
+    
+    expiringAnuncios: adminProcedure.query(async () => {
+      return await paradasDb.checkExpiringAnuncios(7);
+    }),
   }),
   
   // Approval workflow router

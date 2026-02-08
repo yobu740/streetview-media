@@ -23,6 +23,7 @@ export default function Admin() {
   const { data: notifications } = trpc.notifications.list.useQuery(undefined, { enabled: isAuthenticated });
   const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: isAuthenticated });
   const { data: pendingReservations } = trpc.approvals.pending.useQuery(undefined, { enabled: isAuthenticated && user?.role === 'admin' });
+  const { data: expiringAnuncios } = trpc.notifications.expiringAnuncios.useQuery(undefined, { enabled: isAuthenticated && user?.role === 'admin' });
   const markAsRead = trpc.notifications.markAsRead.useMutation();
   const approveReservation = trpc.approvals.approve.useMutation();
   const rejectReservation = trpc.approvals.reject.useMutation();
@@ -38,8 +39,18 @@ export default function Admin() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [paradaToDelete, setParadaToDelete] = useState<any>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  
+  // Bulk edit state
+  const [bulkEditForm, setBulkEditForm] = useState({
+    searchCliente: "",
+    operation: "extend" as "extend" | "set",
+    months: 3,
+    newFechaInicio: "",
+    newFechaFin: "",
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedReservations, setSelectedReservations] = useState<number[]>([]);
   
@@ -163,6 +174,25 @@ export default function Admin() {
       setParadaToDelete(null);
       refetchParadas();
       refetchAnuncios();
+    },
+    onError: (error) => {
+      toast.error(`Error: ${error.message}`);
+    },
+  });
+  
+  const bulkUpdateDates = trpc.anuncios.bulkUpdateDates.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} anuncios actualizados exitosamente`);
+      setIsBulkEditDialogOpen(false);
+      setBulkEditForm({
+        searchCliente: "",
+        operation: "extend",
+        months: 3,
+        newFechaInicio: "",
+        newFechaFin: "",
+      });
+      refetchAnuncios();
+      refetchParadas();
     },
     onError: (error) => {
       toast.error(`Error: ${error.message}`);
@@ -620,6 +650,14 @@ export default function Admin() {
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Exportar a Excel
             </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsBulkEditDialogOpen(true)}
+              className="border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Edición Masiva
+            </Button>
             <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
               <Printer className="h-4 w-4 mr-2" />
               Imprimir Reporte
@@ -947,6 +985,50 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+        
+        {/* Expiring Anuncios Alert */}
+        {user?.role === 'admin' && expiringAnuncios && expiringAnuncios.length > 0 && (
+          <Card className="mb-8 border-yellow-500 bg-yellow-50 print:hidden">
+            <CardHeader>
+              <CardTitle className="text-yellow-700 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Anuncios Próximos a Vencer ({expiringAnuncios.length})
+              </CardTitle>
+              <CardDescription className="text-yellow-600">
+                Estos anuncios vencerán en los próximos 7 días
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {expiringAnuncios.map((anuncio: any) => {
+                  const daysUntilExpiration = Math.ceil(
+                    (new Date(anuncio.fechaFin).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                  );
+                  return (
+                    <div key={anuncio.id} className="bg-white border border-yellow-300 rounded-lg p-4">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-gray-900">{anuncio.cliente}</span>
+                            <Badge variant="outline" className="text-yellow-700 border-yellow-500">
+                              Vence en {daysUntilExpiration} día{daysUntilExpiration !== 1 ? 's' : ''}
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            Parada: {anuncio.parada?.cobertizoId} - {anuncio.parada?.localizacion}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Fecha fin: {new Date(anuncio.fechaFin).toLocaleDateString('es-PR')}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Search and Filters */}
         <Card className="mb-8 print:hidden">
@@ -1088,6 +1170,7 @@ export default function Admin() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>ID Cobertizo</TableHead>
+                        <TableHead>Orient.</TableHead>
                         <TableHead>Localización</TableHead>
                         <TableHead>Ruta</TableHead>
                         <TableHead>Dirección</TableHead>
@@ -1111,6 +1194,11 @@ export default function Admin() {
                                   </Badge>
                                 )}
                               </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="font-mono text-xs">
+                                {parada.orientacion || "—"}
+                              </Badge>
                             </TableCell>
                             <TableCell>{parada.localizacion || "—"}</TableCell>
                             <TableCell>{parada.ruta || "—"}</TableCell>
@@ -1717,6 +1805,112 @@ export default function Admin() {
           </tbody>
         </table>
       </div>
+      
+      {/* Bulk Edit Dialog */}
+      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edición Masiva de Fechas</DialogTitle>
+            <DialogDescription>
+              Ajusta las fechas de múltiples anuncios a la vez buscando por cliente
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Buscar por Cliente</Label>
+              <Input
+                placeholder="Ej: KFC, AMAZON, TATTOO..."
+                value={bulkEditForm.searchCliente}
+                onChange={(e) => setBulkEditForm({ ...bulkEditForm, searchCliente: e.target.value })}
+              />
+            </div>
+            
+            <div>
+              <Label>Operación</Label>
+              <Select 
+                value={bulkEditForm.operation} 
+                onValueChange={(v: "extend" | "set") => setBulkEditForm({ ...bulkEditForm, operation: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="extend">Extender fechas existentes</SelectItem>
+                  <SelectItem value="set">Establecer nuevas fechas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {bulkEditForm.operation === "extend" ? (
+              <div>
+                <Label>Extender por (meses)</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="12"
+                  value={bulkEditForm.months}
+                  onChange={(e) => setBulkEditForm({ ...bulkEditForm, months: parseInt(e.target.value) || 3 })}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Nueva Fecha Inicio</Label>
+                  <Input
+                    type="date"
+                    value={bulkEditForm.newFechaInicio}
+                    onChange={(e) => setBulkEditForm({ ...bulkEditForm, newFechaInicio: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Nueva Fecha Fin</Label>
+                  <Input
+                    type="date"
+                    value={bulkEditForm.newFechaFin}
+                    onChange={(e) => setBulkEditForm({ ...bulkEditForm, newFechaFin: e.target.value })}
+                  />
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+              <p className="text-sm text-blue-800">
+                <strong>Vista previa:</strong> Se actualizarán los anuncios que contengan "{bulkEditForm.searchCliente}" en el nombre del cliente.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkEditDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => {
+                if (!bulkEditForm.searchCliente.trim()) {
+                  toast.error("Ingresa un cliente para buscar");
+                  return;
+                }
+                
+                if (bulkEditForm.operation === "set" && (!bulkEditForm.newFechaInicio || !bulkEditForm.newFechaFin)) {
+                  toast.error("Ingresa ambas fechas");
+                  return;
+                }
+                
+                // Call bulk edit mutation
+                bulkUpdateDates.mutate({
+                  searchCliente: bulkEditForm.searchCliente,
+                  operation: bulkEditForm.operation,
+                  months: bulkEditForm.operation === "extend" ? bulkEditForm.months : undefined,
+                  newFechaInicio: bulkEditForm.operation === "set" && bulkEditForm.newFechaInicio ? new Date(bulkEditForm.newFechaInicio) : undefined,
+                  newFechaFin: bulkEditForm.operation === "set" && bulkEditForm.newFechaFin ? new Date(bulkEditForm.newFechaFin) : undefined,
+                });
+              }}
+              className="bg-[#ff6b35] hover:bg-[#e65a25]"
+            >
+              Aplicar Cambios
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -372,3 +372,94 @@ export async function getAnunciosByUserId(userId: number) {
     return [];
   }
 }
+
+export async function bulkUpdateAnuncioDates(
+  searchCliente: string,
+  operation: "extend" | "set",
+  months?: number,
+  newFechaInicio?: Date,
+  newFechaFin?: Date
+): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot bulk update anuncio dates: database not available");
+    return 0;
+  }
+
+  try {
+    // Find all anuncios matching the cliente search
+    const matchingAnuncios = await db
+      .select()
+      .from(anuncios)
+      .where(like(anuncios.cliente, `%${searchCliente}%`));
+
+    if (matchingAnuncios.length === 0) {
+      return 0;
+    }
+
+    // Update each anuncio
+    for (const anuncio of matchingAnuncios) {
+      let updateData: any = {};
+
+      if (operation === "extend" && months) {
+        // Extend existing dates by X months
+        const currentFechaFin = new Date(anuncio.fechaFin);
+        currentFechaFin.setMonth(currentFechaFin.getMonth() + months);
+        updateData.fechaFin = currentFechaFin;
+      } else if (operation === "set" && newFechaInicio && newFechaFin) {
+        // Set new dates
+        updateData.fechaInicio = newFechaInicio;
+        updateData.fechaFin = newFechaFin;
+      }
+
+      updateData.updatedAt = new Date();
+
+      await db
+        .update(anuncios)
+        .set(updateData)
+        .where(eq(anuncios.id, anuncio.id));
+    }
+
+    console.log(`[Database] Bulk updated ${matchingAnuncios.length} anuncios for cliente: ${searchCliente}`);
+    return matchingAnuncios.length;
+  } catch (error) {
+    console.error("[Database] Failed to bulk update anuncio dates:", error);
+    throw error;
+  }
+}
+
+export async function checkExpiringAnuncios(daysBeforeExpiration: number = 7) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot check expiring anuncios: database not available");
+    return [];
+  }
+
+  try {
+    const today = new Date();
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + daysBeforeExpiration);
+
+    // Find anuncios expiring within the specified days
+    const expiringAnuncios = await db
+      .select()
+      .from(anuncios)
+      .leftJoin(paradas, eq(anuncios.paradaId, paradas.id))
+      .where(
+        and(
+          gte(anuncios.fechaFin, today),
+          lte(anuncios.fechaFin, expirationDate),
+          eq(anuncios.estado, "Activo")
+        )
+      )
+      .orderBy(asc(anuncios.fechaFin));
+
+    return expiringAnuncios.map((row) => ({
+      ...row.anuncios,
+      parada: row.paradas,
+    }));
+  } catch (error) {
+    console.error("[Database] Failed to check expiring anuncios:", error);
+    return [];
+  }
+}

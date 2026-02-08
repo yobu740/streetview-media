@@ -346,3 +346,9 @@
 - [x] Identified old 2025 anuncios causing incorrect data display
 - [x] Deleted all 2025 anuncios to avoid confusion
 - [x] Calendar now shows only current 2026 anuncios (565 total)
+
+## New Features Implementation
+- [x] Add orientation column (I/O/P) to main paradas table
+- [x] Create bulk date editing tool for multiple anuncios at once
+- [x] Implement automatic expiration alerts (7 days before anuncio ends)
+- [x] Test all three features
