@@ -787,15 +787,15 @@ export default function Admin() {
       )}
 
       <div className="container py-12">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Panel Administrativo <span className="text-sm text-red-600">[v2.1]</span></h1>
-            <p className="text-body text-lg text-gray-600">Gestión de paradas y anuncios</p>
+            <h1 className="text-display text-3xl md:text-4xl text-[#1a4d3c] mb-2">Panel Administrativo <span className="text-sm text-red-600">[v2.1]</span></h1>
+            <p className="text-body text-base md:text-lg text-gray-600">Gestión de paradas y anuncios</p>
           </div>
           {user?.role === 'admin' && (
             <Button 
               onClick={() => setIsAddParadaDialogOpen(true)}
-              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a] w-full md:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               Agregar Parada
@@ -1260,6 +1260,7 @@ export default function Admin() {
                                               const input = document.createElement('input');
                                               input.type = 'file';
                                               input.accept = 'image/*';
+                                              input.setAttribute('capture', 'environment');
                                               input.onchange = (e: any) => {
                                                 const file = e.target.files?.[0];
                                                 if (file) {

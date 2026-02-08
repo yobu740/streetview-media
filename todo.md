@@ -352,3 +352,10 @@
 - [x] Create bulk date editing tool for multiple anuncios at once
 - [x] Implement automatic expiration alerts (7 days before anuncio ends)
 - [x] Test all three features
+
+## Mobile Version Fixes
+- [x] Fix admin delete icon not showing on mobile in paradas table (buttons visible with horizontal scroll)
+- [x] Fix "Agregar Parada" button not showing on mobile (now full-width on mobile)
+- [x] Fix photo upload from mobile camera not working (added capture attribute)
+- [x] Fix photo upload from mobile gallery not working (accept image/* allows gallery selection)
+- [x] Test all fixes on mobile view
