@@ -364,3 +364,7 @@
 - [x] Fix permission error (10002) when admin uploads photos (changed to protectedProcedure)
 - [x] Implement automatic image compression before upload to save space (max 1920x1920, 85% quality)
 - [x] Test photo upload from mobile with compression
+
+## Photo Source Options Fix
+- [x] Remove capture attribute to restore all photo source options (camera, gallery, Google Drive, OneDrive)
+- [x] Test that all options are available on mobile
