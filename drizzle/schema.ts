@@ -30,10 +30,10 @@ export type InsertUser = typeof users.$inferInsert;
  */
 export const paradas = mysqlTable("paradas", {
   id: int("id").autoincrement().primaryKey(),
-  cobertizoId: varchar("cobertizo_id", { length: 64 }).notNull().unique(), // #COB. from Excel
+  cobertizoId: varchar("cobertizo_id", { length: 64 }).notNull(), // #COB. from Excel - can have duplicates with different orientacion
   localizacion: varchar("localizacion", { length: 255 }).notNull(), // LOCALIZACIÓN
   direccion: text("direccion").notNull(), // DIRECCION
-  orientacion: varchar("orientacion", { length: 10 }), // I/O/P
+  orientacion: varchar("orientacion", { length: 10 }).notNull(), // I/O/P - required for uniqueness
   flowCat: varchar("flow_cat", { length: 64 }), // FLOW CAT
   ruta: varchar("ruta", { length: 64 }), // RUTA
   coordenadasLat: varchar("coordenadas_lat", { length: 32 }), // Latitude

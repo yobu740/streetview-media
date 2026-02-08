@@ -326,3 +326,11 @@
 - [x] Search filter searches in 'producto' field of parada
 - [x] 'Anuncio Actual' column shows producto + dates from active anuncio
 - [x] Test that searching "KFC" shows correct results (6 paradas with producto="KFC")
+
+## Database Verification and Update
+- [x] Analyze Excel file SISTEMASPARADASNEW2-6-26.xlsx
+- [x] Check for missing paradas (e.g., 257 Inbound vs 257 Outbound)
+- [x] Verify and correct localizations (rows 3-71 in Excel are AVE. ASHFORD)
+- [x] Update database schema to allow multiple paradas with same cobertizo_id but different orientacion
+- [x] Import all 1,073 paradas from Excel
+- [x] Verify all changes are reflected in database

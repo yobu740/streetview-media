@@ -1,0 +1,28 @@
+{
+  "query": "SELECT COUNT(*) as total FROM paradas; SELECT cobertizo_id, orientacion, localizacion, producto FROM paradas WHERE cobertizo_id = '257'; SELECT COUNT(*) as ashford_count FROM paradas WHERE localizacion = 'AVE. ASHFORD';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT COUNT(*) as total FROM paradas; SELECT cobertizo_id, orientacion, localizacion, producto FROM paradas WHERE cobertizo_id = '257'; SELECT COUNT(*) as ashford_count FROM paradas WHERE localizacion = 'AVE. ASHFORD';",
+  "rows": [
+    {
+      "total": "1073"
+    },
+    {
+      "total": "cobertizo_id\torientacion\tlocalizacion\tproducto"
+    },
+    {
+      "total": "257\tI\tAVE. ASHFORD\tOPIOIDES DIJERON"
+    },
+    {
+      "total": "257\tO\tAVE. ASHFORD\tPLN"
+    },
+    {
+      "total": "ashford_count"
+    },
+    {
+      "total": "69"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n1073\ncobertizo_id\torientacion\tlocalizacion\tproducto\n257\tI\tAVE. ASHFORD\tOPIOIDES DIJERON\n257\tO\tAVE. ASHFORD\tPLN\nashford_count\n69\n",
+  "stderr": "",
+  "execution_time_ms": 445
+}

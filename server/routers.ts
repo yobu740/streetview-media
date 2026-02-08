@@ -43,7 +43,7 @@ export const appRouter = router({
         cobertizoId: z.string(),
         localizacion: z.string(),
         direccion: z.string(),
-        orientacion: z.string().optional(),
+        orientacion: z.string(), // Required for uniqueness with cobertizoId
         flowCat: z.string().optional(),
         ruta: z.string().optional(),
         coordenadasLat: z.string().optional(),
@@ -63,7 +63,7 @@ export const appRouter = router({
           cobertizoId: z.string().optional(),
           localizacion: z.string().optional(),
           direccion: z.string().optional(),
-          orientacion: z.string().optional(),
+          orientacion: z.string(), // Required for uniqueness with cobertizoId
           flowCat: z.string().optional(),
           ruta: z.string().optional(),
           coordenadasLat: z.string().optional(),

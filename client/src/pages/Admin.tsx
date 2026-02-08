@@ -455,7 +455,7 @@ export default function Admin() {
       direccion: paradaForm.direccion,
       ruta: paradaForm.ruta || undefined,
       tipoFormato: paradaForm.tipoFormato,
-      orientacion: paradaForm.orientacion || undefined,
+      orientacion: paradaForm.orientacion || 'O', // Default to Outbound if not specified
     });
     
     // Si hay foto, subirla
