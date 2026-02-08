@@ -84,7 +84,7 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    uploadFoto: adminProcedure
+    uploadFoto: protectedProcedure
       .input(z.object({
         paradaId: z.number(),
         cobertizoId: z.string(),

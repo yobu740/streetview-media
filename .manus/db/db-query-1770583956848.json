@@ -1,0 +1,66 @@
+{
+  "query": "SELECT id, name, email, role, openId FROM users LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, name, email, role, openId FROM users LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "maestro servicio",
+      "email": "maestroservicio@requiretechnology.com",
+      "role": "admin",
+      "openId": "5UUj4tWsy6sSkYyL6jH9QY"
+    },
+    {
+      "id": "60002",
+      "name": "maestro servicio",
+      "email": "maestroservicio@requiretechnology.com",
+      "role": "admin",
+      "openId": "2Hy3RJQ3woPVKH9NCUJ3i3"
+    },
+    {
+      "id": "660008",
+      "name": "Jose Gonzalez",
+      "email": "jgonzalez@requiretechnology.com",
+      "role": "vendedor",
+      "openId": "e7c192e6-f9a8-45b4-b3de-b25418e0c506"
+    },
+    {
+      "id": "690042",
+      "name": "maestroservicio",
+      "email": "maestroservicio@requiretechnology.com",
+      "role": "user",
+      "openId": "03a776ef-a42d-4efd-8eea-8a84f1372193"
+    },
+    {
+      "id": "960002",
+      "name": "Enrique Ortiz",
+      "email": "enortiz@requiretechnology.com",
+      "role": "admin",
+      "openId": "5b51cef6-a8e0-4513-be6a-a2159173e480"
+    },
+    {
+      "id": "990001",
+      "name": "Paloma Tirado Cruz",
+      "email": "ptirado@requiretechnology.com",
+      "role": "vendedor",
+      "openId": "f7cd0a03-fb5c-4a42-86e7-cbb5f0701fec"
+    },
+    {
+      "id": "990005",
+      "name": "Paloma Tirado",
+      "email": "ptirado@streetviewmediapr.com",
+      "role": "admin",
+      "openId": "af55d4fb-b7d0-4aea-89c0-cb54d1a2bfdb"
+    },
+    {
+      "id": "990034",
+      "name": "Maestro Interno 1",
+      "email": "maestro1@requiretechnology.com",
+      "role": "vendedor",
+      "openId": "bbac80ab-4603-484d-9a9d-06eb28abb750"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\trole\topenId\n1\tmaestro servicio\tmaestroservicio@requiretechnology.com\tadmin\t5UUj4tWsy6sSkYyL6jH9QY\n60002\tmaestro servicio\tmaestroservicio@requiretechnology.com\tadmin\t2Hy3RJQ3woPVKH9NCUJ3i3\n660008\tJose Gonzalez\tjgonzalez@requiretechnology.com\tvendedor\te7c192e6-f9a8-45b4-b3de-b25418e0c506\n690042\tmaestroservicio\tmaestroservicio@requiretechnology.com\tuser\t03a776ef-a42d-4efd-8eea-8a84f1372193\n960002\tEnrique Ortiz\tenortiz@requiretechnology.com\tadmin\t5b51cef6-a8e0-4513-be6a-a2159173e480\n990001\tPaloma Tirado Cruz\tptirado@requiretechnology.com\tvendedor\tf7cd0a03-fb5c-4a42-86e7-cbb5f0701fec\n990005\tPaloma Tirado\tptirado@streetviewmediapr.com\tadmin\taf55d4fb-b7d0-4aea-89c0-cb54d1a2bfdb\n990034\tMaestro Interno 1\tmaestro1@requiretechnology.com\tvendedor\tbbac80ab-4603-484d-9a9d-06eb28abb750\n",
+  "stderr": "",
+  "execution_time_ms": 367
+}

@@ -359,3 +359,8 @@
 - [x] Fix photo upload from mobile camera not working (added capture attribute)
 - [x] Fix photo upload from mobile gallery not working (accept image/* allows gallery selection)
 - [x] Test all fixes on mobile view
+
+## Photo Upload Fixes
+- [x] Fix permission error (10002) when admin uploads photos (changed to protectedProcedure)
+- [x] Implement automatic image compression before upload to save space (max 1920x1920, 85% quality)
+- [x] Test photo upload from mobile with compression
