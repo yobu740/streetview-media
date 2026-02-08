@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, CONCAT('[', producto, ']') as producto_bracketed, LENGTH(producto) as producto_len FROM paradas WHERE LOWER(TRIM(producto)) = 'bluey' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, CONCAT('[', producto, ']') as producto_bracketed, LENGTH(producto) as producto_len FROM paradas WHERE LOWER(TRIM(producto)) = 'bluey' LIMIT 10;",
+  "rows": [
+    {
+      "id": "127",
+      "cobertizo_id": "417B",
+      "localizacion": "",
+      "producto_bracketed": "[BLUEY]",
+      "producto_len": "5"
+    },
+    {
+      "id": "167",
+      "cobertizo_id": "461B",
+      "localizacion": "",
+      "producto_bracketed": "[BLUEY]",
+      "producto_len": "5"
+    },
+    {
+      "id": "210",
+      "cobertizo_id": "203",
+      "localizacion": "",
+      "producto_bracketed": "[BLUEY]",
+      "producto_len": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tproducto_bracketed\tproducto_len\n127\t417B\t\t[BLUEY]\t5\n167\t461B\t\t[BLUEY]\t5\n210\t203\t\t[BLUEY]\t5\n",
+  "stderr": "",
+  "execution_time_ms": 358
+}

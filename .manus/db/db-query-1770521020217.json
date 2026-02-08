@@ -1,0 +1,46 @@
+{
+  "query": "SELECT id, cobertizo_id, producto, cliente\nFROM paradas \nWHERE LOWER(producto) = 'kfc' OR LOWER(cliente) = 'kfc';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, producto, cliente\nFROM paradas \nWHERE LOWER(producto) = 'kfc' OR LOWER(cliente) = 'kfc';",
+  "rows": [
+    {
+      "id": "111",
+      "cobertizo_id": "684",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "115",
+      "cobertizo_id": "700",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "399",
+      "cobertizo_id": "173",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "406",
+      "cobertizo_id": "491",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "464",
+      "cobertizo_id": "182",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "465",
+      "cobertizo_id": "184",
+      "producto": "KFC",
+      "cliente": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tproducto\tcliente\n111\t684\tKFC\tNULL\n115\t700\tKFC\tNULL\n399\t173\tKFC\tNULL\n406\t491\tKFC\tNULL\n464\t182\tKFC\tNULL\n465\t184\tKFC\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 352
+}

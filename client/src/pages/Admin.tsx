@@ -331,6 +331,8 @@ export default function Admin() {
   };
 
   // Apply all filters
+  console.log('Filter state:', { productoSearch, searchTerm, filterStatus, filterTipo, filterRuta });
+  
   const filteredParadas = paradas?.filter(p => {
     // Search filter (general search with comma-separated IDs support)
     const matchesSearch = !searchTerm || (() => {
@@ -346,10 +348,19 @@ export default function Admin() {
         (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
     })();
     
-    // Producto search filter (exact match by parada producto field OR anuncio cliente)
-    const matchesProductoSearch = !productoSearch || 
-      (p.producto && p.producto.toLowerCase() === productoSearch.toLowerCase()) ||
-      (p.anuncioCliente && p.anuncioCliente.toLowerCase() === productoSearch.toLowerCase());
+    // Producto search filter (exact match by parada producto field ONLY)
+    const trimmedProductoSearch = productoSearch.trim();
+    const matchesProductoSearch = !trimmedProductoSearch || 
+      (p.producto && p.producto.trim().toLowerCase() === trimmedProductoSearch.toLowerCase());
+    
+    // Debug logging
+    if (trimmedProductoSearch && matchesProductoSearch) {
+      console.log('Match found:', {
+        cobertizoId: p.cobertizoId,
+        producto: p.producto,
+        searchTerm: trimmedProductoSearch
+      });
+    }
     
     // Status filter
     const { status } = getParadaStatus(p);
@@ -740,7 +751,7 @@ export default function Admin() {
       <div className="container py-12">
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Panel Administrativo</h1>
+            <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Panel Administrativo <span className="text-sm text-red-600">[v2.1]</span></h1>
             <p className="text-body text-lg text-gray-600">Gestión de paradas y anuncios</p>
           </div>
           {user?.role === 'admin' && (
@@ -951,14 +962,21 @@ export default function Admin() {
                     className="pl-10"
                   />
                 </div>
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff6b35]" size={20} />
-                  <Input
-                    placeholder="Buscar por anuncio/producto..."
-                    value={productoSearch}
-                    onChange={(e) => { setProductoSearch(e.target.value); setSearchTerm(""); }}
-                    className="pl-10 border-[#ff6b35] focus:ring-[#ff6b35]"
-                  />
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#ff6b35]" size={20} />
+                    <Input
+                      placeholder="Buscar por anuncio/producto..."
+                      value={productoSearch}
+                      onChange={(e) => { setProductoSearch(e.target.value); setSearchTerm(""); }}
+                      className="pl-10 border-[#ff6b35] focus:ring-[#ff6b35]"
+                    />
+                  </div>
+                  {productoSearch && (
+                    <div className="text-sm text-gray-600 mt-1 ml-1">
+                      {filteredParadas.length} resultado(s) encontrado(s)
+                    </div>
+                  )}
                 </div>
                 {hasActiveFilters && (
                   <Button 
@@ -1108,12 +1126,14 @@ export default function Admin() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {anuncio ? (
+                              {parada.producto ? (
                                 <div className="text-sm">
-                                  <div className="font-medium">{anuncio.cliente}</div>
-                                  <div className="text-gray-500 text-xs">
-                                    {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
-                                  </div>
+                                  <div className="font-medium">{parada.producto}</div>
+                                  {anuncio && (
+                                    <div className="text-gray-500 text-xs">
+                                      {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
+                                    </div>
+                                  )}
                                 </div>
                               ) : (
                                 "—"

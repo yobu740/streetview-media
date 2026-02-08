@@ -315,3 +315,14 @@
 - [x] Fix search returning paradas without search term (e.g., "Bluey" returns non-Bluey paradas) - Changed to exact match
 - [x] Test calendario displays correct current data - Calendar uses anuncios table correctly
 - [x] Test search only returns exact matches - Changed from .includes() to === for exact match
+
+## Bug - Exact Search Still Returning Wrong Results
+- [ ] Investigate why searching "KFC" returns paradas without KFC
+- [ ] Check if there are hidden characters or whitespace issues
+- [ ] Verify the exact match logic is actually being used
+- [ ] Test with multiple search terms
+
+## Search and Display Fix
+- [x] Search filter searches in 'producto' field of parada
+- [x] 'Anuncio Actual' column shows producto + dates from active anuncio
+- [x] Test that searching "KFC" shows correct results (6 paradas with producto="KFC")

@@ -1,0 +1,45 @@
+{
+  "query": "SELECT cobertizo_id, producto, cliente FROM paradas WHERE LOWER(producto) LIKE 'k%' OR LOWER(cliente) LIKE 'k%' LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT cobertizo_id, producto, cliente FROM paradas WHERE LOWER(producto) LIKE 'k%' OR LOWER(cliente) LIKE 'k%' LIMIT 20;",
+  "rows": [
+    {
+      "cobertizo_id": "684",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "700",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "515",
+      "producto": "KENTUCKY NUGGETS",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "173",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "491",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "182",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "184",
+      "producto": "KFC",
+      "cliente": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "cobertizo_id\tproducto\tcliente\n684\tKFC\tNULL\n700\tKFC\tNULL\n515\tKENTUCKY NUGGETS\tNULL\n173\tKFC\tNULL\n491\tKFC\tNULL\n182\tKFC\tNULL\n184\tKFC\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 355
+}

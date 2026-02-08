@@ -1,0 +1,17 @@
+{
+  "query": "\nSELECT \n  p.id,\n  p.cobertizo_id,\n  p.localizacion,\n  p.producto,\n  a.cliente as anuncio_cliente\nFROM paradas p\nLEFT JOIN (\n  SELECT a1.*\n  FROM anuncios a1\n  INNER JOIN (\n    SELECT parada_id, MAX(id) as max_id\n    FROM anuncios\n    WHERE estado IN ('Activo', 'Programado')\n    AND fecha_fin >= CURDATE()\n    GROUP BY parada_id\n  ) a2 ON a1.parada_id = a2.parada_id AND a1.id = a2.max_id\n) a ON p.id = a.parada_id\nWHERE LOWER(TRIM(a.cliente)) = 'bluey'\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT \n  p.id,\n  p.cobertizo_id,\n  p.localizacion,\n  p.producto,\n  a.cliente as anuncio_cliente\nFROM paradas p\nLEFT JOIN (\n  SELECT a1.*\n  FROM anuncios a1\n  INNER JOIN (\n    SELECT parada_id, MAX(id) as max_id\n    FROM anuncios\n    WHERE estado IN ('Activo', 'Programado')\n    AND fecha_fin >= CURDATE()\n    GROUP BY parada_id\n  ) a2 ON a1.parada_id = a2.parada_id AND a1.id = a2.max_id\n) a ON p.id = a.parada_id\nWHERE LOWER(TRIM(a.cliente)) = 'bluey'\nLIMIT 20;\n",
+  "rows": [
+    {
+      "id": "201",
+      "cobertizo_id": "635",
+      "localizacion": "",
+      "producto": "NN",
+      "anuncio_cliente": "BLUEY"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tproducto\tanuncio_cliente\n201\t635\t\tNN\tBLUEY\n",
+  "stderr": "",
+  "execution_time_ms": 387
+}

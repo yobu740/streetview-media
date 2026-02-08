@@ -1,0 +1,25 @@
+{
+  "query": "SELECT cobertizo_id, producto, cliente FROM paradas WHERE cobertizo_id IN ('684', '601B', '685') LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT cobertizo_id, producto, cliente FROM paradas WHERE cobertizo_id IN ('684', '601B', '685') LIMIT 5;",
+  "rows": [
+    {
+      "cobertizo_id": "601B",
+      "producto": "AMAZON",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "684",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "cobertizo_id": "685",
+      "producto": "ANIME BOY",
+      "cliente": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "cobertizo_id\tproducto\tcliente\n601B\tAMAZON\tNULL\n684\tKFC\tNULL\n685\tANIME BOY\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 356
+}

@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, producto, cliente FROM paradas WHERE producto LIKE '%KFC%' OR cliente LIKE '%KFC%' LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, producto, cliente FROM paradas WHERE producto LIKE '%KFC%' OR cliente LIKE '%KFC%' LIMIT 20;",
+  "rows": [
+    {
+      "id": "111",
+      "cobertizo_id": "684",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "115",
+      "cobertizo_id": "700",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "399",
+      "cobertizo_id": "173",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "406",
+      "cobertizo_id": "491",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "464",
+      "cobertizo_id": "182",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    },
+    {
+      "id": "465",
+      "cobertizo_id": "184",
+      "localizacion": "",
+      "producto": "KFC",
+      "cliente": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tproducto\tcliente\n111\t684\t\tKFC\tNULL\n115\t700\t\tKFC\tNULL\n399\t173\t\tKFC\tNULL\n406\t491\t\tKFC\tNULL\n464\t182\t\tKFC\tNULL\n465\t184\t\tKFC\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 377
+}
