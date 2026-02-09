@@ -396,3 +396,7 @@
 - [x] Disable occupied paradas with message "Disponible después de [fecha]"
 - [x] Update getAvailableParadas to return all paradas with availability info
 - [ ] Test that occupied paradas show correct availability date
+
+## Fix Producto Search - Partial Matching
+- [x] Update producto search to show results with partial matches (e.g., "OPI" shows "OPIOIDES")
+- [x] Test that search works with incomplete terms

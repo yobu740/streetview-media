@@ -382,10 +382,11 @@ export default function Admin() {
         (p.ruta && p.ruta.toLowerCase().includes(searchTerm.toLowerCase()));
     })();
     
-    // Producto search filter (exact match by parada producto field ONLY)
+    // Producto search filter (partial match by parada producto field or anuncio producto)
     const trimmedProductoSearch = productoSearch.trim();
     const matchesProductoSearch = !trimmedProductoSearch || 
-      (p.producto && p.producto.trim().toLowerCase() === trimmedProductoSearch.toLowerCase());
+      (p.producto && p.producto.trim().toLowerCase().includes(trimmedProductoSearch.toLowerCase())) ||
+      (p.anuncioProducto && p.anuncioProducto.trim().toLowerCase().includes(trimmedProductoSearch.toLowerCase()));
     
     // Debug logging
     if (trimmedProductoSearch && matchesProductoSearch) {
