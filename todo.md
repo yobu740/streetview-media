@@ -368,3 +368,6 @@
 ## Photo Source Options Fix
 - [x] Remove capture attribute to restore all photo source options (camera, gallery, Google Drive, OneDrive)
 - [x] Test that all options are available on mobile
+
+## UI Cleanup
+- [x] Remove version tag [v2.1] from Admin panel header
