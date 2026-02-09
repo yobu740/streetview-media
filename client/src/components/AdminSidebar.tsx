@@ -16,7 +16,6 @@ import {
   Edit3,
   X,
   Menu,
-  Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -71,12 +70,6 @@ export default function AdminSidebar({
       label: "Anuncios",
       icon: Megaphone,
       href: "/anuncios",
-    },
-    {
-      label: "Mantenimiento",
-      icon: Wrench,
-      href: "/mantenimiento",
-      adminOnly: true,
     },
     {
       label: "Mis Reservas",
@@ -153,8 +146,6 @@ export default function AdminSidebar({
           {navItems.map((item) => {
             // Hide user-only items for admins
             if (item.userOnly && user?.role === "admin") return null;
-            // Hide admin-only items for non-admins
-            if ((item as any).adminOnly && user?.role !== "admin") return null;
 
             const Icon = item.icon;
             const isActive = location === item.href;
@@ -301,7 +292,6 @@ export default function AdminSidebar({
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
             {navItems.map((item) => {
               if (item.userOnly && user?.role === "admin") return null;
-              if ((item as any).adminOnly && user?.role !== "admin") return null;
 
               const Icon = item.icon;
               const isActive = location === item.href;
