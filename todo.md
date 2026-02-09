@@ -458,3 +458,13 @@
 - [x] Improved styling with border, icons colored, and font-medium
 - [x] Verify action items are rendering in both desktop and mobile sidebar
 - [x] Test that action buttons work when clicked
+
+## Recent Activity Tracking in Sidebar
+- [x] Create activity_log table in database schema
+- [x] Run database migration (pnpm db:push)
+- [x] Add backend procedures to log user actions (activity.log mutation)
+- [x] Create tRPC query to fetch last 3 activities for current user (activity.recent)
+- [x] Add "Actividad Reciente" section in AdminSidebar component
+- [x] Display activities with relative timestamps (hace X min/hora)
+- [x] Add activity logging on Excel export and print report
+- [x] Test that activities are logged and displayed correctly

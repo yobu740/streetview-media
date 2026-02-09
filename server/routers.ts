@@ -385,6 +385,52 @@ export const appRouter = router({
       return await getPendingAnuncios();
     }),
   }),
+
+  // Activity logging router
+  activity: router({
+    // Log a new activity
+    log: protectedProcedure
+      .input(z.object({
+        action: z.string(),
+        entityType: z.string().optional(),
+        entityId: z.number().optional(),
+        details: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { getDb } = await import("./db");
+        const { activityLog } = await import("../drizzle/schema");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.insert(activityLog).values({
+          userId: ctx.user.id,
+          action: input.action,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          details: input.details,
+        });
+        
+        return { success: true };
+      }),
+    
+    // Get recent activities for current user
+    recent: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { activityLog } = await import("../drizzle/schema");
+      const { desc, eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+      
+      const activities = await db
+        .select()
+        .from(activityLog)
+        .where(eq(activityLog.userId, ctx.user.id))
+        .orderBy(desc(activityLog.createdAt))
+        .limit(3);
+      
+      return activities;
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

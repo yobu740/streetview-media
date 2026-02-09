@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface AdminSidebarProps {
   unreadCount?: number;
@@ -39,6 +42,12 @@ export default function AdminSidebar({
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  
+  // Fetch recent activities
+  const { data: recentActivities = [] } = trpc.activity.recent.useQuery(undefined, {
+    enabled: !!user,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
 
   const navItems = [
     {
@@ -200,6 +209,25 @@ export default function AdminSidebar({
           )}
         </nav>
 
+        {/* Recent Activity Section */}
+        {!isCollapsed && recentActivities.length > 0 && (
+          <div className="p-4 border-t-2 border-[#1a4d3c]">
+            <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Actividad Reciente
+            </div>
+            <div className="space-y-2">
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="text-xs p-2 bg-gray-50 rounded">
+                  <div className="font-medium text-gray-900">{activity.action}</div>
+                  <div className="text-gray-500 mt-1">
+                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: es })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Bottom Actions */}
         <div className="p-4 border-t border-gray-200 space-y-2">
           <Button
@@ -317,6 +345,25 @@ export default function AdminSidebar({
               </>
             )}
           </nav>
+
+          {/* Recent Activity Section */}
+          {recentActivities.length > 0 && (
+            <div className="p-4 border-t-2 border-[#1a4d3c]">
+              <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Actividad Reciente
+              </div>
+              <div className="space-y-2">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="text-xs p-2 bg-gray-50 rounded">
+                    <div className="font-medium text-gray-900">{activity.action}</div>
+                    <div className="text-gray-500 mt-1">
+                      {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: es })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Bottom Actions */}
           <div className="p-4 border-t border-gray-200">

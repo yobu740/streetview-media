@@ -90,3 +90,19 @@ export const notifications = mysqlTable("notifications", {
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+
+/**
+ * Activity log table to track user actions
+ */
+export const activityLog = mysqlTable("activity_log", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(), // FK to users
+  action: varchar("action", { length: 255 }).notNull(), // Action description (e.g., "Creó anuncio", "Exportó Excel")
+  entityType: varchar("entity_type", { length: 64 }), // Type of entity affected (e.g., "anuncio", "parada")
+  entityId: int("entity_id"), // ID of affected entity
+  details: text("details"), // Additional JSON details
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ActivityLog = typeof activityLog.$inferSelect;
+export type InsertActivityLog = typeof activityLog.$inferInsert;

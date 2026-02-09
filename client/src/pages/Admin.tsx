@@ -30,6 +30,7 @@ export default function Admin() {
   const rejectReservation = trpc.approvals.reject.useMutation();
   const bulkApprove = trpc.approvals.bulkApprove.useMutation();
   const bulkReject = trpc.approvals.bulkReject.useMutation();
+  const logActivity = trpc.activity.log.useMutation();
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState("");
   const [productoSearch, setProductoSearch] = useState("");
@@ -562,6 +563,12 @@ export default function Admin() {
       // Download file
       XLSX.writeFile(wb, filename);
       
+      // Log activity
+      logActivity.mutate({
+        action: `Exportó ${exportData.length} paradas a Excel`,
+        entityType: 'export',
+      });
+      
       toast.success('Archivo Excel descargado exitosamente');
     }).catch(error => {
       console.error('Error exporting to Excel:', error);
@@ -600,6 +607,12 @@ export default function Admin() {
       `);
       printWindow.document.close();
       printWindow.print();
+      
+      // Log activity
+      logActivity.mutate({
+        action: 'Imprimió reporte de paradas',
+        entityType: 'report',
+      });
     }, 100);
   };
   
