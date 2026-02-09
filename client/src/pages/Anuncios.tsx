@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 
@@ -37,6 +37,7 @@ export default function Anuncios() {
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
   const { data: paradas } = trpc.paradas.list.useQuery();
   const updateAnuncio = trpc.anuncios.update.useMutation();
+  const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const utils = trpc.useUtils();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,6 +126,26 @@ export default function Anuncios() {
         },
         onError: (error) => {
           toast.error(`Error: ${error.message}`);
+        },
+      }
+    );
+  };
+
+  const handleDelete = (anuncio: any) => {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el anuncio #${anuncio.id} de ${anuncio.producto}?\n\nEsta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    deleteAnuncio.mutate(
+      { id: anuncio.id },
+      {
+        onSuccess: () => {
+          toast.success("Anuncio eliminado exitosamente");
+          utils.anuncios.list.invalidate();
+          utils.paradas.list.invalidate();
+        },
+        onError: (error) => {
+          toast.error(`Error al eliminar: ${error.message}`);
         },
       }
     );
@@ -444,13 +465,23 @@ export default function Anuncios() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(anuncio)}
-                        >
-                          <Edit size={16} />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(anuncio)}
+                          >
+                            <Edit size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(anuncio)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

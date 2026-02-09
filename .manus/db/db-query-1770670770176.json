@@ -1,0 +1,18 @@
+{
+  "query": "SELECT tipo, COUNT(*) as total FROM anuncios WHERE producto LIKE '%OPIOIDES%' GROUP BY tipo ORDER BY tipo;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT tipo, COUNT(*) as total FROM anuncios WHERE producto LIKE '%OPIOIDES%' GROUP BY tipo ORDER BY tipo;",
+  "rows": [
+    {
+      "tipo": "Fijo",
+      "total": "74"
+    },
+    {
+      "tipo": "Bonificación",
+      "total": "30"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\ttotal\nFijo\t74\nBonificación\t30\n",
+  "stderr": "",
+  "execution_time_ms": 353
+}

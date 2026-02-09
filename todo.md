@@ -496,3 +496,13 @@
 - [x] Add parada selection dropdown to edit dialog in Anuncios.tsx
 - [x] Update backend update procedure to allow changing paradaId
 - [ ] Test moving an ad from one parada to another
+## Delete Anuncios Functionality
+- [x] Add delete button to Anuncios.tsx table
+- [x] Add confirmation dialog before deletion
+- [x] Implement backend delete procedure (already exists)
+- [ ] Test deletion works correctly
+
+## Correct OPIOIDES Ads Classification
+- [x] Read Excel file to identify which OPIOIDES ads are Bonificación (B) vs Fijo (F)
+- [x] Create SQL update to correct tipo field for OPIOIDES ads
+- [x] Verify all OPIOIDES ads have correct tipo after update (74 Fijo, 30 Bonificación)
