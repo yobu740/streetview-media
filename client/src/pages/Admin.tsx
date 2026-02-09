@@ -1120,6 +1120,7 @@ export default function Admin() {
                         <TableHead>Dirección</TableHead>
                         <TableHead>Tipo Parada</TableHead>
                         <TableHead>Estado</TableHead>
+                        <TableHead>Condición</TableHead>
                         <TableHead>Anuncio Actual</TableHead>
                         <TableHead className="print:hidden">Acciones</TableHead>
                       </TableRow>
@@ -1156,6 +1157,16 @@ export default function Admin() {
                               <Badge variant={status === "Disponible" ? "outline" : "destructive"}>
                                 {status}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {(() => {
+                                const isRenovada = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
+                                return (
+                                  <Badge variant={isRenovada ? "default" : "secondary"} className={isRenovada ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}>
+                                    {isRenovada ? "Renovada" : "Pendiente"}
+                                  </Badge>
+                                );
+                              })()}
                             </TableCell>
 
                             <TableCell>

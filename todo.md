@@ -524,3 +524,8 @@
 - [x] Update all existing paradas to set displayPublicidad to "Si"
 - [x] Add optimistic updates to Mantenimiento checkboxes for instant feedback
 - [ ] Test that checkboxes respond immediately when clicked
+
+## Add Condición Column to Admin Table
+- [x] Add Condición column header to Admin paradas table
+- [x] Display status badge (Renovada/Pendiente) based on condition fields
+- [ ] Test that status updates when conditions change in Mantenimiento
