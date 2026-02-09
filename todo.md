@@ -519,3 +519,15 @@
 - [x] Make stat cards in Anuncios.tsx clickable to filter by estado
 - [x] Add active state styling to selected filter card (ring-2 border)
 - [ ] Test filtering works when clicking cards
+
+## Create Mantenimiento Section
+- [x] Create mantenimiento_historial table to track condition changes
+- [x] Create Mantenimiento.tsx page with paradas list
+- [x] Add editable condition checkboxes and display selector
+- [x] Add Mantenimiento route to App.tsx
+- [x] Add Mantenimiento link to sidebar navigation
+- [x] Implement backend to save condition changes to history
+- [x] Add maintenance report export (Excel/PDF)
+- [x] Add filter by condition status in Mantenimiento page
+- [ ] Test that changes sync to Admin page condition column
+- [ ] Fix non-functional checkboxes in Admin detail dialog

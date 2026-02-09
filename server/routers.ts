@@ -104,8 +104,72 @@ export const appRouter = router({
         condicionLimpia: z.number().optional(),
         displayPublicidad: z.enum(["Si", "No", "N/A"]).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const { paradaId, ...updates } = input;
+        
+        // Get current parada state before update
+        const { getDb } = await import("./db");
+        const { paradas, mantenimientoHistorial } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        
+        if (db) {
+          const [currentParada] = await db.select().from(paradas).where(eq(paradas.id, paradaId));
+          
+          // Track changes in history
+          const historyEntries = [];
+          
+          if (updates.condicionPintada !== undefined && currentParada.condicionPintada !== updates.condicionPintada) {
+            historyEntries.push({
+              paradaId,
+              userId: ctx.user.id,
+              userName: ctx.user.name || ctx.user.email || "Usuario",
+              campoModificado: "pintada",
+              valorAnterior: currentParada.condicionPintada ? "S\u00ed" : "No",
+              valorNuevo: updates.condicionPintada ? "S\u00ed" : "No",
+            });
+          }
+          
+          if (updates.condicionArreglada !== undefined && currentParada.condicionArreglada !== updates.condicionArreglada) {
+            historyEntries.push({
+              paradaId,
+              userId: ctx.user.id,
+              userName: ctx.user.name || ctx.user.email || "Usuario",
+              campoModificado: "arreglada",
+              valorAnterior: currentParada.condicionArreglada ? "S\u00ed" : "No",
+              valorNuevo: updates.condicionArreglada ? "S\u00ed" : "No",
+            });
+          }
+          
+          if (updates.condicionLimpia !== undefined && currentParada.condicionLimpia !== updates.condicionLimpia) {
+            historyEntries.push({
+              paradaId,
+              userId: ctx.user.id,
+              userName: ctx.user.name || ctx.user.email || "Usuario",
+              campoModificado: "limpia",
+              valorAnterior: currentParada.condicionLimpia ? "S\u00ed" : "No",
+              valorNuevo: updates.condicionLimpia ? "S\u00ed" : "No",
+            });
+          }
+          
+          if (updates.displayPublicidad && currentParada.displayPublicidad !== updates.displayPublicidad) {
+            historyEntries.push({
+              paradaId,
+              userId: ctx.user.id,
+              userName: ctx.user.name || ctx.user.email || "Usuario",
+              campoModificado: "display",
+              valorAnterior: currentParada.displayPublicidad,
+              valorNuevo: updates.displayPublicidad,
+            });
+          }
+          
+          // Insert history entries
+          if (historyEntries.length > 0) {
+            await db.insert(mantenimientoHistorial).values(historyEntries);
+          }
+        }
+        
+        // Update parada
         await paradasDb.updateParada(paradaId, updates);
         return { success: true };
       }),
@@ -447,6 +511,27 @@ export const appRouter = router({
       
       return activities;
     }),
+  }),
+
+  // Mantenimiento (Maintenance) router
+  mantenimiento: router({
+    getHistory: protectedProcedure
+      .input(z.object({ paradaId: z.number() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { mantenimientoHistorial } = await import("../drizzle/schema");
+        const { desc, eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+        
+        const history = await db
+          .select()
+          .from(mantenimientoHistorial)
+          .where(eq(mantenimientoHistorial.paradaId, input.paradaId))
+          .orderBy(desc(mantenimientoHistorial.createdAt))
+          .limit(50);
+        return history;
+      }),
   }),
 });
 
