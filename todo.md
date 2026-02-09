@@ -450,3 +450,11 @@
 - [x] Fixed z-index and positioning of hamburger button
 - [x] Changed button style to be more visible (green bg, white icons)
 - [x] Test hamburger menu on mobile viewport
+
+## Action Items Not Showing in Sidebar
+- [x] Debug why Exportar Excel, Imprimir Reporte, Edición Masiva not visible
+- [x] Check if handlers are being passed correctly to AdminSidebar
+- [x] Added "ACCIONES" section title above action items
+- [x] Improved styling with border, icons colored, and font-medium
+- [x] Verify action items are rendering in both desktop and mobile sidebar
+- [x] Test that action buttons work when clicked

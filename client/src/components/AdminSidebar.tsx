@@ -173,7 +173,12 @@ export default function AdminSidebar({
           {/* Action Items */}
           {user?.role === 'admin' && (
             <>
-              <div className="my-4 border-t border-gray-200" />
+              <div className="my-4 border-t-2 border-[#1a4d3c]" />
+              {!isCollapsed && (
+                <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </div>
+              )}
               {actionItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -181,13 +186,13 @@ export default function AdminSidebar({
                     key={item.label}
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start gap-3",
+                      "w-full justify-start gap-3 hover:bg-[#f5f5f5]",
                       isCollapsed && "justify-center px-2"
                     )}
                     onClick={item.onClick}
                   >
-                    <Icon size={20} className="flex-shrink-0" />
-                    {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
+                    <Icon size={20} className="flex-shrink-0 text-[#1a4d3c]" />
+                    {!isCollapsed && <span className="flex-1 text-left font-medium">{item.label}</span>}
                   </Button>
                 );
               })}
@@ -288,21 +293,24 @@ export default function AdminSidebar({
             {/* Action Items */}
             {user?.role === 'admin' && (
               <>
-                <div className="my-4 border-t border-gray-200" />
+                <div className="my-4 border-t-2 border-[#1a4d3c]" />
+                <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </div>
                 {actionItems.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Button
                       key={item.label}
                       variant="ghost"
-                      className="w-full justify-start gap-3"
+                      className="w-full justify-start gap-3 hover:bg-[#f5f5f5]"
                       onClick={() => {
                         item.onClick?.();
                         setIsMobileOpen(false);
                       }}
                     >
-                      <Icon size={20} className="flex-shrink-0" />
-                      <span className="flex-1 text-left">{item.label}</span>
+                      <Icon size={20} className="flex-shrink-0 text-[#1a4d3c]" />
+                      <span className="flex-1 text-left font-medium">{item.label}</span>
                     </Button>
                   );
                 })}
