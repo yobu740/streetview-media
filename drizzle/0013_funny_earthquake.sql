@@ -1,0 +1,1 @@
+DROP TABLE `mantenimiento_historial`;

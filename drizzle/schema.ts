@@ -112,3 +112,21 @@ export const activityLog = mysqlTable("activity_log", {
 
 export type ActivityLog = typeof activityLog.$inferSelect;
 export type InsertActivityLog = typeof activityLog.$inferInsert;
+
+/**
+ * Mantenimiento history table to track condition changes
+ */
+export const mantenimientoHistorial = mysqlTable("mantenimiento_historial", {
+  id: int("id").autoincrement().primaryKey(),
+  paradaId: int("parada_id").notNull(), // FK to paradas
+  userId: int("user_id"), // FK to users - who made the change
+  userName: varchar("user_name", { length: 255 }), // User name for display
+  campoModificado: varchar("campo_modificado", { length: 100 }).notNull(), // Field that was modified
+  valorAnterior: varchar("valor_anterior", { length: 255 }), // Previous value
+  valorNuevo: varchar("valor_nuevo", { length: 255 }), // New value
+  notas: text("notas"), // Optional notes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type MantenimientoHistorial = typeof mantenimientoHistorial.$inferSelect;
+export type InsertMantenimientoHistorial = typeof mantenimientoHistorial.$inferInsert;

@@ -213,7 +213,6 @@ export default function Admin() {
     },
   });
   
-  const updateParadaCondicion = trpc.paradas.updateCondicion.useMutation();
   
   const updateAnuncioStatus = trpc.anuncios.updateStatus.useMutation();
   
@@ -1121,7 +1120,6 @@ export default function Admin() {
                         <TableHead>Dirección</TableHead>
                         <TableHead>Tipo Parada</TableHead>
                         <TableHead>Estado</TableHead>
-                        <TableHead>Condición</TableHead>
                         <TableHead>Anuncio Actual</TableHead>
                         <TableHead className="print:hidden">Acciones</TableHead>
                       </TableRow>
@@ -1159,17 +1157,7 @@ export default function Admin() {
                                 {status}
                               </Badge>
                             </TableCell>
-                            <TableCell>
-                              <Badge variant={
-                                parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia
-                                  ? "default"
-                                  : "secondary"
-                              }>
-                                {parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia
-                                  ? "Renovada"
-                                  : "Pendiente de renovación"}
-                              </Badge>
-                            </TableCell>
+
                             <TableCell>
                               {anuncio ? (
                                 <div className="text-sm">
@@ -1304,127 +1292,7 @@ export default function Admin() {
                                       </div>
                                       
                                       {/* Condition Section */}
-                                      <div className="border-t pt-4">
-                                        <h4 className="font-semibold mb-4 text-[#1a4d3c]">Condición de la Parada</h4>
-                                        <div className="space-y-3">
-                                          <div className="flex items-center space-x-2">
-                                            <input
-                                              type="checkbox"
-                                              id={`pintada-${parada.id}`}
-                                              checked={!!(parada as any).condicionPintada}
-                                              onChange={(e) => {
-                                                updateParadaCondicion.mutate(
-                                                  {
-                                                    paradaId: parada.id,
-                                                    condicionPintada: e.target.checked ? 1 : 0,
-                                                  },
-                                                  {
-                                                    onSuccess: () => {
-                                                      toast.success('Condición actualizada');
-                                                      refetchParadas();
-                                                    },
-                                                    onError: () => {
-                                                      toast.error('Error al actualizar');
-                                                    },
-                                                  }
-                                                );
-                                              }}
-                                              className="h-4 w-4 rounded border-gray-300 text-[#1a4d3c] focus:ring-[#1a4d3c]"
-                                            />
-                                            <Label htmlFor={`pintada-${parada.id}`} className="cursor-pointer">
-                                              Pintada
-                                            </Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <input
-                                              type="checkbox"
-                                              id={`arreglada-${parada.id}`}
-                                              checked={!!(parada as any).condicionArreglada}
-                                              onChange={(e) => {
-                                                updateParadaCondicion.mutate(
-                                                  {
-                                                    paradaId: parada.id,
-                                                    condicionArreglada: e.target.checked ? 1 : 0,
-                                                  },
-                                                  {
-                                                    onSuccess: () => {
-                                                      toast.success('Condición actualizada');
-                                                      refetchParadas();
-                                                    },
-                                                    onError: () => {
-                                                      toast.error('Error al actualizar');
-                                                    },
-                                                  }
-                                                );
-                                              }}
-                                              className="h-4 w-4 rounded border-gray-300 text-[#1a4d3c] focus:ring-[#1a4d3c]"
-                                            />
-                                            <Label htmlFor={`arreglada-${parada.id}`} className="cursor-pointer">
-                                              Arreglada
-                                            </Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <input
-                                              type="checkbox"
-                                              id={`limpia-${parada.id}`}
-                                              checked={!!(parada as any).condicionLimpia}
-                                              onChange={(e) => {
-                                                updateParadaCondicion.mutate(
-                                                  {
-                                                    paradaId: parada.id,
-                                                    condicionLimpia: e.target.checked ? 1 : 0,
-                                                  },
-                                                  {
-                                                    onSuccess: () => {
-                                                      toast.success('Condición actualizada');
-                                                      refetchParadas();
-                                                    },
-                                                    onError: () => {
-                                                      toast.error('Error al actualizar');
-                                                    },
-                                                  }
-                                                );
-                                              }}
-                                              className="h-4 w-4 rounded border-gray-300 text-[#1a4d3c] focus:ring-[#1a4d3c]"
-                                            />
-                                            <Label htmlFor={`limpia-${parada.id}`} className="cursor-pointer">
-                                              Limpia
-                                            </Label>
-                                          </div>
-                                          <div className="pt-2">
-                                            <Label className="text-gray-500 mb-2 block">Display de Publicidad</Label>
-                                            <Select
-                                              value={(parada as any).displayPublicidad || "N/A"}
-                                              onValueChange={(value) => {
-                                                updateParadaCondicion.mutate(
-                                                  {
-                                                    paradaId: parada.id,
-                                                    displayPublicidad: value as "Si" | "No" | "N/A",
-                                                  },
-                                                  {
-                                                    onSuccess: () => {
-                                                      toast.success('Display actualizado');
-                                                      refetchParadas();
-                                                    },
-                                                    onError: () => {
-                                                      toast.error('Error al actualizar');
-                                                    },
-                                                  }
-                                                );
-                                              }}
-                                            >
-                                              <SelectTrigger className="w-[180px]">
-                                                <SelectValue />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                <SelectItem value="Si">Si</SelectItem>
-                                                <SelectItem value="No">No</SelectItem>
-                                                <SelectItem value="N/A">N/A</SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                          </div>
-                                        </div>
-                                      </div>
+
                                       {anuncio && (
                                         <div className="border-t pt-4">
                                           <h4 className="font-semibold mb-2">Anuncio Actual</h4>

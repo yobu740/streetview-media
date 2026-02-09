@@ -104,8 +104,81 @@ export const appRouter = router({
         condicionLimpia: z.number().optional(),
         displayPublicidad: z.enum(["Si", "No", "N/A"]).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { paradaId, ...updates } = input;
+        
+        // Get current parada state before update
+        const { getDb } = await import("./db");
+        const { paradas, mantenimientoHistorial } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [currentParada] = await db
+          .select()
+          .from(paradas)
+          .where(eq(paradas.id, paradaId))
+          .limit(1);
+        
+        if (!currentParada) throw new Error("Parada not found");
+        
+        // Track changes in history
+        const historyEntries = [];
+        
+        if (updates.condicionPintada !== undefined && updates.condicionPintada !== currentParada.condicionPintada) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "Pintada",
+            valorAnterior: currentParada.condicionPintada ? "Sí" : "No",
+            valorNuevo: updates.condicionPintada ? "Sí" : "No",
+            notas: null,
+          });
+        }
+        
+        if (updates.condicionArreglada !== undefined && updates.condicionArreglada !== currentParada.condicionArreglada) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "Arreglada",
+            valorAnterior: currentParada.condicionArreglada ? "Sí" : "No",
+            valorNuevo: updates.condicionArreglada ? "Sí" : "No",
+            notas: null,
+          });
+        }
+        
+        if (updates.condicionLimpia !== undefined && updates.condicionLimpia !== currentParada.condicionLimpia) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "Limpia",
+            valorAnterior: currentParada.condicionLimpia ? "Sí" : "No",
+            valorNuevo: updates.condicionLimpia ? "Sí" : "No",
+            notas: null,
+          });
+        }
+        
+        if (updates.displayPublicidad !== undefined && updates.displayPublicidad !== currentParada.displayPublicidad) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "Display Publicidad",
+            valorAnterior: currentParada.displayPublicidad,
+            valorNuevo: updates.displayPublicidad,
+            notas: null,
+          });
+        }
+        
+        // Insert history entries
+        if (historyEntries.length > 0) {
+          await db.insert(mantenimientoHistorial).values(historyEntries);
+        }
+        
+        // Update parada
         await paradasDb.updateParada(paradaId, updates);
         return { success: true };
       }),
@@ -447,6 +520,27 @@ export const appRouter = router({
       
       return activities;
     }),
+  }),
+
+  // Mantenimiento history router
+  mantenimiento: router({    getHistory: publicProcedure
+      .input(z.object({ paradaId: z.number() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { mantenimientoHistorial } = await import("../drizzle/schema");
+        const { desc, eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+        
+        const history = await db
+          .select()
+          .from(mantenimientoHistorial)
+          .where(eq(mantenimientoHistorial.paradaId, input.paradaId))
+          .orderBy(desc(mantenimientoHistorial.createdAt))
+          .limit(50);
+        
+        return history;
+      }),
   }),
 });
 

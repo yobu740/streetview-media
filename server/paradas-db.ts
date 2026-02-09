@@ -67,6 +67,11 @@ export async function getAllParadas() {
         producto: parada.producto,
         cliente: parada.cliente,
         activa: parada.activa,
+        // Condition fields
+        condicionPintada: parada.condicionPintada,
+        condicionArreglada: parada.condicionArreglada,
+        condicionLimpia: parada.condicionLimpia,
+        displayPublicidad: parada.displayPublicidad,
         createdAt: parada.createdAt,
         updatedAt: parada.updatedAt,
         // Current anuncio fields (null if no anuncio)
