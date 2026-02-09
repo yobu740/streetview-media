@@ -371,3 +371,8 @@
 
 ## UI Cleanup
 - [x] Remove version tag [v2.1] from Admin panel header
+
+## Reservation Modal Search
+- [x] Add search field for parada ID in reservation modal
+- [x] Filter available paradas by search term (cobertizo ID)
+- [x] Test search functionality works correctly

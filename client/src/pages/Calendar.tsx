@@ -29,6 +29,7 @@ export default function Calendar() {
     selectedParadas: [] as number[],
     selectedRutas: [] as string[],
   });
+  const [paradaSearchTerm, setParadaSearchTerm] = useState("");
   
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
@@ -118,7 +119,20 @@ export default function Calendar() {
         return !(fin < anuncioInicio || inicio > anuncioFin);
       });
       
-      return !hasConflict;
+      // Filter by search term if provided
+      const matchesSearch = !paradaSearchTerm || (() => {
+        const searchLower = paradaSearchTerm.toLowerCase().trim();
+        // Support comma-separated IDs
+        if (searchLower.includes(',')) {
+          const ids = searchLower.split(',').map(id => id.trim());
+          return ids.some(id => parada.cobertizoId.toLowerCase().includes(id));
+        }
+        // Single ID search
+        return parada.cobertizoId.toLowerCase().includes(searchLower) ||
+               parada.localizacion.toLowerCase().includes(searchLower);
+      })();
+      
+      return !hasConflict && matchesSearch;
     });
   };
   
@@ -510,6 +524,15 @@ export default function Calendar() {
                   </div>
                 ) : (
                   <>
+                    {/* Search input for parada ID */}
+                    <div className="mt-2 mb-3">
+                      <Input
+                        placeholder="Buscar por ID de parada (ej: 123, 456, 789)"
+                        value={paradaSearchTerm}
+                        onChange={(e) => setParadaSearchTerm(e.target.value)}
+                        className="w-full"
+                      />
+                    </div>
                     <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
                       {getAvailableParadas().length === 0 ? (
                         <p className="text-sm text-gray-500">No hay paradas disponibles para las fechas seleccionadas.</p>
@@ -588,6 +611,15 @@ export default function Calendar() {
                     {reservaForm.selectedRutas.length > 0 && (
                       <div className="mt-4">
                         <Label>Seleccionar Paradas Disponibles en Ruta {reservaForm.selectedRutas[0]}</Label>
+                        {/* Search input for parada ID */}
+                        <div className="mt-2 mb-3">
+                          <Input
+                            placeholder="Buscar por ID de parada (ej: 123, 456, 789)"
+                            value={paradaSearchTerm}
+                            onChange={(e) => setParadaSearchTerm(e.target.value)}
+                            className="w-full"
+                          />
+                        </div>
                         <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
                           {(() => {
                             const availableInRoute = getAvailableParadas().filter(
