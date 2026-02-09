@@ -376,3 +376,8 @@
 - [x] Add search field for parada ID in reservation modal
 - [x] Filter available paradas by search term (cobertizo ID)
 - [x] Test search functionality works correctly
+
+## Reservation Modal - Show Orientation
+- [x] Display orientation (I/O/P) next to parada ID in reservation modal
+- [x] Show in both "Paradas Específicas" and "Por Rutas" modes
+- [x] Test that orientation is visible and clear

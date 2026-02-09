@@ -560,7 +560,9 @@ export default function Calendar() {
                         htmlFor={`parada-${parada.id}`}
                         className="text-sm cursor-pointer flex-1"
                       >
-                        <span className="font-medium">{parada.cobertizoId}</span> - {parada.localizacion}
+                        <span className="font-medium">{parada.cobertizoId}</span>
+                        <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
+                        {" - "}{parada.localizacion}
                         {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
                       </label>
                     </div>
@@ -653,7 +655,9 @@ export default function Calendar() {
                                   htmlFor={`parada-ruta-${parada.id}`}
                                   className="text-sm cursor-pointer flex-1"
                                 >
-                                  <span className="font-medium">{parada.cobertizoId}</span> - {parada.localizacion}
+                                  <span className="font-medium">{parada.cobertizoId}</span>
+                                  <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
+                                  {" - "}{parada.localizacion}
                                 </label>
                               </div>
                             ));
