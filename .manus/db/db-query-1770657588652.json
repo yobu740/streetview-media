@@ -1,0 +1,9 @@
+{
+  "query": "SELECT id, parada_id, producto, cliente, fecha_inicio, fecha_fin, estado, approval_status \nFROM anuncios \nWHERE producto LIKE '%OPIOIDES%' \nORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, parada_id, producto, cliente, fecha_inicio, fecha_fin, estado, approval_status \nFROM anuncios \nWHERE producto LIKE '%OPIOIDES%' \nORDER BY id;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 356
+}

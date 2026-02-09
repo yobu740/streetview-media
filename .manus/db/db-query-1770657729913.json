@@ -1,0 +1,738 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, producto, cliente \nFROM paradas \nWHERE producto LIKE '%OPIOIDES%' \nORDER BY cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, producto, cliente \nFROM paradas \nWHERE producto LIKE '%OPIOIDES%' \nORDER BY cobertizo_id;",
+  "rows": [
+    {
+      "id": "91541",
+      "cobertizo_id": "003",
+      "localizacion": "AVE. MAYAGUEZ",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91151",
+      "cobertizo_id": "008",
+      "localizacion": "AVE. BARBOSA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91742",
+      "cobertizo_id": "012",
+      "localizacion": "AVE. QUISQUELLA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91545",
+      "cobertizo_id": "013",
+      "localizacion": "AVE. MAYAGUEZ",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91523",
+      "cobertizo_id": "021",
+      "localizacion": "AVE. GLASGOW",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91527",
+      "cobertizo_id": "023",
+      "localizacion": "AVE. GLASGOW",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91269",
+      "cobertizo_id": "025",
+      "localizacion": "AVE. CHARDON",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92071",
+      "cobertizo_id": "031A",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91275",
+      "cobertizo_id": "034",
+      "localizacion": "AVE. CHARDON",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91343",
+      "cobertizo_id": "039A",
+      "localizacion": "AVE. DE DIEGO SANTURCE",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91348",
+      "cobertizo_id": "040A",
+      "localizacion": "AVE. DE DIEGO SANTURCE",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92078",
+      "cobertizo_id": "046B",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91297",
+      "cobertizo_id": "048",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91299",
+      "cobertizo_id": "050",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91303",
+      "cobertizo_id": "055",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91329",
+      "cobertizo_id": "057",
+      "localizacion": "AVE. DE DIEGO RIO PIEDRAS",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91365",
+      "cobertizo_id": "059",
+      "localizacion": "AVE. DOMENECH",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91367",
+      "cobertizo_id": "060",
+      "localizacion": "AVE. DOMENECH",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91396",
+      "cobertizo_id": "065",
+      "localizacion": "AVE. FERNANDEZ JUNCOS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91437",
+      "cobertizo_id": "066",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91397",
+      "cobertizo_id": "070",
+      "localizacion": "AVE. FERNANDEZ JUNCOS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91464",
+      "cobertizo_id": "079B",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91469",
+      "cobertizo_id": "082A",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91475",
+      "cobertizo_id": "091",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91481",
+      "cobertizo_id": "094A",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91492",
+      "cobertizo_id": "096",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92013",
+      "cobertizo_id": "099",
+      "localizacion": "AVE. ROBERTO H. TODD",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91580",
+      "cobertizo_id": "123",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91631",
+      "cobertizo_id": "135A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91643",
+      "cobertizo_id": "147",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91753",
+      "cobertizo_id": "163",
+      "localizacion": "CARRETERA #1",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91824",
+      "cobertizo_id": "175",
+      "localizacion": "CARRETERA #176",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91941",
+      "cobertizo_id": "182",
+      "localizacion": "AVE. SAN PATRICIO",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91943",
+      "cobertizo_id": "184",
+      "localizacion": "AVE. SAN PATRICIO",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91965",
+      "cobertizo_id": "186",
+      "localizacion": "AVE. 65 DE INFANTERÍA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91969",
+      "cobertizo_id": "188",
+      "localizacion": "AVE. 65 DE INFANTERÍA",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91439",
+      "cobertizo_id": "203",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91307",
+      "cobertizo_id": "208",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91800",
+      "cobertizo_id": "218",
+      "localizacion": "CARRETERA #21",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91553",
+      "cobertizo_id": "222",
+      "localizacion": "AVE. AMERICO MIRANDA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91555",
+      "cobertizo_id": "223",
+      "localizacion": "AVE. AMERICO MIRANDA",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91212",
+      "cobertizo_id": "235",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91157",
+      "cobertizo_id": "239",
+      "localizacion": "AVE. BARBOSA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91335",
+      "cobertizo_id": "245",
+      "localizacion": "AVE. DE DIEGO RIO PIEDRAS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91074",
+      "cobertizo_id": "257",
+      "localizacion": "AVE. ASHFORD",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91584",
+      "cobertizo_id": "305",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91656",
+      "cobertizo_id": "331B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91983",
+      "cobertizo_id": "341A",
+      "localizacion": "AVE. 65 DE INFANTERÍA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91762",
+      "cobertizo_id": "342A ",
+      "localizacion": "CARRETERA #1",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91267",
+      "cobertizo_id": "360",
+      "localizacion": "AVE. ESCORIAL",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92034",
+      "cobertizo_id": "364",
+      "localizacion": "CALLE LOÍZA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91665",
+      "cobertizo_id": "372",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91315",
+      "cobertizo_id": "380",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91769",
+      "cobertizo_id": "386B",
+      "localizacion": "CARRETERA #1",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91279",
+      "cobertizo_id": "417A",
+      "localizacion": "AVE. CHARDON",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91804",
+      "cobertizo_id": "423",
+      "localizacion": "CARRETERA #21",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91865",
+      "cobertizo_id": "425B",
+      "localizacion": "CARRETERA #177",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91447",
+      "cobertizo_id": "430",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91451",
+      "cobertizo_id": "436",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92039",
+      "cobertizo_id": "437B",
+      "localizacion": "CALLE LOÍZA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92085",
+      "cobertizo_id": "441",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91408",
+      "cobertizo_id": "446",
+      "localizacion": "AVE. FERNANDEZ JUNCOS",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91874",
+      "cobertizo_id": "460",
+      "localizacion": "CARRETERA #177",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91359",
+      "cobertizo_id": "461A",
+      "localizacion": "AVE. DE DIEGO SANTURCE",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92020",
+      "cobertizo_id": "465B",
+      "localizacion": "AVE. ROBERTO H. TODD",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91806",
+      "cobertizo_id": "475",
+      "localizacion": "CARRETERA #21",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91604",
+      "cobertizo_id": "481",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91187",
+      "cobertizo_id": "489",
+      "localizacion": "AVE. HOSTOS",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91220",
+      "cobertizo_id": "498",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91386",
+      "cobertizo_id": "499",
+      "localizacion": "AVE. DOMENECH",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92089",
+      "cobertizo_id": "504",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91681",
+      "cobertizo_id": "507A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91836",
+      "cobertizo_id": "508",
+      "localizacion": "CARRETERA #176",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92096",
+      "cobertizo_id": "517",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91222",
+      "cobertizo_id": "520",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91882",
+      "cobertizo_id": "526",
+      "localizacion": "CARRETERA #177",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91911",
+      "cobertizo_id": "529",
+      "localizacion": "LAS CUMBRES",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91224",
+      "cobertizo_id": "541",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91167",
+      "cobertizo_id": "547",
+      "localizacion": "AVE. BARBOSA",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91171",
+      "cobertizo_id": "550",
+      "localizacion": "AVE. BARBOSA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92053",
+      "cobertizo_id": "570",
+      "localizacion": "CALLE LOÍZA",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91414",
+      "cobertizo_id": "578",
+      "localizacion": "AVE. FERNANDEZ JUNCOS",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91319",
+      "cobertizo_id": "583",
+      "localizacion": "AVE. DE DIEGO PUERTO NUEVO",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91961",
+      "cobertizo_id": "598",
+      "localizacion": "AVE. SAN PATRICIO",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91232",
+      "cobertizo_id": "601A",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91509",
+      "cobertizo_id": "605",
+      "localizacion": "AVE. FD ROOSEVELT",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92027",
+      "cobertizo_id": "610",
+      "localizacion": "AVE. ROBERTO H. TODD",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91780",
+      "cobertizo_id": "614",
+      "localizacion": "CARRETERA #1",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91098",
+      "cobertizo_id": "620",
+      "localizacion": "AVE. ASHFORD",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91458",
+      "cobertizo_id": "627B",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91919",
+      "cobertizo_id": "629",
+      "localizacion": "LAS CUMBRES",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91419",
+      "cobertizo_id": "633",
+      "localizacion": "AVE. FERNANDEZ JUNCOS",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91697",
+      "cobertizo_id": "634",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91391",
+      "cobertizo_id": "653",
+      "localizacion": "AVE. DOMENECH",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91141",
+      "cobertizo_id": "675",
+      "localizacion": "AVE. ASHFORD",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91714",
+      "cobertizo_id": "681",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91247",
+      "cobertizo_id": "683",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91253",
+      "cobertizo_id": "686",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "92102",
+      "cobertizo_id": "704",
+      "localizacion": "MISCELÁNEOS",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91259",
+      "cobertizo_id": "707",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "producto": "OPIOIDES ESCONDER",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91716",
+      "cobertizo_id": "711",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91923",
+      "cobertizo_id": "735",
+      "localizacion": "LAS CUMBRES",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91184",
+      "cobertizo_id": "752A",
+      "localizacion": "AVE. BARBOSA",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    },
+    {
+      "id": "91746",
+      "cobertizo_id": "CE001",
+      "localizacion": "CENTRO MÉDICO",
+      "producto": "OPIOIDES PASTILLA",
+      "cliente": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tproducto\tcliente\n91541\t003\tAVE. MAYAGUEZ\tOPIOIDES DIJERON\tNULL\n91151\t008\tAVE. BARBOSA\tOPIOIDES ESCONDER\tNULL\n91742\t012\tAVE. QUISQUELLA\tOPIOIDES PASTILLA\tNULL\n91545\t013\tAVE. MAYAGUEZ\tOPIOIDES ESCONDER\tNULL\n91523\t021\tAVE. GLASGOW\tOPIOIDES ESCONDER\tNULL\n91527\t023\tAVE. GLASGOW\tOPIOIDES PASTILLA\tNULL\n91269\t025\tAVE. CHARDON\tOPIOIDES ESCONDER\tNULL\n92071\t031A\tMISCELÁNEOS\tOPIOIDES PASTILLA\tNULL\n91275\t034\tAVE. CHARDON\tOPIOIDES PASTILLA\tNULL\n91343\t039A\tAVE. DE DIEGO SANTURCE\tOPIOIDES PASTILLA\tNULL\n91348\t040A\tAVE. DE DIEGO SANTURCE\tOPIOIDES ESCONDER\tNULL\n92078\t046B\tMISCELÁNEOS\tOPIOIDES ESCONDER\tNULL\n91297\t048\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES ESCONDER\tNULL\n91299\t050\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES DIJERON\tNULL\n91303\t055\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES ESCONDER\tNULL\n91329\t057\tAVE. DE DIEGO RIO PIEDRAS\tOPIOIDES DIJERON\tNULL\n91365\t059\tAVE. DOMENECH\tOPIOIDES DIJERON\tNULL\n91367\t060\tAVE. DOMENECH\tOPIOIDES ESCONDER\tNULL\n91396\t065\tAVE. FERNANDEZ JUNCOS\tOPIOIDES PASTILLA\tNULL\n91437\t066\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\tOPIOIDES ESCONDER\tNULL\n91397\t070\tAVE. FERNANDEZ JUNCOS\tOPIOIDES PASTILLA\tNULL\n91464\t079B\tAVE. FD ROOSEVELT\tOPIOIDES DIJERON\tNULL\n91469\t082A\tAVE. FD ROOSEVELT\tOPIOIDES DIJERON\tNULL\n91475\t091\tAVE. FD ROOSEVELT\tOPIOIDES DIJERON\tNULL\n91481\t094A\tAVE. FD ROOSEVELT\tOPIOIDES ESCONDER\tNULL\n91492\t096\tAVE. FD ROOSEVELT\tOPIOIDES PASTILLA\tNULL\n92013\t099\tAVE. ROBERTO H. TODD\tOPIOIDES DIJERON\tNULL\n91580\t123\tAVE. MUÑOZ RIVERA HATO REY \tOPIOIDES DIJERON\tNULL\n91631\t135A \tAVE. PONCE DE LEÓN\tOPIOIDES DIJERON\tNULL\n91643\t147\tAVE. PONCE DE LEÓN\tOPIOIDES ESCONDER\tNULL\n91753\t163\tCARRETERA #1\tOPIOIDES PASTILLA\tNULL\n91824\t175\tCARRETERA #176\tOPIOIDES ESCONDER\tNULL\n91941\t182\tAVE. SAN PATRICIO\tOPIOIDES PASTILLA\tNULL\n91943\t184\tAVE. SAN PATRICIO\tOPIOIDES DIJERON\tNULL\n91965\t186\tAVE. 65 DE INFANTERÍA\tOPIOIDES PASTILLA\tNULL\n91969\t188\tAVE. 65 DE INFANTERÍA\tOPIOIDES DIJERON\tNULL\n91439\t203\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\tOPIOIDES ESCONDER\tNULL\n91307\t208\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES PASTILLA\tNULL\n91800\t218\tCARRETERA #21\tOPIOIDES ESCONDER\tNULL\n91553\t222\tAVE. AMERICO MIRANDA\tOPIOIDES PASTILLA\tNULL\n91555\t223\tAVE. AMERICO MIRANDA\tOPIOIDES DIJERON\tNULL\n91212\t235\tAVE. PIÑERO / CENTRAL\tOPIOIDES DIJERON\tNULL\n91157\t239\tAVE. BARBOSA\tOPIOIDES PASTILLA\tNULL\n91335\t245\tAVE. DE DIEGO RIO PIEDRAS\tOPIOIDES PASTILLA\tNULL\n91074\t257\tAVE. ASHFORD\tOPIOIDES DIJERON\tNULL\n91584\t305\tAVE. MUÑOZ RIVERA HATO REY \tOPIOIDES ESCONDER\tNULL\n91656\t331B\tAVE. PONCE DE LEÓN\tOPIOIDES DIJERON\tNULL\n91983\t341A\tAVE. 65 DE INFANTERÍA\tOPIOIDES ESCONDER\tNULL\n91762\t342A \tCARRETERA #1\tOPIOIDES DIJERON\tNULL\n91267\t360\tAVE. ESCORIAL\tOPIOIDES DIJERON\tNULL\n92034\t364\tCALLE LOÍZA\tOPIOIDES ESCONDER\tNULL\n91665\t372\tAVE. PONCE DE LEÓN\tOPIOIDES PASTILLA\tNULL\n91315\t380\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES DIJERON\tNULL\n91769\t386B\tCARRETERA #1\tOPIOIDES ESCONDER\tNULL\n91279\t417A\tAVE. CHARDON\tOPIOIDES DIJERON\tNULL\n91804\t423\tCARRETERA #21\tOPIOIDES PASTILLA\tNULL\n91865\t425B\tCARRETERA #177\tOPIOIDES DIJERON\tNULL\n91447\t430\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\tOPIOIDES DIJERON\tNULL\n91451\t436\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\tOPIOIDES PASTILLA\tNULL\n92039\t437B\tCALLE LOÍZA\tOPIOIDES PASTILLA\tNULL\n92085\t441\tMISCELÁNEOS\tOPIOIDES PASTILLA\tNULL\n91408\t446\tAVE. FERNANDEZ JUNCOS\tOPIOIDES DIJERON\tNULL\n91874\t460\tCARRETERA #177\tOPIOIDES ESCONDER\tNULL\n91359\t461A\tAVE. DE DIEGO SANTURCE\tOPIOIDES DIJERON\tNULL\n92020\t465B\tAVE. ROBERTO H. TODD\tOPIOIDES ESCONDER\tNULL\n91806\t475\tCARRETERA #21\tOPIOIDES DIJERON\tNULL\n91604\t481\tAVE. MUÑOZ RIVERA HATO REY \tOPIOIDES PASTILLA\tNULL\n91187\t489\tAVE. HOSTOS\tOPIOIDES PASTILLA\tNULL\n91220\t498\tAVE. PIÑERO / CENTRAL\tOPIOIDES ESCONDER\tNULL\n91386\t499\tAVE. DOMENECH\tOPIOIDES PASTILLA\tNULL\n92089\t504\tMISCELÁNEOS\tOPIOIDES DIJERON\tNULL\n91681\t507A \tAVE. PONCE DE LEÓN\tOPIOIDES ESCONDER\tNULL\n91836\t508\tCARRETERA #176\tOPIOIDES PASTILLA\tNULL\n92096\t517\tMISCELÁNEOS\tOPIOIDES ESCONDER\tNULL\n91222\t520\tAVE. PIÑERO / CENTRAL\tOPIOIDES DIJERON\tNULL\n91882\t526\tCARRETERA #177\tOPIOIDES PASTILLA\tNULL\n91911\t529\tLAS CUMBRES\tOPIOIDES DIJERON\tNULL\n91224\t541\tAVE. PIÑERO / CENTRAL\tOPIOIDES ESCONDER\tNULL\n91167\t547\tAVE. BARBOSA\tOPIOIDES DIJERON\tNULL\n91171\t550\tAVE. BARBOSA\tOPIOIDES ESCONDER\tNULL\n92053\t570\tCALLE LOÍZA\tOPIOIDES DIJERON\tNULL\n91414\t578\tAVE. FERNANDEZ JUNCOS\tOPIOIDES ESCONDER\tNULL\n91319\t583\tAVE. DE DIEGO PUERTO NUEVO\tOPIOIDES PASTILLA\tNULL\n91961\t598\tAVE. SAN PATRICIO\tOPIOIDES ESCONDER\tNULL\n91232\t601A\tAVE. PIÑERO / CENTRAL\tOPIOIDES PASTILLA\tNULL\n91509\t605\tAVE. FD ROOSEVELT\tOPIOIDES ESCONDER\tNULL\n92027\t610\tAVE. ROBERTO H. TODD\tOPIOIDES PASTILLA\tNULL\n91780\t614\tCARRETERA #1\tOPIOIDES PASTILLA\tNULL\n91098\t620\tAVE. ASHFORD\tOPIOIDES PASTILLA\tNULL\n91458\t627B\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\tOPIOIDES ESCONDER\tNULL\n91919\t629\tLAS CUMBRES\tOPIOIDES ESCONDER\tNULL\n91419\t633\tAVE. FERNANDEZ JUNCOS\tOPIOIDES DIJERON\tNULL\n91697\t634\tAVE. PONCE DE LEÓN\tOPIOIDES PASTILLA\tNULL\n91391\t653\tAVE. DOMENECH\tOPIOIDES DIJERON\tNULL\n91141\t675\tAVE. ASHFORD\tOPIOIDES ESCONDER\tNULL\n91714\t681\tAVE. PONCE DE LEÓN\tOPIOIDES ESCONDER\tNULL\n91247\t683\tAVE. PIÑERO / CENTRAL\tOPIOIDES PASTILLA\tNULL\n91253\t686\tAVE. PIÑERO / CENTRAL\tOPIOIDES ESCONDER\tNULL\n92102\t704\tMISCELÁNEOS\tOPIOIDES DIJERON\tNULL\n91259\t707\tAVE. PIÑERO / CENTRAL\tOPIOIDES ESCONDER\tNULL\n91716\t711\tAVE. PONCE DE LEÓN\tOPIOIDES DIJERON\tNULL\n91923\t735\tLAS CUMBRES\tOPIOIDES DIJERON\tNULL\n91184\t752A\tAVE. BARBOSA\tOPIOIDES PASTILLA\tNULL\n91746\tCE001\tCENTRO MÉDICO\tOPIOIDES PASTILLA\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 347
+}

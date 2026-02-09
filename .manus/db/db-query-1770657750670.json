@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total, estado, approval_status \nFROM anuncios \nWHERE producto LIKE '%OPIOIDES%' \nGROUP BY estado, approval_status;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT COUNT(*) as total, estado, approval_status \nFROM anuncios \nWHERE producto LIKE '%OPIOIDES%' \nGROUP BY estado, approval_status;",
+  "rows": [
+    {
+      "total": "104",
+      "estado": "Activo",
+      "approval_status": "approved"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\testado\tapproval_status\n104\tActivo\tapproved\n",
+  "stderr": "",
+  "execution_time_ms": 367
+}

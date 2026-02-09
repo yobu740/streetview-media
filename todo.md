@@ -407,15 +407,20 @@
 - [x] Verify that only OPIOIDES paradas show as occupied
 
 ## Anuncios Management Section
-- [ ] Create new "Gestión de Anuncios" page/tab in admin panel
-- [ ] Display table with all anuncios showing: ID, Parada, Cliente, Producto, Fechas, Estado
-- [ ] Add filters: by cliente, producto, estado, fecha range
-- [ ] Implement edit dialog to modify anuncio details
-- [ ] Add backend update procedure for anuncios
-- [ ] Test editing anuncios and verify changes persist
+- [x] Complete Anuncios.tsx page with full table and filters
+- [x] Add backend update procedure for anuncios (trpc.anuncios.update)
+- [x] Add route to App.tsx for /anuncios page
+- [x] Add navigation link in Admin panel to Anuncios page
+- [x] Test editing anuncios and verify changes persist
 
 ## Auto-Update Expired Anuncios
 - [x] Update all expired anuncios (fecha_fin < today) to Finalizado status
 - [x] Modify backend to automatically check and update expired anuncios on query
 - [x] Verify expired anuncios don't show in "Anuncio Actual" column
 - [x] Test that paradas with expired anuncios show as Disponible
+
+## Fix OPIOIDES Anuncios Not Showing
+- [x] Verify OPIOIDES anuncios have correct fecha_fin (April 15, 2026)
+- [x] Check approval_status of OPIOIDES anuncios
+- [x] Verify OPIOIDES anuncios have estado = Activo
+- [x] Created 104 active OPIOIDES anuncios until April 15, 2026

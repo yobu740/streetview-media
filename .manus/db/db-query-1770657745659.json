@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO anuncios (parada_id, producto, cliente, tipo, fecha_inicio, fecha_fin, estado, approval_status, created_at, updated_at)\nSELECT \n  id,\n  producto,\n  COALESCE(cliente, 'Cliente OPIOIDES'),\n  'Fijo',\n  '2025-01-01 00:00:00',\n  '2026-04-15 23:59:59',\n  'Activo',\n  'approved',\n  NOW(),\n  NOW()\nFROM paradas \nWHERE producto LIKE '%OPIOIDES%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute INSERT INTO anuncios (parada_id, producto, cliente, tipo, fecha_inicio, fecha_fin, estado, approval_status, created_at, updated_at)\nSELECT \n  id,\n  producto,\n  COALESCE(cliente, 'Cliente OPIOIDES'),\n  'Fijo',\n  '2025-01-01 00:00:00',\n  '2026-04-15 23:59:59',\n  'Activo',\n  'approved',\n  NOW(),\n  NOW()\nFROM paradas \nWHERE producto LIKE '%OPIOIDES%';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 361
+}

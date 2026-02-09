@@ -174,17 +174,17 @@ export const appRouter = router({
     update: adminProcedure
       .input(z.object({
         id: z.number(),
-        data: z.object({
-          cliente: z.string().optional(),
-          tipo: z.enum(["Fijo", "Bonificación"]).optional(),
-          fechaInicio: z.date().optional(),
-          fechaFin: z.date().optional(),
-          estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
-          notas: z.string().optional(),
-        }),
+        producto: z.string().optional(),
+        cliente: z.string().optional(),
+        tipo: z.enum(["Fijo", "Bonificación"]).optional(),
+        fechaInicio: z.date().optional(),
+        fechaFin: z.date().optional(),
+        estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
+        notas: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        await paradasDb.updateAnuncio(input.id, input.data);
+        const { id, ...data } = input;
+        await paradasDb.updateAnuncio(id, data);
         return { success: true };
       }),
     

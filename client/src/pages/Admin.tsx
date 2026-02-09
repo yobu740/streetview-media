@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -652,6 +652,12 @@ export default function Admin() {
                 Métricas
               </Link>
             </Button>
+            <Button variant="outline" asChild>
+              <Link href="/anuncios">
+                <Megaphone className="h-4 w-4 mr-2" />
+                Anuncios
+              </Link>
+            </Button>
             <Button variant="outline" onClick={handleExportToExcel}>
               <FileSpreadsheet className="h-4 w-4 mr-2" />
               Exportar a Excel
@@ -717,6 +723,12 @@ export default function Admin() {
               <Link href="/metrics" onClick={() => setIsMobileMenuOpen(false)}>
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Métricas
+              </Link>
+            </Button>
+            <Button variant="outline" className="w-full justify-start" asChild>
+              <Link href="/anuncios" onClick={() => setIsMobileMenuOpen(false)}>
+                <Megaphone className="h-4 w-4 mr-2" />
+                Anuncios
               </Link>
             </Button>
             <Button 
