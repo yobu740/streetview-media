@@ -400,3 +400,8 @@
 ## Fix Producto Search - Partial Matching
 - [x] Update producto search to show results with partial matches (e.g., "OPI" shows "OPIOIDES")
 - [x] Test that search works with incomplete terms
+
+## Update Anuncio End Dates
+- [x] Update all OPIOIDES anuncios to end on April 15, 2026
+- [x] Update all other anuncios to end on January 31, 2026
+- [x] Verify that only OPIOIDES paradas show as occupied

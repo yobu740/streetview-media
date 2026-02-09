@@ -1,0 +1,170 @@
+{
+  "query": "SELECT id, producto, cliente, fecha_inicio, fecha_fin, estado \nFROM anuncios \nORDER BY fecha_fin DESC \nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, producto, cliente, fecha_inicio, fecha_fin, estado \nFROM anuncios \nORDER BY fecha_fin DESC \nLIMIT 20;",
+  "rows": [
+    {
+      "id": "30001",
+      "producto": "",
+      "cliente": "Corona Fest",
+      "fecha_inicio": "2026-02-11 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "60001",
+      "producto": "",
+      "cliente": "Test Client",
+      "fecha_inicio": "2026-03-01 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "90006",
+      "producto": "",
+      "cliente": "Test Cliente",
+      "fecha_inicio": "2026-03-01 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Finalizado"
+    },
+    {
+      "id": "90007",
+      "producto": "",
+      "cliente": "Pending Test",
+      "fecha_inicio": "2026-05-01 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "90008",
+      "producto": "",
+      "cliente": "Cancelled Test",
+      "fecha_inicio": "2026-06-01 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Inactivo"
+    },
+    {
+      "id": "120001",
+      "producto": "",
+      "cliente": "Pablo",
+      "fecha_inicio": "2026-02-06 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Finalizado"
+    },
+    {
+      "id": "150001",
+      "producto": "",
+      "cliente": "BPPR",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "150002",
+      "producto": "",
+      "cliente": "BPPR",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "150003",
+      "producto": "",
+      "cliente": "BPPR",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Finalizado"
+    },
+    {
+      "id": "150004",
+      "producto": "",
+      "cliente": "BPPR",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "150005",
+      "producto": "",
+      "cliente": "BPPR",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "150006",
+      "producto": "",
+      "cliente": "bbb",
+      "fecha_inicio": "2026-02-20 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Finalizado"
+    },
+    {
+      "id": "150007",
+      "producto": "",
+      "cliente": "bbb",
+      "fecha_inicio": "2026-02-20 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Disponible"
+    },
+    {
+      "id": "150008",
+      "producto": "",
+      "cliente": "bbb",
+      "fecha_inicio": "2026-02-20 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "180001",
+      "producto": "",
+      "cliente": "OPIOIDES DIJERON",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "180002",
+      "producto": "",
+      "cliente": "PLN",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "180003",
+      "producto": "",
+      "cliente": "PIRAÑA",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "180004",
+      "producto": "",
+      "cliente": "OPIOIDES PASTILLA",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "180005",
+      "producto": "",
+      "cliente": "CHENCHO SOLO",
+      "fecha_inicio": "2026-02-08 00:00:00",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Programado"
+    },
+    {
+      "id": "1",
+      "producto": "",
+      "cliente": "Test Cliente",
+      "fecha_inicio": "2026-02-04 18:42:47",
+      "fecha_fin": "2026-01-31 23:59:59",
+      "estado": "Activo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproducto\tcliente\tfecha_inicio\tfecha_fin\testado\n30001\t\tCorona Fest\t2026-02-11 00:00:00\t2026-01-31 23:59:59\tProgramado\n60001\t\tTest Client\t2026-03-01 00:00:00\t2026-01-31 23:59:59\tProgramado\n90006\t\tTest Cliente\t2026-03-01 00:00:00\t2026-01-31 23:59:59\tFinalizado\n90007\t\tPending Test\t2026-05-01 00:00:00\t2026-01-31 23:59:59\tProgramado\n90008\t\tCancelled Test\t2026-06-01 00:00:00\t2026-01-31 23:59:59\tInactivo\n120001\t\tPablo\t2026-02-06 00:00:00\t2026-01-31 23:59:59\tFinalizado\n150001\t\tBPPR\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n150002\t\tBPPR\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n150003\t\tBPPR\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tFinalizado\n150004\t\tBPPR\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n150005\t\tBPPR\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n150006\t\tbbb\t2026-02-20 00:00:00\t2026-01-31 23:59:59\tFinalizado\n150007\t\tbbb\t2026-02-20 00:00:00\t2026-01-31 23:59:59\tDisponible\n150008\t\tbbb\t2026-02-20 00:00:00\t2026-01-31 23:59:59\tProgramado\n180001\t\tOPIOIDES DIJERON\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n180002\t\tPLN\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n180003\t\tPIRAÑA\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n180004\t\tOPIOIDES PASTILLA\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n180005\t\tCHENCHO SOLO\t2026-02-08 00:00:00\t2026-01-31 23:59:59\tProgramado\n1\t\tTest Cliente\t2026-02-04 18:42:47\t2026-01-31 23:59:59\tActivo\n",
+  "stderr": "",
+  "execution_time_ms": 370
+}

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE anuncios \nSET fecha_fin = '2026-04-15 23:59:59' \nWHERE producto LIKE '%OPIOIDES%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE anuncios \nSET fecha_fin = '2026-04-15 23:59:59' \nWHERE producto LIKE '%OPIOIDES%';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 372
+}

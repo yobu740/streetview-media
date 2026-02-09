@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE anuncios \nSET fecha_fin = '2026-01-31 23:59:59' \nWHERE producto NOT LIKE '%OPIOIDES%' OR producto IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE anuncios \nSET fecha_fin = '2026-01-31 23:59:59' \nWHERE producto NOT LIKE '%OPIOIDES%' OR producto IS NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 402
+}
