@@ -405,3 +405,11 @@
 - [x] Update all OPIOIDES anuncios to end on April 15, 2026
 - [x] Update all other anuncios to end on January 31, 2026
 - [x] Verify that only OPIOIDES paradas show as occupied
+
+## Anuncios Management Section
+- [ ] Create new "Gestión de Anuncios" page/tab in admin panel
+- [ ] Display table with all anuncios showing: ID, Parada, Cliente, Producto, Fechas, Estado
+- [ ] Add filters: by cliente, producto, estado, fecha range
+- [ ] Implement edit dialog to modify anuncio details
+- [ ] Add backend update procedure for anuncios
+- [ ] Test editing anuncios and verify changes persist
