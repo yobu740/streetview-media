@@ -133,6 +133,7 @@ export const appRouter = router({
         producto: z.string(),
         cliente: z.string(),
         tipo: z.enum(["Fijo", "Bonificación"]),
+        costoPorUnidad: z.number().optional(),
         fechaInicio: z.date(),
         fechaFin: z.date(),
         estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
@@ -157,6 +158,7 @@ export const appRouter = router({
         
         const id = await paradasDb.createAnuncio({
           ...input,
+          costoPorUnidad: input.costoPorUnidad !== undefined ? input.costoPorUnidad.toString() : undefined,
           createdBy: ctx.user.id,
           approvalStatus: isAdmin ? "approved" : "pending",
           approvedBy: isAdmin ? ctx.user.id : undefined,
@@ -174,6 +176,7 @@ export const appRouter = router({
     update: adminProcedure
       .input(z.object({
         id: z.number(),
+        paradaId: z.number().optional(),
         producto: z.string().optional(),
         cliente: z.string().optional(),
         tipo: z.enum(["Fijo", "Bonificación"]).optional(),

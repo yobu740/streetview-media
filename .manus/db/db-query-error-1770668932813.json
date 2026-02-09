@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT \n  a.id as anuncio_id,\n  a.producto,\n  a.tipo as anuncio_tipo,\n  p.cobertizoId,\n  p.tipoFormato as parada_tipo\nFROM anuncios a\nJOIN paradas p ON a.parada_id = p.id\nWHERE a.producto LIKE '%OPIOIDES%'\nORDER BY p.cobertizoId\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT \n  a.id as anuncio_id,\n  a.producto,\n  a.tipo as anuncio_tipo,\n  p.cobertizoId,\n  p.tipoFormato as parada_tipo\nFROM anuncios a\nJOIN paradas p ON a.parada_id = p.id\nWHERE a.producto LIKE '%OPIOIDES%'\nORDER BY p.cobertizoId\nLIMIT 20;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'p.cobertizoId' in 'order clause'"
+  ]
+}

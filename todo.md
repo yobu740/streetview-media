@@ -468,3 +468,31 @@
 - [x] Display activities with relative timestamps (hace X min/hora)
 - [x] Add activity logging on Excel export and print report
 - [x] Test that activities are logged and displayed correctly
+
+## Fix OPIOIDES Anuncio Tipo Classification
+- [x] Query current tipo values for all OPIOIDES anuncios
+- [ ] Wait for user to provide original table with B classifications
+- [ ] Update anuncio tipo to "Bonificación" for paradas with B classification
+- [ ] Verify all OPIOIDES anuncios have correct tipo in gestor de anuncios
+
+## Add Report Generation to Anuncios Manager
+- [x] Add date range filter (fecha inicio/fin) to Anuncios page
+- [x] Add tipo filter (Fijo/Bonificación/Todos) to Anuncios page
+- [x] Add filter UI components to Anuncios page
+- [x] Fix imports (FileSpreadsheet, Printer icons)
+- [x] Implement handleExportExcel function (CSV export)
+- [x] Implement handlePrintReport function (PDF print)
+- [x] Include all fields in export: ID, Parada, Cliente, Producto, Tipo, Fechas, Estado
+- [ ] Test report generation with different filters
+
+## Add Costo Por Unidad to Reservations
+- [x] Add costo_por_unidad field to anuncios table schema
+- [x] Run database migration (pnpm db:push)
+- [x] Add costo_por_unidad input to reservation modal in Calendar.tsx
+- [x] Update backend create procedure to accept costo_por_unidad
+- [ ] Test that cost saves correctly
+
+## Add Parada Editing to Anuncios Manager
+- [x] Add parada selection dropdown to edit dialog in Anuncios.tsx
+- [x] Update backend update procedure to allow changing paradaId
+- [ ] Test moving an ad from one parada to another

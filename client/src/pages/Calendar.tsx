@@ -27,6 +27,7 @@ export default function Calendar() {
     fechaInicio: "",
     fechaFin: "",
     tipo: "Fijo" as "Fijo" | "Bonificación",
+    costoPorUnidad: "",
     selectionMode: "paradas" as "paradas" | "rutas",
     selectedParadas: [] as number[],
     selectedRutas: [] as string[],
@@ -519,6 +520,20 @@ export default function Calendar() {
               </Select>
             </div>
 
+            {/* Costo por Unidad */}
+            <div>
+              <Label htmlFor="costoPorUnidad">Costo por Unidad ($)</Label>
+              <Input
+                id="costoPorUnidad"
+                type="number"
+                step="0.01"
+                min="0"
+                value={reservaForm.costoPorUnidad}
+                onChange={(e) => setReservaForm({ ...reservaForm, costoPorUnidad: e.target.value })}
+                placeholder="Ej: 1500.00"
+              />
+            </div>
+
             {/* Selection Mode */}
             <div>
               <Label>Seleccionar por:</Label>
@@ -750,6 +765,7 @@ export default function Calendar() {
                       producto: reservaForm.producto,
                       cliente: reservaForm.cliente,
                       tipo: reservaForm.tipo,
+                      costoPorUnidad: reservaForm.costoPorUnidad ? parseFloat(reservaForm.costoPorUnidad) : undefined,
                       fechaInicio: new Date(reservaForm.fechaInicio),
                       fechaFin: new Date(reservaForm.fechaFin),
                       estado: "Programado",
@@ -777,6 +793,7 @@ export default function Calendar() {
                     fechaInicio: "",
                     fechaFin: "",
                     tipo: "Fijo",
+                    costoPorUnidad: "",
                     selectionMode: "paradas",
                     selectedParadas: [],
                     selectedRutas: [],

@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -59,6 +59,7 @@ export const anuncios = mysqlTable("anuncios", {
   producto: varchar("producto", { length: 255 }).notNull(), // Product/Ad name
   cliente: varchar("cliente", { length: 255 }).notNull(), // Client company name
   tipo: mysqlEnum("tipo", ["Fijo", "Bonificación"]).notNull(), // F/B from Excel
+  costoPorUnidad: decimal("costo_por_unidad", { precision: 10, scale: 2 }), // Cost per unit
   fechaInicio: timestamp("fecha_inicio").notNull(), // Start date
   fechaFin: timestamp("fecha_fin").notNull(), // End date
   estado: mysqlEnum("estado", ["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).default("Activo").notNull(),

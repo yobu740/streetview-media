@@ -1,0 +1,1 @@
+ALTER TABLE `anuncios` ADD `costo_por_unidad` decimal(10,2);

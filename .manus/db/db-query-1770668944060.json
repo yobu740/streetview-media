@@ -1,0 +1,220 @@
+{
+  "query": "\nSELECT \n  a.id as anuncio_id,\n  a.producto,\n  a.tipo as anuncio_tipo,\n  p.cobertizo_id,\n  p.tipo_formato as parada_tipo\nFROM anuncios a\nJOIN paradas p ON a.parada_id = p.id\nWHERE a.producto LIKE '%OPIOIDES%'\nORDER BY p.cobertizo_id\nLIMIT 30;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT \n  a.id as anuncio_id,\n  a.producto,\n  a.tipo as anuncio_tipo,\n  p.cobertizo_id,\n  p.tipo_formato as parada_tipo\nFROM anuncios a\nJOIN paradas p ON a.parada_id = p.id\nWHERE a.producto LIKE '%OPIOIDES%'\nORDER BY p.cobertizo_id\nLIMIT 30;\n",
+  "rows": [
+    {
+      "anuncio_id": "210056",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "003",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210005",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "008",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210071",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "012",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210057",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "013",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210054",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "021",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210055",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "023",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210020",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "025",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210100",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "031A",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210021",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "034",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210031",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "039A",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210032",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "040A",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210101",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "046B",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210023",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "048",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210024",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "050",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210025",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "055",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210029",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "057",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210034",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "059",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210035",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "060",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210038",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "065",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210043",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "066",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210039",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "070",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210048",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "079B",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210049",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "082A",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210050",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "091",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210051",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "094A",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210052",
+      "producto": "OPIOIDES PASTILLA",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "096",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210094",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "099",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210060",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "123",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210063",
+      "producto": "OPIOIDES DIJERON",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "135A ",
+      "parada_tipo": "Fija"
+    },
+    {
+      "anuncio_id": "210064",
+      "producto": "OPIOIDES ESCONDER",
+      "anuncio_tipo": "Fijo",
+      "cobertizo_id": "147",
+      "parada_tipo": "Fija"
+    }
+  ],
+  "messages": [],
+  "stdout": "anuncio_id\tproducto\tanuncio_tipo\tcobertizo_id\tparada_tipo\n210056\tOPIOIDES DIJERON\tFijo\t003\tFija\n210005\tOPIOIDES ESCONDER\tFijo\t008\tFija\n210071\tOPIOIDES PASTILLA\tFijo\t012\tFija\n210057\tOPIOIDES ESCONDER\tFijo\t013\tFija\n210054\tOPIOIDES ESCONDER\tFijo\t021\tFija\n210055\tOPIOIDES PASTILLA\tFijo\t023\tFija\n210020\tOPIOIDES ESCONDER\tFijo\t025\tFija\n210100\tOPIOIDES PASTILLA\tFijo\t031A\tFija\n210021\tOPIOIDES PASTILLA\tFijo\t034\tFija\n210031\tOPIOIDES PASTILLA\tFijo\t039A\tFija\n210032\tOPIOIDES ESCONDER\tFijo\t040A\tFija\n210101\tOPIOIDES ESCONDER\tFijo\t046B\tFija\n210023\tOPIOIDES ESCONDER\tFijo\t048\tFija\n210024\tOPIOIDES DIJERON\tFijo\t050\tFija\n210025\tOPIOIDES ESCONDER\tFijo\t055\tFija\n210029\tOPIOIDES DIJERON\tFijo\t057\tFija\n210034\tOPIOIDES DIJERON\tFijo\t059\tFija\n210035\tOPIOIDES ESCONDER\tFijo\t060\tFija\n210038\tOPIOIDES PASTILLA\tFijo\t065\tFija\n210043\tOPIOIDES ESCONDER\tFijo\t066\tFija\n210039\tOPIOIDES PASTILLA\tFijo\t070\tFija\n210048\tOPIOIDES DIJERON\tFijo\t079B\tFija\n210049\tOPIOIDES DIJERON\tFijo\t082A\tFija\n210050\tOPIOIDES DIJERON\tFijo\t091\tFija\n210051\tOPIOIDES ESCONDER\tFijo\t094A\tFija\n210052\tOPIOIDES PASTILLA\tFijo\t096\tFija\n210094\tOPIOIDES DIJERON\tFijo\t099\tFija\n210060\tOPIOIDES DIJERON\tFijo\t123\tFija\n210063\tOPIOIDES DIJERON\tFijo\t135A \tFija\n210064\tOPIOIDES ESCONDER\tFijo\t147\tFija\n",
+  "stderr": "",
+  "execution_time_ms": 368
+}

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 
@@ -41,9 +41,13 @@ export default function Anuncios() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterEstado, setFilterEstado] = useState<string>("all");
+  const [filterTipo, setFilterTipo] = useState<string>("all");
+  const [dateRangeStart, setDateRangeStart] = useState("");
+  const [dateRangeEnd, setDateRangeEnd] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnuncio, setSelectedAnuncio] = useState<any>(null);
   const [editForm, setEditForm] = useState({
+    paradaId: 0,
     producto: "",
     cliente: "",
     fechaInicio: "",
@@ -61,8 +65,13 @@ export default function Anuncios() {
       a.paradaId.toString().includes(searchTerm);
 
     const matchesEstado = filterEstado === "all" || a.estado === filterEstado;
+    const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
+    
+    const matchesDateRange = 
+      (!dateRangeStart || new Date(a.fechaInicio) >= new Date(dateRangeStart)) &&
+      (!dateRangeEnd || new Date(a.fechaFin) <= new Date(dateRangeEnd));
 
-    return matchesSearch && matchesEstado;
+    return matchesSearch && matchesEstado && matchesTipo && matchesDateRange;
   });
 
   const getParadaInfo = (paradaId: number) => {
@@ -75,6 +84,7 @@ export default function Anuncios() {
   const handleEdit = (anuncio: any) => {
     setSelectedAnuncio(anuncio);
     setEditForm({
+      paradaId: anuncio.paradaId,
       producto: anuncio.producto || "",
       cliente: anuncio.cliente || "",
       fechaInicio: new Date(anuncio.fechaInicio).toISOString().split("T")[0],
@@ -97,6 +107,7 @@ export default function Anuncios() {
     updateAnuncio.mutate(
       {
         id: selectedAnuncio.id,
+        paradaId: editForm.paradaId,
         producto: editForm.producto,
         cliente: editForm.cliente,
         fechaInicio: new Date(editForm.fechaInicio),
@@ -137,9 +148,114 @@ export default function Anuncios() {
   const clearFilters = () => {
     setSearchTerm("");
     setFilterEstado("all");
+    setFilterTipo("all");
+    setDateRangeStart("");
+    setDateRangeEnd("");
   };
 
-  const hasActiveFilters = searchTerm || filterEstado !== "all";
+  const hasActiveFilters = searchTerm || filterEstado !== "all" || filterTipo !== "all" || dateRangeStart || dateRangeEnd;
+
+  const handleExportExcel = () => {
+    if (!filteredAnuncios || filteredAnuncios.length === 0) {
+      toast.error("No hay anuncios para exportar");
+      return;
+    }
+
+    const headers = ["ID", "Parada", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado"];
+    const rows = filteredAnuncios.map((a) => [
+      a.id,
+      getParadaInfo(a.paradaId),
+      a.cliente,
+      a.producto,
+      a.tipo,
+      new Date(a.fechaInicio).toLocaleDateString(),
+      new Date(a.fechaFin).toLocaleDateString(),
+      a.estado,
+    ]);
+
+    let csv = headers.join(",") + "\n";
+    rows.forEach((row) => {
+      csv += row.map((cell) => `"${cell}"`).join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `anuncios_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+
+    toast.success("Anuncios exportados exitosamente");
+  };
+
+  const handlePrintReport = () => {
+    if (!filteredAnuncios || filteredAnuncios.length === 0) {
+      toast.error("No hay anuncios para imprimir");
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Reporte de Anuncios</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #1a4d3c; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #1a4d3c; color: white; }
+            tr:nth-child(even) { background-color: #f5f5f5; }
+            @media print { button { display: none; } }
+          </style>
+        </head>
+        <body>
+          <h1>Reporte de Anuncios</h1>
+          <p>Generado: ${new Date().toLocaleString()}</p>
+          <p>Total: ${filteredAnuncios.length} anuncios</p>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Parada</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredAnuncios
+                .map(
+                  (a) => `
+                <tr>
+                  <td>${a.id}</td>
+                  <td>${getParadaInfo(a.paradaId)}</td>
+                  <td>${a.cliente}</td>
+                  <td>${a.producto}</td>
+                  <td>${a.tipo}</td>
+                  <td>${new Date(a.fechaInicio).toLocaleDateString()}</td>
+                  <td>${new Date(a.fechaFin).toLocaleDateString()}</td>
+                  <td>${a.estado}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+          <button onclick="window.print()">Imprimir</button>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    toast.success("Reporte generado");
+  };
 
   if (isLoading) {
     return (
@@ -168,7 +284,7 @@ export default function Anuncios() {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
             <div>
               <Label>Buscar</Label>
               <div className="relative">
@@ -199,18 +315,60 @@ export default function Anuncios() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-end">
-              {hasActiveFilters && (
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="w-full"
-                >
-                  <X size={16} className="mr-2" />
-                  Limpiar Filtros
-                </Button>
-              )}
+            <div>
+              <Label>Tipo</Label>
+              <Select value={filterTipo} onValueChange={setFilterTipo}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="Fijo">Fijo</SelectItem>
+                  <SelectItem value="Bonificación">Bonificación</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            <div>
+              <Label>Fecha Inicio (desde)</Label>
+              <Input
+                type="date"
+                value={dateRangeStart}
+                onChange={(e) => setDateRangeStart(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Fecha Fin (hasta)</Label>
+              <Input
+                type="date"
+                value={dateRangeEnd}
+                onChange={(e) => setDateRangeEnd(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+              >
+                <X size={16} className="mr-2" />
+                Limpiar Filtros
+              </Button>
+            )}
+            <Button
+              onClick={handleExportExcel}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <FileSpreadsheet size={16} className="mr-2" />
+              Exportar Excel
+            </Button>
+            <Button
+              onClick={handlePrintReport}
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+            >
+              <Printer size={16} className="mr-2" />
+              Imprimir Reporte
+            </Button>
           </div>
         </div>
 
@@ -319,6 +477,26 @@ export default function Anuncios() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-parada">Parada *</Label>
+              <Select
+                value={editForm.paradaId?.toString()}
+                onValueChange={(value) =>
+                  setEditForm({ ...editForm, paradaId: parseInt(value) })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una parada" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paradas?.map((parada) => (
+                    <SelectItem key={parada.id} value={parada.id.toString()}>
+                      {parada.id} [{parada.orientacion}] - {parada.localizacion}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label htmlFor="edit-producto">Producto *</Label>
               <Input
