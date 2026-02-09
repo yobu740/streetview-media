@@ -76,7 +76,6 @@ export default function AdminSidebar({
       label: "Mantenimiento",
       icon: Wrench,
       href: "/mantenimiento",
-      adminOnly: true,
     },
     {
       label: "Mis Reservas",
@@ -154,7 +153,7 @@ export default function AdminSidebar({
             // Hide user-only items for admins
             if (item.userOnly && user?.role === "admin") return null;
             // Hide admin-only items for non-admins
-            if (item.adminOnly && user?.role !== "admin") return null;
+            if ((item as any).adminOnly === true && user?.role !== "admin") return null;
 
             const Icon = item.icon;
             const isActive = location === item.href;
@@ -301,7 +300,7 @@ export default function AdminSidebar({
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
             {navItems.map((item) => {
               if (item.userOnly && user?.role === "admin") return null;
-              if (item.adminOnly && user?.role !== "admin") return null;
+              if ((item as any).adminOnly === true && user?.role !== "admin") return null;
 
               const Icon = item.icon;
               const isActive = location === item.href;

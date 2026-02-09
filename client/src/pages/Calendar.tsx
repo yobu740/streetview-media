@@ -195,15 +195,7 @@ export default function Calendar() {
         <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50">
           <div className="container flex items-center justify-between h-16">
             <h1 className="text-2xl font-bold text-[#1a4d3c]">Calendario de Reservas</h1>
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-3">
-              <Button 
-                className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
-                onClick={() => setIsReservaDialogOpen(true)}
-              >
-                Nueva Reserva
-              </Button>
-            </div>
+
           
           {/* Mobile Menu Button */}
           <Button 
@@ -222,15 +214,6 @@ export default function Calendar() {
         <div className="md:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
           <div className="container py-4 space-y-2">
             <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
-            <Button 
-              className="w-full justify-start bg-[#ff6b35] hover:bg-[#e65a25] text-white"
-              onClick={() => {
-                setIsReservaDialogOpen(true);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              Reservar
-            </Button>
             <Button variant="outline" className="w-full justify-start" asChild>
               <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>Volver al Panel</Link>
             </Button>
@@ -242,6 +225,16 @@ export default function Calendar() {
         <div className="mb-8">
           <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Calendario de Ocupación</h1>
           <p className="text-body text-lg text-gray-600">Vista mensual de anuncios activos</p>
+        </div>
+
+        {/* Nueva Reserva Button */}
+        <div className="mb-6">
+          <Button 
+            className="bg-[#ff6b35] hover:bg-[#e65a25] text-white w-full md:w-auto"
+            onClick={() => setIsReservaDialogOpen(true)}
+          >
+            Nueva Reserva
+          </Button>
         </div>
 
         {/* Statistics */}

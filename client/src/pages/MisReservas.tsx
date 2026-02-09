@@ -218,26 +218,34 @@ export default function MisReservas() {
               Aquí puedes ver todas tus reservas y su estado de aprobación
             </p>
           </div>
-          {reservations && reservations.length > 0 && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => exportToExcel()}
-                className="flex items-center gap-2"
-              >
-                <FileDown className="w-4 h-4" />
-                Exportar Excel
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => window.print()}
-                className="flex items-center gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <Button
+              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+              asChild
+            >
+              <Link href="/calendar">Nueva Reserva</Link>
+            </Button>
+            {reservations && reservations.length > 0 && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => exportToExcel()}
+                  className="flex items-center gap-2"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Exportar Excel
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.print()}
+                  className="flex items-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  Imprimir
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         {!reservations || reservations.length === 0 ? (

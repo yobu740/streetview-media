@@ -529,3 +529,9 @@
 - [x] Add Condición column header to Admin paradas table
 - [x] Display status badge (Renovada/Pendiente) based on condition fields
 - [ ] Test that status updates when conditions change in Mantenimiento
+
+## Fix Mobile Menu and Reservar Button
+- [x] Move Reservar button from Calendar header to main content area
+- [x] Add Reservar button to Mis Reservas page for vendedores
+- [x] Remove adminOnly restriction from Mantenimiento in sidebar
+- [ ] Test mobile menu doesn't have conflicts
