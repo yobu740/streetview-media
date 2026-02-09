@@ -506,3 +506,16 @@
 - [x] Read Excel file to identify which OPIOIDES ads are Bonificación (B) vs Fijo (F)
 - [x] Create SQL update to correct tipo field for OPIOIDES ads
 - [x] Verify all OPIOIDES ads have correct tipo after update (74 Fijo, 30 Bonificación)
+
+## Add Parada Condition Fields
+- [x] Add condicion_parada fields to paradas table (pintada, arreglada, limpia)
+- [x] Add display_publicidad field to paradas table (Si/No/N/A)
+- [x] Update Paradas list page to show condition badges (Renovada/Pendiente de renovación)
+- [x] Add condition editing fields to parada detail dialog (checkboxes + display select)
+- [x] Update backend to accept condition fields
+- [ ] Test condition updates work correctly
+
+## Add Clickable Filters to Anuncios Cards
+- [x] Make stat cards in Anuncios.tsx clickable to filter by estado
+- [x] Add active state styling to selected filter card (ring-2 border)
+- [ ] Test filtering works when clicking cards

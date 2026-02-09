@@ -96,6 +96,20 @@ export const appRouter = router({
         return { fotoUrl };
       }),
     
+    updateCondicion: protectedProcedure
+      .input(z.object({
+        paradaId: z.number(),
+        condicionPintada: z.number().optional(),
+        condicionArreglada: z.number().optional(),
+        condicionLimpia: z.number().optional(),
+        displayPublicidad: z.enum(["Si", "No", "N/A"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { paradaId, ...updates } = input;
+        await paradasDb.updateParada(paradaId, updates);
+        return { success: true };
+      }),
+    
     disponibles: publicProcedure
       .input(z.object({
         fechaInicio: z.date(),

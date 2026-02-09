@@ -43,6 +43,11 @@ export const paradas = mysqlTable("paradas", {
   producto: varchar("producto", { length: 255 }), // PRODUCTO from Excel - current ad/product name
   cliente: varchar("cliente", { length: 255 }), // CLIENTE from Excel - client name (can be empty)
   activa: int("activa").default(1).notNull(), // 1 = active, 0 = inactive
+  // Condition fields
+  condicionPintada: int("condicion_pintada").default(0).notNull(), // 1 = pintada, 0 = no pintada
+  condicionArreglada: int("condicion_arreglada").default(0).notNull(), // 1 = arreglada, 0 = no arreglada
+  condicionLimpia: int("condicion_limpia").default(0).notNull(), // 1 = limpia, 0 = no limpia
+  displayPublicidad: mysqlEnum("display_publicidad", ["Si", "No", "N/A"]).default("N/A").notNull(), // Display status
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });

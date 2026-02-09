@@ -395,25 +395,45 @@ export default function Anuncios() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div 
+            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+              filterEstado === "all" ? "ring-2 ring-[#1a4d3c]" : ""
+            }`}
+            onClick={() => setFilterEstado("all")}
+          >
             <p className="text-sm text-gray-600 mb-1">Total Anuncios</p>
             <p className="text-3xl font-bold text-[#1a4d3c]">
               {filteredAnuncios?.length || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div 
+            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+              filterEstado === "Activo" ? "ring-2 ring-green-600" : ""
+            }`}
+            onClick={() => setFilterEstado("Activo")}
+          >
             <p className="text-sm text-gray-600 mb-1">Activos</p>
             <p className="text-3xl font-bold text-green-600">
               {filteredAnuncios?.filter((a) => a.estado === "Activo").length || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div 
+            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+              filterEstado === "Programado" ? "ring-2 ring-blue-600" : ""
+            }`}
+            onClick={() => setFilterEstado("Programado")}
+          >
             <p className="text-sm text-gray-600 mb-1">Programados</p>
             <p className="text-3xl font-bold text-blue-600">
               {filteredAnuncios?.filter((a) => a.estado === "Programado").length || 0}
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div 
+            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+              filterEstado === "Finalizado" ? "ring-2 ring-gray-600" : ""
+            }`}
+            onClick={() => setFilterEstado("Finalizado")}
+          >
             <p className="text-sm text-gray-600 mb-1">Finalizados</p>
             <p className="text-3xl font-bold text-gray-600">
               {filteredAnuncios?.filter((a) => a.estado === "Finalizado").length || 0}
