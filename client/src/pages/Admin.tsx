@@ -72,6 +72,7 @@ export default function Admin() {
   const [printDateTo, setPrintDateTo] = useState("");
   
   const [anuncioForm, setAnuncioForm] = useState({
+    producto: "",
     cliente: "",
     tipo: "Fijo" as "Fijo" | "Bonificación",
     fechaInicio: "",
@@ -119,6 +120,7 @@ export default function Admin() {
       toast.success("Anuncio creado exitosamente");
       setIsAnuncioDialogOpen(false);
       setAnuncioForm({
+        producto: "",
         cliente: "",
         tipo: "Fijo",
         fechaInicio: "",
@@ -343,7 +345,9 @@ export default function Admin() {
 
   const getParadaStatus = (parada: any) => {
     // Check if parada has an active anuncio from the joined data
-    if (parada.anuncioId && parada.anuncioCliente) {
+    // Only show as Ocupada if the anuncio estado is Activo or Programado
+    if (parada.anuncioId && parada.anuncioCliente && 
+        (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")) {
       return { 
         status: "Ocupada", 
         anuncio: {
@@ -468,6 +472,7 @@ export default function Admin() {
     
     createAnuncio.mutate({
       paradaId: selectedParada.id,
+      producto: anuncioForm.producto,
       cliente: anuncioForm.cliente,
       tipo: anuncioForm.tipo,
       fechaInicio: new Date(anuncioForm.fechaInicio),
@@ -1214,14 +1219,12 @@ export default function Admin() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {parada.producto ? (
+                              {anuncio ? (
                                 <div className="text-sm">
-                                  <div className="font-medium">{parada.producto}</div>
-                                  {anuncio && (
-                                    <div className="text-gray-500 text-xs">
-                                      {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
-                                    </div>
-                                  )}
+                                  <div className="font-medium">{parada.anuncioProducto || parada.producto || anuncio.cliente}</div>
+                                  <div className="text-gray-500 text-xs">
+                                    {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
+                                  </div>
                                 </div>
                               ) : (
                                 "—"
@@ -1511,11 +1514,19 @@ export default function Admin() {
           
           <div className="space-y-4">
             <div>
-              <Label>Cliente</Label>
+              <Label>Producto/Anuncio *</Label>
+              <Input
+                value={anuncioForm.producto}
+                onChange={(e) => setAnuncioForm({ ...anuncioForm, producto: e.target.value })}
+                placeholder="Ej: Coca Cola, iPhone 15, etc."
+              />
+            </div>
+            <div>
+              <Label>Cliente *</Label>
               <Input
                 value={anuncioForm.cliente}
                 onChange={(e) => setAnuncioForm({ ...anuncioForm, cliente: e.target.value })}
-                placeholder="Nombre del cliente"
+                placeholder="Ej: Coca Cola Company, Apple Inc., etc."
               />
             </div>
             <div>
@@ -1578,7 +1589,7 @@ export default function Admin() {
             </Button>
             <Button 
               onClick={handleCreateAnuncio}
-              disabled={!anuncioForm.cliente || !anuncioForm.fechaInicio || !anuncioForm.fechaFin}
+              disabled={!anuncioForm.producto || !anuncioForm.cliente || !anuncioForm.fechaInicio || !anuncioForm.fechaFin}
               className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
             >
               Crear Anuncio

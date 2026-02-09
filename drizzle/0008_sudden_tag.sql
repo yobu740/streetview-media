@@ -1,0 +1,1 @@
+ALTER TABLE `anuncios` ADD `producto` varchar(255) NOT NULL;

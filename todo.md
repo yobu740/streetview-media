@@ -381,3 +381,18 @@
 - [x] Display orientation (I/O/P) next to parada ID in reservation modal
 - [x] Show in both "Paradas Específicas" and "Por Rutas" modes
 - [x] Test that orientation is visible and clear
+
+## Separate Producto and Cliente in Anuncios
+- [x] Add producto field to anuncios table schema
+- [x] Run database migration (pnpm db:push)
+- [x] Update anuncio creation form to have both producto and cliente inputs
+- [x] Update backend procedures to require producto field
+- [x] Update all displays to show both fields correctly
+- [x] Fix Anuncio Actual display to clear when status is Disponible
+- [ ] Test that both fields save and display properly
+
+## Show Occupied Paradas with Availability Date
+- [x] Modify reservation modal to show ALL paradas (not just available)
+- [x] Disable occupied paradas with message "Disponible después de [fecha]"
+- [x] Update getAvailableParadas to return all paradas with availability info
+- [ ] Test that occupied paradas show correct availability date

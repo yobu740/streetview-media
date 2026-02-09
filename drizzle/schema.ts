@@ -56,7 +56,8 @@ export type InsertParada = typeof paradas.$inferInsert;
 export const anuncios = mysqlTable("anuncios", {
   id: int("id").autoincrement().primaryKey(),
   paradaId: int("parada_id").notNull(), // FK to paradas
-  cliente: varchar("cliente", { length: 255 }).notNull(), // Client/Product name
+  producto: varchar("producto", { length: 255 }).notNull(), // Product/Ad name
+  cliente: varchar("cliente", { length: 255 }).notNull(), // Client company name
   tipo: mysqlEnum("tipo", ["Fijo", "Bonificación"]).notNull(), // F/B from Excel
   fechaInicio: timestamp("fecha_inicio").notNull(), // Start date
   fechaFin: timestamp("fecha_fin").notNull(), // End date

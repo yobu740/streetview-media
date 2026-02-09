@@ -130,6 +130,7 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         paradaId: z.number(),
+        producto: z.string(),
         cliente: z.string(),
         tipo: z.enum(["Fijo", "Bonificación"]),
         fechaInicio: z.date(),

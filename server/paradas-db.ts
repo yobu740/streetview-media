@@ -55,6 +55,7 @@ export async function getAllParadas() {
         updatedAt: parada.updatedAt,
         // Current anuncio fields (null if no anuncio)
         anuncioId: currentAnuncio?.id || null,
+        anuncioProducto: currentAnuncio?.producto || null,
         anuncioCliente: currentAnuncio?.cliente || null,
         anuncioTipo: currentAnuncio?.tipo || null,
         anuncioFechaInicio: currentAnuncio?.fechaInicio || null,

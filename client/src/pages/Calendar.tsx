@@ -21,6 +21,7 @@ export default function Calendar() {
   const [isReservaDialogOpen, setIsReservaDialogOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [reservaForm, setReservaForm] = useState({
+    producto: "",
     cliente: "",
     fechaInicio: "",
     fechaFin: "",
@@ -98,7 +99,7 @@ export default function Calendar() {
     setSelectedDate(date);
   };
   
-  // Get available paradas for selected date range
+  // Get all paradas with availability information for selected date range
   const getAvailableParadas = () => {
     if (!reservaForm.fechaInicio || !reservaForm.fechaFin || !paradas || !anuncios) {
       return [];
@@ -107,20 +108,43 @@ export default function Calendar() {
     const inicio = new Date(reservaForm.fechaInicio);
     const fin = new Date(reservaForm.fechaFin);
     
-    return paradas.filter(parada => {
-      // Check if this parada has any conflicting anuncios in the date range
-      const hasConflict = anuncios.some(anuncio => {
-        if (anuncio.paradaId !== parada.id || anuncio.estado !== "Activo") return false;
+    return paradas
+      .map(parada => {
+        // Find conflicting anuncios for this parada
+        const conflictingAnuncios = anuncios.filter(anuncio => {
+          if (anuncio.paradaId !== parada.id || (anuncio.estado !== "Activo" && anuncio.estado !== "Programado")) return false;
+          
+          const anuncioInicio = new Date(anuncio.fechaInicio);
+          const anuncioFin = new Date(anuncio.fechaFin);
+          
+          // Check if date ranges overlap
+          return !(fin < anuncioInicio || inicio > anuncioFin);
+        });
         
-        const anuncioInicio = new Date(anuncio.fechaInicio);
-        const anuncioFin = new Date(anuncio.fechaFin);
+        const hasConflict = conflictingAnuncios.length > 0;
         
-        // Check if date ranges overlap
-        return !(fin < anuncioInicio || inicio > anuncioFin);
-      });
-      
-      // Filter by search term if provided
-      const matchesSearch = !paradaSearchTerm || (() => {
+        // Find the next available date (end date of the latest conflicting anuncio)
+        let availableAfter = null;
+        if (hasConflict) {
+          const latestAnuncio = conflictingAnuncios.reduce((latest, current) => {
+            const currentEnd = new Date(current.fechaFin);
+            const latestEnd = new Date(latest.fechaFin);
+            return currentEnd > latestEnd ? current : latest;
+          });
+          availableAfter = new Date(latestAnuncio.fechaFin);
+          availableAfter.setDate(availableAfter.getDate() + 1); // Available day after the anuncio ends
+        }
+        
+        return {
+          ...parada,
+          isAvailable: !hasConflict,
+          availableAfter,
+        };
+      })
+      .filter(parada => {
+        // Filter by search term if provided
+        if (!paradaSearchTerm) return true;
+        
         const searchLower = paradaSearchTerm.toLowerCase().trim();
         // Support comma-separated IDs
         if (searchLower.includes(',')) {
@@ -130,10 +154,7 @@ export default function Calendar() {
         // Single ID search
         return parada.cobertizoId.toLowerCase().includes(searchLower) ||
                parada.localizacion.toLowerCase().includes(searchLower);
-      })();
-      
-      return !hasConflict && matchesSearch;
-    });
+      });
   };
   
   const previousMonth = () => {
@@ -444,6 +465,17 @@ export default function Calendar() {
           </DialogHeader>
           
           <div className="space-y-6">
+            {/* Product Name */}
+            <div>
+              <Label htmlFor="producto">Producto/Anuncio *</Label>
+              <Input
+                id="producto"
+                value={reservaForm.producto}
+                onChange={(e) => setReservaForm({ ...reservaForm, producto: e.target.value })}
+                placeholder="Ej: Coca Cola, iPhone 15, etc."
+              />
+            </div>
+            
             {/* Client Name */}
             <div>
               <Label htmlFor="cliente">Nombre del Cliente *</Label>
@@ -451,7 +483,7 @@ export default function Calendar() {
                 id="cliente"
                 value={reservaForm.cliente}
                 onChange={(e) => setReservaForm({ ...reservaForm, cliente: e.target.value })}
-                placeholder="Ej: Coca Cola, BPPR, etc."
+                placeholder="Ej: Coca Cola Company, Apple Inc., etc."
               />
             </div>
 
@@ -538,10 +570,11 @@ export default function Calendar() {
                         <p className="text-sm text-gray-500">No hay paradas disponibles para las fechas seleccionadas.</p>
                       ) : (
                         getAvailableParadas().map(parada => (
-                    <div key={parada.id} className="flex items-center space-x-2 py-2">
+                    <div key={parada.id} className={`flex items-center space-x-2 py-2 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
                       <Checkbox
                         id={`parada-${parada.id}`}
                         checked={reservaForm.selectedParadas.includes(parada.id)}
+                        disabled={!parada.isAvailable}
                         onCheckedChange={(checked) => {
                           if (checked) {
                             setReservaForm({
@@ -558,12 +591,19 @@ export default function Calendar() {
                       />
                       <label
                         htmlFor={`parada-${parada.id}`}
-                        className="text-sm cursor-pointer flex-1"
+                        className={`text-sm flex-1 ${parada.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                       >
-                        <span className="font-medium">{parada.cobertizoId}</span>
-                        <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                        {" - "}{parada.localizacion}
-                        {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
+                        <div>
+                          <span className="font-medium">{parada.cobertizoId}</span>
+                          <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
+                          {" - "}{parada.localizacion}
+                          {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
+                        </div>
+                        {!parada.isAvailable && parada.availableAfter && (
+                          <div className="text-xs text-red-600 mt-1">
+                            Disponible después de {parada.availableAfter.toLocaleDateString('es-PR')}
+                          </div>
+                        )}
                       </label>
                     </div>
                         ))
@@ -633,10 +673,11 @@ export default function Calendar() {
                             }
                             
                             return availableInRoute.map(parada => (
-                              <div key={parada.id} className="flex items-center space-x-2 py-2">
+                              <div key={parada.id} className={`flex items-center space-x-2 py-2 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
                                 <Checkbox
                                   id={`parada-ruta-${parada.id}`}
                                   checked={reservaForm.selectedParadas.includes(parada.id)}
+                                  disabled={!parada.isAvailable}
                                   onCheckedChange={(checked) => {
                                     if (checked) {
                                       setReservaForm({
@@ -653,11 +694,18 @@ export default function Calendar() {
                                 />
                                 <label
                                   htmlFor={`parada-ruta-${parada.id}`}
-                                  className="text-sm cursor-pointer flex-1"
+                                  className={`text-sm flex-1 ${parada.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                                 >
-                                  <span className="font-medium">{parada.cobertizoId}</span>
-                                  <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                                  {" - "}{parada.localizacion}
+                                  <div>
+                                    <span className="font-medium">{parada.cobertizoId}</span>
+                                    <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
+                                    {" - "}{parada.localizacion}
+                                  </div>
+                                  {!parada.isAvailable && parada.availableAfter && (
+                                    <div className="text-xs text-red-600 mt-1">
+                                      Disponible después de {parada.availableAfter.toLocaleDateString('es-PR')}
+                                    </div>
+                                  )}
                                 </label>
                               </div>
                             ));
@@ -682,7 +730,7 @@ export default function Calendar() {
               className="bg-[#ff6b35] hover:bg-[#e65a25]"
               onClick={() => {
                 // Validate
-                if (!reservaForm.cliente || !reservaForm.fechaInicio || !reservaForm.fechaFin) {
+                if (!reservaForm.producto || !reservaForm.cliente || !reservaForm.fechaInicio || !reservaForm.fechaFin) {
                   toast.error("Por favor completa todos los campos requeridos");
                   return;
                 }
@@ -703,6 +751,7 @@ export default function Calendar() {
                   paradasToReserve.map(paradaId =>
                     createAnuncio.mutateAsync({
                       paradaId,
+                      producto: reservaForm.producto,
                       cliente: reservaForm.cliente,
                       tipo: reservaForm.tipo,
                       fechaInicio: new Date(reservaForm.fechaInicio),
@@ -727,6 +776,7 @@ export default function Calendar() {
                   setIsReservaDialogOpen(false);
                   // Reset form
                   setReservaForm({
+                    producto: "",
                     cliente: "",
                     fechaInicio: "",
                     fechaFin: "",
