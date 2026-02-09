@@ -651,9 +651,8 @@ export default function Admin() {
             )}
           </div>
           
-          {/* Mobile Menu Button */}
+          {/* Mobile - Notification Bell Only */}
           <div className="flex lg:hidden items-center gap-2">
-            {/* Notification Bell - Mobile */}
             {user?.role === 'admin' && (
               <Button 
                 variant="outline" 
@@ -669,48 +668,9 @@ export default function Admin() {
                 )}
               </Button>
             )}
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </nav>
-
-      {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
-          <div className="container py-4 space-y-2">
-            <div className="text-sm text-gray-600 mb-4">Panel Administrativo</div>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start" 
-              onClick={() => {
-                handleExportToExcel();
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Exportar a Excel
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start" 
-              onClick={() => {
-                setIsPrintDialogOpen(true);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir Reporte
-            </Button>
-
-          </div>
-        </div>
-      )}
 
       {/* Notification Panel */}
       {isNotificationPanelOpen && user?.role === 'admin' && (

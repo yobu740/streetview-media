@@ -216,12 +216,12 @@ export default function AdminSidebar({
         {/* Hamburger Button - Fixed */}
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="fixed top-4 right-4 z-50 p-2 bg-white border-2 border-[#1a4d3c] rounded-md shadow-lg"
+          className="fixed top-6 right-4 z-[60] p-3 bg-[#1a4d3c] text-white rounded-md shadow-lg hover:bg-[#0f3a2a] transition-colors"
         >
           {isMobileOpen ? (
-            <X size={24} className="text-[#1a4d3c]" />
+            <X size={24} className="text-white" />
           ) : (
-            <Menu size={24} className="text-[#1a4d3c]" />
+            <Menu size={24} className="text-white" />
           )}
         </button>
 
@@ -236,7 +236,7 @@ export default function AdminSidebar({
         {/* Mobile Sidebar Drawer */}
         <aside
           className={cn(
-            "fixed top-0 right-0 h-full w-64 bg-white border-l-4 border-[#1a4d3c] z-40 transform transition-transform duration-300",
+            "fixed top-0 right-0 h-full w-64 bg-white border-l-4 border-[#1a4d3c] z-50 transform transition-transform duration-300",
             isMobileOpen ? "translate-x-0" : "translate-x-full"
           )}
         >
