@@ -1,6 +1,6 @@
-import { eq, and, gte, lte, desc, asc, like, or, sql } from "drizzle-orm";
+import { eq, and, or, desc, asc, like, sql, lte, gte } from "drizzle-orm";
 import { paradas, anuncios, type Parada, type Anuncio, type InsertParada, type InsertAnuncio } from "../drizzle/schema";
-import { getDb } from "./db";
+import { getDb } from "./db";;
 
 // ========== PARADAS ==========
 
@@ -8,13 +8,28 @@ export async function getAllParadas() {
   const db = await getDb();
   if (!db) return [];
   
-  // Get all paradas first
+  // First, auto-update expired anuncios to Finalizado status
+  const now = new Date();
+  await db
+    .update(anuncios)
+    .set({ estado: "Finalizado" })
+    .where(
+      and(
+        sql`${anuncios.fechaFin} < ${now}`,
+        or(
+          eq(anuncios.estado, "Activo"),
+          eq(anuncios.estado, "Programado")
+        )
+      )
+    );
+  
+  // Get all paradas
   const allParadas = await db
     .select()
     .from(paradas)
     .orderBy(asc(paradas.localizacion));
   
-  // For each parada, get the most recent active/scheduled anuncio
+  // For each parada, get the most recent active/scheduled anuncio (not expired)
   const result = await Promise.all(
     allParadas.map(async (parada) => {
       const anuncio = await db
@@ -27,7 +42,8 @@ export async function getAllParadas() {
             or(
               eq(anuncios.estado, "Activo"),
               eq(anuncios.estado, "Programado")
-            )
+            ),
+            sql`${anuncios.fechaFin} >= ${now}` // Only get non-expired anuncios
           )
         )
         .orderBy(desc(anuncios.fechaInicio))

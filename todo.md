@@ -413,3 +413,9 @@
 - [ ] Implement edit dialog to modify anuncio details
 - [ ] Add backend update procedure for anuncios
 - [ ] Test editing anuncios and verify changes persist
+
+## Auto-Update Expired Anuncios
+- [x] Update all expired anuncios (fecha_fin < today) to Finalizado status
+- [x] Modify backend to automatically check and update expired anuncios on query
+- [x] Verify expired anuncios don't show in "Anuncio Actual" column
+- [x] Test that paradas with expired anuncios show as Disponible
