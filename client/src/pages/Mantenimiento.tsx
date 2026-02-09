@@ -42,13 +42,42 @@ export default function Mantenimiento() {
     { enabled: !!selectedParada && isHistoryDialogOpen }
   );
 
+  const utils = trpc.useUtils();
+  
   const updateCondicion = trpc.paradas.updateCondicion.useMutation({
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await utils.paradas.list.cancel();
+      
+      // Snapshot previous value
+      const previousParadas = utils.paradas.list.getData();
+      
+      // Optimistically update to new value
+      utils.paradas.list.setData(undefined, (old) => {
+        if (!old) return old;
+        return old.map((p) => {
+          if (p.id === variables.paradaId) {
+            return { ...p, ...variables };
+          }
+          return p;
+        });
+      });
+      
+      return { previousParadas };
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousParadas) {
+        utils.paradas.list.setData(undefined, context.previousParadas);
+      }
+      toast.error(`Error: ${error.message}`);
+    },
     onSuccess: () => {
       toast.success("Condición actualizada");
-      refetchParadas();
     },
-    onError: (error) => {
-      toast.error(`Error: ${error.message}`);
+    onSettled: () => {
+      // Always refetch after error or success to ensure sync
+      utils.paradas.list.invalidate();
     },
   });
 

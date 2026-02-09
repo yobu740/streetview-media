@@ -519,3 +519,8 @@
 - [x] Make stat cards in Anuncios.tsx clickable to filter by estado
 - [x] Add active state styling to selected filter card (ring-2 border)
 - [ ] Test filtering works when clicking cards
+
+## Set All Displays to Si and Add Optimistic Updates
+- [x] Update all existing paradas to set displayPublicidad to "Si"
+- [x] Add optimistic updates to Mantenimiento checkboxes for instant feedback
+- [ ] Test that checkboxes respond immediately when clicked
