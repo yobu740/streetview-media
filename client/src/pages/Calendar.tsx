@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -183,30 +184,25 @@ export default function Calendar() {
   const occupancyRate = totalParadas > 0 ? Math.round((occupiedParadas / totalParadas) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c]">
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/admin">
-            <img 
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
-              alt="Streetview Media" 
-              className="h-12 cursor-pointer"
-            />
-          </Link>
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-4">
-            <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
-            <Button 
-              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
-              onClick={() => setIsReservaDialogOpen(true)}
-            >
-              Reservar
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/admin">Volver al Panel</Link>
-            </Button>
-          </div>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <AdminSidebar />
+      
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
+        {/* Page Header */}
+        <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50">
+          <div className="container flex items-center justify-between h-16">
+            <h1 className="text-2xl font-bold text-[#1a4d3c]">Calendario de Reservas</h1>
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-3">
+              <Button 
+                className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+                onClick={() => setIsReservaDialogOpen(true)}
+              >
+                Nueva Reserva
+              </Button>
+            </div>
           
           {/* Mobile Menu Button */}
           <Button 
@@ -793,6 +789,7 @@ export default function Calendar() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

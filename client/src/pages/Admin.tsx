@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -606,7 +607,15 @@ export default function Admin() {
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="flex min-h-screen bg-[#f5f5f5]">
+      {/* Sidebar */}
+      <AdminSidebar 
+        pendingReservationsCount={pendingReservations?.length || 0}
+        unreadCount={unreadCount || 0}
+      />
+      
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
       {/* Header */}
       <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
         <div className="container flex items-center justify-between h-20">
@@ -617,9 +626,9 @@ export default function Admin() {
               className="h-12 cursor-pointer"
             />
           </Link>
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-4">
-            <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+          {/* Desktop Menu - Page Actions Only */}
+          <div className="hidden lg:flex items-center gap-3">
+            <span className="text-sm text-gray-600">Panel Administrativo</span>
             
             {/* Notification Bell */}
             {user?.role === 'admin' && (
@@ -640,27 +649,9 @@ export default function Admin() {
               </div>
             )}
             
-            <Button variant="outline" asChild>
-              <Link href="/calendar">
-                <Calendar className="h-4 w-4 mr-2" />
-                Calendario
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/metrics">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Métricas
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/anuncios">
-                <Megaphone className="h-4 w-4 mr-2" />
-                Anuncios
-              </Link>
-            </Button>
             <Button variant="outline" onClick={handleExportToExcel}>
               <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Exportar a Excel
+              Exportar
             </Button>
             <Button 
               variant="outline" 
@@ -672,10 +663,7 @@ export default function Admin() {
             </Button>
             <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
               <Printer className="h-4 w-4 mr-2" />
-              Imprimir Reporte
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/">Ver Sitio Público</Link>
+              Imprimir
             </Button>
           </div>
           
@@ -712,25 +700,7 @@ export default function Admin() {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
           <div className="container py-4 space-y-2">
-            <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/calendar" onClick={() => setIsMobileMenuOpen(false)}>
-                <Calendar className="h-4 w-4 mr-2" />
-                Calendario
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/metrics" onClick={() => setIsMobileMenuOpen(false)}>
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Métricas
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/anuncios" onClick={() => setIsMobileMenuOpen(false)}>
-                <Megaphone className="h-4 w-4 mr-2" />
-                Anuncios
-              </Link>
-            </Button>
+            <div className="text-sm text-gray-600 mb-4">Panel Administrativo</div>
             <Button 
               variant="outline" 
               className="w-full justify-start" 
@@ -753,9 +723,7 @@ export default function Admin() {
               <Printer className="h-4 w-4 mr-2" />
               Imprimir Reporte
             </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Ver Sitio Público</Link>
-            </Button>
+
           </div>
         </div>
       )}
@@ -1969,6 +1937,7 @@ export default function Admin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

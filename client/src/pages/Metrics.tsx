@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -177,48 +178,12 @@ export default function Metrics() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c]">
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/admin">
-            <img 
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
-              alt="Streetview Media" 
-              className="h-12 cursor-pointer"
-            />
-          </Link>
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-4">
-            <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
-            <Button variant="outline" asChild>
-              <Link href="/admin">Volver al Panel</Link>
-            </Button>
-          </div>
-          
-          {/* Mobile Menu Button */}
-          <Button 
-            variant="outline" 
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b-2 border-[#1a4d3c] shadow-lg">
-          <div className="container py-4 space-y-2">
-            <div className="text-sm text-gray-600 mb-4">Hola, {user?.name || user?.email}</div>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>Volver al Panel</Link>
-            </Button>
-          </div>
-        </div>
-      )}
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <AdminSidebar />
+      
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
 
       <div className="container py-12">
         <div className="mb-8">
@@ -521,6 +486,7 @@ export default function Metrics() {
             )}
           </CardContent>
         </Card>
+      </div>
       </div>
     </div>
   );

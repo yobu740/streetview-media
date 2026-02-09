@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import AdminSidebar from "@/components/AdminSidebar";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Search, Edit, X, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
 
 export default function Anuncios() {
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
@@ -148,31 +150,14 @@ export default function Anuncios() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
-      {/* Header */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50">
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/">
-            <img
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png"
-              alt="Streetview Media"
-              className="h-12 cursor-pointer"
-            />
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/admin">
-              <Button variant="outline" className="flex items-center gap-2">
-                <ArrowLeft size={16} />
-                Volver al Panel
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+    <div className="flex min-h-screen bg-[#f5f5f5]">
+      {/* Sidebar */}
+      <AdminSidebar />
+      
       {/* Main Content */}
-      <div className="container py-8">
-        <div className="mb-8">
+      <div className="flex-1 min-w-0">
+        <div className="container py-8">
+          <div className="mb-8">
           <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">
             Gestión de Anuncios
           </h1>
@@ -442,6 +427,7 @@ export default function Anuncios() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

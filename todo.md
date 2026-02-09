@@ -424,3 +424,13 @@
 - [x] Check approval_status of OPIOIDES anuncios
 - [x] Verify OPIOIDES anuncios have estado = Activo
 - [x] Created 104 active OPIOIDES anuncios until April 15, 2026
+
+## LMS-Style Sidebar Navigation
+- [x] Create AdminSidebar component with navigation links
+- [x] Design sidebar with logo, user info, navigation sections
+- [x] Update Admin.tsx to use sidebar layout
+- [x] Update Calendar.tsx to use sidebar layout
+- [x] Update Metrics.tsx to use sidebar layout
+- [x] Update Anuncios.tsx to use sidebar layout
+- [x] Implement mobile responsive behavior (collapsible sidebar)
+- [x] Test navigation and responsive behavior
