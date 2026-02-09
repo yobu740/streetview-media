@@ -434,3 +434,12 @@
 - [x] Update Anuncios.tsx to use sidebar layout
 - [x] Implement mobile responsive behavior (collapsible sidebar)
 - [x] Test navigation and responsive behavior
+
+## Refine Sidebar Navigation
+- [x] Remove logo from AdminSidebar (keep only in header)
+- [x] Remove "Inicio" button from sidebar
+- [x] Add "Reportes" button with submenu (Exportar Excel, Imprimir Reporte)
+- [x] Add "Edición Masiva" button to sidebar
+- [x] Clean Admin.tsx header to only show logo and notifications bell
+- [x] Implement mobile hamburger menu for sidebar access
+- [x] Test responsive behavior on mobile

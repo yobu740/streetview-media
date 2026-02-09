@@ -612,6 +612,9 @@ export default function Admin() {
       <AdminSidebar 
         pendingReservationsCount={pendingReservations?.length || 0}
         unreadCount={unreadCount || 0}
+        onExportExcel={handleExportToExcel}
+        onPrintReport={() => setIsPrintDialogOpen(true)}
+        onBulkEdit={() => setIsBulkEditDialogOpen(true)}
       />
       
       {/* Main Content */}
@@ -626,10 +629,8 @@ export default function Admin() {
               className="h-12 cursor-pointer"
             />
           </Link>
-          {/* Desktop Menu - Page Actions Only */}
+          {/* Desktop - Notification Bell Only */}
           <div className="hidden lg:flex items-center gap-3">
-            <span className="text-sm text-gray-600">Panel Administrativo</span>
-            
             {/* Notification Bell */}
             {user?.role === 'admin' && (
               <div className="relative">
@@ -648,23 +649,6 @@ export default function Admin() {
                 </Button>
               </div>
             )}
-            
-            <Button variant="outline" onClick={handleExportToExcel}>
-              <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsBulkEditDialogOpen(true)}
-              className="border-[#ff6b35] text-[#ff6b35] hover:bg-[#ff6b35] hover:text-white"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Edición Masiva
-            </Button>
-            <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir
-            </Button>
           </div>
           
           {/* Mobile Menu Button */}
