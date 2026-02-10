@@ -21,23 +21,16 @@ export async function generateInvoiceFromAnuncios(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Get anuncios by IDs
-  const { inArray } = await import("drizzle-orm");
+  // Get anuncios by IDs using raw SQL to avoid decimal mapping issues
   console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
   
-  const clientAnuncios = await db
-    .select({
-      id: anuncios.id,
-      paradaId: anuncios.paradaId,
-      producto: anuncios.producto,
-      cliente: anuncios.cliente,
-      fechaInicio: anuncios.fechaInicio,
-      fechaFin: anuncios.fechaFin,
-      costoPorUnidad: anuncios.costoPorUnidad,
-      tipo: anuncios.tipo,
-    })
-    .from(anuncios)
-    .where(inArray(anuncios.id, anuncioIds));
+  const placeholders = anuncioIds.map(() => '?').join(',');
+  const result: any = await db.execute(
+    `SELECT id, parada_id as paradaId, producto, cliente, fecha_inicio as fechaInicio, 
+     fecha_fin as fechaFin, costo_por_unidad as costoPorUnidad, tipo 
+     FROM anuncios WHERE id IN (${placeholders})`
+  );
+  const clientAnuncios = result[0] as any[];
   
   console.log("[Invoice] Found", clientAnuncios.length, "anuncios");
   if (clientAnuncios.length > 0) {
@@ -54,8 +47,9 @@ export async function generateInvoiceFromAnuncios(
 
   for (const anuncio of clientAnuncios) {
     // Skip bonificaciones (cost = 0)
+    console.log(`[Invoice] Anuncio #${anuncio.id} RAW: costoPorUnidad=${JSON.stringify(anuncio.costoPorUnidad)}, tipo=${anuncio.tipo}`);
     const cost = parseFloat(anuncio.costoPorUnidad?.toString() || "0");
-    console.log(`[Invoice] Anuncio #${anuncio.id}: cost=${cost}, tipo=${anuncio.tipo}`);
+    console.log(`[Invoice] Anuncio #${anuncio.id} PARSED: cost=${cost}`);
     if (cost === 0) {
       console.log(`[Invoice] Skipping anuncio #${anuncio.id} (cost = 0)`);
       continue;

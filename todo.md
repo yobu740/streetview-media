@@ -591,3 +591,8 @@
 - [x] Production database has all costs at $0 (dev import didn't sync to production) - FIXED with SQL UPDATE
 - [x] Fix logo loading - replace require() with ES import - FIXED using fetch()
 - [x] Run import script against production database - FIXED with direct SQL
+
+## costoPorUnidad Reading Issue
+- [x] Backend changed to use raw SQL instead of Drizzle ORM (avoiding decimal mapping bug)
+- [ ] Frontend shows total $350 instead of $25,900 (74 × $350) - NEEDS FIX
+- [ ] Test backend invoice generation after raw SQL change
