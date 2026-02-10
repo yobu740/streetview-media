@@ -13,34 +13,29 @@ interface InvoiceItem {
   costo: number;
 }
 
-export async function generateInvoicePDF(cliente: string, month: string): Promise<string> {
+export async function generateInvoiceFromAnuncios(
+  anuncioIds: number[],
+  title?: string,
+  description?: string
+): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Parse month (YYYY-MM)
-  const [year, monthNum] = month.split("-");
-  const startDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
-  const endDate = new Date(parseInt(year), parseInt(monthNum), 0); // Last day of month
-
-  // Get all anuncios for this client in this month
+  // Get anuncios by IDs
+  const { inArray } = await import("drizzle-orm");
   const clientAnuncios = await db
     .select({
       id: anuncios.id,
       paradaId: anuncios.paradaId,
       producto: anuncios.producto,
+      cliente: anuncios.cliente,
       fechaInicio: anuncios.fechaInicio,
       fechaFin: anuncios.fechaFin,
       costoPorUnidad: anuncios.costoPorUnidad,
       tipo: anuncios.tipo,
     })
     .from(anuncios)
-    .where(
-      and(
-        eq(anuncios.cliente, cliente),
-        // Anuncio overlaps with the month
-        sql`(${anuncios.fechaInicio} <= ${endDate.toISOString()} AND ${anuncios.fechaFin} >= ${startDate.toISOString()})`
-      )
-    );
+    .where(inArray(anuncios.id, anuncioIds));
 
   // Get parada info for each anuncio
   const items: InvoiceItem[] = [];
@@ -73,12 +68,16 @@ export async function generateInvoicePDF(cliente: string, month: string): Promis
     total += cost;
   }
 
+  // Get client name from first anuncio
+  const clientName = clientAnuncios[0]?.cliente || "Cliente";
+  const invoiceTitle = title || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
+
   // Generate PDF
-  const pdfBuffer = await createPDFBuffer(cliente, month, items, total);
+  const pdfBuffer = await createPDFBuffer(clientName, invoiceTitle, description, items, total);
 
   // Upload to S3
   const invoiceNumber = `INV-${Date.now()}`;
-  const fileName = `facturas/${invoiceNumber}-${cliente.replace(/\s+/g, "-")}-${month}.pdf`;
+  const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}.pdf`;
   const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
 
   return url;
@@ -86,7 +85,8 @@ export async function generateInvoicePDF(cliente: string, month: string): Promis
 
 async function createPDFBuffer(
   cliente: string,
-  month: string,
+  invoiceTitle: string,
+  description: string | undefined,
   items: InvoiceItem[],
   total: number
 ): Promise<Buffer> {
@@ -112,11 +112,6 @@ async function createPDFBuffer(
 
     // Invoice info
     const invoiceNumber = `INV-${Date.now()}`;
-    const [year, monthNum] = month.split("-");
-    const monthName = new Date(parseInt(year), parseInt(monthNum) - 1).toLocaleDateString("es-PR", {
-      year: "numeric",
-      month: "long",
-    });
 
     doc
       .fontSize(12)
@@ -128,7 +123,15 @@ async function createPDFBuffer(
       .fillColor("#666666")
       .text(`No. ${invoiceNumber}`, 400, 70, { align: "right" })
       .text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, 85, { align: "right" })
-      .text(`Período: ${monthName}`, 400, 100, { align: "right" });
+      .text(invoiceTitle, 400, 100, { align: "right" });
+
+    // Description if provided
+    if (description) {
+      doc
+        .fontSize(10)
+        .fillColor("#666666")
+        .text(description, 400, 115, { align: "right" });
+    }
 
     // Client info
     doc

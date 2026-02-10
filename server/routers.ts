@@ -552,12 +552,13 @@ export const appRouter = router({
   invoices: router({
     generate: protectedProcedure
       .input(z.object({
-        cliente: z.string(),
-        month: z.string(), // Format: YYYY-MM
+        anuncioIds: z.array(z.number()),
+        title: z.string().optional(),
+        description: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { generateInvoicePDF } = await import("./invoice-generator");
-        const pdfUrl = await generateInvoicePDF(input.cliente, input.month);
+        const { generateInvoiceFromAnuncios } = await import("./invoice-generator");
+        const pdfUrl = await generateInvoiceFromAnuncios(input.anuncioIds, input.title, input.description);
         return { pdfUrl };
       }),
   }),

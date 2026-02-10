@@ -551,3 +551,15 @@
 - [x] Include logo, client info, itemized ads, and totals in PDF
 - [x] Generate unique invoice numbers
 - [ ] Test invoice generation for different clients and months
+
+## Fix Invoice Generation Issues
+- [x] Debug why invoices show $0.00 total (fixed by using anuncioIds instead of date range query)
+- [ ] Add Streetview Media logo to PDF header
+- [x] Fix dropdown to show clients instead of products (removed dropdown)
+- [x] Change invoice generation to use currently filtered anuncios list
+- [x] Remove client/month selector, add title/description input for invoice
+- [ ] Test invoice generation with filtered OPIOIDES ads
+
+## Fix Date Range Filter in Anuncios
+- [ ] Debug why date range filter (desde/hasta) is not working
+- [ ] Test date filter with various date ranges
