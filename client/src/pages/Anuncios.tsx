@@ -134,11 +134,14 @@ export default function Anuncios() {
         notas: editForm.notas,
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("Anuncio actualizado exitosamente");
           setIsEditDialogOpen(false);
-          utils.anuncios.list.invalidate();
-          utils.paradas.list.invalidate();
+          // Invalidate both queries to refresh data
+          await Promise.all([
+            utils.anuncios.list.invalidate(),
+            utils.paradas.list.invalidate()
+          ]);
         },
         onError: (error) => {
           toast.error(`Error: ${error.message}`);
@@ -615,11 +618,33 @@ export default function Anuncios() {
                   <SelectValue placeholder="Selecciona una parada" />
                 </SelectTrigger>
                 <SelectContent>
-                  {paradas?.map((parada) => (
-                    <SelectItem key={parada.id} value={parada.id.toString()}>
-                      {parada.id} [{parada.orientacion}] - {parada.localizacion}
-                    </SelectItem>
-                  ))}
+                  {paradas
+                    ?.filter((parada) => {
+                      // Only show paradas that are available in the selected date range
+                      if (!editForm.fechaInicio || !editForm.fechaFin) return true;
+                      
+                      const startDate = new Date(editForm.fechaInicio);
+                      const endDate = new Date(editForm.fechaFin);
+                      
+                      // Check if parada has any conflicting anuncios (excluding current one)
+                      const hasConflict = anuncios?.some((a) => {
+                        if (a.id === selectedAnuncio?.id) return false; // Exclude current anuncio
+                        if (a.paradaId !== parada.id) return false; // Different parada
+                        
+                        const aStart = new Date(a.fechaInicio);
+                        const aEnd = new Date(a.fechaFin);
+                        
+                        // Check for date overlap
+                        return aStart <= endDate && aEnd >= startDate;
+                      });
+                      
+                      return !hasConflict;
+                    })
+                    .map((parada) => (
+                      <SelectItem key={parada.id} value={parada.id.toString()}>
+                        {parada.cobertizoId} [{parada.orientacion}] - {parada.localizacion}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

@@ -615,3 +615,8 @@
 
 ## PDF Download
 - [ ] Change invoice PDF to download instead of opening in new tab (browser blocks popup)
+
+## Edit Anuncio Dialog Issues
+- [x] Dropdown de paradas no muestra cobertizoId (solo ubicación) - FIXED: ahora muestra cobertizoId
+- [x] Falta validación: dropdown debe mostrar solo paradas disponibles en rango de fechas - FIXED: filtra por disponibilidad
+- [x] Cambios en parada no se reflejan automáticamente en listas - FIXED: usa Promise.all para invalidar queries
