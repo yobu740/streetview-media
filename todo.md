@@ -581,3 +581,8 @@
 - [x] Import 104 OPIOIDES ads from Excel with correct costs (74 Fijo @ $350, 30 Bonificación @ $0)
 - [ ] Verify invoice PDF shows correct costs and line items
 - [ ] Test invoice generation with filtered OPIOIDES ads
+
+## Invoice Generation Fixes (Current)
+- [x] Include Activo and Programado ads in invoice (not just Finalizado)
+- [x] Fix logo not displaying in PDF header (uploaded to S3 CDN)
+- [ ] Test invoice generation with all three estados

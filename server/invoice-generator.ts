@@ -105,7 +105,7 @@ async function createPDFBuffer(
   items: InvoiceItem[],
   total: number
 ): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const doc = new PDFDocument({ size: "LETTER", margin: 50 });
     const chunks: Buffer[] = [];
 
@@ -113,11 +113,23 @@ async function createPDFBuffer(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Header with logo
+    // Header with logo from S3
+    const logoUrl = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/aXdEhASWaNhvKWjP.png";
     try {
-      doc.image("/home/ubuntu/streetview-logo.png", 50, 45, { width: 120 });
+      // Download logo from S3
+      const https = require('https');
+      const logoBuffer = await new Promise<Buffer>((resolve, reject) => {
+        https.get(logoUrl, (res: any) => {
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk: Buffer) => chunks.push(chunk));
+          res.on('end', () => resolve(Buffer.concat(chunks)));
+          res.on('error', reject);
+        }).on('error', reject);
+      });
+      doc.image(logoBuffer, 50, 45, { width: 120 });
     } catch (e) {
-      // Fallback to text if logo not found
+      console.error('[Invoice] Failed to load logo:', e);
+      // Fallback to text if logo fails to load
       doc
         .fontSize(24)
         .fillColor("#1a4d3c")

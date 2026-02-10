@@ -148,7 +148,18 @@ export default function Anuncios() {
       return;
     }
 
-    const anuncioIds = filteredAnuncios.map(a => a.id);
+    // Include only billable estados: Activo, Programado, Finalizado
+    // Exclude: Disponible, Inactivo
+    const billableAnuncios = filteredAnuncios.filter(a => 
+      a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado"
+    );
+    
+    if (billableAnuncios.length === 0) {
+      toast.error("No hay anuncios facturables (Activo/Programado/Finalizado) en los filtros actuales.");
+      return;
+    }
+
+    const anuncioIds = billableAnuncios.map(a => a.id);
     const title = invoiceTitle || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
 
     generateInvoice.mutate(
@@ -758,8 +769,9 @@ export default function Anuncios() {
               />
             </div>
             <div className="text-sm text-gray-600">
-              <p><strong>Anuncios a facturar:</strong> {filteredAnuncios?.length || 0}</p>
-              <p><strong>Total estimado:</strong> ${filteredAnuncios?.reduce((sum, a) => sum + (parseFloat(a.costoPorUnidad?.toString() || "0")), 0).toFixed(2)}</p>
+              <p><strong>Anuncios filtrados:</strong> {filteredAnuncios?.length || 0}</p>
+              <p><strong>Anuncios facturables (Activo/Programado/Finalizado):</strong> {filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").length || 0}</p>
+              <p><strong>Total estimado:</strong> ${filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").reduce((sum, a) => sum + (parseFloat(a.costoPorUnidad?.toString() || "0")), 0).toFixed(2)}</p>
             </div>
           </div>
           <DialogFooter>

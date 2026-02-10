@@ -1,0 +1,14 @@
+{
+  "query": "SELECT estado, COUNT(*) as count \nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nGROUP BY estado;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT estado, COUNT(*) as count \nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nGROUP BY estado;",
+  "rows": [
+    {
+      "estado": "Finalizado",
+      "count": "208"
+    }
+  ],
+  "messages": [],
+  "stdout": "estado\tcount\nFinalizado\t208\n",
+  "stderr": "",
+  "execution_time_ms": 350
+}
