@@ -604,12 +604,11 @@
 
 ## Invoice & Anuncios Issues (Current)
 - [x] Updated costs in production DB (73 Fijo @ $350, 30 Bonificación @ $0)
-- [ ] Fix SQL template to read costoPorUnidad correctly
-- [ ] Invoice PDF doesn't show individual line items (103 paradas)
-- [ ] Frontend "Total estimado" shows $350 instead of summing all costs
-- [ ] Add to invoice modal: Production Cost input, Other Services (description + cost), Salesperson name
-- [ ] ID column in anuncios table shows internal DB ID instead of cobertizoId
-- [ ] Search by cobertizoId doesn't work
+- [x] Step 1: Change costoPorUnidad from decimal to varchar in schema and migrate data
+- [x] Step 2: Add to invoice modal: Production Cost, Other Services (description + cost), Salesperson name
+- [x] Step 3: Change ID column to show cobertizoId and enable search by cobertizo number
+- [ ] Fix frontend total calculation
+- [ ] Change PDF to download instead of open in new tab
 
 ## Paradas Status Label
 - [ ] Change "Renovada" status label to "Lista" (means ready for sales)

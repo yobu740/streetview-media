@@ -16,49 +16,38 @@ interface InvoiceItem {
 export async function generateInvoiceFromAnuncios(
   anuncioIds: number[],
   title?: string,
-  description?: string
+  description?: string,
+  productionCost?: number,
+  otherServicesDescription?: string,
+  otherServicesCost?: number,
+  salespersonName?: string
 ): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Get anuncios by IDs - use raw SQL to bypass Drizzle decimal bug
+  // Get anuncios by IDs - now using ORM since costoPorUnidad is varchar
   console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
   
-  // Build SQL manually to avoid parameter binding issues
-  const idList = anuncioIds.join(',');
-  const query = `
-    SELECT id, parada_id as paradaId, producto, cliente, 
-           fecha_inicio as fechaInicio, fecha_fin as fechaFin, 
-           costo_por_unidad as costoPorUnidad, tipo 
-    FROM anuncios 
-    WHERE id IN (${idList})
-  `;
+  const { inArray } = await import("drizzle-orm");
+  const clientAnuncios = await db
+    .select()
+    .from(anuncios)
+    .where(inArray(anuncios.id, anuncioIds));
   
-  const result: any = await db.execute(query);
-  console.log("[Invoice] Raw result type:", typeof result, "isArray:", Array.isArray(result));
-  console.log("[Invoice] result[0] length:", result[0]?.length, "result.rows length:", result.rows?.length);
-  
-  const clientAnuncios = (result[0] || result.rows || result) as any[];
   console.log("[Invoice] Found", clientAnuncios.length, "anuncios");
-  if (clientAnuncios.length > 0) {
-    console.log("[Invoice] Sample anuncio:", {
-      id: clientAnuncios[0].id,
-      costoPorUnidad: clientAnuncios[0].costoPorUnidad,
-      tipo: clientAnuncios[0].tipo
-    });
-  }
 
   // Get parada info for each anuncio
   const items: InvoiceItem[] = [];
   let total = 0;
 
   for (const anuncio of clientAnuncios) {
+    // costoPorUnidad is now varchar, parse as float
+    const cost = parseFloat(anuncio.costoPorUnidad || "0");
+    console.log(`[Invoice] Anuncio #${anuncio.id}: cost=${cost}, tipo=${anuncio.tipo}`);
+    
     // Skip bonificaciones (cost = 0)
-    console.log(`[Invoice] Anuncio #${anuncio.id} RAW: costoPorUnidad=${JSON.stringify(anuncio.costoPorUnidad)}, tipo=${anuncio.tipo}`);
-    const cost = parseFloat(anuncio.costoPorUnidad?.toString() || "0");
-    console.log(`[Invoice] Anuncio #${anuncio.id} PARSED: cost=${cost}`);
     if (cost === 0) {
-      console.log(`[Invoice] Skipping anuncio #${anuncio.id} (cost = 0)`);
+      console.log(`[Invoice] Skipping anuncio #${anuncio.id} (Bonificación)`);
       continue;
     }
 
@@ -88,8 +77,24 @@ export async function generateInvoiceFromAnuncios(
   const clientName = clientAnuncios[0]?.cliente || "Cliente";
   const invoiceTitle = title || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
 
+  // Add production cost and other services to total
+  let finalTotal = total;
+  if (productionCost) finalTotal += productionCost;
+  if (otherServicesCost) finalTotal += otherServicesCost;
+
   // Generate PDF
-  const pdfBuffer = await createPDFBuffer(clientName, invoiceTitle, description, items, total);
+  const pdfBuffer = await createPDFBuffer(
+    clientName, 
+    invoiceTitle, 
+    description, 
+    items, 
+    total,
+    productionCost,
+    otherServicesDescription,
+    otherServicesCost,
+    salespersonName,
+    finalTotal
+  );
 
   // Upload to S3
   const invoiceNumber = `INV-${Date.now()}`;
@@ -104,7 +109,12 @@ async function createPDFBuffer(
   invoiceTitle: string,
   description: string | undefined,
   items: InvoiceItem[],
-  total: number
+  subtotal: number,
+  productionCost?: number,
+  otherServicesDescription?: string,
+  otherServicesCost?: number,
+  salespersonName?: string,
+  total?: number
 ): Promise<Buffer> {
   return new Promise(async (resolve, reject) => {
     const doc = new PDFDocument({ size: "LETTER", margin: 50 });
@@ -215,14 +225,53 @@ async function createPDFBuffer(
       y += 25;
     });
 
-    // Total
+    // Subtotal and additional costs
     y += 20;
     doc
-      .fontSize(12)
+      .fontSize(11)
+      .fillColor("#333333")
+      .text("Subtotal (Anuncios):", 350, y, { align: "right" })
+      .text(`$${subtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+    
+    y += 20;
+    if (productionCost) {
+      doc
+        .text("Costo de Producción:", 350, y, { align: "right" })
+        .text(`$${productionCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+      y += 20;
+    }
+    
+    if (otherServicesCost) {
+      const serviceLabel = otherServicesDescription || "Otros Servicios";
+      doc
+        .text(`${serviceLabel}:`, 350, y, { align: "right" })
+        .text(`$${otherServicesCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+      y += 20;
+    }
+    
+    // Total line
+    doc
+      .moveTo(350, y)
+      .lineTo(562, y)
+      .stroke("#1a4d3c");
+    
+    y += 10;
+    const finalTotal = total || subtotal;
+    doc
+      .fontSize(13)
       .fillColor("#1a4d3c")
-      .text("TOTAL:", 400, y, { align: "right" })
-      .fontSize(14)
-      .text(`$${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 450, y);
+      .text("TOTAL:", 350, y, { align: "right" })
+      .fontSize(15)
+      .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+    
+    // Salesperson name if provided
+    if (salespersonName) {
+      y += 30;
+      doc
+        .fontSize(10)
+        .fillColor("#666666")
+        .text(`Vendedor: ${salespersonName}`, 50, y);
+    }
 
     // Footer
     doc

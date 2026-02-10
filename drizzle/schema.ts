@@ -64,7 +64,7 @@ export const anuncios = mysqlTable("anuncios", {
   producto: varchar("producto", { length: 255 }).notNull(), // Product/Ad name
   cliente: varchar("cliente", { length: 255 }).notNull(), // Client company name
   tipo: mysqlEnum("tipo", ["Fijo", "Bonificación"]).notNull(), // F/B from Excel
-  costoPorUnidad: decimal("costo_por_unidad", { precision: 10, scale: 2 }), // Cost per unit
+  costoPorUnidad: varchar("costo_por_unidad", { length: 20 }), // Cost per unit (stored as string to avoid Drizzle decimal bug)
   fechaInicio: timestamp("fecha_inicio").notNull(), // Start date
   fechaFin: timestamp("fecha_fin").notNull(), // End date
   estado: mysqlEnum("estado", ["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).default("Activo").notNull(),

@@ -1,0 +1,1 @@
+ALTER TABLE `anuncios` MODIFY COLUMN `costo_por_unidad` varchar(20);

@@ -62,13 +62,18 @@ export default function Anuncios() {
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [invoiceDescription, setInvoiceDescription] = useState("");
+  const [productionCost, setProductionCost] = useState("");
+  const [otherServicesDescription, setOtherServicesDescription] = useState("");
+  const [otherServicesCost, setOtherServicesCost] = useState("");
+  const [salespersonName, setSalespersonName] = useState("");
 
   const filteredAnuncios = anuncios?.filter((a) => {
     const matchesSearch =
       !searchTerm ||
       a.producto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       a.cliente?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      a.paradaId.toString().includes(searchTerm);
+      a.paradaId.toString().includes(searchTerm) ||
+      paradas?.find(p => p.id === a.paradaId)?.cobertizoId?.toString().includes(searchTerm);
 
     const matchesEstado = filterEstado === "all" || a.estado === filterEstado;
     const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
@@ -167,6 +172,10 @@ export default function Anuncios() {
         anuncioIds,
         title,
         description: invoiceDescription,
+        productionCost: productionCost ? parseFloat(productionCost) : undefined,
+        otherServicesDescription: otherServicesDescription || undefined,
+        otherServicesCost: otherServicesCost ? parseFloat(otherServicesCost) : undefined,
+        salespersonName: salespersonName || undefined,
       },
       {
         onSuccess: (data: any) => {
@@ -511,8 +520,8 @@ export default function Anuncios() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Parada</TableHead>
+                  <TableHead>Cobertizo</TableHead>
+                  <TableHead>Ubicación</TableHead>
                   <TableHead>Producto</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead>Tipo</TableHead>
@@ -526,9 +535,11 @@ export default function Anuncios() {
                 {filteredAnuncios && filteredAnuncios.length > 0 ? (
                   filteredAnuncios.map((anuncio) => (
                     <TableRow key={anuncio.id}>
-                      <TableCell className="font-medium">{anuncio.id}</TableCell>
+                      <TableCell className="font-medium">
+                        {paradas?.find(p => p.id === anuncio.paradaId)?.cobertizoId || anuncio.paradaId}
+                      </TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {getParadaInfo(anuncio.paradaId)}
+                        {paradas?.find(p => p.id === anuncio.paradaId)?.localizacion || "—"}
                       </TableCell>
                       <TableCell>{anuncio.producto || "—"}</TableCell>
                       <TableCell>{anuncio.cliente || "—"}</TableCell>
@@ -766,6 +777,46 @@ export default function Anuncios() {
                 value={invoiceDescription}
                 onChange={(e) => setInvoiceDescription(e.target.value)}
                 placeholder="Ej: Servicios de publicidad exterior"
+              />
+            </div>
+            <div>
+              <Label htmlFor="production-cost">Costo de Producción (opcional)</Label>
+              <Input
+                id="production-cost"
+                type="number"
+                step="0.01"
+                value={productionCost}
+                onChange={(e) => setProductionCost(e.target.value)}
+                placeholder="Ej: 500.00"
+              />
+            </div>
+            <div>
+              <Label htmlFor="other-services-desc">Otros Servicios - Descripción (opcional)</Label>
+              <Input
+                id="other-services-desc"
+                value={otherServicesDescription}
+                onChange={(e) => setOtherServicesDescription(e.target.value)}
+                placeholder="Ej: Instalación y mantenimiento"
+              />
+            </div>
+            <div>
+              <Label htmlFor="other-services-cost">Otros Servicios - Costo (opcional)</Label>
+              <Input
+                id="other-services-cost"
+                type="number"
+                step="0.01"
+                value={otherServicesCost}
+                onChange={(e) => setOtherServicesCost(e.target.value)}
+                placeholder="Ej: 250.00"
+              />
+            </div>
+            <div>
+              <Label htmlFor="salesperson-name">Nombre del Vendedor (opcional)</Label>
+              <Input
+                id="salesperson-name"
+                value={salespersonName}
+                onChange={(e) => setSalespersonName(e.target.value)}
+                placeholder="Ej: Juan Pérez"
               />
             </div>
             <div className="text-sm text-gray-600">

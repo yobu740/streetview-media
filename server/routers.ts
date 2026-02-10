@@ -555,12 +555,24 @@ export const appRouter = router({
         anuncioIds: z.array(z.number()),
         title: z.string().optional(),
         description: z.string().optional(),
+        productionCost: z.number().optional(),
+        otherServicesDescription: z.string().optional(),
+        otherServicesCost: z.number().optional(),
+        salespersonName: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         try {
           console.log("[Invoice Router] Received request with", input.anuncioIds.length, "anuncios");
           const { generateInvoiceFromAnuncios } = await import("./invoice-generator");
-          const pdfUrl = await generateInvoiceFromAnuncios(input.anuncioIds, input.title, input.description);
+          const pdfUrl = await generateInvoiceFromAnuncios(
+            input.anuncioIds, 
+            input.title, 
+            input.description,
+            input.productionCost,
+            input.otherServicesDescription,
+            input.otherServicesCost,
+            input.salespersonName
+          );
           console.log("[Invoice Router] Generated PDF:", pdfUrl);
           return { pdfUrl };
         } catch (error) {
