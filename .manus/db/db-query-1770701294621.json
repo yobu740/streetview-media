@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total, \n       SUM(CASE WHEN producto = 'OPIOIDES' THEN 1 ELSE 0 END) as opioides_count,\n       SUM(CASE WHEN producto = 'OPIOIDES' AND tipo = 'Fijo' THEN 1 ELSE 0 END) as opioides_fijo_count\nFROM anuncios;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT COUNT(*) as total, \n       SUM(CASE WHEN producto = 'OPIOIDES' THEN 1 ELSE 0 END) as opioides_count,\n       SUM(CASE WHEN producto = 'OPIOIDES' AND tipo = 'Fijo' THEN 1 ELSE 0 END) as opioides_fijo_count\nFROM anuncios;",
+  "rows": [
+    {
+      "total": "666",
+      "opioides_count": "0",
+      "opioides_fijo_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\topioides_count\topioides_fijo_count\n666\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 345
+}

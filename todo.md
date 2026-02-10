@@ -575,3 +575,9 @@
 - [ ] Add logging to see what database query returns
 - [ ] Verify costoPorUnidad is being selected in query
 - [ ] Fix logo not loading in PDF (shows text instead of image)
+
+## Invoice Generation Cost Fix
+- [x] Update database to set costo_por_unidad = 350 for all OPIOIDES Fijo ads
+- [x] Import 104 OPIOIDES ads from Excel with correct costs (74 Fijo @ $350, 30 Bonificación @ $0)
+- [ ] Verify invoice PDF shows correct costs and line items
+- [ ] Test invoice generation with filtered OPIOIDES ads

@@ -1,0 +1,17 @@
+{
+  "query": "SELECT COUNT(*) as total,\n       SUM(CASE WHEN tipo = 'Fijo' THEN 1 ELSE 0 END) as fijo_count,\n       SUM(CASE WHEN tipo = 'Bonificación' THEN 1 ELSE 0 END) as bonificacion_count,\n       SUM(CASE WHEN tipo = 'Fijo' AND costo_por_unidad = '350.00' THEN 1 ELSE 0 END) as fijo_with_cost,\n       SUM(CASE WHEN tipo = 'Bonificación' AND costo_por_unidad = '0.00' THEN 1 ELSE 0 END) as bonif_with_zero\nFROM anuncios \nWHERE cliente = 'OPIOIDES';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT COUNT(*) as total,\n       SUM(CASE WHEN tipo = 'Fijo' THEN 1 ELSE 0 END) as fijo_count,\n       SUM(CASE WHEN tipo = 'Bonificación' THEN 1 ELSE 0 END) as bonificacion_count,\n       SUM(CASE WHEN tipo = 'Fijo' AND costo_por_unidad = '350.00' THEN 1 ELSE 0 END) as fijo_with_cost,\n       SUM(CASE WHEN tipo = 'Bonificación' AND costo_por_unidad = '0.00' THEN 1 ELSE 0 END) as bonif_with_zero\nFROM anuncios \nWHERE cliente = 'OPIOIDES';",
+  "rows": [
+    {
+      "total": "208",
+      "fijo_count": "148",
+      "bonificacion_count": "60",
+      "fijo_with_cost": "148",
+      "bonif_with_zero": "60"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tfijo_count\tbonificacion_count\tfijo_with_cost\tbonif_with_zero\n208\t148\t60\t148\t60\n",
+  "stderr": "",
+  "execution_time_ms": 353
+}
