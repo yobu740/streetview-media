@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, producto, cliente, costo_por_unidad, tipo FROM anuncios WHERE producto LIKE '%OPIOIDES%' OR cliente LIKE '%OPIOIDES%' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, producto, cliente, costo_por_unidad, tipo FROM anuncios WHERE producto LIKE '%OPIOIDES%' OR cliente LIKE '%OPIOIDES%' LIMIT 10;",
+  "rows": [
+    {
+      "id": "180001",
+      "producto": "",
+      "cliente": "OPIOIDES DIJERON",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180004",
+      "producto": "",
+      "cliente": "OPIOIDES PASTILLA",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180009",
+      "producto": "",
+      "cliente": "OPIOIDES ESCONDER",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180015",
+      "producto": "",
+      "cliente": "OPIOIDES ESCONDER",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180021",
+      "producto": "",
+      "cliente": "OPIOIDES PASTILLA",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180029",
+      "producto": "",
+      "cliente": "OPIOIDES DIJERON",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180033",
+      "producto": "",
+      "cliente": "OPIOIDES ESCONDER",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180040",
+      "producto": "",
+      "cliente": "OPIOIDES PASTILLA",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180043",
+      "producto": "",
+      "cliente": "OPIOIDES PASTILLA",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    },
+    {
+      "id": "180051",
+      "producto": "",
+      "cliente": "OPIOIDES DIJERON",
+      "costo_por_unidad": "NULL",
+      "tipo": "Fijo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproducto\tcliente\tcosto_por_unidad\ttipo\n180001\t\tOPIOIDES DIJERON\tNULL\tFijo\n180004\t\tOPIOIDES PASTILLA\tNULL\tFijo\n180009\t\tOPIOIDES ESCONDER\tNULL\tFijo\n180015\t\tOPIOIDES ESCONDER\tNULL\tFijo\n180021\t\tOPIOIDES PASTILLA\tNULL\tFijo\n180029\t\tOPIOIDES DIJERON\tNULL\tFijo\n180033\t\tOPIOIDES ESCONDER\tNULL\tFijo\n180040\t\tOPIOIDES PASTILLA\tNULL\tFijo\n180043\t\tOPIOIDES PASTILLA\tNULL\tFijo\n180051\t\tOPIOIDES DIJERON\tNULL\tFijo\n",
+  "stderr": "",
+  "execution_time_ms": 351
+}

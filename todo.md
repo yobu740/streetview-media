@@ -569,3 +569,9 @@
 - [ ] Debug why costs show $0.00 (check costoPorUnidad field name and parsing)
 - [ ] Add console logging to invoice generator to trace data flow
 - [ ] Test with OPIOIDES ads that have $350 cost
+
+## Fix Invoice Empty Table Issue
+- [ ] Add detailed logging to see what anuncioIds are received
+- [ ] Add logging to see what database query returns
+- [ ] Verify costoPorUnidad is being selected in query
+- [ ] Fix logo not loading in PDF (shows text instead of image)
