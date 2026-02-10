@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, cliente, tipo, costo_por_unidad FROM anuncios WHERE cliente LIKE '%OPIOIDES%' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cliente, tipo, costo_por_unidad FROM anuncios WHERE cliente LIKE '%OPIOIDES%' LIMIT 10;",
+  "rows": [
+    {
+      "id": "180001",
+      "cliente": "OPIOIDES DIJERON",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180004",
+      "cliente": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180009",
+      "cliente": "OPIOIDES ESCONDER",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180021",
+      "cliente": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180029",
+      "cliente": "OPIOIDES DIJERON",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180033",
+      "cliente": "OPIOIDES ESCONDER",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180040",
+      "cliente": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180043",
+      "cliente": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180051",
+      "cliente": "OPIOIDES DIJERON",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "180057",
+      "cliente": "OPIOIDES ESCONDER",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\ttipo\tcosto_por_unidad\n180001\tOPIOIDES DIJERON\tFijo\tNULL\n180004\tOPIOIDES PASTILLA\tFijo\tNULL\n180009\tOPIOIDES ESCONDER\tFijo\tNULL\n180021\tOPIOIDES PASTILLA\tFijo\tNULL\n180029\tOPIOIDES DIJERON\tFijo\tNULL\n180033\tOPIOIDES ESCONDER\tFijo\tNULL\n180040\tOPIOIDES PASTILLA\tFijo\tNULL\n180043\tOPIOIDES PASTILLA\tFijo\tNULL\n180051\tOPIOIDES DIJERON\tFijo\tNULL\n180057\tOPIOIDES ESCONDER\tFijo\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 360
+}

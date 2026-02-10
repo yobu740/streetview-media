@@ -1160,10 +1160,10 @@ export default function Admin() {
                             </TableCell>
                             <TableCell>
                               {(() => {
-                                const isRenovada = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
+                                const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
                                 return (
-                                  <Badge variant={isRenovada ? "default" : "secondary"} className={isRenovada ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}>
-                                    {isRenovada ? "Renovada" : "Pendiente"}
+                                  <Badge variant={isLista ? "default" : "secondary"} className={isLista ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}>
+                                    {isLista ? "Lista" : "Pendiente"}
                                   </Badge>
                                 );
                               })()}

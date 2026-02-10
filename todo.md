@@ -620,3 +620,15 @@
 - [x] Dropdown de paradas no muestra cobertizoId (solo ubicación) - FIXED: ahora muestra cobertizoId
 - [x] Falta validación: dropdown debe mostrar solo paradas disponibles en rango de fechas - FIXED: filtra por disponibilidad
 - [x] Cambios en parada no se reflejan automáticamente en listas - FIXED: usa Promise.all para invalidar queries
+
+## Remaining Frontend Fixes
+- [x] Fix frontend total calculation - shows $350 instead of summing all costs
+- [x] Change PDF to download instead of opening in new tab - uses fetch + blob
+- [x] Rename parada status "Renovada" to "Lista"
+
+## PDF Invoice Issues (URGENT)
+- [x] Texto solapado - vendedor debe estar en header, no en footer
+- [x] Solo muestra 1 anuncio en PDF cuando se seleccionaron 103 activos - FIXED: updated costs in DB
+
+## Edit Dialog Parada Display
+- [x] Dropdown de parada aparece vacío en edición - FIXED: ahora muestra parada actual con cobertizoId

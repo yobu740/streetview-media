@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN costo_por_unidad IS NULL OR costo_por_unidad = '' THEN 1 ELSE 0 END) as sin_costo,\n  SUM(CASE WHEN costo_por_unidad = '350' THEN 1 ELSE 0 END) as con_350,\n  SUM(CASE WHEN costo_por_unidad = '0' THEN 1 ELSE 0 END) as con_0\nFROM anuncios \nWHERE cliente LIKE '%OPIOIDES%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT \n  COUNT(*) as total,\n  SUM(CASE WHEN costo_por_unidad IS NULL OR costo_por_unidad = '' THEN 1 ELSE 0 END) as sin_costo,\n  SUM(CASE WHEN costo_por_unidad = '350' THEN 1 ELSE 0 END) as con_350,\n  SUM(CASE WHEN costo_por_unidad = '0' THEN 1 ELSE 0 END) as con_0\nFROM anuncios \nWHERE cliente LIKE '%OPIOIDES%';",
+  "rows": [
+    {
+      "total": "409",
+      "sin_costo": "204",
+      "con_350": "0",
+      "con_0": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tsin_costo\tcon_350\tcon_0\n409\t204\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 357
+}

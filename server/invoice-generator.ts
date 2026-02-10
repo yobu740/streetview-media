@@ -162,6 +162,11 @@ async function createPDFBuffer(
       .text(`No. ${invoiceNumber}`, 400, 70, { align: "right" })
       .text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, 85, { align: "right" })
       .text(invoiceTitle, 400, 100, { align: "right" });
+    
+    // Salesperson name in header if provided
+    if (salespersonName) {
+      doc.text(`Vendedor: ${salespersonName}`, 400, 115, { align: "right" });
+    }
 
     // Description if provided
     if (description) {
@@ -264,14 +269,7 @@ async function createPDFBuffer(
       .fontSize(15)
       .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
     
-    // Salesperson name if provided
-    if (salespersonName) {
-      y += 30;
-      doc
-        .fontSize(10)
-        .fillColor("#666666")
-        .text(`Vendedor: ${salespersonName}`, 50, y);
-    }
+
 
     // Footer
     doc

@@ -182,16 +182,33 @@ export default function Anuncios() {
       },
       {
         onSuccess: (data: any) => {
-          // Download PDF
-          const link = document.createElement('a');
-          link.href = data.pdfUrl;
-          link.download = `Factura-${Date.now()}.pdf`;
-          link.click();
+          // Download PDF using fetch to avoid popup blockers
+          fetch(data.pdfUrl)
+            .then(response => response.blob())
+            .then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `Factura-${Date.now()}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            })
+            .catch(err => {
+              console.error('Download failed:', err);
+              // Fallback: open in new tab
+              window.open(data.pdfUrl, '_blank');
+            });
           
           toast.success("Factura generada exitosamente");
           setIsInvoiceDialogOpen(false);
           setInvoiceTitle("");
           setInvoiceDescription("");
+          setProductionCost("");
+          setOtherServicesDescription("");
+          setOtherServicesCost("");
+          setSalespersonName("");
         },
         onError: (error: any) => {
           toast.error(error.message || "Error al generar factura");
@@ -615,7 +632,11 @@ export default function Anuncios() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una parada" />
+                  <SelectValue placeholder="Selecciona una parada">
+                    {editForm.paradaId && paradas?.find(p => p.id === editForm.paradaId)
+                      ? `${paradas.find(p => p.id === editForm.paradaId)?.cobertizoId} [${paradas.find(p => p.id === editForm.paradaId)?.orientacion}] - ${paradas.find(p => p.id === editForm.paradaId)?.localizacion}`
+                      : "Selecciona una parada"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {paradas
@@ -847,7 +868,16 @@ export default function Anuncios() {
             <div className="text-sm text-gray-600">
               <p><strong>Anuncios filtrados:</strong> {filteredAnuncios?.length || 0}</p>
               <p><strong>Anuncios facturables (Activo/Programado/Finalizado):</strong> {filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").length || 0}</p>
-              <p><strong>Total estimado:</strong> ${filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").reduce((sum, a) => sum + (parseFloat(a.costoPorUnidad?.toString() || "0")), 0).toFixed(2)}</p>
+              <p><strong>Total estimado:</strong> ${(() => {
+                const billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                const subtotal = billable.reduce((sum, a) => {
+                  const cost = parseFloat(a.costoPorUnidad || "0");
+                  return sum + cost;
+                }, 0);
+                const prodCost = parseFloat(productionCost || "0");
+                const otherCost = parseFloat(otherServicesCost || "0");
+                return (subtotal + prodCost + otherCost).toFixed(2);
+              })()}</p>
             </div>
           </div>
           <DialogFooter>
