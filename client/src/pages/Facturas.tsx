@@ -17,8 +17,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Download, Trash2, Search, FileText } from "lucide-react";
+import { Download, Trash2, Search, FileText, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 export default function Facturas() {
   const [clienteFilter, setClienteFilter] = useState("");
@@ -46,6 +47,58 @@ export default function Facturas() {
   const handleDownload = (pdfUrl: string, numeroFactura: string) => {
     // Open PDF in new tab for download
     window.open(pdfUrl, "_blank");
+  };
+
+  const handleExportExcel = () => {
+    if (!facturas || facturas.length === 0) {
+      toast.error("No hay facturas para exportar");
+      return;
+    }
+
+    // Prepare data for Excel
+    const excelData = facturas.map((factura) => ({
+      "No. Factura": factura.numeroFactura,
+      "Fecha": new Date(factura.createdAt).toLocaleDateString("es-PR"),
+      "Cliente": factura.cliente,
+      "Título": factura.titulo,
+      "Descripción": factura.descripcion || "",
+      "Cantidad Anuncios": factura.cantidadAnuncios,
+      "Subtotal": parseFloat(factura.subtotal),
+      "Costo Producción": factura.costoProduccion ? parseFloat(factura.costoProduccion) : 0,
+      "Otros Servicios": factura.otrosServiciosDescripcion || "",
+      "Costo Otros Servicios": factura.otrosServiciosCosto ? parseFloat(factura.otrosServiciosCosto) : 0,
+      "Total": parseFloat(factura.total),
+      "Vendedor": factura.vendedor || "",
+    }));
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Set column widths
+    ws["!cols"] = [
+      { wch: 20 }, // No. Factura
+      { wch: 12 }, // Fecha
+      { wch: 25 }, // Cliente
+      { wch: 30 }, // Título
+      { wch: 40 }, // Descripción
+      { wch: 10 }, // Cantidad
+      { wch: 12 }, // Subtotal
+      { wch: 15 }, // Costo Producción
+      { wch: 30 }, // Otros Servicios
+      { wch: 18 }, // Costo Otros
+      { wch: 12 }, // Total
+      { wch: 20 }, // Vendedor
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Facturas");
+
+    // Generate filename with current date
+    const filename = `Facturas_${new Date().toISOString().split("T")[0]}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(wb, filename);
+    toast.success(`Exportado ${facturas.length} facturas a Excel`);
   };
 
   return (
@@ -79,6 +132,14 @@ export default function Facturas() {
               onClick={() => setClienteFilter("")}
             >
               Limpiar Filtros
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleExportExcel}
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exportar a Excel
             </Button>
           </div>
 

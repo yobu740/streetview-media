@@ -98,6 +98,7 @@ export default function Home() {
             <a href="#nosotros" onClick={(e) => handleNavClick(e, '#nosotros')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Nosotros</a>
             <a href="#servicios" onClick={(e) => handleNavClick(e, '#servicios')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Servicios</a>
             <a href="#contacto" onClick={(e) => handleNavClick(e, '#contacto')} className="text-body font-medium hover:text-[#ff6b35] transition-colors">Contacto</a>
+            <a href="/facturas" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Facturas</a>
             <a href="/admin" className="text-body font-medium hover:text-[#ff6b35] transition-colors">Admin</a>
           </div>
           
@@ -119,6 +120,7 @@ export default function Home() {
               <a href="#nosotros" onClick={(e) => handleNavClick(e, '#nosotros')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Nosotros</a>
               <a href="#servicios" onClick={(e) => handleNavClick(e, '#servicios')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Servicios</a>
               <a href="#contacto" onClick={(e) => handleNavClick(e, '#contacto')} className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Contacto</a>
+              <a href="/facturas" className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Facturas</a>
               <a href="/admin" className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors">Admin</a>
             </div>
           </div>

@@ -643,3 +643,10 @@
 - [x] Create backend procedures (list with filters, delete)
 - [x] Create Facturas page with table and filters - /facturas route
 - [x] Save invoice record when generating PDF - auto-saves to facturas table
+
+## Final Enhancements
+- [x] Add Facturas link to main navigation menu (Home page)
+- [x] Implement Excel export for Facturas page
+- [x] Change anuncios.list to protectedProcedure
+- [x] Change facturas.list to protectedProcedure
+- [x] Change invoices.generate to protectedProcedure

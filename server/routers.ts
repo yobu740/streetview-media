@@ -195,7 +195,7 @@ export const appRouter = router({
   
   // Anuncios management router
   anuncios: router({
-    list: publicProcedure.query(async () => {
+    list: protectedProcedure.query(async () => {
       return await paradasDb.getAllAnuncios();
     }),
     
@@ -550,7 +550,7 @@ export const appRouter = router({
 
   // Facturas (invoice history) router
   facturas: router({
-    list: publicProcedure
+    list: protectedProcedure
       .input(z.object({
         cliente: z.string().optional(),
         fechaDesde: z.string().optional(),
@@ -589,7 +589,7 @@ export const appRouter = router({
 
   // Invoices router
   invoices: router({
-    generate: publicProcedure
+    generate: protectedProcedure
       .input(z.object({
         anuncioIds: z.array(z.number()),
         title: z.string().optional(),
