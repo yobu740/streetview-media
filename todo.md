@@ -543,3 +543,11 @@
 - [x] Create monthly billing chart in Métricas page
 - [x] Show total revenue by month calculated from cost_por_unidad
 - [x] Show annual total and monthly average
+
+## Create PDF Invoice Generation System
+- [x] Add "Generar Factura" button to Anuncios page header
+- [x] Create dialog to select client and month for invoice
+- [x] Implement backend procedure to generate professional PDF invoice
+- [x] Include logo, client info, itemized ads, and totals in PDF
+- [x] Generate unique invoice numbers
+- [ ] Test invoice generation for different clients and months

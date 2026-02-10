@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2 } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 
@@ -38,6 +38,7 @@ export default function Anuncios() {
   const { data: paradas } = trpc.paradas.list.useQuery();
   const updateAnuncio = trpc.anuncios.update.useMutation();
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
+  const generateInvoice = trpc.invoices.generate.useMutation();
   const utils = trpc.useUtils();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,6 +59,9 @@ export default function Anuncios() {
     costoPorUnidad: "",
     notas: "",
   });
+  const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
+  const [invoiceClient, setInvoiceClient] = useState("");
+  const [invoiceMonth, setInvoiceMonth] = useState("");
 
   const filteredAnuncios = anuncios?.filter((a) => {
     const matchesSearch =
@@ -132,6 +136,37 @@ export default function Anuncios() {
         },
         onError: (error) => {
           toast.error(`Error: ${error.message}`);
+        },
+      }
+    );
+  };
+
+  const handleGenerateInvoice = async () => {
+    if (!invoiceClient || !invoiceMonth) {
+      toast.error("Selecciona cliente y mes");
+      return;
+    }
+
+    generateInvoice.mutate(
+      {
+        cliente: invoiceClient,
+        month: invoiceMonth,
+      },
+      {
+        onSuccess: (data) => {
+          // Download PDF
+          const link = document.createElement('a');
+          link.href = data.pdfUrl;
+          link.download = `Factura-${invoiceClient}-${invoiceMonth}.pdf`;
+          link.click();
+          
+          toast.success("Factura generada exitosamente");
+          setIsInvoiceDialogOpen(false);
+          setInvoiceClient("");
+          setInvoiceMonth("");
+        },
+        onError: (error) => {
+          toast.error(error.message || "Error al generar factura");
         },
       }
     );
@@ -395,6 +430,13 @@ export default function Anuncios() {
             >
               <Printer size={16} className="mr-2" />
               Imprimir Reporte
+            </Button>
+            <Button
+              onClick={() => setIsInvoiceDialogOpen(true)}
+              className="bg-[#ff6b35] hover:bg-[#e65a25]"
+            >
+              <FileText size={16} className="mr-2" />
+              Generar Factura
             </Button>
           </div>
         </div>
@@ -677,6 +719,57 @@ export default function Anuncios() {
               disabled={updateAnuncio.isPending}
             >
               {updateAnuncio.isPending ? "Guardando..." : "Guardar Cambios"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Invoice Generation Dialog */}
+      <Dialog open={isInvoiceDialogOpen} onOpenChange={setIsInvoiceDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Generar Factura Mensual</DialogTitle>
+            <DialogDescription>
+              Selecciona el cliente y el mes para generar la factura en PDF
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="invoice-client">Cliente</Label>
+              <Select value={invoiceClient} onValueChange={setInvoiceClient}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from(new Set(anuncios?.map(a => a.cliente) || [])).sort().map(cliente => (
+                    <SelectItem key={cliente} value={cliente}>
+                      {cliente}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="invoice-month">Mes</Label>
+              <Input
+                id="invoice-month"
+                type="month"
+                value={invoiceMonth}
+                onChange={(e) => setInvoiceMonth(e.target.value)}
+                placeholder="YYYY-MM"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsInvoiceDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="bg-[#ff6b35] hover:bg-[#e65a25]"
+              onClick={handleGenerateInvoice}
+              disabled={!invoiceClient || !invoiceMonth || generateInvoice.isPending}
+            >
+              {generateInvoice.isPending ? "Generando..." : "Generar PDF"}
             </Button>
           </DialogFooter>
         </DialogContent>

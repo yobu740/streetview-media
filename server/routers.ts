@@ -547,6 +547,20 @@ export const appRouter = router({
         return history;
       }),
   }),
+
+  // Invoices router
+  invoices: router({
+    generate: protectedProcedure
+      .input(z.object({
+        cliente: z.string(),
+        month: z.string(), // Format: YYYY-MM
+      }))
+      .mutation(async ({ input }) => {
+        const { generateInvoicePDF } = await import("./invoice-generator");
+        const pdfUrl = await generateInvoicePDF(input.cliente, input.month);
+        return { pdfUrl };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
