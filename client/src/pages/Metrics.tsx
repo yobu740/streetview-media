@@ -110,11 +110,46 @@ export default function Metrics() {
     .sort((a, b) => b.rate - a.rate)
     .slice(0, 10);
   
-  // Revenue projection (assuming $500/month per parada)
-  const pricePerMonth = 500;
-  const currentRevenue = occupiedCount * pricePerMonth;
-  const potentialRevenue = totalParadas * pricePerMonth;
-  const revenueGap = potentialRevenue - currentRevenue;
+  // Revenue calculation based on actual costoPorUnidad
+  const currentRevenue = activeAnuncios.reduce((sum, anuncio) => {
+    const cost = parseFloat(anuncio.costoPorUnidad?.toString() || "0");
+    return sum + cost;
+  }, 0);
+  
+  // Monthly billing calculation
+  const getMonthlyRevenue = () => {
+    const monthlyData: Record<string, number> = {};
+    
+    anuncios?.forEach(anuncio => {
+      if (anuncio.estado === "Finalizado" || anuncio.estado === "Inactivo") return;
+      
+      const cost = parseFloat(anuncio.costoPorUnidad?.toString() || "0");
+      if (cost === 0) return; // Skip bonificaciones
+      
+      const inicio = new Date(anuncio.fechaInicio);
+      const fin = new Date(anuncio.fechaFin);
+      
+      // Calculate months covered by this anuncio
+      let current = new Date(inicio.getFullYear(), inicio.getMonth(), 1);
+      const endMonth = new Date(fin.getFullYear(), fin.getMonth(), 1);
+      
+      while (current <= endMonth) {
+        const monthKey = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+        monthlyData[monthKey] = (monthlyData[monthKey] || 0) + cost;
+        current.setMonth(current.getMonth() + 1);
+      }
+    });
+    
+    // Sort by month and get last 12 months
+    const sortedMonths = Object.entries(monthlyData)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-12);
+    
+    return sortedMonths;
+  };
+  
+  const monthlyRevenue = getMonthlyRevenue();
+  const totalAnnualRevenue = monthlyRevenue.reduce((sum, [, revenue]) => sum + revenue, 0);
 
   // Get unique clients for filter dropdown
   const uniqueClients = Array.from(new Set(anuncios?.map(a => a.cliente) || [])).sort();
@@ -242,7 +277,7 @@ export default function Metrics() {
                 ${currentRevenue.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground">
-                Potencial: ${potentialRevenue.toLocaleString()}
+                Anual: ${totalAnnualRevenue.toLocaleString()}
               </p>
             </CardContent>
           </Card>
@@ -309,55 +344,69 @@ export default function Metrics() {
           </Card>
         </div>
 
-        {/* Revenue Projection */}
-        <Card>
+        {/* Monthly Billing Chart */}
+        <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Proyección de Revenue</CardTitle>
-            <CardDescription>Basado en $500/mes por parada</CardDescription>
+            <CardTitle>Facturación Mensual</CardTitle>
+            <CardDescription>Ingresos mensuales basados en anuncios activos</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
-                <div className="text-sm text-gray-600 mb-2">Revenue Actual (Mensual)</div>
+                <div className="text-sm text-gray-600 mb-2">Revenue Mensual Actual</div>
                 <div className="text-3xl font-bold text-green-600">
                   ${currentRevenue.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {occupiedCount} paradas ocupadas
+                  {activeAnuncios.length} anuncios activos
                 </div>
               </div>
               
               <div>
-                <div className="text-sm text-gray-600 mb-2">Revenue Potencial (100%)</div>
+                <div className="text-sm text-gray-600 mb-2">Total Anual (12 meses)</div>
                 <div className="text-3xl font-bold text-[#1a4d3c]">
-                  ${potentialRevenue.toLocaleString()}
+                  ${totalAnnualRevenue.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {totalParadas} paradas totales
+                  Últimos 12 meses
                 </div>
               </div>
               
               <div>
-                <div className="text-sm text-gray-600 mb-2">Oportunidad de Crecimiento</div>
+                <div className="text-sm text-gray-600 mb-2">Promedio Mensual</div>
                 <div className="text-3xl font-bold text-[#ff6b35]">
-                  ${revenueGap.toLocaleString()}
+                  ${Math.round(totalAnnualRevenue / 12).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
-                  {availableCount} paradas disponibles
+                  Basado en últimos 12 meses
                 </div>
               </div>
             </div>
             
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Progreso hacia 100%</span>
-                <span className="text-sm text-gray-600">{occupancyRate}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div
-                  className="bg-gradient-to-r from-[#1a4d3c] to-[#ff6b35] h-4 rounded-full transition-all"
-                  style={{ width: `${occupancyRate}%` }}
-                ></div>
+            {/* Monthly Bar Chart */}
+            <div className="mt-8">
+              <div className="text-sm font-medium mb-4">Ingresos por Mes (Últimos 12 meses)</div>
+              <div className="space-y-3">
+                {monthlyRevenue.map(([month, revenue]) => {
+                  const maxRevenue = Math.max(...monthlyRevenue.map(([, r]) => r));
+                  const percentage = maxRevenue > 0 ? (revenue / maxRevenue) * 100 : 0;
+                  const monthName = new Date(month + "-01").toLocaleDateString('es-PR', { year: 'numeric', month: 'short' });
+                  
+                  return (
+                    <div key={month}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium">{monthName}</span>
+                        <span className="text-sm text-gray-600">${revenue.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          className="bg-gradient-to-r from-[#1a4d3c] to-[#ff6b35] h-3 rounded-full transition-all"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </CardContent>

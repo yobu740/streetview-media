@@ -267,14 +267,19 @@ export const appRouter = router({
         producto: z.string().optional(),
         cliente: z.string().optional(),
         tipo: z.enum(["Fijo", "Bonificación"]).optional(),
+        costoPorUnidad: z.number().optional(),
         fechaInicio: z.date().optional(),
         fechaFin: z.date().optional(),
         estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
         notas: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        await paradasDb.updateAnuncio(id, data);
+        const { id, costoPorUnidad, ...data } = input;
+        const updateData = {
+          ...data,
+          ...(costoPorUnidad !== undefined && { costoPorUnidad: costoPorUnidad.toString() }),
+        };
+        await paradasDb.updateAnuncio(id, updateData);
         return { success: true };
       }),
     

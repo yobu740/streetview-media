@@ -535,3 +535,11 @@
 - [x] Add Reservar button to Mis Reservas page for vendedores
 - [x] Remove adminOnly restriction from Mantenimiento in sidebar
 - [ ] Test mobile menu doesn't have conflicts
+
+## Add Monthly Billing Metrics and Cost Management
+- [x] Update all OPIOIDES Fijo ads to $350 cost per unit
+- [x] Add cost_por_unidad editing field to Anuncios edit dialog
+- [x] Enforce Bonificación ads have $0 cost (auto-set)
+- [x] Create monthly billing chart in Métricas page
+- [x] Show total revenue by month calculated from cost_por_unidad
+- [x] Show annual total and monthly average

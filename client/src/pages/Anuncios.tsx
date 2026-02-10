@@ -55,6 +55,7 @@ export default function Anuncios() {
     fechaFin: "",
     estado: "Activo" as "Disponible" | "Activo" | "Programado" | "Finalizado" | "Inactivo",
     tipo: "Fijo" as "Fijo" | "Bonificación",
+    costoPorUnidad: "",
     notas: "",
   });
 
@@ -92,6 +93,7 @@ export default function Anuncios() {
       fechaFin: new Date(anuncio.fechaFin).toISOString().split("T")[0],
       estado: anuncio.estado,
       tipo: anuncio.tipo,
+      costoPorUnidad: anuncio.costoPorUnidad?.toString() || "",
       notas: anuncio.notas || "",
     });
     setIsEditDialogOpen(true);
@@ -105,6 +107,9 @@ export default function Anuncios() {
       return;
     }
 
+    // Auto-set cost to 0 for Bonificación
+    const finalCost = editForm.tipo === "Bonificación" ? 0 : parseFloat(editForm.costoPorUnidad) || 0;
+
     updateAnuncio.mutate(
       {
         id: selectedAnuncio.id,
@@ -115,6 +120,7 @@ export default function Anuncios() {
         fechaFin: new Date(editForm.fechaFin),
         estado: editForm.estado,
         tipo: editForm.tipo,
+        costoPorUnidad: finalCost,
         notas: editForm.notas,
       },
       {
@@ -610,6 +616,25 @@ export default function Anuncios() {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label htmlFor="edit-costo">Costo por Unidad ($)</Label>
+                <Input
+                  id="edit-costo"
+                  type="number"
+                  step="0.01"
+                  value={editForm.costoPorUnidad}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, costoPorUnidad: e.target.value })
+                  }
+                  placeholder="350.00"
+                  disabled={editForm.tipo === "Bonificación"}
+                />
+                {editForm.tipo === "Bonificación" && (
+                  <p className="text-sm text-gray-500 mt-1">Las bonificaciones no tienen costo</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-estado">Estado</Label>
                 <Select
