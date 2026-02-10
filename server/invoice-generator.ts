@@ -23,6 +23,8 @@ export async function generateInvoiceFromAnuncios(
 
   // Get anuncios by IDs
   const { inArray } = await import("drizzle-orm");
+  console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
+  
   const clientAnuncios = await db
     .select({
       id: anuncios.id,
@@ -36,6 +38,15 @@ export async function generateInvoiceFromAnuncios(
     })
     .from(anuncios)
     .where(inArray(anuncios.id, anuncioIds));
+  
+  console.log("[Invoice] Found", clientAnuncios.length, "anuncios");
+  if (clientAnuncios.length > 0) {
+    console.log("[Invoice] Sample anuncio:", {
+      id: clientAnuncios[0].id,
+      costoPorUnidad: clientAnuncios[0].costoPorUnidad,
+      tipo: clientAnuncios[0].tipo
+    });
+  }
 
   // Get parada info for each anuncio
   const items: InvoiceItem[] = [];
@@ -44,7 +55,11 @@ export async function generateInvoiceFromAnuncios(
   for (const anuncio of clientAnuncios) {
     // Skip bonificaciones (cost = 0)
     const cost = parseFloat(anuncio.costoPorUnidad?.toString() || "0");
-    if (cost === 0) continue;
+    console.log(`[Invoice] Anuncio #${anuncio.id}: cost=${cost}, tipo=${anuncio.tipo}`);
+    if (cost === 0) {
+      console.log(`[Invoice] Skipping anuncio #${anuncio.id} (cost = 0)`);
+      continue;
+    }
 
     const parada = await db
       .select()

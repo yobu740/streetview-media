@@ -563,3 +563,9 @@
 ## Fix Date Range Filter in Anuncios
 - [x] Debug why date range filter (desde/hasta) is not working (fixed overlapping logic)
 - [ ] Test date filter with various date ranges
+
+## Debug Invoice Generation Issues
+- [ ] Debug why logo is not appearing in PDF (check file path and pdfkit image loading)
+- [ ] Debug why costs show $0.00 (check costoPorUnidad field name and parsing)
+- [ ] Add console logging to invoice generator to trace data flow
+- [ ] Test with OPIOIDES ads that have $350 cost

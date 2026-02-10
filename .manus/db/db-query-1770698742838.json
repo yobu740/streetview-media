@@ -1,0 +1,70 @@
+{
+  "query": "SELECT DISTINCT cliente FROM anuncios ORDER BY cliente LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT DISTINCT cliente FROM anuncios ORDER BY cliente LIMIT 20;",
+  "rows": [
+    {
+      "cliente": "ABBIA"
+    },
+    {
+      "cliente": "AMAZON"
+    },
+    {
+      "cliente": "ANIME BOY"
+    },
+    {
+      "cliente": "ANIME GIRL"
+    },
+    {
+      "cliente": "ASC"
+    },
+    {
+      "cliente": "BETTIS"
+    },
+    {
+      "cliente": "BLUEY"
+    },
+    {
+      "cliente": "BODINE"
+    },
+    {
+      "cliente": "BPPR"
+    },
+    {
+      "cliente": "BSI  "
+    },
+    {
+      "cliente": "BSI BANDERA"
+    },
+    {
+      "cliente": "BUS SHELTER"
+    },
+    {
+      "cliente": "CHENCHO"
+    },
+    {
+      "cliente": "CHENCHO SOLO"
+    },
+    {
+      "cliente": "CICLON"
+    },
+    {
+      "cliente": "CICLÓN"
+    },
+    {
+      "cliente": "CLUB CARIBE"
+    },
+    {
+      "cliente": "CONSTRUCCION"
+    },
+    {
+      "cliente": "COSVI"
+    },
+    {
+      "cliente": "CST"
+    }
+  ],
+  "messages": [],
+  "stdout": "cliente\nABBIA\nAMAZON\nANIME BOY\nANIME GIRL\nASC\nBETTIS\nBLUEY\nBODINE\nBPPR\nBSI  \nBSI BANDERA\nBUS SHELTER\nCHENCHO\nCHENCHO SOLO\nCICLON\nCICLÓN\nCLUB CARIBE\nCONSTRUCCION\nCOSVI\nCST\n",
+  "stderr": "",
+  "execution_time_ms": 357
+}
