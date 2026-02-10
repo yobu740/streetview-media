@@ -130,3 +130,27 @@ export const mantenimientoHistorial = mysqlTable("mantenimiento_historial", {
 
 export type MantenimientoHistorial = typeof mantenimientoHistorial.$inferSelect;
 export type InsertMantenimientoHistorial = typeof mantenimientoHistorial.$inferInsert;
+
+/**
+ * Facturas (invoices) history table
+ */
+export const facturas = mysqlTable("facturas", {
+  id: int("id").autoincrement().primaryKey(),
+  numeroFactura: varchar("numero_factura", { length: 64 }).notNull().unique(), // INV-timestamp
+  cliente: varchar("cliente", { length: 255 }).notNull(), // Client name
+  titulo: varchar("titulo", { length: 255 }).notNull(), // Invoice title
+  descripcion: text("descripcion"), // Optional description
+  subtotal: varchar("subtotal", { length: 20 }).notNull(), // Subtotal from anuncios
+  costoProduccion: varchar("costo_produccion", { length: 20 }), // Production cost
+  otrosServiciosDescripcion: varchar("otros_servicios_descripcion", { length: 255 }), // Other services description
+  otrosServiciosCosto: varchar("otros_servicios_costo", { length: 20 }), // Other services cost
+  total: varchar("total", { length: 20 }).notNull(), // Final total
+  vendedor: varchar("vendedor", { length: 255 }), // Salesperson name
+  pdfUrl: text("pdf_url").notNull(), // S3 URL to PDF
+  cantidadAnuncios: int("cantidad_anuncios").notNull(), // Number of anuncios in invoice
+  createdBy: int("created_by").notNull(), // FK to users - who created the invoice
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Factura = typeof facturas.$inferSelect;
+export type InsertFactura = typeof facturas.$inferInsert;

@@ -101,6 +101,24 @@ export async function generateInvoiceFromAnuncios(
   const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}.pdf`;
   const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
 
+  // Save invoice record to database
+  const { facturas } = await import("../drizzle/schema");
+  await db.insert(facturas).values({
+    numeroFactura: invoiceNumber,
+    cliente: clientName,
+    titulo: invoiceTitle,
+    descripcion: description || null,
+    subtotal: total.toString(),
+    costoProduccion: productionCost ? productionCost.toString() : null,
+    otrosServiciosDescripcion: otherServicesDescription || null,
+    otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
+    total: finalTotal.toString(),
+    vendedor: salespersonName || null,
+    pdfUrl: url,
+    cantidadAnuncios: items.length,
+    createdBy: 1, // TODO: Get from context when auth is implemented
+  });
+
   return url;
 }
 
@@ -156,16 +174,21 @@ async function createPDFBuffer(
       .fillColor("#1a4d3c")
       .text("FACTURA", 400, 50, { align: "right" });
 
+    let headerY = 70;
     doc
       .fontSize(10)
       .fillColor("#666666")
-      .text(`No. ${invoiceNumber}`, 400, 70, { align: "right" })
-      .text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, 85, { align: "right" })
-      .text(invoiceTitle, 400, 100, { align: "right" });
+      .text(`No. ${invoiceNumber}`, 400, headerY, { align: "right" });
+    headerY += 15;
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, headerY, { align: "right" });
+    headerY += 15;
+    doc.text(invoiceTitle, 400, headerY, { align: "right" });
+    headerY += 15;
     
     // Salesperson name in header if provided
     if (salespersonName) {
-      doc.text(`Vendedor: ${salespersonName}`, 400, 115, { align: "right" });
+      doc.text(`Vendedor: ${salespersonName}`, 400, headerY, { align: "right" });
+      headerY += 15;
     }
 
     // Description if provided
@@ -173,7 +196,8 @@ async function createPDFBuffer(
       doc
         .fontSize(10)
         .fillColor("#666666")
-        .text(description, 400, 115, { align: "right" });
+        .text(description, 400, headerY, { align: "right" });
+      headerY += 15;
     }
 
     // Client info
@@ -230,44 +254,56 @@ async function createPDFBuffer(
       y += 25;
     });
 
-    // Subtotal and additional costs
-    y += 20;
+    // Totals section - table format
+    y += 30;
+    
+    // Separator line
+    doc
+      .moveTo(50, y)
+      .lineTo(562, y)
+      .stroke("#cccccc");
+    y += 15;
+    
+    // Subtotal row
     doc
       .fontSize(11)
       .fillColor("#333333")
-      .text("Subtotal (Anuncios):", 350, y, { align: "right" })
-      .text(`$${subtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+      .text("Subtotal (Anuncios)", 50, y)
+      .text(`$${subtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
+    y += 25;
     
-    y += 20;
+    // Production cost row
     if (productionCost) {
       doc
-        .text("Costo de Producción:", 350, y, { align: "right" })
-        .text(`$${productionCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
-      y += 20;
+        .text("Costo de Producción", 50, y)
+        .text(`$${productionCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
+      y += 25;
     }
     
+    // Other services row
     if (otherServicesCost) {
       const serviceLabel = otherServicesDescription || "Otros Servicios";
       doc
-        .text(`${serviceLabel}:`, 350, y, { align: "right" })
-        .text(`$${otherServicesCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
-      y += 20;
+        .text(serviceLabel, 50, y)
+        .text(`$${otherServicesCost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
+      y += 25;
     }
     
-    // Total line
+    // Total separator line
     doc
-      .moveTo(350, y)
+      .moveTo(50, y)
       .lineTo(562, y)
       .stroke("#1a4d3c");
+    y += 15;
     
-    y += 10;
+    // Total row
     const finalTotal = total || subtotal;
     doc
       .fontSize(13)
       .fillColor("#1a4d3c")
-      .text("TOTAL:", 350, y, { align: "right" })
+      .text("TOTAL", 50, y)
       .fontSize(15)
-      .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y);
+      .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
     
 
 

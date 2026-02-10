@@ -632,3 +632,14 @@
 
 ## Edit Dialog Parada Display
 - [x] Dropdown de parada aparece vacío en edición - FIXED: ahora muestra parada actual con cobertizoId
+
+## PDF Layout Fixes (Current)
+- [x] Vendedor en header se solapa con descripción - FIXED: dynamic Y positioning
+- [x] Totales se solapan - FIXED: changed to table format with proper spacing
+
+## Invoice History System
+- [x] Create facturas table schema (id, fecha, cliente, monto, pdf_url, created_by, etc.)
+- [x] Add migration for facturas table - 0016_glorious_kang.sql
+- [x] Create backend procedures (list with filters, delete)
+- [x] Create Facturas page with table and filters - /facturas route
+- [x] Save invoice record when generating PDF - auto-saves to facturas table

@@ -548,6 +548,45 @@ export const appRouter = router({
       }),
   }),
 
+  // Facturas (invoice history) router
+  facturas: router({
+    list: publicProcedure
+      .input(z.object({
+        cliente: z.string().optional(),
+        fechaDesde: z.string().optional(),
+        fechaHasta: z.string().optional(),
+      }).optional())
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { desc, eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+        
+        let query = db.select().from(facturas);
+        
+        if (input?.cliente) {
+          query = query.where(eq(facturas.cliente, input.cliente)) as any;
+        }
+        
+        const results = await query.orderBy(desc(facturas.createdAt));
+        return results;
+      }),
+    
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.delete(facturas).where(eq(facturas.id, input.id));
+        return { success: true };
+      }),
+  }),
+
   // Invoices router
   invoices: router({
     generate: publicProcedure
