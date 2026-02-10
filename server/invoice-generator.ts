@@ -98,17 +98,22 @@ async function createPDFBuffer(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Header
-    doc
-      .fontSize(24)
-      .fillColor("#1a4d3c")
-      .text("STREETVIEW MEDIA", 50, 50);
+    // Header with logo
+    try {
+      doc.image("/home/ubuntu/streetview-logo.png", 50, 45, { width: 120 });
+    } catch (e) {
+      // Fallback to text if logo not found
+      doc
+        .fontSize(24)
+        .fillColor("#1a4d3c")
+        .text("STREETVIEW MEDIA", 50, 50);
+    }
 
     doc
       .fontSize(10)
       .fillColor("#666666")
-      .text("Red de Publicidad Exterior", 50, 80)
-      .text("Puerto Rico", 50, 95);
+      .text("Red de Publicidad Exterior", 50, 95)
+      .text("Puerto Rico", 50, 110);
 
     // Invoice info
     const invoiceNumber = `INV-${Date.now()}`;

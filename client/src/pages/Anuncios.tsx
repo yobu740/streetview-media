@@ -73,9 +73,10 @@ export default function Anuncios() {
     const matchesEstado = filterEstado === "all" || a.estado === filterEstado;
     const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
     
+    // Check if anuncio overlaps with date range
     const matchesDateRange = 
-      (!dateRangeStart || new Date(a.fechaInicio) >= new Date(dateRangeStart)) &&
-      (!dateRangeEnd || new Date(a.fechaFin) <= new Date(dateRangeEnd));
+      (!dateRangeStart || new Date(a.fechaFin) >= new Date(dateRangeStart)) &&
+      (!dateRangeEnd || new Date(a.fechaInicio) <= new Date(dateRangeEnd));
 
     return matchesSearch && matchesEstado && matchesTipo && matchesDateRange;
   });
