@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE anuncios \nSET costo_por_unidad = 350.00 \nWHERE cliente = 'OPIOIDES' AND tipo = 'Fijo';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE anuncios \nSET costo_por_unidad = 350.00 \nWHERE cliente = 'OPIOIDES' AND tipo = 'Fijo';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 369
+}

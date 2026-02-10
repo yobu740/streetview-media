@@ -596,3 +596,23 @@
 - [x] Backend changed to use raw SQL instead of Drizzle ORM (avoiding decimal mapping bug)
 - [ ] Frontend shows total $350 instead of $25,900 (74 × $350) - NEEDS FIX
 - [ ] Test backend invoice generation after raw SQL change
+
+## SQL Execute Error (URGENT)
+- [ ] db.execute() with placeholders failing - "Failed query" error
+- [ ] Need to use sql`` template or build query differently
+- [ ] Invoice generation completely broken
+
+## Invoice & Anuncios Issues (Current)
+- [x] Updated costs in production DB (73 Fijo @ $350, 30 Bonificación @ $0)
+- [ ] Fix SQL template to read costoPorUnidad correctly
+- [ ] Invoice PDF doesn't show individual line items (103 paradas)
+- [ ] Frontend "Total estimado" shows $350 instead of summing all costs
+- [ ] Add to invoice modal: Production Cost input, Other Services (description + cost), Salesperson name
+- [ ] ID column in anuncios table shows internal DB ID instead of cobertizoId
+- [ ] Search by cobertizoId doesn't work
+
+## Paradas Status Label
+- [ ] Change "Renovada" status label to "Lista" (means ready for sales)
+
+## PDF Download
+- [ ] Change invoice PDF to download instead of opening in new tab (browser blocks popup)

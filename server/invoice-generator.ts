@@ -21,17 +21,24 @@ export async function generateInvoiceFromAnuncios(
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  // Get anuncios by IDs using raw SQL to avoid decimal mapping issues
+  // Get anuncios by IDs - use raw SQL to bypass Drizzle decimal bug
   console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
   
-  const placeholders = anuncioIds.map(() => '?').join(',');
-  const result: any = await db.execute(
-    `SELECT id, parada_id as paradaId, producto, cliente, fecha_inicio as fechaInicio, 
-     fecha_fin as fechaFin, costo_por_unidad as costoPorUnidad, tipo 
-     FROM anuncios WHERE id IN (${placeholders})`
-  );
-  const clientAnuncios = result[0] as any[];
+  // Build SQL manually to avoid parameter binding issues
+  const idList = anuncioIds.join(',');
+  const query = `
+    SELECT id, parada_id as paradaId, producto, cliente, 
+           fecha_inicio as fechaInicio, fecha_fin as fechaFin, 
+           costo_por_unidad as costoPorUnidad, tipo 
+    FROM anuncios 
+    WHERE id IN (${idList})
+  `;
   
+  const result: any = await db.execute(query);
+  console.log("[Invoice] Raw result type:", typeof result, "isArray:", Array.isArray(result));
+  console.log("[Invoice] result[0] length:", result[0]?.length, "result.rows length:", result.rows?.length);
+  
+  const clientAnuncios = (result[0] || result.rows || result) as any[];
   console.log("[Invoice] Found", clientAnuncios.length, "anuncios");
   if (clientAnuncios.length > 0) {
     console.log("[Invoice] Sample anuncio:", {

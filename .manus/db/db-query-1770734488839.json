@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, cliente, tipo, costo_por_unidad \nFROM anuncios \nWHERE id BETWEEN 210000 AND 210100 \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cliente, tipo, costo_por_unidad \nFROM anuncios \nWHERE id BETWEEN 210000 AND 210100 \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "210002",
+      "cliente": "Cliente OPIOIDES",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "id": "210003",
+      "cliente": "Cliente OPIOIDES",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210004",
+      "cliente": "Cliente OPIOIDES",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210006",
+      "cliente": "Cliente OPIOIDES",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210007",
+      "cliente": "Cliente OPIOIDES",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\ttipo\tcosto_por_unidad\n210002\tCliente OPIOIDES\tFijo\t350.00\n210003\tCliente OPIOIDES\tFijo\tNULL\n210004\tCliente OPIOIDES\tFijo\tNULL\n210006\tCliente OPIOIDES\tFijo\tNULL\n210007\tCliente OPIOIDES\tFijo\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 393
+}

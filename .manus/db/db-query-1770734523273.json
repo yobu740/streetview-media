@@ -1,0 +1,22 @@
+{
+  "query": "SELECT tipo, COUNT(*) as total, \n  SUM(CASE WHEN costo_por_unidad > 0 THEN 1 ELSE 0 END) as con_costo,\n  MAX(costo_por_unidad) as max_costo\nFROM anuncios \nWHERE cliente = 'OPIOIDES'\nGROUP BY tipo;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT tipo, COUNT(*) as total, \n  SUM(CASE WHEN costo_por_unidad > 0 THEN 1 ELSE 0 END) as con_costo,\n  MAX(costo_por_unidad) as max_costo\nFROM anuncios \nWHERE cliente = 'OPIOIDES'\nGROUP BY tipo;",
+  "rows": [
+    {
+      "tipo": "Fijo",
+      "total": "148",
+      "con_costo": "148",
+      "max_costo": "350.00"
+    },
+    {
+      "tipo": "Bonificación",
+      "total": "59",
+      "con_costo": "0",
+      "max_costo": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\ttotal\tcon_costo\tmax_costo\nFijo\t148\t148\t350.00\nBonificación\t59\t0\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 364
+}

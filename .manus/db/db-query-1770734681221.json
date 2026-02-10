@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, tipo, costo_por_unidad \nFROM anuncios \nWHERE id IN (210098, 210099, 210100, 210101, 210102);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, tipo, costo_por_unidad \nFROM anuncios \nWHERE id IN (210098, 210099, 210100, 210101, 210102);",
+  "rows": [
+    {
+      "id": "210098",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210099",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210100",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210101",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    },
+    {
+      "id": "210102",
+      "tipo": "Fijo",
+      "costo_por_unidad": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttipo\tcosto_por_unidad\n210098\tFijo\tNULL\n210099\tFijo\tNULL\n210100\tFijo\tNULL\n210101\tFijo\tNULL\n210102\tFijo\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 350
+}
