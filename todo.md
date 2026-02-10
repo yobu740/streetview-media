@@ -586,3 +586,8 @@
 - [x] Include Activo and Programado ads in invoice (not just Finalizado)
 - [x] Fix logo not displaying in PDF header (uploaded to S3 CDN)
 - [ ] Test invoice generation with all three estados
+
+## URGENT: Invoice Still Broken
+- [x] Production database has all costs at $0 (dev import didn't sync to production) - FIXED with SQL UPDATE
+- [x] Fix logo loading - replace require() with ES import - FIXED using fetch()
+- [x] Run import script against production database - FIXED with direct SQL

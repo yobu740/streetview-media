@@ -1,0 +1,20 @@
+{
+  "query": "SELECT tipo, COUNT(*) as count, costo_por_unidad\nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nGROUP BY tipo, costo_por_unidad;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT tipo, COUNT(*) as count, costo_por_unidad\nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nGROUP BY tipo, costo_por_unidad;",
+  "rows": [
+    {
+      "tipo": "Fijo",
+      "count": "148",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "tipo": "Bonificación",
+      "count": "60",
+      "costo_por_unidad": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\tcount\tcosto_por_unidad\nFijo\t148\t350.00\nBonificación\t60\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 349
+}

@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, producto, tipo, costo_por_unidad \nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, producto, tipo, costo_por_unidad \nFROM anuncios \nWHERE cliente = 'OPIOIDES' \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "300001",
+      "producto": "OPIOIDES DIJERON",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "id": "300002",
+      "producto": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "id": "300003",
+      "producto": "OPIOIDES ESCONDER",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "id": "300004",
+      "producto": "OPIOIDES ESCONDER",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    },
+    {
+      "id": "300005",
+      "producto": "OPIOIDES PASTILLA",
+      "tipo": "Fijo",
+      "costo_por_unidad": "350.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproducto\ttipo\tcosto_por_unidad\n300001\tOPIOIDES DIJERON\tFijo\t350.00\n300002\tOPIOIDES PASTILLA\tFijo\t350.00\n300003\tOPIOIDES ESCONDER\tFijo\t350.00\n300004\tOPIOIDES ESCONDER\tFijo\t350.00\n300005\tOPIOIDES PASTILLA\tFijo\t350.00\n",
+  "stderr": "",
+  "execution_time_ms": 345
+}

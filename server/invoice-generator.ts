@@ -116,16 +116,11 @@ async function createPDFBuffer(
     // Header with logo from S3
     const logoUrl = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/aXdEhASWaNhvKWjP.png";
     try {
-      // Download logo from S3
-      const https = require('https');
-      const logoBuffer = await new Promise<Buffer>((resolve, reject) => {
-        https.get(logoUrl, (res: any) => {
-          const chunks: Buffer[] = [];
-          res.on('data', (chunk: Buffer) => chunks.push(chunk));
-          res.on('end', () => resolve(Buffer.concat(chunks)));
-          res.on('error', reject);
-        }).on('error', reject);
-      });
+      // Download logo from S3 using fetch
+      const response = await fetch(logoUrl);
+      if (!response.ok) throw new Error(`Failed to fetch logo: ${response.statusText}`);
+      const arrayBuffer = await response.arrayBuffer();
+      const logoBuffer = Buffer.from(arrayBuffer);
       doc.image(logoBuffer, 50, 45, { width: 120 });
     } catch (e) {
       console.error('[Invoice] Failed to load logo:', e);
