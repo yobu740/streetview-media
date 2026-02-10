@@ -650,3 +650,9 @@
 - [x] Change anuncios.list to protectedProcedure
 - [x] Change facturas.list to protectedProcedure
 - [x] Change invoices.generate to protectedProcedure
+
+## Reorganization - Move Facturas to Admin Area
+- [x] Remove Facturas link from public landing page navigation (desktop and mobile)
+- [x] Add Facturación menu item to AdminSidebar below Mantenimiento (admin-only)
+- [x] Add AdminSidebar layout to Facturas page
+- [x] Implement Excel export for individual invoices (button in table actions)

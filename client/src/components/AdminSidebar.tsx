@@ -8,6 +8,7 @@ import {
   BarChart3,
   Megaphone,
   FileText,
+  Receipt,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -76,6 +77,12 @@ export default function AdminSidebar({
       label: "Mantenimiento",
       icon: Wrench,
       href: "/mantenimiento",
+    },
+    {
+      label: "Facturación",
+      icon: Receipt,
+      href: "/facturas",
+      adminOnly: true,
     },
     {
       label: "Mis Reservas",

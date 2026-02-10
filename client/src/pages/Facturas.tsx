@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -101,8 +102,73 @@ export default function Facturas() {
     toast.success(`Exportado ${facturas.length} facturas a Excel`);
   };
 
+  const handleExportSingleInvoiceExcel = (factura: any) => {
+    // Create detailed invoice export with line items
+    const invoiceData = [
+      { Campo: "No. Factura", Valor: factura.numeroFactura },
+      { Campo: "Fecha", Valor: new Date(factura.createdAt).toLocaleDateString("es-PR") },
+      { Campo: "Cliente", Valor: factura.cliente },
+      { Campo: "Título", Valor: factura.titulo },
+      { Campo: "Descripción", Valor: factura.descripcion || "" },
+      { Campo: "Vendedor", Valor: factura.vendedor || "" },
+      { Campo: "", Valor: "" }, // Empty row
+      { Campo: "DETALLE", Valor: "" },
+      { Campo: "Cantidad de Anuncios", Valor: factura.cantidadAnuncios },
+      { Campo: "Subtotal", Valor: parseFloat(factura.subtotal) },
+      { Campo: "", Valor: "" }, // Empty row
+    ];
+
+    // Add production cost if present
+    if (factura.costoProduccion && parseFloat(factura.costoProduccion) > 0) {
+      invoiceData.push({
+        Campo: "Costo de Producción",
+        Valor: parseFloat(factura.costoProduccion),
+      });
+    }
+
+    // Add other services if present
+    if (factura.otrosServiciosCosto && parseFloat(factura.otrosServiciosCosto) > 0) {
+      invoiceData.push({
+        Campo: "Otros Servicios",
+        Valor: factura.otrosServiciosDescripcion || "",
+      });
+      invoiceData.push({
+        Campo: "Costo Otros Servicios",
+        Valor: parseFloat(factura.otrosServiciosCosto),
+      });
+    }
+
+    // Add total
+    invoiceData.push(
+      { Campo: "", Valor: "" }, // Empty row
+      { Campo: "TOTAL", Valor: parseFloat(factura.total) }
+    );
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(invoiceData);
+
+    // Set column widths
+    ws["!cols"] = [
+      { wch: 30 }, // Campo
+      { wch: 50 }, // Valor
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Factura");
+
+    // Generate filename
+    const filename = `${factura.numeroFactura}_${factura.cliente.replace(/\s+/g, "_")}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(wb, filename);
+    toast.success(`Factura ${factura.numeroFactura} exportada a Excel`);
+  };
+
   return (
-    <div className="container mx-auto py-8">
+    <div className="flex min-h-screen">
+      <AdminSidebar />
+      <div className="flex-1 min-w-0">
+        <div className="container py-8">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -196,8 +262,17 @@ export default function Facturas() {
                             onClick={() =>
                               handleDownload(factura.pdfUrl, factura.numeroFactura)
                             }
+                            title="Descargar PDF"
                           >
                             <Download className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleExportSingleInvoiceExcel(factura)}
+                            title="Exportar a Excel"
+                          >
+                            <FileSpreadsheet className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
@@ -205,6 +280,7 @@ export default function Facturas() {
                             onClick={() =>
                               handleDelete(factura.id, factura.numeroFactura)
                             }
+                            title="Eliminar"
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -218,6 +294,8 @@ export default function Facturas() {
           )}
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }
