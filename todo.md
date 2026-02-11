@@ -656,3 +656,8 @@
 - [x] Add Facturación menu item to AdminSidebar below Mantenimiento (admin-only)
 - [x] Add AdminSidebar layout to Facturas page
 - [x] Implement Excel export for individual invoices (button in table actions)
+
+## UI Fixes - Responsive and Header Issues
+- [x] Fix responsive layout: Generar Factura button overflow in Anuncios page
+- [x] Fix button overflow in Facturación page
+- [x] Add header with Streetview Media logo to Facturación page

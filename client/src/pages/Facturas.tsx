@@ -168,6 +168,22 @@ export default function Facturas() {
     <div className="flex min-h-screen">
       <AdminSidebar />
       <div className="flex-1 min-w-0">
+        {/* Header */}
+        <div className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-10">
+          <div className="container py-4">
+            <div className="flex items-center gap-4">
+              <img 
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
+                alt="Streetview Media" 
+                className="h-12"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-[#1a4d3c]">Sistema de Facturación</h1>
+                <p className="text-sm text-gray-600">Gestión de facturas y cobros</p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="container py-8">
       <Card>
         <CardHeader>
@@ -181,8 +197,8 @@ export default function Facturas() {
         </CardHeader>
         <CardContent>
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
-            <div className="flex-1">
+          <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
