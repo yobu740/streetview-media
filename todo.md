@@ -677,3 +677,6 @@
 
 ## Bug Fixes
 - [x] Fix editable location/address fields in parada detail modal - fields not accepting keyboard input
+
+## UI Improvements - Reservation Modal
+- [x] Change reservation modal to display direccion instead of localizacion next to parada ID

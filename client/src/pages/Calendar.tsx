@@ -600,7 +600,7 @@ export default function Calendar() {
                         <div>
                           <span className="font-medium">{parada.cobertizoId}</span>
                           <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                          {" - "}{parada.localizacion}
+                          {" - "}{parada.direccion}
                           {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
                         </div>
                         {!parada.isAvailable && parada.availableAfter && (
@@ -703,7 +703,7 @@ export default function Calendar() {
                                   <div>
                                     <span className="font-medium">{parada.cobertizoId}</span>
                                     <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                                    {" - "}{parada.localizacion}
+                                    {" - "}{parada.direccion}
                                   </div>
                                   {!parada.isAvailable && parada.availableAfter && (
                                     <div className="text-xs text-red-600 mt-1">
