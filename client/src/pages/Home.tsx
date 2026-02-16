@@ -261,7 +261,7 @@ export default function Home() {
                 PARADA FIJA
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
-                Descripción del formato de Parada Fija. Ideal para campañas de largo plazo con alta visibilidad en puntos estratégicos del área metropolitana.
+                Para una presencia constante, este formato le otorga la propiedad completa del espacio visual. Su marca disfruta de una exposición total las 24 horas del día en un panel impreso de 48.5 pulgadas de ancho por 69 de alto (con un área visual de 46.5 por 67 pulgadas), asegurando que su mensaje se mantenga visible y dominante en todo momento.
               </p>
             </Card>
             
@@ -270,7 +270,7 @@ export default function Home() {
                 PARADA DIGITAL
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
-                Descripción del formato de Parada Digital. Contenido dinámico y rotativo que maximiza el impacto visual con tecnología de última generación.
+                Conecte con su audiencia mediante nuestras pantallas electrónicas controladas por computadora. Este formato le ofrece la flexibilidad total de actualizar su arte y cambiar mensajes sin costo de producción. Su anuncio se mantiene dinámico rotando cada 8 segundos en un circuito de hasta 8 clientes, con disponibilidad de diferentes tamaños para adaptarse a su estrategia.
               </p>
             </Card>
           </div>
@@ -408,7 +408,7 @@ export default function Home() {
               <h3 className="text-display text-2xl mb-4">Contacto</h3>
               <div className="space-y-2 text-body text-sm">
                 <p>(787)708-5115</p>
-                <p>contacto@streetviewmediapr.com</p>
+                <p>sales@streetviewpr.com</p>
                 <p>130 Ave. Winston Churchill<br/>PMB 167<br/>San Juan, PR 00926</p>
               </div>
             </div>

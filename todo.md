@@ -661,3 +661,8 @@
 - [x] Fix responsive layout: Generar Factura button overflow in Anuncios page
 - [x] Fix button overflow in Facturación page
 - [x] Add header with Streetview Media logo to Facturación page
+
+## Home Page Content Updates
+- [x] Update footer email to sales@streetviewpr.com
+- [x] Update Parada Digital format description with new content
+- [x] Update Parada Fija format description with new content and dimensions
