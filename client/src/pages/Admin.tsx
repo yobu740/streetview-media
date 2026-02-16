@@ -1324,11 +1324,11 @@ export default function Admin() {
                                           <Label className="text-gray-500">Localización</Label>
                                           {user?.role === 'admin' ? (
                                             <Input
-                                              value={parada.localizacion || ""}
+                                              value={selectedParada?.localizacion || ""}
                                               onChange={(e) => {
                                                 // Update local state immediately
                                                 const newValue = e.target.value;
-                                                setSelectedParada({ ...parada, localizacion: newValue });
+                                                setSelectedParada({ ...selectedParada, localizacion: newValue });
                                               }}
                                               onBlur={(e) => {
                                                 // Save to database on blur
@@ -1362,10 +1362,10 @@ export default function Admin() {
                                           <Label className="text-gray-500">Dirección</Label>
                                           {user?.role === 'admin' ? (
                                             <Input
-                                              value={parada.direccion || ""}
+                                              value={selectedParada?.direccion || ""}
                                               onChange={(e) => {
                                                 const newValue = e.target.value;
-                                                setSelectedParada({ ...parada, direccion: newValue });
+                                                setSelectedParada({ ...selectedParada, direccion: newValue });
                                               }}
                                               onBlur={(e) => {
                                                 const newValue = e.target.value;

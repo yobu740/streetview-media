@@ -674,3 +674,6 @@
 - [x] Update Excel export to include "Anuncio Actual" column (product info)
 - [x] Modify export to only export selected paradas when checkboxes are used
 - [x] Add "Select All" checkbox in table header
+
+## Bug Fixes
+- [x] Fix editable location/address fields in parada detail modal - fields not accepting keyboard input
