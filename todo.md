@@ -666,3 +666,11 @@
 - [x] Update footer email to sales@streetviewpr.com
 - [x] Update Parada Digital format description with new content
 - [x] Update Parada Fija format description with new content and dimensions
+
+## Paradas Page Enhancements
+- [x] Add editable location/address field in parada detail modal
+- [x] Implement multi-select checkboxes for paradas in table
+- [ ] Add bulk status change functionality for selected paradas
+- [x] Update Excel export to include "Anuncio Actual" column (product info)
+- [x] Modify export to only export selected paradas when checkboxes are used
+- [x] Add "Select All" checkbox in table header

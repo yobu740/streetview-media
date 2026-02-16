@@ -96,6 +96,18 @@ export const appRouter = router({
         return { fotoUrl };
       }),
     
+    updateLocation: adminProcedure
+      .input(z.object({
+        paradaId: z.number(),
+        localizacion: z.string().optional(),
+        direccion: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { paradaId, ...updates } = input;
+        await paradasDb.updateParada(paradaId, updates);
+        return { success: true };
+      }),
+    
     updateCondicion: protectedProcedure
       .input(z.object({
         paradaId: z.number(),

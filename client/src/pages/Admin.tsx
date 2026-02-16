@@ -55,6 +55,7 @@ export default function Admin() {
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedReservations, setSelectedReservations] = useState<number[]>([]);
+  const [selectedParadas, setSelectedParadas] = useState<number[]>([]);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -180,6 +181,12 @@ export default function Admin() {
       refetchAnuncios();
     },
     onError: (error) => {
+      toast.error(`Error: ${error.message}`);
+    },
+  });
+  
+  const updateParadaLocation = trpc.paradas.updateLocation.useMutation({
+    onError: (error: any) => {
       toast.error(`Error: ${error.message}`);
     },
   });
@@ -514,8 +521,13 @@ export default function Admin() {
 
   const handleExportToExcel = () => {
     import('xlsx').then((XLSX) => {
+      // Determine which paradas to export: selected ones if any, otherwise all filtered
+      const paradasToExport = selectedParadas.length > 0 
+        ? filteredParadas.filter(p => selectedParadas.includes(p.id))
+        : filteredParadas;
+      
       // Prepare data for export
-      const exportData = filteredParadas.map(parada => {
+      const exportData = paradasToExport.map(parada => {
         const { status, anuncio } = getParadaStatus(parada);
         return {
           'ID': parada.cobertizoId,
@@ -525,6 +537,7 @@ export default function Admin() {
           'Orientación': parada.orientacion || '',
           'Tipo': parada.tipoFormato === 'Digital' ? 'Digital (B)' : 'Fija (F)',
           'Estado': status,
+          'Anuncio Actual': parada.anuncioProducto || '',
           'Cliente Actual': anuncio ? anuncio.cliente : '',
           'Fecha Inicio': anuncio ? new Date(anuncio.fechaInicio).toLocaleDateString() : '',
           'Fecha Fin': anuncio ? new Date(anuncio.fechaFin).toLocaleDateString() : '',
@@ -546,7 +559,8 @@ export default function Admin() {
         { wch: 12 },  // Orientación
         { wch: 15 },  // Tipo
         { wch: 12 },  // Estado
-        { wch: 25 },  // Cliente
+        { wch: 25 },  // Anuncio Actual
+        { wch: 25 },  // Cliente Actual
         { wch: 12 },  // Fecha Inicio
         { wch: 12 },  // Fecha Fin
         { wch: 15 },  // Tipo Anuncio
@@ -1113,6 +1127,20 @@ export default function Admin() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">
+                          <input
+                            type="checkbox"
+                            checked={selectedParadas.length === paginatedParadas.length && paginatedParadas.length > 0}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedParadas(paginatedParadas.map(p => p.id));
+                              } else {
+                                setSelectedParadas([]);
+                              }
+                            }}
+                            className="cursor-pointer"
+                          />
+                        </TableHead>
                         <TableHead>ID Cobertizo</TableHead>
                         <TableHead>Orient.</TableHead>
                         <TableHead>Localización</TableHead>
@@ -1130,6 +1158,20 @@ export default function Admin() {
                         const { status, anuncio } = getParadaStatus(parada);
                         return (
                           <TableRow key={parada.id}>
+                            <TableCell>
+                              <input
+                                type="checkbox"
+                                checked={selectedParadas.includes(parada.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedParadas([...selectedParadas, parada.id]);
+                                  } else {
+                                    setSelectedParadas(selectedParadas.filter(id => id !== parada.id));
+                                  }
+                                }}
+                                className="cursor-pointer"
+                              />
+                            </TableCell>
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-2">
                                 <span>{parada.cobertizoId}</span>
@@ -1280,7 +1322,37 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Localización</Label>
-                                          <p className="font-medium">{parada.localizacion || "—"}</p>
+                                          {user?.role === 'admin' ? (
+                                            <Input
+                                              value={parada.localizacion || ""}
+                                              onChange={(e) => {
+                                                // Update local state immediately
+                                                const newValue = e.target.value;
+                                                setSelectedParada({ ...parada, localizacion: newValue });
+                                              }}
+                                              onBlur={(e) => {
+                                                // Save to database on blur
+                                                const newValue = e.target.value;
+                                                if (newValue !== parada.localizacion) {
+                                                  updateParadaLocation.mutate(
+                                                    { paradaId: parada.id, localizacion: newValue },
+                                                    {
+                                                      onSuccess: () => {
+                                                        toast.success('Localización actualizada');
+                                                        utils.paradas.list.invalidate();
+                                                      },
+                                                      onError: () => {
+                                                        toast.error('Error al actualizar localización');
+                                                      },
+                                                    }
+                                                  );
+                                                }
+                                              }}
+                                              className="mt-1"
+                                            />
+                                          ) : (
+                                            <p className="font-medium">{parada.localizacion || "—"}</p>
+                                          )}
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Ruta</Label>
@@ -1288,7 +1360,35 @@ export default function Admin() {
                                         </div>
                                         <div className="col-span-2">
                                           <Label className="text-gray-500">Dirección</Label>
-                                          <p className="font-medium">{parada.direccion}</p>
+                                          {user?.role === 'admin' ? (
+                                            <Input
+                                              value={parada.direccion || ""}
+                                              onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                setSelectedParada({ ...parada, direccion: newValue });
+                                              }}
+                                              onBlur={(e) => {
+                                                const newValue = e.target.value;
+                                                if (newValue !== parada.direccion) {
+                                                  updateParadaLocation.mutate(
+                                                    { paradaId: parada.id, direccion: newValue },
+                                                    {
+                                                      onSuccess: () => {
+                                                        toast.success('Dirección actualizada');
+                                                        utils.paradas.list.invalidate();
+                                                      },
+                                                      onError: () => {
+                                                        toast.error('Error al actualizar dirección');
+                                                      },
+                                                    }
+                                                  );
+                                                }
+                                              }}
+                                              className="mt-1"
+                                            />
+                                          ) : (
+                                            <p className="font-medium">{parada.direccion}</p>
+                                          )}
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Orientación</Label>
