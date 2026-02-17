@@ -271,7 +271,7 @@ export default function Anuncios() {
       return;
     }
 
-    const headers = ["ID", "Parada", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado"];
+    const headers = ["ID", "Parada", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo"];
     const rows = filteredAnuncios.map((a) => [
       a.id,
       getParadaInfo(a.paradaId),
@@ -281,6 +281,7 @@ export default function Anuncios() {
       new Date(a.fechaInicio).toLocaleDateString(),
       new Date(a.fechaFin).toLocaleDateString(),
       a.estado,
+      a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`,
     ]);
 
     let csv = headers.join(",") + "\n";
@@ -336,6 +337,7 @@ export default function Anuncios() {
                 <th>Fecha Inicio</th>
                 <th>Fecha Fin</th>
                 <th>Estado</th>
+                <th>Costo</th>
               </tr>
             </thead>
             <tbody>
@@ -351,6 +353,7 @@ export default function Anuncios() {
                   <td>${new Date(a.fechaInicio).toLocaleDateString()}</td>
                   <td>${new Date(a.fechaFin).toLocaleDateString()}</td>
                   <td>${a.estado}</td>
+                  <td>${a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`}</td>
                 </tr>
               `
                 )

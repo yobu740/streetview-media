@@ -699,3 +699,8 @@
 - [x] Hide edit buttons and disable edit functionality for non-admin users in Anuncios page
 - [x] Disable maintenance status toggles for non-admin users in Mantenimiento page
 - [x] Test all permission scenarios (admin, vendedor, user roles)
+
+## Anuncios Report Enhancement
+- [x] Add "Costo" column to Excel export showing price for each anuncio
+- [x] Display "Bonificación - Sin Costo" for anuncios with tipo "Bonificación" in Excel
+- [x] Add "Costo" column to print report with same bonificación handling
