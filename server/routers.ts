@@ -295,6 +295,28 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    bulkUpdate: adminProcedure
+      .input(z.object({
+        anuncioIds: z.array(z.number()),
+        updates: z.object({
+          tipo: z.enum(["Fijo", "Bonificación"]).optional(),
+          fechaFin: z.date().optional(),
+          estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
+          producto: z.string().optional(),
+          cliente: z.string().optional(),
+        }),
+      }))
+      .mutation(async ({ input }) => {
+        const { anuncioIds, updates } = input;
+        
+        // Update each anuncio
+        for (const id of anuncioIds) {
+          await paradasDb.updateAnuncio(id, updates);
+        }
+        
+        return { success: true, count: anuncioIds.length };
+      }),
+    
     delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {

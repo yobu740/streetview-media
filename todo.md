@@ -680,3 +680,12 @@
 
 ## UI Improvements - Reservation Modal
 - [x] Change reservation modal to display direccion instead of localizacion next to parada ID
+
+## Bulk Edit Feature for Anuncios
+- [x] Add checkboxes to Anuncios table for multi-select
+- [x] Add "Select All" checkbox in table header
+- [x] Show "Editar Seleccionados" button when anuncios are selected
+- [x] Create bulk edit modal with fields: Tipo, Fecha Final, Estado, Producto, Cliente
+- [x] Implement conditional field enabling: Producto (only if all same producto), Cliente (only if all same cliente)
+- [x] Add backend bulk update procedure
+- [x] Test bulk edit with various selection scenarios

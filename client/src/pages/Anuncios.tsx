@@ -48,6 +48,8 @@ export default function Anuncios() {
   const [dateRangeEnd, setDateRangeEnd] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnuncio, setSelectedAnuncio] = useState<any>(null);
+  const [selectedAnuncios, setSelectedAnuncios] = useState<number[]>([]);
+  const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     paradaId: 0,
     producto: "",
@@ -462,6 +464,15 @@ export default function Anuncios() {
                 Limpiar Filtros
               </Button>
             )}
+            {selectedAnuncios.length > 0 && (
+              <Button
+                onClick={() => setIsBulkEditDialogOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Edit size={16} className="mr-2" />
+                Editar Seleccionados ({selectedAnuncios.length})
+              </Button>
+            )}
             <Button
               onClick={handleExportExcel}
               className="bg-green-600 hover:bg-green-700"
@@ -540,6 +551,20 @@ export default function Anuncios() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedAnuncios.length === filteredAnuncios?.length && filteredAnuncios.length > 0}
+                      onChange={(e) => {
+                        if (e.target.checked && filteredAnuncios) {
+                          setSelectedAnuncios(filteredAnuncios.map(a => a.id));
+                        } else {
+                          setSelectedAnuncios([]);
+                        }
+                      }}
+                      className="cursor-pointer"
+                    />
+                  </TableHead>
                   <TableHead>Cobertizo</TableHead>
                   <TableHead>Ubicación</TableHead>
                   <TableHead>Producto</TableHead>
@@ -555,6 +580,20 @@ export default function Anuncios() {
                 {filteredAnuncios && filteredAnuncios.length > 0 ? (
                   filteredAnuncios.map((anuncio) => (
                     <TableRow key={anuncio.id}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedAnuncios.includes(anuncio.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedAnuncios([...selectedAnuncios, anuncio.id]);
+                            } else {
+                              setSelectedAnuncios(selectedAnuncios.filter(id => id !== anuncio.id));
+                            }
+                          }}
+                          className="cursor-pointer"
+                        />
+                      </TableCell>
                       <TableCell className="font-medium">
                         {paradas?.find(p => p.id === anuncio.paradaId)?.cobertizoId || anuncio.paradaId}
                       </TableCell>
@@ -894,7 +933,171 @@ export default function Anuncios() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Edit Dialog */}
+      <Dialog open={isBulkEditDialogOpen} onOpenChange={setIsBulkEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Editar Anuncios Seleccionados</DialogTitle>
+            <DialogDescription>
+              Editando {selectedAnuncios.length} anuncio(s). Los campos deshabilitados requieren que todos los anuncios seleccionados tengan el mismo valor.
+            </DialogDescription>
+          </DialogHeader>
+          <BulkEditForm 
+            selectedAnuncios={selectedAnuncios}
+            anuncios={anuncios || []}
+            onClose={() => {
+              setIsBulkEditDialogOpen(false);
+              setSelectedAnuncios([]);
+            }}
+            onSuccess={() => {
+              utils.anuncios.list.invalidate();
+              setIsBulkEditDialogOpen(false);
+              setSelectedAnuncios([]);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
       </div>
+    </div>
+  );
+}
+
+// Bulk Edit Form Component
+function BulkEditForm({ 
+  selectedAnuncios, 
+  anuncios, 
+  onClose, 
+  onSuccess 
+}: { 
+  selectedAnuncios: number[];
+  anuncios: any[];
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const bulkUpdate = trpc.anuncios.bulkUpdate.useMutation();
+  
+  const selectedAnunciosData = anuncios.filter(a => selectedAnuncios.includes(a.id));
+  
+  // Check if all selected have same producto
+  const allSameProducto = selectedAnunciosData.every(a => a.producto === selectedAnunciosData[0]?.producto);
+  // Check if all selected have same cliente
+  const allSameCliente = selectedAnunciosData.every(a => a.cliente === selectedAnunciosData[0]?.cliente);
+  
+  const [formData, setFormData] = useState({
+    tipo: "",
+    fechaFin: "",
+    estado: "",
+    producto: allSameProducto ? selectedAnunciosData[0]?.producto || "" : "",
+    cliente: allSameCliente ? selectedAnunciosData[0]?.cliente || "" : "",
+  });
+  
+  const handleSubmit = () => {
+    const updates: any = {};
+    
+    if (formData.tipo) updates.tipo = formData.tipo;
+    if (formData.fechaFin) updates.fechaFin = new Date(formData.fechaFin);
+    if (formData.estado) updates.estado = formData.estado;
+    if (formData.producto && allSameProducto) updates.producto = formData.producto;
+    if (formData.cliente && allSameCliente) updates.cliente = formData.cliente;
+    
+    if (Object.keys(updates).length === 0) {
+      toast.error("Por favor selecciona al menos un campo para editar");
+      return;
+    }
+    
+    bulkUpdate.mutate(
+      { anuncioIds: selectedAnuncios, updates },
+      {
+        onSuccess: () => {
+          toast.success(`${selectedAnuncios.length} anuncio(s) actualizado(s)`);
+          onSuccess();
+        },
+        onError: (error: any) => {
+          toast.error("Error al actualizar anuncios: " + error.message);
+        },
+      }
+    );
+  };
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="bulk-tipo">Tipo</Label>
+        <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
+          <SelectTrigger id="bulk-tipo">
+            <SelectValue placeholder="No cambiar" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Fijo">Fijo</SelectItem>
+            <SelectItem value="Digital">Digital</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="bulk-fechaFin">Fecha Final</Label>
+        <Input
+          id="bulk-fechaFin"
+          type="date"
+          value={formData.fechaFin}
+          onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="bulk-estado">Estado</Label>
+        <Select value={formData.estado} onValueChange={(v) => setFormData({ ...formData, estado: v })}>
+          <SelectTrigger id="bulk-estado">
+            <SelectValue placeholder="No cambiar" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Programado">Programado</SelectItem>
+            <SelectItem value="Activo">Activo</SelectItem>
+            <SelectItem value="Finalizado">Finalizado</SelectItem>
+            <SelectItem value="Cancelado">Cancelado</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="bulk-producto">
+          Producto {!allSameProducto && "(Deshabilitado - productos diferentes)"}
+        </Label>
+        <Input
+          id="bulk-producto"
+          value={formData.producto}
+          onChange={(e) => setFormData({ ...formData, producto: e.target.value })}
+          disabled={!allSameProducto}
+          placeholder={allSameProducto ? "Editar producto" : "Productos diferentes"}
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="bulk-cliente">
+          Cliente {!allSameCliente && "(Deshabilitado - clientes diferentes)"}
+        </Label>
+        <Input
+          id="bulk-cliente"
+          value={formData.cliente}
+          onChange={(e) => setFormData({ ...formData, cliente: e.target.value })}
+          disabled={!allSameCliente}
+          placeholder={allSameCliente ? "Editar cliente" : "Clientes diferentes"}
+        />
+      </div>
+      
+      <DialogFooter>
+        <Button variant="outline" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={bulkUpdate.isPending}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          {bulkUpdate.isPending ? "Actualizando..." : "Aplicar Cambios"}
+        </Button>
+      </DialogFooter>
     </div>
   );
 }
