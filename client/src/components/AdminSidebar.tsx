@@ -14,7 +14,6 @@ import {
   ChevronRight,
   FileSpreadsheet,
   Printer,
-  Edit3,
   X,
   Menu,
   Wrench,
@@ -30,7 +29,6 @@ interface AdminSidebarProps {
   pendingReservationsCount?: number;
   onExportExcel?: () => void;
   onPrintReport?: () => void;
-  onBulkEdit?: () => void;
 }
 
 export default function AdminSidebar({
@@ -38,7 +36,6 @@ export default function AdminSidebar({
   pendingReservationsCount = 0,
   onExportExcel,
   onPrintReport,
-  onBulkEdit,
 }: AdminSidebarProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
@@ -93,12 +90,6 @@ export default function AdminSidebar({
   ];
 
   const actionItems = [
-    {
-      label: "Edición Masiva",
-      icon: Edit3,
-      onClick: onBulkEdit,
-      adminOnly: true,
-    },
     {
       label: "Exportar Excel",
       icon: FileSpreadsheet,

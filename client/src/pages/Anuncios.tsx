@@ -34,6 +34,7 @@ import { Link } from "wouter";
 import { useState } from "react";
 
 export default function Anuncios() {
+  const { user } = useAuth();
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
   const { data: paradas } = trpc.paradas.list.useQuery();
   const updateAnuncio = trpc.anuncios.update.useMutation();
@@ -464,36 +465,40 @@ export default function Anuncios() {
                 Limpiar Filtros
               </Button>
             )}
-            {selectedAnuncios.length > 0 && (
-              <Button
-                onClick={() => setIsBulkEditDialogOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                <Edit size={16} className="mr-2" />
-                Editar Seleccionados ({selectedAnuncios.length})
-              </Button>
+            {user?.role === 'admin' && (
+              <>
+                {selectedAnuncios.length > 0 && (
+                  <Button
+                    onClick={() => setIsBulkEditDialogOpen(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Edit size={16} className="mr-2" />
+                    Editar Seleccionados ({selectedAnuncios.length})
+                  </Button>
+                )}
+                <Button
+                  onClick={handleExportExcel}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <FileSpreadsheet size={16} className="mr-2" />
+                  Exportar Excel
+                </Button>
+                <Button
+                  onClick={handlePrintReport}
+                  className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+                >
+                  <Printer size={16} className="mr-2" />
+                  Imprimir Reporte
+                </Button>
+                <Button
+                  onClick={() => setIsInvoiceDialogOpen(true)}
+                  className="bg-[#ff6b35] hover:bg-[#e65a25]"
+                >
+                  <FileText size={16} className="mr-2" />
+                  Generar Factura
+                </Button>
+              </>
             )}
-            <Button
-              onClick={handleExportExcel}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <FileSpreadsheet size={16} className="mr-2" />
-              Exportar Excel
-            </Button>
-            <Button
-              onClick={handlePrintReport}
-              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
-            >
-              <Printer size={16} className="mr-2" />
-              Imprimir Reporte
-            </Button>
-            <Button
-              onClick={() => setIsInvoiceDialogOpen(true)}
-              className="bg-[#ff6b35] hover:bg-[#e65a25]"
-            >
-              <FileText size={16} className="mr-2" />
-              Generar Factura
-            </Button>
           </div>
         </div>
 
@@ -619,23 +624,27 @@ export default function Anuncios() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(anuncio)}
-                          >
-                            <Edit size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(anuncio)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
+                        {user?.role === 'admin' ? (
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(anuncio)}
+                            >
+                              <Edit size={16} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(anuncio)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">—</span>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

@@ -689,3 +689,13 @@
 - [x] Implement conditional field enabling: Producto (only if all same producto), Cliente (only if all same cliente)
 - [x] Add backend bulk update procedure
 - [x] Test bulk edit with various selection scenarios
+
+## Permission Enforcement and Menu Cleanup
+- [x] Remove "Edición Masiva" option from AdminSidebar menu
+- [x] Enforce admin-only permission for editing parada locations/addresses (already implemented)
+- [x] Enforce admin-only permission for editing anuncio dates (fechaInicio, fechaFin)
+- [x] Enforce admin-only permission for changing maintenance status (condicion)
+- [x] Ensure vendedores/users can create reservations and view listings
+- [x] Hide edit buttons and disable edit functionality for non-admin users in Anuncios page
+- [x] Disable maintenance status toggles for non-admin users in Mantenimiento page
+- [x] Test all permission scenarios (admin, vendedor, user roles)

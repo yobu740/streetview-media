@@ -29,8 +29,10 @@ import { Badge } from "@/components/ui/badge";
 import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Mantenimiento() {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCondicion, setFilterCondicion] = useState<string>("all");
   const [selectedParada, setSelectedParada] = useState<any>(null);
@@ -368,13 +370,14 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                handleToggleCondicion(
+                                user?.role === 'admin' && handleToggleCondicion(
                                   parada.id,
                                   "condicionPintada",
                                   parada.condicionPintada
                                 )
                               }
-                              className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+                              disabled={user?.role !== 'admin'}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
                             >
                               {parada.condicionPintada ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -386,13 +389,14 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                handleToggleCondicion(
+                                user?.role === 'admin' && handleToggleCondicion(
                                   parada.id,
                                   "condicionArreglada",
                                   parada.condicionArreglada
                                 )
                               }
-                              className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+                              disabled={user?.role !== 'admin'}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
                             >
                               {parada.condicionArreglada ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -404,13 +408,14 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                handleToggleCondicion(
+                                user?.role === 'admin' && handleToggleCondicion(
                                   parada.id,
                                   "condicionLimpia",
                                   parada.condicionLimpia
                                 )
                               }
-                              className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+                              disabled={user?.role !== 'admin'}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
                             >
                               {parada.condicionLimpia ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -423,8 +428,9 @@ export default function Mantenimiento() {
                             <Select
                               value={parada.displayPublicidad}
                               onValueChange={(value: "Si" | "No" | "N/A") =>
-                                handleDisplayChange(parada.id, value)
+                                user?.role === 'admin' && handleDisplayChange(parada.id, value)
                               }
+                              disabled={user?.role !== 'admin'}
                             >
                               <SelectTrigger className="w-[100px]">
                                 <SelectValue />

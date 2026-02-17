@@ -642,7 +642,6 @@ export default function Admin() {
         unreadCount={unreadCount || 0}
         onExportExcel={handleExportToExcel}
         onPrintReport={() => setIsPrintDialogOpen(true)}
-        onBulkEdit={() => setIsBulkEditDialogOpen(true)}
       />
       
       {/* Main Content */}
