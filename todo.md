@@ -717,3 +717,17 @@
 - [x] Add info windows showing parada ID and direccion on marker click
 - [x] Center map on San Juan, Puerto Rico with appropriate zoom level
 - [x] Make map responsive for mobile devices
+
+## Map Debugging - Markers Not Showing
+- [x] Check browser console for errors loading paradas_coordinates.json
+- [x] Verify markers are being created correctly with proper coordinates
+- [x] Ensure map centers on San Juan with all parada markers visible
+- [x] Fixed timing issue: markers now added after both map AND data are ready
+
+## Replace Google Maps with Leaflet + OpenStreetMap
+- [x] Install leaflet and react-leaflet packages
+- [x] Create LeafletMap component with OpenStreetMap tiles
+- [x] Add custom bus stop icon markers with brand colors
+- [x] Implement info popups showing parada ID and direccion
+- [x] Replace ParadasMap component to use Leaflet
+- [x] Test map displays all 1039 paradas correctly
