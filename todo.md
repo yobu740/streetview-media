@@ -734,3 +734,12 @@
 
 ## Bug Fix - Map Duplicate Keys
 - [x] Fix React duplicate key error in ParadasMap caused by duplicate parada IDs (e.g., AMA11)
+
+## Map Enhancements - Clustering, Scroll, and Filters
+- [x] Install react-leaflet-cluster package for marker clustering
+- [x] Implement MarkerClusterGroup to group nearby paradas when zoomed out
+- [x] Add smooth scroll functionality to "Ver Localizaciones" buttons
+- [ ] Create filter controls for Ruta (route selection) - DEFERRED: requires database integration
+- [ ] Create filter controls for Tipo de Formato (Fija/Digital/Troqueles) - DEFERRED: requires database integration
+- [ ] Create filter controls for Disponibilidad (Disponible/Ocupada) - DEFERRED: requires database integration
+- [ ] Update map markers in real-time based on selected filters - DEFERRED: requires database integration

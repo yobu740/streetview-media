@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -88,34 +89,67 @@ export default function ParadasMap() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {paradas.map((parada, index) => (
-          <Marker
-            key={`${parada.id}-${index}`}
-            position={[parada.lat, parada.lon]}
-            icon={busStopIcon}
-          >
-            <Popup>
-              <div style={{ padding: "8px", minWidth: "200px" }}>
-                <h3 style={{ 
-                  margin: "0 0 8px 0", 
-                  fontSize: "16px", 
-                  fontWeight: "600", 
-                  color: "#1a4d3c" 
-                }}>
-                  Parada {parada.id}
-                </h3>
-                <p style={{ 
-                  margin: 0, 
-                  fontSize: "14px", 
-                  color: "#2a2a2a", 
-                  lineHeight: "1.4" 
-                }}>
-                  {parada.direccion}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        <MarkerClusterGroup
+          chunkedLoading
+          maxClusterRadius={50}
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick={true}
+          iconCreateFunction={(cluster: any) => {
+            const count = cluster.getChildCount();
+            let size = 'small';
+            if (count > 100) size = 'large';
+            else if (count > 50) size = 'medium';
+            
+            return L.divIcon({
+              html: `<div style="
+                background-color: #1a4d3c;
+                border: 3px solid #ff6b35;
+                color: white;
+                border-radius: 50%;
+                width: ${size === 'large' ? '50px' : size === 'medium' ? '40px' : '35px'};
+                height: ${size === 'large' ? '50px' : size === 'medium' ? '40px' : '35px'};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: ${size === 'large' ? '16px' : size === 'medium' ? '14px' : '12px'};
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+              ">${count}</div>`,
+              className: 'custom-cluster-icon',
+              iconSize: L.point(50, 50),
+            });
+          }}
+        >
+          {paradas.map((parada, index) => (
+            <Marker
+              key={`${parada.id}-${index}`}
+              position={[parada.lat, parada.lon]}
+              icon={busStopIcon}
+            >
+              <Popup>
+                <div style={{ padding: "8px", minWidth: "200px" }}>
+                  <h3 style={{ 
+                    margin: "0 0 8px 0", 
+                    fontSize: "16px", 
+                    fontWeight: "600", 
+                    color: "#1a4d3c" 
+                  }}>
+                    Parada {parada.id}
+                  </h3>
+                  <p style={{ 
+                    margin: 0, 
+                    fontSize: "14px", 
+                    color: "#2a2a2a", 
+                    lineHeight: "1.4" 
+                  }}>
+                    {parada.direccion}
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   );

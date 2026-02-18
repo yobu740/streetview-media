@@ -150,6 +150,12 @@ export default function Home() {
             </p>
             <Button 
               size="lg" 
+              onClick={() => {
+                const mapSection = document.getElementById('mapa');
+                if (mapSection) {
+                  mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
               className="bg-[#ff6b35] hover:bg-[#e65a25] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#ff6b35] hover:border-white transition-all"
             >
               Ver Localizaciones
@@ -288,6 +294,12 @@ export default function Home() {
           <div className="text-center mt-12">
             <Button 
               size="lg"
+              onClick={() => {
+                const mapSection = document.getElementById('mapa');
+                if (mapSection) {
+                  mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
               className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#1a4d3c] hover:border-[#ff6b35] transition-all" style={{color: '#ffffff'}}
             >
               Ver Localizaciones
@@ -297,7 +309,7 @@ export default function Home() {
       </section>
 
       {/* Map Section */}
-      <section className="py-24 bg-[#f5f5f5] relative">
+      <section id="mapa" className="py-24 bg-[#f5f5f5] relative">
         <div 
           className="absolute inset-0 opacity-30"
           style={{
