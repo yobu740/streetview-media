@@ -1,0 +1,6236 @@
+[
+  {
+    "id": "257",
+    "direccion": "Ave. Ashford fte. Condominio Park Terrace antes First Bank",
+    "lat": 18.45456666666667,
+    "lon": -66.063
+  },
+  {
+    "id": "257",
+    "direccion": "Ave. Ashford fte. Condominio Park Terrace antes First Bank",
+    "lat": 18.45456666666667,
+    "lon": -66.063
+  },
+  {
+    "id": "589",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589A",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589B",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589C",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589D",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589E",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589F",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589G",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "589H",
+    "direccion": "Ave. Ashford fte al Ashford Medical Center PRESBY (DIGITAL)",
+    "lat": 18.45485,
+    "lon": -66.06603333333334
+  },
+  {
+    "id": "591",
+    "direccion": "Ave. Ashford fte a Glam Boutique",
+    "lat": 18.455183333333334,
+    "lon": -66.06855
+  },
+  {
+    "id": "591",
+    "direccion": "Ave. Ashford fte a Glam Boutique",
+    "lat": 18.455183333333334,
+    "lon": -66.06855
+  },
+  {
+    "id": "618",
+    "direccion": "Ave. Ashford fte al Hotel Condado Plaza Hilton",
+    "lat": 18.460733333333334,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "618",
+    "direccion": "Ave. Ashford fte al Hotel Condado Plaza Hilton",
+    "lat": 18.460733333333334,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619A",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619B",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619C",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619D",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619E",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619F",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619G",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "619H",
+    "direccion": "Ave. Ashford opt. al Hotel Condado Plaza Hilton (DIGITAL)",
+    "lat": 18.46055,
+    "lon": -66.08226666666667
+  },
+  {
+    "id": "620",
+    "direccion": "Ave. Ashford opt. 1019 Parking Lot despues de La Marqueta",
+    "lat": 18.459516666666666,
+    "lon": -66.07821666666666
+  },
+  {
+    "id": "620",
+    "direccion": "Ave. Ashford opt. 1019 Parking Lot despues de La Marqueta",
+    "lat": 18.459516666666666,
+    "lon": -66.07821666666666
+  },
+  {
+    "id": "621",
+    "direccion": "Ave. Ashford fte. 1019 Parking Lot antes de La Marqueta",
+    "lat": 18.460316666666667,
+    "lon": -66.07943333333333
+  },
+  {
+    "id": "621",
+    "direccion": "Ave. Ashford fte. 1019 Parking Lot antes de La Marqueta",
+    "lat": 18.460316666666667,
+    "lon": -66.07943333333333
+  },
+  {
+    "id": "622",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622A",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622B",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622C",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622D",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622E",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622F",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622G",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "622H",
+    "direccion": "Ave. Ashford fte. Hotel Vanderbilt (DIGITAL)",
+    "lat": 18.4587,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "623",
+    "direccion": "Ave. Ashford fte. Hotel La Concha",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623A",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623A",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623B",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623B",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623C",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623C",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623D",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623D",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623E",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623E",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623F",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623F",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623G",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623G",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623H",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "623H",
+    "direccion": "Ave. Ashford fte. Hotel La Concha (DIGITAL)",
+    "lat": 18.45695,
+    "lon": -66.0744
+  },
+  {
+    "id": "624",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624A",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624B",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624C",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624D",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624E",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624F",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624G",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "624H",
+    "direccion": "Ave. Ashford fte. CVS/Pharmacy opt. a Walgreens (DIGITAL)",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "631",
+    "direccion": "Ave. Ashford fte a Colegio St John & Robbinson School",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "631",
+    "direccion": "Ave. Ashford fte a Colegio St John & Robbinson School",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "643",
+    "direccion": "Ave. Ashford fte a Oriental Market Place opt. Vanderbilt",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "643",
+    "direccion": "Ave. Ashford fte a Oriental Market Place opt. Vanderbilt",
+    "lat": 18.455916666666667,
+    "lon": -66.07138333333333
+  },
+  {
+    "id": "675",
+    "direccion": "Ave. Magdalena al lado La Belle Epoque Rest.",
+    "lat": 18.454433333333334,
+    "lon": -66.06746666666666
+  },
+  {
+    "id": "675",
+    "direccion": "Ave. Magdalena al lado La Belle Epoque Rest.",
+    "lat": 18.454433333333334,
+    "lon": -66.06746666666666
+  },
+  {
+    "id": "002",
+    "direccion": "Ave. Barbosa Esq c/América fte a Burger King",
+    "lat": 18.4196,
+    "lon": -66.04385
+  },
+  {
+    "id": "002",
+    "direccion": "Ave. Barbosa Esq c/América fte a Burger King",
+    "lat": 18.4196,
+    "lon": -66.04385
+  },
+  {
+    "id": "004",
+    "direccion": "Ave. Barbosa Esq Calle Mayaguez, fte Shell",
+    "lat": 18.416533333333334,
+    "lon": -66.04326666666667
+  },
+  {
+    "id": "004",
+    "direccion": "Ave. Barbosa Antes de Esso e Instituto de Banca",
+    "lat": 18.416533333333334,
+    "lon": -66.04326666666667
+  },
+  {
+    "id": "005",
+    "direccion": "Ave. Barbosa Fte a Tienda Mopar",
+    "lat": 18.413733333333333,
+    "lon": -66.04283333333333
+  },
+  {
+    "id": "005",
+    "direccion": "Ave. Barbosa Fte a Tienda Mopar",
+    "lat": 18.413733333333333,
+    "lon": -66.04283333333333
+  },
+  {
+    "id": "007",
+    "direccion": "Ave. Barbosa Esq. Quisquella fte Alcalde Auto Parts",
+    "lat": 18.427433333333333,
+    "lon": -66.04878333333333
+  },
+  {
+    "id": "007",
+    "direccion": "Ave. Barbosa Esq. Quisquella fte Alcalde Auto Parts",
+    "lat": 18.427433333333333,
+    "lon": -66.04878333333333
+  },
+  {
+    "id": "008",
+    "direccion": "Ave. Barbosa Fte entrada de la UPR",
+    "lat": 18.405716666666667,
+    "lon": -66.04391666666666
+  },
+  {
+    "id": "008",
+    "direccion": "Ave. Barbosa Fte entrada de la UPR",
+    "lat": 18.405716666666667,
+    "lon": -66.04391666666666
+  },
+  {
+    "id": "010",
+    "direccion": "Ave. Barbosa Opuesto entrada de UPR",
+    "lat": 18.405816666666666,
+    "lon": -66.04371666666667
+  },
+  {
+    "id": "010",
+    "direccion": "Ave. Barbosa Opuesto entrada de UPR",
+    "lat": 18.405816666666666,
+    "lon": -66.04371666666667
+  },
+  {
+    "id": "052",
+    "direccion": "Ave. Barbosa Esq Roosevelt opuesto a gasolinera Shell",
+    "lat": 18.426216666666665,
+    "lon": -66.04811666666667
+  },
+  {
+    "id": "052",
+    "direccion": "Ave. Barbosa Esq Roosevelt opuesto a gasolinera Shell",
+    "lat": 18.426216666666665,
+    "lon": -66.04811666666667
+  },
+  {
+    "id": "239",
+    "direccion": "Ave. Barbosa Fte al Colegio San Antonio",
+    "lat": 18.397100000000002,
+    "lon": -66.04341666666667
+  },
+  {
+    "id": "239",
+    "direccion": "Ave. Barbosa Fte al Colegio San Antonio",
+    "lat": 18.397100000000002,
+    "lon": -66.04341666666667
+  },
+  {
+    "id": "373",
+    "direccion": "Ave. Barbosa Fte al Parque de la UPR",
+    "lat": 18.40295,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "373",
+    "direccion": "Ave. Barbosa Fte al Parque de la UPR",
+    "lat": 18.40295,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "377A",
+    "direccion": "Ave. Barbosa Fte al terminal de la AMA",
+    "lat": 18.400016666666666,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "377A",
+    "direccion": "Ave. Barbosa Fte al terminal de la AMA",
+    "lat": 18.400016666666666,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "377B",
+    "direccion": "Ave. Barbosa Fte al terminal de la AMA",
+    "lat": 18.400016666666666,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "377B",
+    "direccion": "Ave. Barbosa Fte al terminal de la AMA",
+    "lat": 18.400016666666666,
+    "lon": -66.04361666666667
+  },
+  {
+    "id": "392",
+    "direccion": "Ave. Barbosa Opuesto al parque de la UPR",
+    "lat": 18.40276666666667,
+    "lon": -66.04333333333334
+  },
+  {
+    "id": "392",
+    "direccion": "Ave. Barbosa Opuesto al parque de la UPR",
+    "lat": 18.40276666666667,
+    "lon": -66.04333333333334
+  },
+  {
+    "id": "547",
+    "direccion": "Ave. Barbosa Fte escuela Vocacional Metropolitana",
+    "lat": 18.41048333333333,
+    "lon": -66.04365
+  },
+  {
+    "id": "547",
+    "direccion": "Ave. Barbosa Fte escuela Vocacional Metropolitana",
+    "lat": 18.41048333333333,
+    "lon": -66.04365
+  },
+  {
+    "id": "549",
+    "direccion": "Ave. Barbosa Fte a Dewey Univ, antes de Walgreens",
+    "lat": 18.416766666666668,
+    "lon": -66.04316666666666
+  },
+  {
+    "id": "549",
+    "direccion": "Ave. Barbosa Fte a Dewey Univ, antes de Walgreens",
+    "lat": 18.416766666666668,
+    "lon": -66.04316666666666
+  },
+  {
+    "id": "550",
+    "direccion": "Calle Cecilia fte a Parque de Bombas",
+    "lat": 18.419066666666666,
+    "lon": -66.04291666666667
+  },
+  {
+    "id": "550",
+    "direccion": "Calle Cecilia fte a Parque de Bombas",
+    "lat": 18.419066666666666,
+    "lon": -66.04291666666667
+  },
+  {
+    "id": "551",
+    "direccion": "Calle Cecilia opuesto Parque de Bombas",
+    "lat": 18.418866666666666,
+    "lon": -66.04243333333334
+  },
+  {
+    "id": "551",
+    "direccion": "Calle Cecilia opuesto Parque de Bombas",
+    "lat": 18.418866666666666,
+    "lon": -66.04243333333334
+  },
+  {
+    "id": "553",
+    "direccion": "Ave. Bolivia opuesto a UPS",
+    "lat": 18.4264,
+    "lon": -66.05676666666666
+  },
+  {
+    "id": "553",
+    "direccion": "Ave. Bolivia opuesto a UPS",
+    "lat": 18.4264,
+    "lon": -66.05676666666666
+  },
+  {
+    "id": "718",
+    "direccion": "Calle Flandes fte Casa Verde",
+    "lat": 18.418883333333333,
+    "lon": -66.03368333333333
+  },
+  {
+    "id": "718",
+    "direccion": "Calle Flandes fte Casa Verde",
+    "lat": 18.418883333333333,
+    "lon": -66.03368333333333
+  },
+  {
+    "id": "727",
+    "direccion": "Ave. Barbosa Fte Departamento de la Familia",
+    "lat": 18.41646666666667,
+    "lon": -66.0344
+  },
+  {
+    "id": "727",
+    "direccion": "Ave. Barbosa Fte Departamento de la Familia",
+    "lat": 18.41646666666667,
+    "lon": -66.0344
+  },
+  {
+    "id": "751",
+    "direccion": "Ave. Barbosa al lado de Pitusa",
+    "lat": 18.422083333333333,
+    "lon": -66.04425
+  },
+  {
+    "id": "751",
+    "direccion": "Ave. Barbosa al lado de Pitusa",
+    "lat": 18.422083333333333,
+    "lon": -66.04425
+  },
+  {
+    "id": "752A",
+    "direccion": "Calle Bolivia fte Popular Center",
+    "lat": 18.426233333333332,
+    "lon": -66.05803333333333
+  },
+  {
+    "id": "752A",
+    "direccion": "Calle Bolivia fte Popular Center",
+    "lat": 18.426233333333332,
+    "lon": -66.05803333333333
+  },
+  {
+    "id": "752B",
+    "direccion": "Calle Bolivia fte Popular Center",
+    "lat": 18.426233333333332,
+    "lon": -66.05803333333333
+  },
+  {
+    "id": "752B",
+    "direccion": "Calle Bolivia fte Popular Center",
+    "lat": 18.426233333333332,
+    "lon": -66.05803333333333
+  },
+  {
+    "id": "489",
+    "direccion": "Ave. Hostos fte. a Subway",
+    "lat": 18.40797,
+    "lon": -66.05928
+  },
+  {
+    "id": "489",
+    "direccion": "Ave. Hostos fte. a Subway",
+    "lat": 18.40797,
+    "lon": -66.05928
+  },
+  {
+    "id": "028",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028A",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028B",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028C",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028D",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028E",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028F",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028G",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "028H",
+    "direccion": "Ave. Central Esq de Diego fte a gasolinera Mobil (DIGITAL)",
+    "lat": 18.4036,
+    "lon": -66.08702
+  },
+  {
+    "id": "111",
+    "direccion": "Carr. #19 entrada a Garden Hills Plaza opt. La Esquina Gastrobar",
+    "lat": 18.398516666666666,
+    "lon": -66.10821666666666
+  },
+  {
+    "id": "111",
+    "direccion": "Carr. #19 entrada a Garden Hills Plaza opt. La Esquina Gastrobar",
+    "lat": 18.398516666666666,
+    "lon": -66.10821666666666
+  },
+  {
+    "id": "228",
+    "direccion": "Calle Notre Dame fte estacionamiento Famacia Caridad",
+    "lat": 18.40695,
+    "lon": -66.06526666666667
+  },
+  {
+    "id": "228",
+    "direccion": "Calle Notre Dame fte estacionamiento Famacia Caridad",
+    "lat": 18.40695,
+    "lon": -66.06526666666667
+  },
+  {
+    "id": "229",
+    "direccion": "Ave. Central Esq Escorial fte a Jimmy Bou",
+    "lat": 18.402533333333334,
+    "lon": -66.09031666666667
+  },
+  {
+    "id": "229",
+    "direccion": "Ave. Central Esq Escorial fte a Jimmy Bou",
+    "lat": 18.402533333333334,
+    "lon": -66.09031666666667
+  },
+  {
+    "id": "234",
+    "direccion": "Calle Notre Dame opuesto Farmacia Caridad",
+    "lat": 18.40685,
+    "lon": -66.06518333333334
+  },
+  {
+    "id": "234",
+    "direccion": "Calle Notre Dame opuesto Farmacia Caridad",
+    "lat": 18.40685,
+    "lon": -66.06518333333334
+  },
+  {
+    "id": "235",
+    "direccion": "Ave. Central Fte a Residencial Villa España",
+    "lat": 18.395766666666667,
+    "lon": -66.10063333333333
+  },
+  {
+    "id": "235",
+    "direccion": "Ave. Central Fte a Residencial Villa España",
+    "lat": 18.395766666666667,
+    "lon": -66.10063333333333
+  },
+  {
+    "id": "258A",
+    "direccion": "Ave. Central Esq Andalucia fte Rest. Oriental",
+    "lat": 18.40695,
+    "lon": -66.07485
+  },
+  {
+    "id": "258A",
+    "direccion": "Ave. Central Esq Andalucia fte Rest. Oriental",
+    "lat": 18.40695,
+    "lon": -66.07485
+  },
+  {
+    "id": "258B",
+    "direccion": "Ave. Central Esq Andalucia fte Rest. Oriental",
+    "lat": 18.40695,
+    "lon": -66.07485
+  },
+  {
+    "id": "258B",
+    "direccion": "Ave. Central Esq Andalucia fte Rest. Oriental",
+    "lat": 18.40695,
+    "lon": -66.07485
+  },
+  {
+    "id": "370",
+    "direccion": "Ave. Central despues puente salida Exp Las Americas",
+    "lat": 18.407216666666667,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "370",
+    "direccion": "Ave. Central despues puente salida Exp Las Americas",
+    "lat": 18.407216666666667,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "498",
+    "direccion": "Ave. Central fte gasolinera Total",
+    "lat": 18.407566666666668,
+    "lon": -66.05993333333333
+  },
+  {
+    "id": "498",
+    "direccion": "Ave. Central fte gasolinera Total",
+    "lat": 18.407566666666668,
+    "lon": -66.05993333333333
+  },
+  {
+    "id": "520",
+    "direccion": "Ave. Central Fte Edificio Tren Urbano",
+    "lat": 18.407583333333335,
+    "lon": -66.06585
+  },
+  {
+    "id": "520",
+    "direccion": "Ave. Central Fte Edificio Tren Urbano",
+    "lat": 18.407583333333335,
+    "lon": -66.06585
+  },
+  {
+    "id": "541",
+    "direccion": "Ave. Jesus T. Piñero Fte Escuela Gabriela Mistral",
+    "lat": 18.401833333333332,
+    "lon": -66.09181666666667
+  },
+  {
+    "id": "541",
+    "direccion": "Ave. Jesus T. Piñero Fte Escuela Gabriela Mistral",
+    "lat": 18.401833333333332,
+    "lon": -66.09181666666667
+  },
+  {
+    "id": "596",
+    "direccion": "Carr. #19 Int. Ave. Central opuesto a Powerhouse",
+    "lat": 18.393666666666668,
+    "lon": -66.1057
+  },
+  {
+    "id": "596",
+    "direccion": "Carr. #19 Int. Ave. Central opuesto a Powerhouse",
+    "lat": 18.393666666666668,
+    "lon": -66.1057
+  },
+  {
+    "id": "600",
+    "direccion": "Ave. Central al lado puente salida carr. #21",
+    "lat": 18.3939,
+    "lon": -66.10286666666667
+  },
+  {
+    "id": "600",
+    "direccion": "Ave. Central al lado puente salida carr. #21",
+    "lat": 18.3939,
+    "lon": -66.10286666666667
+  },
+  {
+    "id": "601A",
+    "direccion": "Ave. Central final Fte a Econo de Altamira",
+    "lat": 18.39377,
+    "lon": -66.10417
+  },
+  {
+    "id": "601A",
+    "direccion": "Ave. Central final Fte a Econo de Altamira",
+    "lat": 18.39377,
+    "lon": -66.10417
+  },
+  {
+    "id": "601B",
+    "direccion": "Ave. Central final Fte a Econo de Altamira",
+    "lat": 18.39377,
+    "lon": -66.10417
+  },
+  {
+    "id": "601B",
+    "direccion": "Ave. Central final Fte a Econo de Altamira",
+    "lat": 18.39377,
+    "lon": -66.10417
+  },
+  {
+    "id": "602",
+    "direccion": "Ave. Central final fte a Edificio Popular Mortgage",
+    "lat": 18.394283333333334,
+    "lon": -66.10351666666666
+  },
+  {
+    "id": "602",
+    "direccion": "Ave. Central final fte a Edificio Popular Mortgage",
+    "lat": 18.394283333333334,
+    "lon": 18.394283333333334
+  },
+  {
+    "id": "602",
+    "direccion": "Ave. Central final fte a Edificio Popular Mortgage",
+    "lat": 18.394283333333334,
+    "lon": 18.394283333333334
+  },
+  {
+    "id": "603",
+    "direccion": "Desvío Exp. Martínez Nadal salida Ave. Central",
+    "lat": 18.3939,
+    "lon": -66.10208
+  },
+  {
+    "id": "603",
+    "direccion": "Desvío Exp. Martínez Nadal salida Ave. Central",
+    "lat": 18.3939,
+    "lon": -66.10208
+  },
+  {
+    "id": "616",
+    "direccion": "Ave. Central Fte Escuela Trina Padilla",
+    "lat": 18.40715,
+    "lon": -66.0732
+  },
+  {
+    "id": "616",
+    "direccion": "Ave. Central Fte Escuela Trina Padilla",
+    "lat": 18.40715,
+    "lon": -66.0732
+  },
+  {
+    "id": "657",
+    "direccion": "Ave. Central después del Residencial Villa España",
+    "lat": 18.39833,
+    "lon": -66.09835
+  },
+  {
+    "id": "657",
+    "direccion": "Ave. Central después del Residencial Villa España",
+    "lat": 18.39833,
+    "lon": -66.09835
+  },
+  {
+    "id": "682",
+    "direccion": "Ave. Central Fte a Pizza Hut Delivery",
+    "lat": 18.400133333333333,
+    "lon": -66.0957
+  },
+  {
+    "id": "682",
+    "direccion": "Ave. Central Fte a Pizza Hut Delivery",
+    "lat": 18.400133333333333,
+    "lon": -66.0957
+  },
+  {
+    "id": "683",
+    "direccion": "Ave. Central fte. a Basking Robbins esq. Ave. Andalucía",
+    "lat": 18.407116666666667,
+    "lon": -66.07533333333333
+  },
+  {
+    "id": "683",
+    "direccion": "Ave. Central fte. a Basking Robbins esq. Ave. Andalucía",
+    "lat": 18.407116666666667,
+    "lon": -66.07533333333333
+  },
+  {
+    "id": "684",
+    "direccion": "Ave. Central Fte a Matress Depot",
+    "lat": 18.4046,
+    "lon": -66.08373333333333
+  },
+  {
+    "id": "684",
+    "direccion": "Ave. Central Fte a Matress Depot",
+    "lat": 18.4046,
+    "lon": -66.08373333333333
+  },
+  {
+    "id": "685",
+    "direccion": "Ave. Central Fte Callejeros, opuesto Glidden",
+    "lat": 18.40025,
+    "lon": -66.09602
+  },
+  {
+    "id": "685",
+    "direccion": "Ave. Central Fte Callejeros, opuesto Glidden",
+    "lat": 18.40025,
+    "lon": -66.09602
+  },
+  {
+    "id": "686",
+    "direccion": "Ave. Central Fte a Pavo Asado",
+    "lat": 18.40501666666667,
+    "lon": -66.0816
+  },
+  {
+    "id": "686",
+    "direccion": "Ave. Central Fte a Pavo Asado",
+    "lat": 18.40501666666667,
+    "lon": -66.0816
+  },
+  {
+    "id": "687",
+    "direccion": "Ave. Central Opuesto a The Pool Shop",
+    "lat": 18.398183333333332,
+    "lon": -66.09871666666666
+  },
+  {
+    "id": "687",
+    "direccion": "Ave. Central Opuesto a The Pool Shop",
+    "lat": 18.398183333333332,
+    "lon": -66.09871666666666
+  },
+  {
+    "id": "700",
+    "direccion": "Ave. Piñero despues de Churraskito's Rest & Birras",
+    "lat": 18.406816666666668,
+    "lon": -66.07671666666667
+  },
+  {
+    "id": "700",
+    "direccion": "Ave. Piñero despues de Churraskito's Rest & Birras",
+    "lat": 18.406816666666668,
+    "lon": -66.07671666666667
+  },
+  {
+    "id": "707",
+    "direccion": "Carr. #19 opuesto a Baby Bull Express",
+    "lat": 18.392983333333333,
+    "lon": -66.10566666666666
+  },
+  {
+    "id": "707",
+    "direccion": "Carr. #19 opuesto a Baby Bull Express",
+    "lat": 18.392983333333333,
+    "lon": -66.10566666666666
+  },
+  {
+    "id": "232",
+    "direccion": "Ave. Escorial Fte a Escuela Republica del Salvador",
+    "lat": 18.40723,
+    "lon": -66.09505
+  },
+  {
+    "id": "232",
+    "direccion": "Ave. Escorial Fte a Escuela Republica del Salvador",
+    "lat": 18.40723,
+    "lon": -66.09505
+  },
+  {
+    "id": "322",
+    "direccion": "Ave. Escorial Esq Calle Esperanza",
+    "lat": 18.405633333333334,
+    "lon": -66.0939
+  },
+  {
+    "id": "322",
+    "direccion": "Ave. Escorial Esq Calle Esperanza",
+    "lat": 18.405633333333334,
+    "lon": -66.0939
+  },
+  {
+    "id": "323",
+    "direccion": "Ave. Escorial Esq calle Elida",
+    "lat": 18.40832,
+    "lon": -66.09617
+  },
+  {
+    "id": "323",
+    "direccion": "Ave. Escorial Esq calle Elida",
+    "lat": 18.40832,
+    "lon": -66.09617
+  },
+  {
+    "id": "360",
+    "direccion": "Ave. Escorial Esq Ave. Jesus T.Piñeiro",
+    "lat": 18.40265,
+    "lon": -66.09068
+  },
+  {
+    "id": "360",
+    "direccion": "Ave. Escorial Esq Ave. Jesus T.Piñeiro",
+    "lat": 18.40265,
+    "lon": -66.09068
+  },
+  {
+    "id": "025",
+    "direccion": "Federico Acosta fte. Best Buy Opt. Telemundo",
+    "lat": 18.423583333333333,
+    "lon": -66.07045
+  },
+  {
+    "id": "025",
+    "direccion": "Federico Acosta fte. Best Buy Opt. Telemundo",
+    "lat": 18.423583333333333,
+    "lon": -66.07045
+  },
+  {
+    "id": "032",
+    "direccion": "Ave. Chardon Fte a Torre Municipal",
+    "lat": 18.425433333333334,
+    "lon": -66.06205
+  },
+  {
+    "id": "032",
+    "direccion": "Ave. Chardon Fte a Torre Municipal",
+    "lat": 18.425433333333334,
+    "lon": -66.06205
+  },
+  {
+    "id": "033",
+    "direccion": "Ave. Chardon Opuesto a Escuela Libre de Música",
+    "lat": 18.425633333333334,
+    "lon": -66.0609
+  },
+  {
+    "id": "033",
+    "direccion": "Ave. Chardon Opuesto a Escuela Libre de Música",
+    "lat": 18.425633333333334,
+    "lon": -66.0609
+  },
+  {
+    "id": "034",
+    "direccion": "Ave. Chardon Fte al Edificio Federal",
+    "lat": 18.42467,
+    "lon": -66.06443
+  },
+  {
+    "id": "034",
+    "direccion": "Ave. Chardon Fte al Edificio Federal",
+    "lat": 18.42467,
+    "lon": -66.06443
+  },
+  {
+    "id": "035",
+    "direccion": "Ave. Chardon Opuesto a Vaqueria Tres Monjitas",
+    "lat": 18.42338,
+    "lon": -66.06893
+  },
+  {
+    "id": "035",
+    "direccion": "Ave. Chardon Opuesto a Vaqueria Tres Monjitas",
+    "lat": 18.42338,
+    "lon": -66.06893
+  },
+  {
+    "id": "417A",
+    "direccion": "Ave. Chardon Fte estacionamiento Tres Monjitas",
+    "lat": 18.42357,
+    "lon": -66.06928
+  },
+  {
+    "id": "417A",
+    "direccion": "Ave. Chardon Fte estacionamiento Tres Monjitas",
+    "lat": 18.42357,
+    "lon": -66.06928
+  },
+  {
+    "id": "417B",
+    "direccion": "Ave. Chardon Fte estacionamiento Tres Monjitas",
+    "lat": 18.42357,
+    "lon": -66.06928
+  },
+  {
+    "id": "417B",
+    "direccion": "Ave. Chardon Fte estacionamiento Tres Monjitas",
+    "lat": 18.42357,
+    "lon": -66.06928
+  },
+  {
+    "id": "500A",
+    "direccion": "Ave. Chardon Opuesto a Edificio ACAA",
+    "lat": 18.42525,
+    "lon": -66.06237
+  },
+  {
+    "id": "500A",
+    "direccion": "Ave. Chardon Opuesto a Edificio ACAA",
+    "lat": 18.42525,
+    "lon": -66.06237
+  },
+  {
+    "id": "500B",
+    "direccion": "Ave. Chardon Opuesto a Edificio ACAA",
+    "lat": 18.42525,
+    "lon": -66.06237
+  },
+  {
+    "id": "500B",
+    "direccion": "Ave. Chardon Opuesto a Edificio ACAA",
+    "lat": 18.42525,
+    "lon": -66.06237
+  },
+  {
+    "id": "042A",
+    "direccion": "Ave. De Diego Fte First Bank San Francisco",
+    "lat": 18.385066666666667,
+    "lon": -66.08151666666667
+  },
+  {
+    "id": "042A",
+    "direccion": "Ave. De Diego Fte First Bank San Francisco",
+    "lat": 18.385066666666667,
+    "lon": -66.08151666666667
+  },
+  {
+    "id": "042B",
+    "direccion": "Ave. De Diego Fte First Bank San Francisco",
+    "lat": 18.385066666666667,
+    "lon": -66.08151666666667
+  },
+  {
+    "id": "042B",
+    "direccion": "Ave. De Diego Fte First Bank San Francisco",
+    "lat": 18.385066666666667,
+    "lon": -66.08151666666667
+  },
+  {
+    "id": "044A",
+    "direccion": "Ave. De Diego Fte San Francisco Shop. II",
+    "lat": 18.383183333333335,
+    "lon": -66.07358333333333
+  },
+  {
+    "id": "044A",
+    "direccion": "Ave. De Diego Fte San Francisco Shop. II",
+    "lat": 18.383183333333335,
+    "lon": -66.07358333333333
+  },
+  {
+    "id": "044B",
+    "direccion": "Ave. De Diego Fte San Francisco Shop. II",
+    "lat": 18.383183333333335,
+    "lon": -66.07358333333333
+  },
+  {
+    "id": "044B",
+    "direccion": "Ave. De Diego Fte San Francisco Shop. II",
+    "lat": 18.383183333333335,
+    "lon": -66.07358333333333
+  },
+  {
+    "id": "045",
+    "direccion": "Ave. De Diego Opuesto a San Francisco Shop. II",
+    "lat": 18.382716666666667,
+    "lon": -66.07425
+  },
+  {
+    "id": "045",
+    "direccion": "Ave. De Diego Opuesto a San Francisco Shop. II",
+    "lat": 18.382716666666667,
+    "lon": -66.07425
+  },
+  {
+    "id": "048",
+    "direccion": "Ave. De Diego (San Francisco) opuesto First Bank",
+    "lat": 18.38533333333333,
+    "lon": -66.08191666666667
+  },
+  {
+    "id": "048",
+    "direccion": "Ave. De Diego (San Francisco) opuesto First Bank",
+    "lat": 18.38533333333333,
+    "lon": -66.08191666666667
+  },
+  {
+    "id": "050",
+    "direccion": "Ave. De Diego Pto. Nuevo opuesto Total",
+    "lat": 18.395516666666666,
+    "lon": -66.0845
+  },
+  {
+    "id": "050",
+    "direccion": "Ave. De Diego Pto. Nuevo opuesto Total",
+    "lat": 18.395516666666666,
+    "lon": -66.0845
+  },
+  {
+    "id": "053",
+    "direccion": "Ave. De Diego fte Dubai Motors",
+    "lat": 18.3946,
+    "lon": -66.0842
+  },
+  {
+    "id": "053",
+    "direccion": "Ave. De Diego fte Dubai Motors",
+    "lat": 18.3946,
+    "lon": -66.0842
+  },
+  {
+    "id": "055",
+    "direccion": "Ave. De Diego Esq Roosevelt Fte al BPPR",
+    "lat": 18.413,
+    "lon": -66.0889
+  },
+  {
+    "id": "055",
+    "direccion": "Ave. De Diego Esq Roosevelt Fte al BPPR",
+    "lat": 18.413,
+    "lon": -66.0889
+  },
+  {
+    "id": "058",
+    "direccion": "Ave. De Diego Esq De Diego Rental",
+    "lat": 18.40915,
+    "lon": -66.08875
+  },
+  {
+    "id": "058",
+    "direccion": "Ave. De Diego Esq De Diego Rental",
+    "lat": 18.40915,
+    "lon": -66.08875
+  },
+  {
+    "id": "208",
+    "direccion": "Ave. De Diego (Pto. Nuevo) Fte. Colegio e Iglesia Metodista",
+    "lat": 18.407566666666668,
+    "lon": -66.08868333333334
+  },
+  {
+    "id": "208",
+    "direccion": "Ave. De Diego (Pto. Nuevo) Fte. Colegio e Iglesia Metodista",
+    "lat": 18.407566666666668,
+    "lon": -66.08868333333334
+  },
+  {
+    "id": "209",
+    "direccion": "Ave. De Diego (Pto. Nuevo) Fte. Iglesia Sta. Maria",
+    "lat": 18.397166666666667,
+    "lon": -66.08505
+  },
+  {
+    "id": "209",
+    "direccion": "Ave. De Diego (Pto. Nuevo) Fte. Iglesia Sta. Maria",
+    "lat": 18.397166666666667,
+    "lon": -66.08505
+  },
+  {
+    "id": "362",
+    "direccion": "Ave. De Diego Opuesto al Fondo del Seguro de Estado",
+    "lat": 18.391983333333332,
+    "lon": -66.08363333333334
+  },
+  {
+    "id": "362",
+    "direccion": "Ave. De Diego Opuesto al Fondo del Seguro de Estado",
+    "lat": 18.391983333333332,
+    "lon": -66.08363333333334
+  },
+  {
+    "id": "367",
+    "direccion": "Ave. De Diego Opuesto a Suiza Dairy fte Roger Electric",
+    "lat": 18.3928,
+    "lon": -66.08383333333333
+  },
+  {
+    "id": "367",
+    "direccion": "Ave. De Diego Opuesto a Suiza Dairy fte Roger Electric",
+    "lat": 18.3928,
+    "lon": -66.08383333333333
+  },
+  {
+    "id": "380",
+    "direccion": "Ave. De Diego Fte Antiguo de Operaciones Tácticas",
+    "lat": 18.384,
+    "lon": -66.07023333333333
+  },
+  {
+    "id": "380",
+    "direccion": "Ave. De Diego Fte Antiguo de Operaciones Tácticas",
+    "lat": 18.384,
+    "lon": -66.07023333333333
+  },
+  {
+    "id": "497",
+    "direccion": "Ave. De Diego fte. Res./Nursery Urb. San Francisco",
+    "lat": 18.383183333333335,
+    "lon": -66.07743333333333
+  },
+  {
+    "id": "497",
+    "direccion": "Ave. De Diego fte. Res./Nursery Urb. San Francisco",
+    "lat": 18.383183333333335,
+    "lon": -66.07743333333333
+  },
+  {
+    "id": "583",
+    "direccion": "Ave. De Diego opt. Oishi",
+    "lat": 18.383033333333334,
+    "lon": -66.06961666666666
+  },
+  {
+    "id": "583",
+    "direccion": "Ave. De Diego opt. Oishi",
+    "lat": 18.383033333333334,
+    "lon": -66.06961666666666
+  },
+  {
+    "id": "584",
+    "direccion": "Ave. De Diego Fte Villas de San Francisco Plaza II",
+    "lat": 18.383633333333332,
+    "lon": -66.07286666666667
+  },
+  {
+    "id": "584",
+    "direccion": "Ave. De Diego Fte Villas de San Francisco Plaza II",
+    "lat": 18.383633333333332,
+    "lon": -66.07286666666667
+  },
+  {
+    "id": "709",
+    "direccion": "Ave. De Diego Opuesto a Estación Tren Urbano",
+    "lat": 18.390616666666666,
+    "lon": -66.08356666666667
+  },
+  {
+    "id": "709",
+    "direccion": "Ave. De Diego Opuesto a Estación Tren Urbano",
+    "lat": 18.390616666666666,
+    "lon": -66.08356666666667
+  },
+  {
+    "id": "750",
+    "direccion": "Ave. De Diego Esq. Ave Central antes de garage Shell",
+    "lat": 18.402833333333334,
+    "lon": -66.08691666666667
+  },
+  {
+    "id": "750",
+    "direccion": "Ave. De Diego Esq. Ave Central antes de garage Shell",
+    "lat": 18.402833333333334,
+    "lon": -66.08691666666667
+  },
+  {
+    "id": "049",
+    "direccion": "Calle De Diego Fte a Cristaleria Sabana Llana, opuesto Marrero BBQ",
+    "lat": 18.397683333333333,
+    "lon": -66.0307
+  },
+  {
+    "id": "049",
+    "direccion": "Calle De Diego Fte a Cristaleria Sabana Llana, opuesto Marrero BBQ",
+    "lat": 18.397683333333333,
+    "lon": -66.0307
+  },
+  {
+    "id": "057",
+    "direccion": "Calle De Diego fte Gasolinera Mobil, opuesto National Lumber",
+    "lat": 18.3969,
+    "lon": -66.02478333333333
+  },
+  {
+    "id": "057",
+    "direccion": "Calle De Diego fte Gasolinera Mobil, opuesto National Lumber",
+    "lat": 18.3969,
+    "lon": -66.02478333333333
+  },
+  {
+    "id": "242",
+    "direccion": "Calle De Diego Fte al Cond. Winsor Tower",
+    "lat": 18.398266666666668,
+    "lon": -66.03693333333334
+  },
+  {
+    "id": "242",
+    "direccion": "Calle De Diego Fte al Cond. Winsor Tower",
+    "lat": 18.398266666666668,
+    "lon": -66.03693333333334
+  },
+  {
+    "id": "243",
+    "direccion": "Calle De Diego opuesto Farmacia Media y Trust Mortgage",
+    "lat": 18.3979,
+    "lon": -66.03316666666667
+  },
+  {
+    "id": "243",
+    "direccion": "Calle De Diego opuesto Farmacia Media y Trust Mortgage",
+    "lat": 18.3979,
+    "lon": -66.03316666666667
+  },
+  {
+    "id": "245",
+    "direccion": "Calle De Diego Opuesto al Cond. Windsor Tower",
+    "lat": 18.39828333333333,
+    "lon": -66.03646666666667
+  },
+  {
+    "id": "245",
+    "direccion": "Calle De Diego Opuesto al Cond. Windsor Tower",
+    "lat": 18.39828333333333,
+    "lon": -66.03646666666667
+  },
+  {
+    "id": "247",
+    "direccion": "Calle De Diego Opuesto Esc. Republicana de Colombia",
+    "lat": 18.3984,
+    "lon": -66.04125
+  },
+  {
+    "id": "247",
+    "direccion": "Calle De Diego Opuesto Esc. Republicana de Colombia",
+    "lat": 18.3984,
+    "lon": -66.04125
+  },
+  {
+    "id": "038A",
+    "direccion": "Ave. De Diego (Santurce) Fte a Edificio Minillas",
+    "lat": 18.4479,
+    "lon": -66.0672
+  },
+  {
+    "id": "038A",
+    "direccion": "Ave. De Diego (Santurce) Fte a Edificio Minillas",
+    "lat": 18.4479,
+    "lon": -66.0672
+  },
+  {
+    "id": "038B",
+    "direccion": "Ave. De Diego (Santurce) Fte a Edificio Minillas",
+    "lat": 18.4479,
+    "lon": -66.0672
+  },
+  {
+    "id": "038B",
+    "direccion": "Ave. De Diego (Santurce) Fte a Edificio Minillas",
+    "lat": 18.4479,
+    "lon": -66.0672
+  },
+  {
+    "id": "039A",
+    "direccion": "Ave. De Diego (Santurce) antes de SJ Health Center",
+    "lat": 18.450816666666668,
+    "lon": -66.06513333333334
+  },
+  {
+    "id": "039A",
+    "direccion": "Ave. De Diego (Santurce) antes de SJ Health Center",
+    "lat": 18.450816666666668,
+    "lon": -66.06513333333334
+  },
+  {
+    "id": "039B",
+    "direccion": "Ave. De Diego (Santurce) antes de SJ Health Center",
+    "lat": 18.450816666666668,
+    "lon": -66.06513333333334
+  },
+  {
+    "id": "039B",
+    "direccion": "Ave. De Diego (Santurce) antes de SJ Health Center",
+    "lat": 18.450816666666668,
+    "lon": -66.06513333333334
+  },
+  {
+    "id": "040A",
+    "direccion": "Ave. De Diego (Santurce) opuesto al Edificio Minillas",
+    "lat": 18.449033333333333,
+    "lon": -66.06631666666667
+  },
+  {
+    "id": "040A",
+    "direccion": "Ave. De Diego (Santurce) opuesto al Edificio Minillas",
+    "lat": 18.449033333333333,
+    "lon": -66.06631666666667
+  },
+  {
+    "id": "040B",
+    "direccion": "Ave. De Diego (Santurce) opuesto al Edificio Minillas",
+    "lat": 18.449033333333333,
+    "lon": -66.06631666666667
+  },
+  {
+    "id": "040B",
+    "direccion": "Ave. De Diego (Santurce) opuesto al Edificio Minillas",
+    "lat": 18.449033333333333,
+    "lon": -66.06631666666667
+  },
+  {
+    "id": "300A",
+    "direccion": "Ave. De Diego (Santurce) fte. Double Tree",
+    "lat": 18.450883333333334,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "300A",
+    "direccion": "Ave. De Diego (Santurce) fte. Double Tree",
+    "lat": 18.450883333333334,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "300B",
+    "direccion": "Ave. De Diego (Santurce) fte. Double Tree",
+    "lat": 18.450883333333334,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "300B",
+    "direccion": "Ave. De Diego (Santurce) fte. Double Tree",
+    "lat": 18.450883333333334,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "416",
+    "direccion": "Ave. De Diego (Santurce) fte. Rest. Aché Jama Cubana",
+    "lat": 18.446683333333333,
+    "lon": -66.06785
+  },
+  {
+    "id": "416",
+    "direccion": "Ave. De Diego (Santurce) fte. Rest. Aché Jama Cubana",
+    "lat": 18.446683333333333,
+    "lon": -66.06785
+  },
+  {
+    "id": "439",
+    "direccion": "Ave. De Diego (Santurce) fte Santurcia Hostel",
+    "lat": 18.446883333333332,
+    "lon": -66.06785
+  },
+  {
+    "id": "439",
+    "direccion": "Ave. De Diego (Santurce) fte Santurcia Hostel",
+    "lat": 18.446883333333332,
+    "lon": -66.06785
+  },
+  {
+    "id": "461A",
+    "direccion": "Ave. De Diego (Santurce) al lado del Garage Shell",
+    "lat": 18.452466666666666,
+    "lon": -66.06383333333333
+  },
+  {
+    "id": "461A",
+    "direccion": "Ave. De Diego (Santurce) al lado del Garage Shell",
+    "lat": 18.452466666666666,
+    "lon": -66.06383333333333
+  },
+  {
+    "id": "461B",
+    "direccion": "Ave. De Diego (Santurce) al lado del Garage Shell",
+    "lat": 18.452466666666666,
+    "lon": -66.06383333333333
+  },
+  {
+    "id": "461B",
+    "direccion": "Ave. De Diego (Santurce) al lado del Garage Shell",
+    "lat": 18.452466666666666,
+    "lon": -66.06383333333333
+  },
+  {
+    "id": "462",
+    "direccion": "Ave. De Diego (Santurce) Esq Ashford fte. First Bank",
+    "lat": 18.454033333333335,
+    "lon": -66.06335
+  },
+  {
+    "id": "462",
+    "direccion": "Ave. De Diego (Santurce) Esq Ashford fte. First Bank",
+    "lat": 18.454033333333335,
+    "lon": -66.06335
+  },
+  {
+    "id": "059",
+    "direccion": "Ave. Domenech Fte a Hospital del Maestro",
+    "lat": 18.412783333333334,
+    "lon": -66.06853333333333
+  },
+  {
+    "id": "059",
+    "direccion": "Ave. Domenech Fte a Hospital del Maestro",
+    "lat": 18.412783333333334,
+    "lon": -66.06853333333333
+  },
+  {
+    "id": "060",
+    "direccion": "Ave. T. César González Fte Funeraria Buxeda",
+    "lat": 18.411216666666668,
+    "lon": -66.06496666666666
+  },
+  {
+    "id": "060",
+    "direccion": "Ave. T. César González Fte Funeraria Buxeda",
+    "lat": 18.411216666666668,
+    "lon": -66.06496666666666
+  },
+  {
+    "id": "060",
+    "direccion": "Ave. T. César González Fte Funeraria Buxeda",
+    "lat": 18.411216666666668,
+    "lon": -66.06496666666666
+  },
+  {
+    "id": "061",
+    "direccion": "Ave. Domenech Fte a canchas de tennis de Baldrich",
+    "lat": 18.41445,
+    "lon": -66.06226666666667
+  },
+  {
+    "id": "061",
+    "direccion": "Ave. Domenech Fte a canchas de tennis de Baldrich",
+    "lat": 18.41445,
+    "lon": -66.06226666666667
+  },
+  {
+    "id": "062",
+    "direccion": "Ave. Domenech Fte a oficina Dr. Planell",
+    "lat": 18.413683333333335,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "062",
+    "direccion": "Ave. Domenech Fte a oficina Dr. Planell",
+    "lat": 18.413683333333335,
+    "lon": -66.06488333333333
+  },
+  {
+    "id": "397",
+    "direccion": "Ave. Domenech Fte a Burger King",
+    "lat": 18.41282,
+    "lon": -66.06913
+  },
+  {
+    "id": "397",
+    "direccion": "Ave. Domenech Fte a Burger King",
+    "lat": 18.41282,
+    "lon": -66.06913
+  },
+  {
+    "id": "453",
+    "direccion": "Ave. Domenech Fte a Egida La Merced",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453A",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453B",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453C",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453D",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453E",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453F",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453G",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "453H",
+    "direccion": "Ave. Domenech Fte a Egida La Merced (DIGITAL)",
+    "lat": 18.413316666666667,
+    "lon": -66.06608333333334
+  },
+  {
+    "id": "499",
+    "direccion": "Ave. Domenech Opuesto a canchas de Hockey",
+    "lat": 18.414566666666666,
+    "lon": -66.06205
+  },
+  {
+    "id": "499",
+    "direccion": "Ave. Domenech Opuesto a canchas de Hockey",
+    "lat": 18.414566666666666,
+    "lon": -66.06205
+  },
+  {
+    "id": "515",
+    "direccion": "Ave. Domenech Fte OV Martin y Dr. Ferdinad Menendez",
+    "lat": 18.4157,
+    "lon": -66.05808333333333
+  },
+  {
+    "id": "515",
+    "direccion": "Ave. Domenech Fte OV Martin y Dr. Ferdinad Menendez",
+    "lat": 18.4157,
+    "lon": -66.05808333333333
+  },
+  {
+    "id": "531",
+    "direccion": "Ave. Domenech Opuesto a OV Martin y Dr. Menendez",
+    "lat": 18.415816666666668,
+    "lon": -66.05793333333334
+  },
+  {
+    "id": "531",
+    "direccion": "Ave. Domenech Opuesto a OV Martin y Dr. Menendez",
+    "lat": 18.415816666666668,
+    "lon": -66.05793333333334
+  },
+  {
+    "id": "653",
+    "direccion": "Ave. Domenech al lado del Dept del Trabajo",
+    "lat": 18.415966666666666,
+    "lon": -66.0562
+  },
+  {
+    "id": "653",
+    "direccion": "Ave. Domenech al lado del Dept del Trabajo",
+    "lat": 18.415966666666666,
+    "lon": -66.0562
+  },
+  {
+    "id": "064",
+    "direccion": "Ave. Fndz. Juncos fte AOR Building antes de Viva Carpet",
+    "lat": 18.439233333333334,
+    "lon": -66.0616
+  },
+  {
+    "id": "064",
+    "direccion": "Ave. Fndz. Juncos fte AOR Building antes de Viva Carpet",
+    "lat": 18.439233333333334,
+    "lon": -66.0616
+  },
+  {
+    "id": "065",
+    "direccion": "Ave. Fndz. Juncos Esq fte Rest La Casona",
+    "lat": 18.442016666666667,
+    "lon": -66.0645
+  },
+  {
+    "id": "065",
+    "direccion": "Ave. Fndz. Juncos Esq fte Rest La Casona",
+    "lat": 18.442016666666667,
+    "lon": -66.0645
+  },
+  {
+    "id": "070",
+    "direccion": "Ave. Fndz. Juncos fte Antiguo Hotel Clarion Esq Ave. Miramar",
+    "lat": 18.4536,
+    "lon": -66.08658333333334
+  },
+  {
+    "id": "070",
+    "direccion": "Ave. Fndz. Juncos fte Antiguo Hotel Clarion Esq Ave. Miramar",
+    "lat": 18.4536,
+    "lon": -66.08658333333334
+  },
+  {
+    "id": "071",
+    "direccion": "Ave. Fndz. Juncos opuesto antiguo Hotel Clarion Esq Ave. Miramar",
+    "lat": 18.453683333333334,
+    "lon": -66.0867
+  },
+  {
+    "id": "071",
+    "direccion": "Ave. Fndz. Juncos opuesto antiguo Hotel Clarion Esq Ave. Miramar",
+    "lat": 18.453683333333334,
+    "lon": -66.0867
+  },
+  {
+    "id": "074",
+    "direccion": "Ave. Fndz. Juncos Opuesto San Juan Bay Marina",
+    "lat": 18.4575,
+    "lon": -66.08676666666666
+  },
+  {
+    "id": "074",
+    "direccion": "Ave. Fndz. Juncos Opuesto San Juan Bay Marina",
+    "lat": 18.4575,
+    "lon": -66.08676666666666
+  },
+  {
+    "id": "077",
+    "direccion": "Ave. Fndz. Juncos Fte parque calle Hoare",
+    "lat": 18.4515,
+    "lon": -66.08081666666666
+  },
+  {
+    "id": "077",
+    "direccion": "Ave. Fndz. Juncos Fte parque calle Hoare",
+    "lat": 18.4515,
+    "lon": -66.08081666666666
+  },
+  {
+    "id": "378",
+    "direccion": "Ave. Fndz. Juncos Fte Pacific 807, desp de Ciqala Suites",
+    "lat": 18.45225,
+    "lon": -66.08328333333333
+  },
+  {
+    "id": "378",
+    "direccion": "Ave. Fndz. Juncos Fte Pacific 807, desp de Ciqala Suites",
+    "lat": 18.45225,
+    "lon": -66.08328333333333
+  },
+  {
+    "id": "446",
+    "direccion": "Ave. Fndz. Juncos Fte Estacionamiento Hosp Pavia",
+    "lat": 18.4448,
+    "lon": -66.07023333333333
+  },
+  {
+    "id": "446",
+    "direccion": "Ave. Fndz. Juncos Fte Estacionamiento Hosp Pavia",
+    "lat": 18.4448,
+    "lon": -66.07023333333333
+  },
+  {
+    "id": "523",
+    "direccion": "Ave. Fndz. Juncos opuesto Asoc medica antes Dr. Hospital",
+    "lat": 18.447683333333334,
+    "lon": -66.07406666666667
+  },
+  {
+    "id": "523",
+    "direccion": "Ave. Fndz. Juncos opuesto Asoc medica antes Dr. Hospital",
+    "lat": 18.447683333333334,
+    "lon": -66.07406666666667
+  },
+  {
+    "id": "524",
+    "direccion": "Ave. Fndz. Juncos Fte a Bangkok Bombay Rest.",
+    "lat": 18.446533333333335,
+    "lon": -66.07243333333334
+  },
+  {
+    "id": "524",
+    "direccion": "Ave. Fndz. Juncos Fte a Bangkok Bombay Rest.",
+    "lat": 18.446533333333335,
+    "lon": -66.07243333333334
+  },
+  {
+    "id": "578",
+    "direccion": "Ave. Fndz. Juncos Fte a Dept de Agricultura, opuesto Doctors",
+    "lat": 18.4476,
+    "lon": -66.07373333333334
+  },
+  {
+    "id": "578",
+    "direccion": "Ave. Fndz. Juncos Fte a Dept de Agricultura, opuesto Doctors",
+    "lat": 18.4476,
+    "lon": -66.07373333333334
+  },
+  {
+    "id": "579",
+    "direccion": "Ave. Fndz. Juncos Opuesto a Hosp Pavía",
+    "lat": 18.444183333333335,
+    "lon": -66.07036666666667
+  },
+  {
+    "id": "579",
+    "direccion": "Ave. Fndz. Juncos Opuesto a Hosp Pavía",
+    "lat": 18.444183333333335,
+    "lon": -66.07036666666667
+  },
+  {
+    "id": "580",
+    "direccion": "Ave. Fndz. Juncos Opuesto a National Lumber",
+    "lat": 18.442916666666665,
+    "lon": -66.06691666666667
+  },
+  {
+    "id": "580",
+    "direccion": "Ave. Fndz. Juncos Opuesto a National Lumber",
+    "lat": 18.442916666666665,
+    "lon": -66.06691666666667
+  },
+  {
+    "id": "633",
+    "direccion": "Fte CDT Hoare",
+    "lat": 18.44655,
+    "lon": -66.08281666666667
+  },
+  {
+    "id": "633",
+    "direccion": "Fte CDT Hoare",
+    "lat": 18.44655,
+    "lon": -66.08281666666667
+  },
+  {
+    "id": "635",
+    "direccion": "Ave. Las Palmas Fte Centro de transferencia AEE en Miramar",
+    "lat": 18.450033333333334,
+    "lon": -66.08266666666667
+  },
+  {
+    "id": "635",
+    "direccion": "Ave. Las Palmas Fte Centro de transferencia AEE en Miramar",
+    "lat": 18.450033333333334,
+    "lon": -66.08266666666667
+  },
+  {
+    "id": "636",
+    "direccion": "Ave. Fndz. Juncos Fte Eter Rooftop bar",
+    "lat": 18.452583333333333,
+    "lon": -66.08426666666666
+  },
+  {
+    "id": "636",
+    "direccion": "Ave. Fndz. Juncos Fte Eter Rooftop bar",
+    "lat": 18.452583333333333,
+    "lon": -66.08426666666666
+  },
+  {
+    "id": "637",
+    "direccion": "Ave. Fndz. Juncos opuesto Viva Carpet",
+    "lat": 18.438866666666666,
+    "lon": -66.0614
+  },
+  {
+    "id": "637",
+    "direccion": "Ave. Fndz. Juncos opuesto Viva Carpet",
+    "lat": 18.438866666666666,
+    "lon": -66.0614
+  },
+  {
+    "id": "638",
+    "direccion": "Fndz. Juncos opuesto Grillon Cash & Carry",
+    "lat": 18.4512,
+    "lon": -66.08001666666667
+  },
+  {
+    "id": "638",
+    "direccion": "Fndz. Juncos opuesto Grillon Cash & Carry",
+    "lat": 18.4512,
+    "lon": -66.08001666666667
+  },
+  {
+    "id": "639",
+    "direccion": "Ave. Fndz. Juncos Fte al parque Del Gallo, desp de Borinquen Memorial",
+    "lat": 18.44055,
+    "lon": -66.0721
+  },
+  {
+    "id": "639",
+    "direccion": "Ave. Fndz. Juncos Fte al parque Del Gallo, desp de Borinquen Memorial",
+    "lat": 18.44055,
+    "lon": -66.0721
+  },
+  {
+    "id": "640",
+    "direccion": "Ave. Fndz. Juncos opuesto Podiatry Center",
+    "lat": 18.446266666666666,
+    "lon": -66.0721
+  },
+  {
+    "id": "640",
+    "direccion": "Ave. Fndz. Juncos opuesto Podiatry Center",
+    "lat": 18.446266666666666,
+    "lon": -66.0721
+  },
+  {
+    "id": "656",
+    "direccion": "Ave. Fndz. Juncos Fte Walgreens, opuesto Puttanesca",
+    "lat": 18.44895,
+    "lon": -66.07603333333333
+  },
+  {
+    "id": "656",
+    "direccion": "Ave. Fndz. Juncos Fte Walgreens, opuesto Puttanesca",
+    "lat": 18.44895,
+    "lon": -66.07603333333333
+  },
+  {
+    "id": "712",
+    "direccion": "Ave. Fndz. Juncos Opuesto La Casona, fte Power Solar",
+    "lat": 18.441966666666666,
+    "lon": -66.0645
+  },
+  {
+    "id": "712",
+    "direccion": "Ave. Fndz. Juncos Opuesto La Casona, fte Power Solar",
+    "lat": 18.441966666666666,
+    "lon": -66.0645
+  },
+  {
+    "id": "066",
+    "direccion": "Ave. Fndz. Juncos Opuesto a US Engineer Office",
+    "lat": 18.46282,
+    "lon": -66.09395
+  },
+  {
+    "id": "066",
+    "direccion": "Ave. Fndz. Juncos Opuesto a US Engineer Office",
+    "lat": 18.46282,
+    "lon": -66.09395
+  },
+  {
+    "id": "203",
+    "direccion": "Ave. Fndz. Juncos Fte al Muelle #11 Opt. Caserio Pta Tierra",
+    "lat": 18.46335,
+    "lon": -66.10126666666666
+  },
+  {
+    "id": "203",
+    "direccion": "Ave. Fndz. Juncos Fte al Muelle #11 Opt. Caserio Pta Tierra",
+    "lat": 18.46335,
+    "lon": -66.10126666666666
+  },
+  {
+    "id": "382",
+    "direccion": "Ave. Fndz. Juncos Fte al Salvation Army",
+    "lat": 18.4645,
+    "lon": -66.1034
+  },
+  {
+    "id": "382",
+    "direccion": "Ave. Fndz. Juncos Fte al Salvation Army",
+    "lat": 18.4645,
+    "lon": -66.1034
+  },
+  {
+    "id": "394",
+    "direccion": "Ave. Fndz. Juncos Fte al Parque de Bombas",
+    "lat": 18.46225,
+    "lon": -66.09165
+  },
+  {
+    "id": "394",
+    "direccion": "Ave. Fndz. Juncos Fte al Parque de Bombas",
+    "lat": 18.46225,
+    "lon": -66.09165
+  },
+  {
+    "id": "429",
+    "direccion": "Ave. Fndz. Juncos Opuesto Uniform Outlet (Zona Portuaria)",
+    "lat": 18.462866666666667,
+    "lon": -66.09461666666667
+  },
+  {
+    "id": "429",
+    "direccion": "Ave. Fndz. Juncos Opuesto Uniform Outlet (Zona Portuaria)",
+    "lat": 18.462866666666667,
+    "lon": -66.09461666666667
+  },
+  {
+    "id": "430",
+    "direccion": "Ave. Fndz. Juncos Opuesto a Food and Drug Adm.",
+    "lat": 18.461933333333334,
+    "lon": -66.09
+  },
+  {
+    "id": "430",
+    "direccion": "Ave. Fndz. Juncos Opuesto a Food and Drug Adm.",
+    "lat": 18.461933333333334,
+    "lon": -66.09
+  },
+  {
+    "id": "432",
+    "direccion": "Ave. Fndz. Juncos Opuesto al Residencial San Agustín",
+    "lat": 18.46305,
+    "lon": -66.09943
+  },
+  {
+    "id": "432",
+    "direccion": "Ave. Fndz. Juncos Opuesto al Residencial San Agustín",
+    "lat": 18.46305,
+    "lon": -66.09943
+  },
+  {
+    "id": "436",
+    "direccion": "Ave. Fndz. Juncos Fte a Food and Drug Adm",
+    "lat": 18.461783333333333,
+    "lon": -66.08961666666667
+  },
+  {
+    "id": "436",
+    "direccion": "Ave. Fndz. Juncos Fte a Food and Drug Adm",
+    "lat": 18.461783333333333,
+    "lon": -66.08961666666667
+  },
+  {
+    "id": "484",
+    "direccion": "Ave. Fndz. Juncos Fte Cuartel de la Policía",
+    "lat": 18.46285,
+    "lon": -66.0966
+  },
+  {
+    "id": "484",
+    "direccion": "Ave. Fndz. Juncos Fte Cuartel de la Policía",
+    "lat": 18.46285,
+    "lon": -66.0966
+  },
+  {
+    "id": "627A",
+    "direccion": "Opuesto Autoridad de los Puertos",
+    "lat": 18.46408,
+    "lon": -66.11007
+  },
+  {
+    "id": "627A",
+    "direccion": "Opuesto Autoridad de los Puertos",
+    "lat": 18.46408,
+    "lon": -66.11007
+  },
+  {
+    "id": "627B",
+    "direccion": "Opuesto Autoridad de los Puertos",
+    "lat": 18.46408,
+    "lon": -66.11007
+  },
+  {
+    "id": "627B",
+    "direccion": "Opuesto Autoridad de los Puertos",
+    "lat": 18.46408,
+    "lon": -66.11007
+  },
+  {
+    "id": "628",
+    "direccion": "Fte a estacionamiento Luis A. Ferre",
+    "lat": 18.46525,
+    "lon": -66.10557
+  },
+  {
+    "id": "628",
+    "direccion": "Fte a estacionamiento Luis A. Ferre",
+    "lat": 18.46525,
+    "lon": -66.10557
+  },
+  {
+    "id": "079A",
+    "direccion": "Ave. Roosevelt Esq de Diego fte a BPPR",
+    "lat": 18.413633333333333,
+    "lon": -66.08938333333333
+  },
+  {
+    "id": "079A",
+    "direccion": "Ave. Roosevelt Esq de Diego fte a BPPR",
+    "lat": 18.413633333333333,
+    "lon": -66.08938333333333
+  },
+  {
+    "id": "079B",
+    "direccion": "Ave. Roosevelt Esq de Diego fte a BPPR",
+    "lat": 18.413633333333333,
+    "lon": -66.08938333333333
+  },
+  {
+    "id": "079B",
+    "direccion": "Ave. Roosevelt Esq de Diego fte a BPPR",
+    "lat": 18.413633333333333,
+    "lon": -66.08938333333333
+  },
+  {
+    "id": "080",
+    "direccion": "Ave. Roosevelt Fte a Triple S",
+    "lat": 18.41345,
+    "lon": -66.09605
+  },
+  {
+    "id": "080",
+    "direccion": "Ave. Roosevelt Fte a Triple S",
+    "lat": 18.41345,
+    "lon": -66.09605
+  },
+  {
+    "id": "081",
+    "direccion": "Ave. Roosevelt Fte California Closets",
+    "lat": 18.41583333333333,
+    "lon": -66.0792
+  },
+  {
+    "id": "081",
+    "direccion": "Ave. Roosevelt Fte California Closets",
+    "lat": 18.41583333333333,
+    "lon": -66.0792
+  },
+  {
+    "id": "082A",
+    "direccion": "Ave. Roosevelt Fte a Plaza Las Américas",
+    "lat": 18.418883333333333,
+    "lon": -66.07338333333334
+  },
+  {
+    "id": "082A",
+    "direccion": "Ave. Roosevelt Fte a Plaza Las Américas",
+    "lat": 18.418883333333333,
+    "lon": -66.07338333333334
+  },
+  {
+    "id": "082B",
+    "direccion": "Ave. Roosevelt Fte a Plaza Las Américas",
+    "lat": 18.418883333333333,
+    "lon": -66.07338333333334
+  },
+  {
+    "id": "082B",
+    "direccion": "Ave. Roosevelt Fte a Plaza Las Américas",
+    "lat": 18.418883333333333,
+    "lon": -66.07338333333334
+  },
+  {
+    "id": "089",
+    "direccion": "Ave. Roosevelt Fte a Boricua Mufflers",
+    "lat": 18.41477,
+    "lon": -66.08172
+  },
+  {
+    "id": "089",
+    "direccion": "Ave. Roosevelt Fte a Boricua Mufflers",
+    "lat": 18.41477,
+    "lon": -66.08172
+  },
+  {
+    "id": "091",
+    "direccion": "Ave. Roosevelt Antes de Rest Margarita's",
+    "lat": 18.415983333333333,
+    "lon": -66.07943333333333
+  },
+  {
+    "id": "091",
+    "direccion": "Ave. Roosevelt Antes de Rest Margarita's",
+    "lat": 18.415983333333333,
+    "lon": -66.07943333333333
+  },
+  {
+    "id": "092A",
+    "direccion": "Ave. Roosevelt Esq de Diego al lado del Garage Puma",
+    "lat": 18.41382,
+    "lon": -66.09012
+  },
+  {
+    "id": "092A",
+    "direccion": "Ave. Roosevelt Esq de Diego al lado del Garage Puma",
+    "lat": 18.41382,
+    "lon": -66.09012
+  },
+  {
+    "id": "092B",
+    "direccion": "Ave. Roosevelt Esq de Diego al lado del Garage Puma",
+    "lat": 18.41382,
+    "lon": -66.09012
+  },
+  {
+    "id": "092B",
+    "direccion": "Ave. Roosevelt Esq de Diego al lado del Garage Puma",
+    "lat": 18.41382,
+    "lon": -66.09012
+  },
+  {
+    "id": "094A",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094A",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094B",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "094BO",
+    "direccion": "Ave. Roosevelt Fte Estadio Hiram Bithorn (DIGITAL)",
+    "lat": 18.418366666666667,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "096",
+    "direccion": "Ave. Roosevelt Fte Ambiente Moderno",
+    "lat": 18.422133333333335,
+    "lon": -66.06355
+  },
+  {
+    "id": "096",
+    "direccion": "Ave. Roosevelt Fte Ambiente Moderno",
+    "lat": 18.422133333333335,
+    "lon": -66.06355
+  },
+  {
+    "id": "098",
+    "direccion": "Ave. Roosevelt esq. C/ Fernando Primero dsp de Basking Robins",
+    "lat": 18.422916666666666,
+    "lon": -66.06055
+  },
+  {
+    "id": "098",
+    "direccion": "Ave. Roosevelt esq. C/ Fernando Primero dsp de Basking Robins",
+    "lat": 18.422916666666666,
+    "lon": -66.06055
+  },
+  {
+    "id": "390",
+    "direccion": "Ave. Roosevelt Fte Centro Gubernamental Opt Subway",
+    "lat": 18.41377,
+    "lon": -66.08565
+  },
+  {
+    "id": "390",
+    "direccion": "Ave. Roosevelt Fte Centro Gubernamental Opt Subway",
+    "lat": 18.41377,
+    "lon": -66.08565
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo Caribe",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "449",
+    "direccion": "Ave. Roosevelt Fte Platanal Hato Rey Opt. Cayo C. (DIGITAL)",
+    "lat": 18.421733333333332,
+    "lon": -66.06453333333333
+  },
+  {
+    "id": "604",
+    "direccion": "Ave. Roosevelt Fte Centro Comercial y Capri",
+    "lat": 18.413666666666668,
+    "lon": -66.09451666666666
+  },
+  {
+    "id": "604",
+    "direccion": "Ave. Roosevelt Fte Centro Comercial y Capri",
+    "lat": 18.413666666666668,
+    "lon": -66.09451666666666
+  },
+  {
+    "id": "605",
+    "direccion": "Ave. Roosevelt Fte Borinquen Towers Shopping",
+    "lat": 18.413383333333332,
+    "lon": -66.09543333333333
+  },
+  {
+    "id": "605",
+    "direccion": "Ave. Roosevelt Fte Borinquen Towers Shopping",
+    "lat": 18.413383333333332,
+    "lon": -66.09543333333333
+  },
+  {
+    "id": "606",
+    "direccion": "Ave. Roosevelt Opuesto a Baskin Robins",
+    "lat": 18.422833333333333,
+    "lon": -66.0598
+  },
+  {
+    "id": "606",
+    "direccion": "Ave. Roosevelt Opuesto a Baskin Robins",
+    "lat": 18.422833333333333,
+    "lon": -66.0598
+  },
+  {
+    "id": "741",
+    "direccion": "Ave. Roosevelt Fte HF Mortgage (antes de la Ceiba)",
+    "lat": 18.41421666666667,
+    "lon": -66.0841
+  },
+  {
+    "id": "741",
+    "direccion": "Ave. Roosevelt Fte HF Mortgage (antes de la Ceiba)",
+    "lat": 18.41421666666667,
+    "lon": -66.0841
+  },
+  {
+    "id": "210",
+    "direccion": "Ave. Universidad esq. Calle Peregrina",
+    "lat": 18.403066666666668,
+    "lon": -66.05511666666666
+  },
+  {
+    "id": "210",
+    "direccion": "Ave. Universidad esq. Calle Peregrina",
+    "lat": 18.403066666666668,
+    "lon": -66.05511666666666
+  },
+  {
+    "id": "480",
+    "direccion": "Ave. Gandara fte UHS Opuesto UPR",
+    "lat": 18.401216666666667,
+    "lon": -66.04886666666667
+  },
+  {
+    "id": "480",
+    "direccion": "Ave. Gandara fte UHS Opuesto UPR",
+    "lat": 18.401216666666667,
+    "lon": -66.04886666666667
+  },
+  {
+    "id": "732",
+    "direccion": "Ave. Gandara cruce C/Sur Fte a la UPR",
+    "lat": 18.4015,
+    "lon": -66.04795
+  },
+  {
+    "id": "732",
+    "direccion": "Ave. Gandara cruce C/Sur Fte a la UPR",
+    "lat": 18.4015,
+    "lon": -66.04795
+  },
+  {
+    "id": "733",
+    "direccion": "Ave Gandara Esq Ponce de Leon",
+    "lat": 18.401283333333332,
+    "lon": -66.05138333333333
+  },
+  {
+    "id": "733",
+    "direccion": "Ave Gandara Esq Ponce de Leon",
+    "lat": 18.401283333333332,
+    "lon": -66.05138333333333
+  },
+  {
+    "id": "021",
+    "direccion": "Ave. Glasgow Fte a Garage Total",
+    "lat": 18.376,
+    "lon": -66.09101666666666
+  },
+  {
+    "id": "021",
+    "direccion": "Ave. Glasgow Fte a Garage Total",
+    "lat": 18.376,
+    "lon": -66.09101666666666
+  },
+  {
+    "id": "022",
+    "direccion": "Ave. Glasgow Fte Colegio Maria Reina",
+    "lat": 18.38365,
+    "lon": -66.08543333333333
+  },
+  {
+    "id": "022",
+    "direccion": "Ave. Glasgow Fte Colegio Maria Reina",
+    "lat": 18.38365,
+    "lon": -66.08543333333333
+  },
+  {
+    "id": "023",
+    "direccion": "Ave. Glasgow Opuesto Alejandrino Animal Hosp",
+    "lat": 18.379683333333332,
+    "lon": -66.08981666666666
+  },
+  {
+    "id": "023",
+    "direccion": "Ave. Glasgow Opuesto Alejandrino Animal Hosp",
+    "lat": 18.379683333333332,
+    "lon": -66.08981666666666
+  },
+  {
+    "id": "024",
+    "direccion": "Ave. Glasgow Esq Genova Fte Ofic de Pediatras",
+    "lat": 18.381816666666666,
+    "lon": -66.08795
+  },
+  {
+    "id": "024",
+    "direccion": "Ave. Glasgow Esq Genova Fte Ofic de Pediatras",
+    "lat": 18.381816666666666,
+    "lon": -66.08795
+  },
+  {
+    "id": "043",
+    "direccion": "Ave. Glasgow Fte a Mansiones de San Ignacio opuesto Parkville",
+    "lat": 18.37785,
+    "lon": -66.09111666666666
+  },
+  {
+    "id": "043",
+    "direccion": "Ave. Glasgow Fte a Mansiones de San Ignacio opuesto Parkville",
+    "lat": 18.37785,
+    "lon": -66.09111666666666
+  },
+  {
+    "id": "485",
+    "direccion": "Ave. Glasgow Opuesto Bark Beria, antes de College Park",
+    "lat": 18.381433333333334,
+    "lon": -66.08818333333333
+  },
+  {
+    "id": "485",
+    "direccion": "Ave. Glasgow Opuesto Bark Beria, antes de College Park",
+    "lat": 18.381433333333334,
+    "lon": -66.08818333333333
+  },
+  {
+    "id": "496",
+    "direccion": "Ave. Glasgow Opuesto Urb College Park",
+    "lat": 18.382633333333334,
+    "lon": -66.08713333333333
+  },
+  {
+    "id": "496",
+    "direccion": "Ave. Glasgow Opuesto Urb College Park",
+    "lat": 18.382633333333334,
+    "lon": -66.08713333333333
+  },
+  {
+    "id": "502",
+    "direccion": "Ave. Glasgow Opuesto a Colegio María Reina",
+    "lat": 18.383516666666665,
+    "lon": -66.084
+  },
+  {
+    "id": "502",
+    "direccion": "Ave. Glasgow Opuesto a Colegio María Reina",
+    "lat": 18.383516666666665,
+    "lon": -66.084
+  },
+  {
+    "id": "522",
+    "direccion": "Ave. Glasgow despúes Belle du Jour clinica de Belleza",
+    "lat": 18.383033333333334,
+    "lon": -66.08685
+  },
+  {
+    "id": "522",
+    "direccion": "Ave. Glasgow despúes Belle du Jour clinica de Belleza",
+    "lat": 18.383033333333334,
+    "lon": -66.08685
+  },
+  {
+    "id": "003",
+    "direccion": "Ave. Mayaguez Fte Iglesia La Inmaculada",
+    "lat": 18.411733333333334,
+    "lon": -66.04435
+  },
+  {
+    "id": "003",
+    "direccion": "Ave. Mayaguez Fte Iglesia La Inmaculada",
+    "lat": 18.411733333333334,
+    "lon": -66.04435
+  },
+  {
+    "id": "009",
+    "direccion": "Ave. Mayaguez Fte Duey Galeria de Arte",
+    "lat": 18.412366666666667,
+    "lon": -66.04823333333333
+  },
+  {
+    "id": "009",
+    "direccion": "Ave. Mayaguez Fte Duey Galeria de Arte",
+    "lat": 18.412366666666667,
+    "lon": -66.04823333333333
+  },
+  {
+    "id": "013",
+    "direccion": "Ave. Mayaguez Fte al Edificio Gubernamental",
+    "lat": 18.412133333333333,
+    "lon": -66.05373333333333
+  },
+  {
+    "id": "013",
+    "direccion": "Ave. Mayaguez Fte al Edificio Gubernamental",
+    "lat": 18.412133333333333,
+    "lon": -66.05373333333333
+  },
+  {
+    "id": "014",
+    "direccion": "Ave. Mayaguez Fte al Condominio French Plaza",
+    "lat": 18.412466666666667,
+    "lon": -66.04858333333334
+  },
+  {
+    "id": "014",
+    "direccion": "Ave. Mayaguez Fte al Condominio French Plaza",
+    "lat": 18.412466666666667,
+    "lon": -66.04858333333334
+  },
+  {
+    "id": "016",
+    "direccion": "Ave. Mayaguez Opuesto a Iglesia Inmaculada",
+    "lat": 18.411716666666667,
+    "lon": -66.04468333333334
+  },
+  {
+    "id": "016",
+    "direccion": "Ave. Mayaguez Opuesto a Iglesia Inmaculada",
+    "lat": 18.411716666666667,
+    "lon": -66.04468333333334
+  },
+  {
+    "id": "562",
+    "direccion": "Ave. Mayaguez Fte a Cond. Emiliano Paul",
+    "lat": 18.412066666666668,
+    "lon": -66.04618333333333
+  },
+  {
+    "id": "562",
+    "direccion": "Ave. Mayaguez Fte a Cond. Emiliano Paul",
+    "lat": 18.412066666666668,
+    "lon": -66.04618333333333
+  },
+  {
+    "id": "222",
+    "direccion": "Ave. Americo Miranda Fte sub estación AEE",
+    "lat": 18.40105,
+    "lon": -66.0788
+  },
+  {
+    "id": "222",
+    "direccion": "Ave. Americo Miranda Fte sub estación AEE",
+    "lat": 18.40105,
+    "lon": -66.0788
+  },
+  {
+    "id": "223",
+    "direccion": "Ave. Americo Miranda Fte Ctro Comercial Repto. Metropilitano",
+    "lat": 18.39966666666667,
+    "lon": -66.07243333333334
+  },
+  {
+    "id": "223",
+    "direccion": "Ave. Americo Miranda Fte Ctro Comercial Repto. Metropilitano",
+    "lat": 18.39966666666667,
+    "lon": -66.07243333333334
+  },
+  {
+    "id": "224",
+    "direccion": "Ave. Americo Miranda Fte Parque Pasivo San Luis Rey",
+    "lat": 18.401833333333332,
+    "lon": -66.07758333333334
+  },
+  {
+    "id": "224",
+    "direccion": "Ave. Americo Miranda Fte Parque Pasivo San Luis Rey",
+    "lat": 18.401833333333332,
+    "lon": -66.07758333333334
+  },
+  {
+    "id": "226",
+    "direccion": "Ave. Americo Miranda Fte a Cosvi",
+    "lat": 18.399616666666667,
+    "lon": -66.06926666666666
+  },
+  {
+    "id": "226",
+    "direccion": "Ave. Americo Miranda Fte a Cosvi",
+    "lat": 18.399616666666667,
+    "lon": -66.06926666666666
+  },
+  {
+    "id": "689",
+    "direccion": "Ave. Americo Miranda Opuesto a Cosvi",
+    "lat": 18.399966666666668,
+    "lon": -66.06745
+  },
+  {
+    "id": "689",
+    "direccion": "Ave. Americo Miranda Opuesto a Cosvi",
+    "lat": 18.399966666666668,
+    "lon": -66.06745
+  },
+  {
+    "id": "112A",
+    "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+    "lat": 18.413266666666665,
+    "lon": -66.0567
+  },
+  {
+    "id": "112A",
+    "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+    "lat": 18.413266666666665,
+    "lon": -66.0567
+  },
+  {
+    "id": "112B",
+    "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+    "lat": 18.413266666666665,
+    "lon": -66.0567
+  },
+  {
+    "id": "112B",
+    "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+    "lat": 18.413266666666665,
+    "lon": -66.0567
+  },
+  {
+    "id": "113",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opuesto a Walgreens",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113A",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113B",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113C",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113E",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113D",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113F",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113G",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "113H",
+    "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+    "lat": 18.42105,
+    "lon": -66.05728333333333
+  },
+  {
+    "id": "115",
+    "direccion": "Ave. Muñoz Rivera Fte edificio del BPPR",
+    "lat": 18.42791666666667,
+    "lon": -66.05888333333333
+  },
+  {
+    "id": "115",
+    "direccion": "Ave. Muñoz Rivera Fte edificio del BPPR",
+    "lat": 18.42791666666667,
+    "lon": -66.05888333333333
+  },
+  {
+    "id": "118",
+    "direccion": "Ave. Muñoz Rivera Antes entrada de Union Dealer",
+    "lat": 18.4059,
+    "lon": -66.05641666666666
+  },
+  {
+    "id": "118",
+    "direccion": "Ave. Muñoz Rivera Antes entrada de Union Dealer",
+    "lat": 18.4059,
+    "lon": -66.05641666666666
+  },
+  {
+    "id": "123",
+    "direccion": "Ave. Muñoz Rivera Fte a Walgreens",
+    "lat": 18.40288333333333,
+    "lon": -66.05645
+  },
+  {
+    "id": "123",
+    "direccion": "Ave. Muñoz Rivera Fte a Walgreens",
+    "lat": 18.40288333333333,
+    "lon": -66.05645
+  },
+  {
+    "id": "125",
+    "direccion": "Ave. Muñoz Rivera Frente al BPPR",
+    "lat": 18.400383333333334,
+    "lon": -66.05618333333334
+  },
+  {
+    "id": "125",
+    "direccion": "Ave. Muñoz Rivera Frente al BPPR",
+    "lat": 18.400383333333334,
+    "lon": -66.05618333333334
+  },
+  {
+    "id": "305",
+    "direccion": "Ave. Muñoz Rivera Fte Tribunal de Apelaciones de PR",
+    "lat": 18.42481666666667,
+    "lon": -66.05813333333333
+  },
+  {
+    "id": "305",
+    "direccion": "Ave. Muñoz Rivera Fte Tribunal de Apelaciones de PR",
+    "lat": 18.42481666666667,
+    "lon": -66.05813333333333
+  },
+  {
+    "id": "306",
+    "direccion": "Ave. Munoz Rivera Esq Calaf antes del Choliseo",
+    "lat": 18.4384,
+    "lon": -66.06181666666667
+  },
+  {
+    "id": "306",
+    "direccion": "Ave. Munoz Rivera Esq Calaf antes del Choliseo",
+    "lat": 18.4384,
+    "lon": -66.06181666666667
+  },
+  {
+    "id": "308",
+    "direccion": "Ave. Munoz Rivera Fte a estacion tren Opuesto a CVS",
+    "lat": 18.424783333333334,
+    "lon": -66.05845
+  },
+  {
+    "id": "308",
+    "direccion": "Ave. Munoz Rivera Fte a estacion tren Opuesto a CVS",
+    "lat": 18.424783333333334,
+    "lon": -66.05845
+  },
+  {
+    "id": "311",
+    "direccion": "Ave. Munoz Rivera Opuesto a Asoc de Maestros",
+    "lat": 18.41865,
+    "lon": -66.05695
+  },
+  {
+    "id": "311",
+    "direccion": "Ave. Munoz Rivera Opuesto a Asoc de Maestros",
+    "lat": 18.41865,
+    "lon": -66.05695
+  },
+  {
+    "id": "313",
+    "direccion": "Ave. Munoz Rivera Fte a Monte Mall",
+    "lat": 18.418633333333332,
+    "lon": -66.05716666666666
+  },
+  {
+    "id": "313",
+    "direccion": "Ave. Munoz Rivera Fte a Monte Mall",
+    "lat": 18.418633333333332,
+    "lon": -66.05716666666666
+  },
+  {
+    "id": "319",
+    "direccion": "Ave. Munoz Rivera Fte Edificio Darlington",
+    "lat": 18.400666666666666,
+    "lon": -66.05615
+  },
+  {
+    "id": "319",
+    "direccion": "Ave. Munoz Rivera Fte Edificio Darlington",
+    "lat": 18.400666666666666,
+    "lon": -66.05615
+  },
+  {
+    "id": "451A",
+    "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+    "lat": 18.409366666666667,
+    "lon": -66.0566
+  },
+  {
+    "id": "451A",
+    "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+    "lat": 18.409366666666667,
+    "lon": -66.0566
+  },
+  {
+    "id": "451B",
+    "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+    "lat": 18.409366666666667,
+    "lon": -66.0566
+  },
+  {
+    "id": "451B",
+    "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+    "lat": 18.409366666666667,
+    "lon": -66.0566
+  },
+  {
+    "id": "472A",
+    "direccion": "Ave. Munoz Rivera Fte a First Bank",
+    "lat": 18.40576666666667,
+    "lon": -66.05663333333334
+  },
+  {
+    "id": "472A",
+    "direccion": "Ave. Munoz Rivera Fte a First Bank",
+    "lat": 18.40576666666667,
+    "lon": -66.05663333333334
+  },
+  {
+    "id": "472B",
+    "direccion": "Ave. Munoz Rivera Fte a First Bank",
+    "lat": 18.40576666666667,
+    "lon": -66.05663333333334
+  },
+  {
+    "id": "472B",
+    "direccion": "Ave. Munoz Rivera Fte a First Bank",
+    "lat": 18.40576666666667,
+    "lon": -66.05663333333334
+  },
+  {
+    "id": "481",
+    "direccion": "Ave. Munoz Rivera Fte a Monte Mall Townhouses",
+    "lat": 18.418633333333332,
+    "lon": -66.05716666666666
+  },
+  {
+    "id": "481",
+    "direccion": "Ave. Munoz Rivera Fte a Monte Mall Townhouses",
+    "lat": 18.418633333333332,
+    "lon": -66.05716666666666
+  },
+  {
+    "id": "532",
+    "direccion": "Ave. Munoz Rivera Opu, fte Denny's opuesto al Darlington",
+    "lat": 18.40495,
+    "lon": -66.05668333333334
+  },
+  {
+    "id": "532",
+    "direccion": "Ave. Munoz Rivera Opu, fte Denny's opuesto al Darlington",
+    "lat": 18.40495,
+    "lon": -66.05668333333334
+  },
+  {
+    "id": "542",
+    "direccion": "Ave. Munoz Rivera Fte Centro Unido de Detallistas",
+    "lat": 18.417133333333332,
+    "lon": -66.05666666666667
+  },
+  {
+    "id": "542",
+    "direccion": "Ave. Munoz Rivera Fte Centro Unido de Detallistas",
+    "lat": 18.417133333333332,
+    "lon": -66.05666666666667
+  },
+  {
+    "id": "069A",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069AI",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069B",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "069B",
+    "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+    "lat": 18.446716666666667,
+    "lon": -66.06903333333334
+  },
+  {
+    "id": "134",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134A",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134B",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134C",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134D",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134E",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134F",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134G",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "134H",
+    "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "135A",
+    "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "135A",
+    "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "135B",
+    "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "135B",
+    "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+    "lat": 18.455633333333335,
+    "lon": -66.08323333333334
+  },
+  {
+    "id": "137",
+    "direccion": "Ave. Ponce de León Fte a Marshalls",
+    "lat": 18.45243333333333,
+    "lon": -66.07706666666667
+  },
+  {
+    "id": "137",
+    "direccion": "Ave. Ponce de León Fte a Marshalls",
+    "lat": 18.45243333333333,
+    "lon": -66.07706666666667
+  },
+  {
+    "id": "139",
+    "direccion": "Ave. Ponce de León Opuesto a Rubén's Café",
+    "lat": 18.44905,
+    "lon": -66.07225
+  },
+  {
+    "id": "139",
+    "direccion": "Ave. Ponce de León Opuesto a Rubén's Café",
+    "lat": 18.44905,
+    "lon": -66.07225
+  },
+  {
+    "id": "140",
+    "direccion": "Ave. Ponce de León antes del Hosp Santurce Medical Mall opt",
+    "lat": 18.439933333333332,
+    "lon": -66.06111666666666
+  },
+  {
+    "id": "140",
+    "direccion": "Ave. Ponce de León antes del Hosp Santurce Medical Mall opt",
+    "lat": 18.439933333333332,
+    "lon": -66.06111666666666
+  },
+  {
+    "id": "143",
+    "direccion": "Ave. Ponce de León Fte edificio Mercantil Plaza",
+    "lat": 18.432483333333334,
+    "lon": -66.05906666666667
+  },
+  {
+    "id": "143",
+    "direccion": "Ave. Ponce de León Fte edificio Mercantil Plaza",
+    "lat": 18.432483333333334,
+    "lon": -66.05906666666667
+  },
+  {
+    "id": "147",
+    "direccion": "Ave. Ponce de León Fte entrada Hosp Auxilio Mutuo",
+    "lat": 18.409383333333334,
+    "lon": -66.0535
+  },
+  {
+    "id": "147",
+    "direccion": "Ave. Ponce de León Fte entrada Hosp Auxilio Mutuo",
+    "lat": 18.409383333333334,
+    "lon": -66.0535
+  },
+  {
+    "id": "148",
+    "direccion": "Ave. Ponce de León detrás del Centro Judicial",
+    "lat": 18.41215,
+    "lon": -66.05446666666667
+  },
+  {
+    "id": "148",
+    "direccion": "Ave. Ponce de León detrás del Centro Judicial",
+    "lat": 18.41215,
+    "lon": -66.05446666666667
+  },
+  {
+    "id": "151",
+    "direccion": "Ave. Ponce de León Fte oficinas de la Telefonica",
+    "lat": 18.414383333333333,
+    "lon": -66.05506666666666
+  },
+  {
+    "id": "151",
+    "direccion": "Ave. Ponce de León Fte oficinas de la Telefonica",
+    "lat": 18.414383333333333,
+    "lon": -66.05506666666666
+  },
+  {
+    "id": "158",
+    "direccion": "Ave. Ponce de León Opuesto a Leonardo's",
+    "lat": 18.44315,
+    "lon": -66.06448333333333
+  },
+  {
+    "id": "158",
+    "direccion": "Ave. Ponce de León Opuesto a Leonardo's",
+    "lat": 18.44315,
+    "lon": -66.06448333333333
+  },
+  {
+    "id": "317A",
+    "direccion": "Ave. Ponce de León Fte a UPR",
+    "lat": 18.4033,
+    "lon": -66.05205
+  },
+  {
+    "id": "317A",
+    "direccion": "Ave. Ponce de León Fte a UPR",
+    "lat": 18.4033,
+    "lon": -66.05205
+  },
+  {
+    "id": "317B",
+    "direccion": "Ave. Ponce de León Fte a UPR",
+    "lat": 18.4033,
+    "lon": -66.05205
+  },
+  {
+    "id": "317B",
+    "direccion": "Ave. Ponce de León Fte a UPR",
+    "lat": 18.4033,
+    "lon": -66.05205
+  },
+  {
+    "id": "331A",
+    "direccion": "Ave. Ponce de León opuesto Hosp Pavia Hato Rey",
+    "lat": 18.4185,
+    "lon": -66.05601666666666
+  },
+  {
+    "id": "331A",
+    "direccion": "Ave. Ponce de León opuesto Hosp Pavia Hato Rey",
+    "lat": 18.4185,
+    "lon": -66.05601666666666
+  },
+  {
+    "id": "331B",
+    "direccion": "Ave. Ponce de León opuesto Hosp Pavia Hato Rey",
+    "lat": 18.4185,
+    "lon": -66.05601666666666
+  },
+  {
+    "id": "331B",
+    "direccion": "Ave. Ponce de León opuesto Hosp Pavia Hato Rey",
+    "lat": 18.4185,
+    "lon": -66.05601666666666
+  },
+  {
+    "id": "349",
+    "direccion": "Ave. Ponce de León antes de Miramar Plz Opt Consv",
+    "lat": 18.45605,
+    "lon": -66.08371666666666
+  },
+  {
+    "id": "349",
+    "direccion": "Ave. Ponce de León antes de Miramar Plz Opt Consv",
+    "lat": 18.45605,
+    "lon": -66.08371666666666
+  },
+  {
+    "id": "353",
+    "direccion": "Ave. Ponce de León Opuesto a la Escuela de Bellas Artes",
+    "lat": 18.447466666666667,
+    "lon": -66.07026666666667
+  },
+  {
+    "id": "353",
+    "direccion": "Ave. Ponce de León Opuesto a la Escuela de Bellas Artes",
+    "lat": 18.45605,
+    "lon": -66.08371666666666
+  },
+  {
+    "id": "359",
+    "direccion": "Ave. Ponce de León Opuesto Pueblo antes de Fine Art Miramar",
+    "lat": 18.453516666666665,
+    "lon": -66.07903333333333
+  },
+  {
+    "id": "359",
+    "direccion": "Ave. Ponce de León Opuesto Pueblo antes de Fine Art Miramar",
+    "lat": 18.453516666666665,
+    "lon": -66.07903333333333
+  },
+  {
+    "id": "372",
+    "direccion": "Ave. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro",
+    "lat": 18.4262,
+    "lon": -66.05781666666667
+  },
+  {
+    "id": "372",
+    "direccion": "Ave. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro",
+    "lat": 18.4262,
+    "lon": -66.05781666666667
+  },
+  {
+    "id": "393",
+    "direccion": "Ave. Ponce de León Fte Tribunal de Justicia en Miramar",
+    "lat": 18.456983333333334,
+    "lon": -66.08568333333334
+  },
+  {
+    "id": "393",
+    "direccion": "Ave. Ponce de León Fte Tribunal de Justicia en Miramar",
+    "lat": 18.456983333333334,
+    "lon": -66.08568333333334
+  },
+  {
+    "id": "398",
+    "direccion": "Ave. Ponce de León antes del Conservatorio Miramar",
+    "lat": 18.45306666666667,
+    "lon": -66.07816666666666
+  },
+  {
+    "id": "398",
+    "direccion": "Ave. Ponce de León antes del Conservatorio Miramar",
+    "lat": 18.45306666666667,
+    "lon": -66.07816666666666
+  },
+  {
+    "id": "454",
+    "direccion": "Ave. Ponce de León Opuesto al Cobians Plaza",
+    "lat": 18.4443,
+    "lon": -66.06601666666667
+  },
+  {
+    "id": "454",
+    "direccion": "Ave. Ponce de León Opuesto al Cobians Plaza",
+    "lat": 18.4443,
+    "lon": -66.06601666666667
+  },
+  {
+    "id": "456",
+    "direccion": "Ave. Ponce de León Opuesto al Liceo Tecnológico",
+    "lat": 18.42025,
+    "lon": -66.05623333333334
+  },
+  {
+    "id": "456",
+    "direccion": "Ave. Ponce de León Opuesto al Liceo Tecnológico",
+    "lat": 18.42025,
+    "lon": -66.05623333333334
+  },
+  {
+    "id": "466",
+    "direccion": "Ave. Ponce de León Opt al estacionamiento de Comercio UPR",
+    "lat": 18.406233333333333,
+    "lon": -66.05201666666666
+  },
+  {
+    "id": "466",
+    "direccion": "Ave. Ponce de León Opt al estacionamiento de Comercio UPR",
+    "lat": 18.406233333333333,
+    "lon": -66.05201666666666
+  },
+  {
+    "id": "469",
+    "direccion": "Ave. Ponce de León Fte estacionamiento Comercio UPR",
+    "lat": 18.405733333333334,
+    "lon": -66.05195
+  },
+  {
+    "id": "469",
+    "direccion": "Ave. Ponce de León Fte estacionamiento Comercio UPR",
+    "lat": 18.405733333333334,
+    "lon": -66.05195
+  },
+  {
+    "id": "506",
+    "direccion": "Ave. Ponce de León opt a Gasolinera Puma",
+    "lat": 18.430033333333334,
+    "lon": -66.05868333333333
+  },
+  {
+    "id": "506",
+    "direccion": "Ave. Ponce de León opt a Gasolinera Puma",
+    "lat": 18.430033333333334,
+    "lon": -66.05868333333333
+  },
+  {
+    "id": "507A",
+    "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+    "lat": 18.4164,
+    "lon": -66.05553333333333
+  },
+  {
+    "id": "507A",
+    "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+    "lat": 18.4164,
+    "lon": -66.05553333333333
+  },
+  {
+    "id": "507B",
+    "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+    "lat": 18.4164,
+    "lon": -66.05553333333333
+  },
+  {
+    "id": "507B",
+    "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+    "lat": 18.4164,
+    "lon": -66.05553333333333
+  },
+  {
+    "id": "511",
+    "direccion": "Ave. Ponce de León Opuesto Colegio Abogados",
+    "lat": 18.455016666666666,
+    "lon": -66.0813
+  },
+  {
+    "id": "511",
+    "direccion": "Ave. Ponce de León Opuesto Colegio Abogados",
+    "lat": 18.455016666666666,
+    "lon": -66.0813
+  },
+  {
+    "id": "518",
+    "direccion": "Ave. Ponce de Léon Fte al Liceo Tecnologico",
+    "lat": 18.4209,
+    "lon": -66.0566
+  },
+  {
+    "id": "518",
+    "direccion": "Ave. Ponce de Léon Fte al Liceo Tecnologico",
+    "lat": 18.4209,
+    "lon": -66.0566
+  },
+  {
+    "id": "530",
+    "direccion": "Ave. Ponce de León Opuesto al Rest. El Camaron",
+    "lat": 18.451333333333334,
+    "lon": -66.07518333333333
+  },
+  {
+    "id": "530",
+    "direccion": "Ave. Ponce de León Opuesto al Rest. El Camaron",
+    "lat": 18.451333333333334,
+    "lon": -66.07518333333333
+  },
+  {
+    "id": "534",
+    "direccion": "Ave. Ponce de León Fte Escuela de Bellas Artes",
+    "lat": 18.447683333333334,
+    "lon": -66.0704
+  },
+  {
+    "id": "534",
+    "direccion": "Ave. Ponce de León Fte Escuela de Bellas Artes",
+    "lat": 18.447683333333334,
+    "lon": -66.0704
+  },
+  {
+    "id": "572",
+    "direccion": "Ave. Ponce de León Esq Entrada Universidad Sagrado Corazón",
+    "lat": 18.43885,
+    "lon": -66.06008333333334
+  },
+  {
+    "id": "572",
+    "direccion": "Ave. Ponce de León Esq Entrada Universidad Sagrado Corazón",
+    "lat": 18.43885,
+    "lon": -66.06008333333334
+  },
+  {
+    "id": "581",
+    "direccion": "Ave. Ponce de León Hacia Condado Fte Tribunal de Justicia",
+    "lat": 18.457216666666667,
+    "lon": -66.0859
+  },
+  {
+    "id": "581",
+    "direccion": "Ave. Ponce de León Hacia Condado Fte Tribunal de Justicia",
+    "lat": 18.457216666666667,
+    "lon": -66.0859
+  },
+  {
+    "id": "634",
+    "direccion": "Ave. Ponce de León Fte a Centro Europa",
+    "lat": 18.446316666666668,
+    "lon": -66.06875
+  },
+  {
+    "id": "634",
+    "direccion": "Ave. Ponce de León Fte a Centro Europa",
+    "lat": 18.446316666666668,
+    "lon": -66.06875
+  },
+  {
+    "id": "641",
+    "direccion": "Ave. Ponce de León Fte Oficina de Arquitectos (V Architecture)",
+    "lat": 18.442666666666668,
+    "lon": -66.0637
+  },
+  {
+    "id": "641",
+    "direccion": "Ave. Ponce de León Fte Oficina de Arquitectos (V Architecture)",
+    "lat": 18.442666666666668,
+    "lon": -66.0637
+  },
+  {
+    "id": "655",
+    "direccion": "Ave. Ponce de León Opuesto CVS Tren Urbano Sagrado",
+    "lat": 18.436566666666668,
+    "lon": -66.05926666666667
+  },
+  {
+    "id": "655",
+    "direccion": "Ave. Ponce de León Opuesto CVS Tren Urbano Sagrado",
+    "lat": 18.436566666666668,
+    "lon": -66.05926666666667
+  },
+  {
+    "id": "673",
+    "direccion": "Ave. Ponce de Léon Opuesto a MUSAN antes HERA Impresos",
+    "lat": 18.442933333333333,
+    "lon": -66.06428333333334
+  },
+  {
+    "id": "673",
+    "direccion": "Ave. Ponce de Léon Opuesto a MUSAN antes HERA Impresos",
+    "lat": 18.442933333333333,
+    "lon": -66.06428333333334
+  },
+  {
+    "id": "676",
+    "direccion": "Ave. Ponce de León Fte. Doctors' Center Clinic",
+    "lat": 18.4457,
+    "lon": -66.06765
+  },
+  {
+    "id": "676",
+    "direccion": "Ave. Ponce de León Fte. Doctor's Center Clinic",
+    "lat": 18.4457,
+    "lon": -66.06765
+  },
+  {
+    "id": "679",
+    "direccion": "Ave. Ponce de León después de Santurce Medical Mall",
+    "lat": 18.440816666666667,
+    "lon": -66.06175
+  },
+  {
+    "id": "679",
+    "direccion": "Ave. Ponce de León después de Santurce Medical Mall",
+    "lat": 18.440816666666667,
+    "lon": -66.06175
+  },
+  {
+    "id": "680",
+    "direccion": "Ave. Ponce de León Opuesto a Junta de Relaciones del Trabajo",
+    "lat": 18.44575,
+    "lon": -66.06783333333334
+  },
+  {
+    "id": "680",
+    "direccion": "Ave. Ponce de León Opuesto a Junta de Relaciones del Trabajo",
+    "lat": 18.44575,
+    "lon": -66.06783333333334
+  },
+  {
+    "id": "681",
+    "direccion": "Ave. Ponce de Léon Fte a Ruben's Café",
+    "lat": 18.4491,
+    "lon": -66.0722
+  },
+  {
+    "id": "681",
+    "direccion": "Ave. Ponce de Léon Fte a Ruben's Café",
+    "lat": 18.4491,
+    "lon": -66.0722
+  },
+  {
+    "id": "711",
+    "direccion": "Ave. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon",
+    "lat": 18.437733333333334,
+    "lon": -66.05981666666666
+  },
+  {
+    "id": "711",
+    "direccion": "Ave. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon",
+    "lat": 18.437733333333334,
+    "lon": -66.05981666666666
+  },
+  {
+    "id": "739",
+    "direccion": "Ave. Ponce de Léon Opuesto entrada UPR",
+    "lat": 18.402566666666665,
+    "lon": -66.05215
+  },
+  {
+    "id": "739",
+    "direccion": "Ave. Ponce de Léon Opuesto entrada UPR",
+    "lat": 18.402566666666665,
+    "lon": -66.05215
+  },
+  {
+    "id": "745A",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745A",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745B",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745B",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745C",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745C",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745D",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745D",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745E",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745E",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745F",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santurce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745F",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745G",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745G",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745H",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "745H",
+    "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+    "lat": 18.450816666666668,
+    "lon": -66.06933333333333
+  },
+  {
+    "id": "753",
+    "direccion": "Ave. Ponce de León Fte Colegio Inmaculada",
+    "lat": 18.441483333333334,
+    "lon": -66.0624
+  },
+  {
+    "id": "753",
+    "direccion": "Ave. Ponce de León Fte Colegio Inmaculada",
+    "lat": 18.441483333333334,
+    "lon": -66.0624
+  },
+  {
+    "id": "715",
+    "direccion": "Ave. Eduardo Conde Fte a Bonanza Liquor",
+    "lat": 18.444233333333333,
+    "lon": -66.06238333333333
+  },
+  {
+    "id": "715",
+    "direccion": "Ave. Eduardo Conde Fte a Bonanza Liquor",
+    "lat": 18.444233333333333,
+    "lon": -66.06238333333333
+  },
+  {
+    "id": "012",
+    "direccion": "Ave. Quisquella Opuesto a Intl Home Products",
+    "lat": 18.427066666666665,
+    "lon": -66.0513
+  },
+  {
+    "id": "012",
+    "direccion": "Ave. Quisquella Opuesto a Intl Home Products",
+    "lat": 18.427066666666665,
+    "lon": -66.0513
+  },
+  {
+    "id": "559",
+    "direccion": "Ave. Quesquella Fte a Ferreteria National, opuesto Alcalde A/P",
+    "lat": 18.427033333333334,
+    "lon": -66.04958333333333
+  },
+  {
+    "id": "559",
+    "direccion": "Ave. Quesquella Fte a Ferreteria National",
+    "lat": 18.427033333333334,
+    "lon": -66.04958333333333
+  },
+  {
+    "id": "CE001",
+    "direccion": "Centro Medico Fte Escuela de Farmacia de la UPR",
+    "lat": 18.397933333333334,
+    "lon": -66.07378333333334
+  },
+  {
+    "id": "CE001",
+    "direccion": "Centro Medico Fte Escuela de Farmacia de la UPR",
+    "lat": 18.397933333333334,
+    "lon": -66.07378333333334
+  },
+  {
+    "id": "CE002",
+    "direccion": "Centro Medico Opuesto entrada del garage principal",
+    "lat": 18.3935,
+    "lon": -66.0753
+  },
+  {
+    "id": "CE003",
+    "direccion": "Centro Medico Fte antiguo Hospital de Psiquiatria",
+    "lat": 18.391466666666666,
+    "lon": -66.07548333333334
+  },
+  {
+    "id": "CE003",
+    "direccion": "Centro Medico Fte antiguo Hospital de Psiquiatria",
+    "lat": 18.391466666666666,
+    "lon": -66.07548333333334
+  },
+  {
+    "id": "CE004",
+    "direccion": "Centro Medico Fte Hosp Centrocardiovascular",
+    "lat": 18.398016666666667,
+    "lon": -66.07291666666667
+  },
+  {
+    "id": "CE004",
+    "direccion": "Centro Medico Fte Hosp Centrocardiovascular",
+    "lat": 18.398016666666667,
+    "lon": -66.07291666666667
+  },
+  {
+    "id": "163",
+    "direccion": "Carr. #1 Fte entrada extensión agricola UPR",
+    "lat": 18.39475,
+    "lon": -66.05561666666667
+  },
+  {
+    "id": "163",
+    "direccion": "Carr. #1 Fte entrada extensión agricola UPR",
+    "lat": 18.39475,
+    "lon": -66.05561666666667
+  },
+  {
+    "id": "164",
+    "direccion": "Carr #1 fte National Lumber, opuesto Ases",
+    "lat": 18.385183333333334,
+    "lon": -66.06655
+  },
+  {
+    "id": "164",
+    "direccion": "Carr #1 fte National Lumber, opuesto Ases",
+    "lat": 18.385183333333334,
+    "lon": -66.06655
+  },
+  {
+    "id": "207A",
+    "direccion": "Carr. #1 Fte a Scotiabank (Antes de Logans)",
+    "lat": 18.383116666666666,
+    "lon": -66.06796666666666
+  },
+  {
+    "id": "207A",
+    "direccion": "Carr. #1 Fte a Scotiabank (Antes de Logans)",
+    "lat": 18.383116666666666,
+    "lon": -66.06796666666666
+  },
+  {
+    "id": "207B",
+    "direccion": "Carr. #1 Fte a Scotiabank (Antes de Logans)",
+    "lat": 18.383116666666666,
+    "lon": -66.06796666666666
+  },
+  {
+    "id": "207B",
+    "direccion": "Carr. #1 Fte a Scotiabank (Antes de Logans)",
+    "lat": 18.383116666666666,
+    "lon": -66.06796666666666
+  },
+  {
+    "id": "342A",
+    "direccion": "Carr. #1 antes del BPPR",
+    "lat": 18.383466666666667,
+    "lon": -66.06745
+  },
+  {
+    "id": "342A",
+    "direccion": "Carr. #1 antes del BPPR",
+    "lat": 18.383466666666667,
+    "lon": -66.06745
+  },
+  {
+    "id": "342B",
+    "direccion": "Carr. #1 antes del BPPR",
+    "lat": 18.383466666666667,
+    "lon": -66.06745
+  },
+  {
+    "id": "342B",
+    "direccion": "Carr. #1 antes del BPPR",
+    "lat": 18.383466666666667,
+    "lon": -66.06745
+  },
+  {
+    "id": "386A",
+    "direccion": "Carr. #1 Esq Ave. De Diego Fte antiguo Logans",
+    "lat": 18.38235,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "386A",
+    "direccion": "Carr. #1 Esq Ave. De Diego Fte antiguo Logans",
+    "lat": 18.38235,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "386B",
+    "direccion": "Carr. #1 Esq Ave. De Diego Fte antiguo Logans",
+    "lat": 18.38235,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "386B",
+    "direccion": "Carr. #1 Esq Ave. De Diego Fte antiguo Logans",
+    "lat": 18.38235,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "471",
+    "direccion": "Carr. #1Fte Music Wave",
+    "lat": 18.38603,
+    "lon": -66.06565
+  },
+  {
+    "id": "471",
+    "direccion": "Carr. #1Fte Music Wave",
+    "lat": 18.38603,
+    "lon": -66.06565
+  },
+  {
+    "id": "612",
+    "direccion": "Carr. #1 fte. CRIM",
+    "lat": 18.364,
+    "lon": -66.08413333333333
+  },
+  {
+    "id": "612",
+    "direccion": "Carr. #1 fte. CRIM",
+    "lat": 18.364,
+    "lon": -66.08413333333333
+  },
+  {
+    "id": "612",
+    "direccion": "Carr. #1 fte. CRIM",
+    "lat": 18.364,
+    "lon": -66.08413333333333
+  },
+  {
+    "id": "613",
+    "direccion": "Carr. #1 Fte Urb. Milaville",
+    "lat": 18.361866666666668,
+    "lon": -66.08565
+  },
+  {
+    "id": "613",
+    "direccion": "Carr. #1 Fte Urb. Milaville",
+    "lat": 18.361866666666668,
+    "lon": -66.08565
+  },
+  {
+    "id": "614",
+    "direccion": "Carr. #1 Opuesto Urb. Milaville",
+    "lat": 18.36285,
+    "lon": -66.08536666666667
+  },
+  {
+    "id": "614",
+    "direccion": "Carr. #1 Opuesto Urb. Milaville",
+    "lat": 18.36285,
+    "lon": -66.08536666666667
+  },
+  {
+    "id": "615",
+    "direccion": "Carr. #1 fte parque Tortugo",
+    "lat": 18.3436,
+    "lon": -66.09341666666667
+  },
+  {
+    "id": "615",
+    "direccion": "Carr. #1 fte parque Tortugo",
+    "lat": 18.3436,
+    "lon": -66.09341666666667
+  },
+  {
+    "id": "651",
+    "direccion": "Carr. #1 Fte antiguo local tacos Tin Tan",
+    "lat": 18.3408,
+    "lon": -66.09465
+  },
+  {
+    "id": "651",
+    "direccion": "Carr. #1 Fte antiguo local tacos Tin Tan",
+    "lat": 18.3408,
+    "lon": -66.09465
+  },
+  {
+    "id": "652",
+    "direccion": "Carr. #1 fte al lado del Dealer Guacoso",
+    "lat": 18.3462,
+    "lon": -66.09276666666666
+  },
+  {
+    "id": "652",
+    "direccion": "Carr. #1 fte al lado del Dealer Guacoso",
+    "lat": 18.3462,
+    "lon": -66.09276666666666
+  },
+  {
+    "id": "654",
+    "direccion": "Carr. #1 fte Alba Azulejos y Ceramica",
+    "lat": 18.351683333333334,
+    "lon": -66.09035
+  },
+  {
+    "id": "654",
+    "direccion": "Carr. #1 fte Alba Azulejos y Ceramica",
+    "lat": 18.351683333333334,
+    "lon": -66.09035
+  },
+  {
+    "id": "670",
+    "direccion": "Carr. #1 Opuesto a Ferreteria Aceros de América",
+    "lat": 18.309716666666667,
+    "lon": -66.07713333333334
+  },
+  {
+    "id": "670",
+    "direccion": "Carr. #1 Opuesto a Ferreteria Aceros de América",
+    "lat": 18.309716666666667,
+    "lon": -66.07713333333334
+  },
+  {
+    "id": "724",
+    "direccion": "Carr # 1 fte a Professional Tire Dist.",
+    "lat": 18.304633333333335,
+    "lon": -66.06996666666667
+  },
+  {
+    "id": "724",
+    "direccion": "Carr # 1 fte a Professional Tire Dist.",
+    "lat": 18.304633333333335,
+    "lon": -66.06996666666667
+  },
+  {
+    "id": "725",
+    "direccion": "Carr. #1 Opuesto a Proffesional Tire Dist.",
+    "lat": 18.304816666666667,
+    "lon": -66.06998333333334
+  },
+  {
+    "id": "725",
+    "direccion": "Carr. #1 Opuesto a Proffesional Tire Dist.",
+    "lat": 18.304816666666667,
+    "lon": -66.06998333333334
+  },
+  {
+    "id": "001",
+    "direccion": "Urb. Santiago Iglesias Ave Paz Granela opuesto a Esso",
+    "lat": 18.384316666666667,
+    "lon": -66.10008333333333
+  },
+  {
+    "id": "001",
+    "direccion": "Urb. Santiago Iglesias Ave Paz Granela opuesto a Esso",
+    "lat": 18.384316666666667,
+    "lon": -66.10008333333333
+  },
+  {
+    "id": "017",
+    "direccion": "Urb. Santiago Iglesias Ave Paz Granela Fte a Esso",
+    "lat": 18.384166666666665,
+    "lon": -66.10005
+  },
+  {
+    "id": "017",
+    "direccion": "Urb. Santiago Iglesias Ave Paz Granela Fte a Esso",
+    "lat": 18.384166666666665,
+    "lon": -66.10005
+  },
+  {
+    "id": "218",
+    "direccion": "Carr. #21 Esq Carr. #841 opuesto Col. Providencia",
+    "lat": 18.389366666666668,
+    "lon": -66.09256666666667
+  },
+  {
+    "id": "218",
+    "direccion": "Carr. #21 Esq Carr. #841 opuesto Col. Providencia",
+    "lat": 18.389366666666668,
+    "lon": -66.09256666666667
+  },
+  {
+    "id": "330",
+    "direccion": "Carr. #21 fte Clinica Las Lomas",
+    "lat": 18.389366666666668,
+    "lon": -66.09256666666667
+  },
+  {
+    "id": "330",
+    "direccion": "Carr. #21 fte Clinica Las Lomas",
+    "lat": 18.389366666666668,
+    "lon": -66.09256666666667
+  },
+  {
+    "id": "423",
+    "direccion": "Carr. #21 Opuesto Power Solar",
+    "lat": 18.38845,
+    "lon": -66.08928333333333
+  },
+  {
+    "id": "423",
+    "direccion": "Carr. #21 Opuesto Power Solar",
+    "lat": 18.38845,
+    "lon": -66.08928333333333
+  },
+  {
+    "id": "475",
+    "direccion": "Carr. #21 Fte a Parking Hospital Metropolitano",
+    "lat": 18.389383333333335,
+    "lon": -66.0993
+  },
+  {
+    "id": "475",
+    "direccion": "Carr. #21 Fte a Parking Hospital Metropolitano",
+    "lat": 18.389383333333335,
+    "lon": -66.0993
+  },
+  {
+    "id": "543",
+    "direccion": "Carr. #21 fte. a ADMELCO",
+    "lat": 18.391483333333333,
+    "lon": -66.06245
+  },
+  {
+    "id": "543",
+    "direccion": "Carr. #21 fte. a ADMELCO",
+    "lat": 18.391483333333333,
+    "lon": -66.06245
+  },
+  {
+    "id": "544",
+    "direccion": "Carr. #21 Opuesto Cementerio Villa Nevarez",
+    "lat": 18.391283333333334,
+    "lon": -66.0635
+  },
+  {
+    "id": "544",
+    "direccion": "Carr. #21 Opuesto Cementerio Villa Nevarez",
+    "lat": 18.391283333333334,
+    "lon": -66.0635
+  },
+  {
+    "id": "585",
+    "direccion": "Carr. #21 Opto al Presidio Estatal o Colmena66 Tu Camino Emp.",
+    "lat": 18.390583333333332,
+    "lon": -66.06901666666667
+  },
+  {
+    "id": "585",
+    "direccion": "Carr. #21 Opto al Presidio Estatal o Colmena66 Tu Camino Emp.",
+    "lat": 18.390583333333332,
+    "lon": -66.06901666666667
+  },
+  {
+    "id": "588",
+    "direccion": "Carr. #21 Fte Hospital Metropolitano",
+    "lat": 18.389133333333334,
+    "lon": -66.0995
+  },
+  {
+    "id": "588",
+    "direccion": "Carr. #21 Fte Hospital Metropolitano",
+    "lat": 18.389133333333334,
+    "lon": -66.0995
+  },
+  {
+    "id": "594",
+    "direccion": "Carr. #21 Fte Juncos Steel",
+    "lat": 18.38925,
+    "lon": -66.1037
+  },
+  {
+    "id": "594",
+    "direccion": "Carr. #21 Fte Juncos Steel",
+    "lat": 18.38925,
+    "lon": -66.1037
+  },
+  {
+    "id": "755",
+    "direccion": "Urb Altamesa fte Nieves BBQ",
+    "lat": 18.38746666666667,
+    "lon": -66.09501666666667
+  },
+  {
+    "id": "755",
+    "direccion": "Urb Altamesa fte Nieves BBQ",
+    "lat": 18.38746666666667,
+    "lon": -66.09501666666667
+  },
+  {
+    "id": "173",
+    "direccion": "Carr. 176 Fte Almacenes Costco antes de Starbucks de (Cupey)",
+    "lat": 18.38521666666667,
+    "lon": -66.06125
+  },
+  {
+    "id": "173",
+    "direccion": "Carr. 176 Fte Almacenes Costco antes de Starbucks de (Cupey)",
+    "lat": 18.38521666666667,
+    "lon": -66.06125
+  },
+  {
+    "id": "174",
+    "direccion": "Carr. #176 antes de Restaurante Ponderosa",
+    "lat": 18.3999,
+    "lon": -66.05715
+  },
+  {
+    "id": "174",
+    "direccion": "Carr. #176 antes de Restaurante Ponderosa",
+    "lat": 18.3999,
+    "lon": -66.05715
+  },
+  {
+    "id": "175",
+    "direccion": "Carr. # 176 fte. UMET (Cupey)",
+    "lat": 18.387666666666668,
+    "lon": -66.06133333333334
+  },
+  {
+    "id": "175",
+    "direccion": "Carr. # 176 fte. UMET (Cupey)",
+    "lat": 18.387666666666668,
+    "lon": -66.06133333333334
+  },
+  {
+    "id": "176",
+    "direccion": "Carr. #176 Fte BPPR (Evertech) y Popeyes",
+    "lat": 18.3799,
+    "lon": -66.0555
+  },
+  {
+    "id": "176",
+    "direccion": "Carr. #176 Fte BPPR (Evertech) y Popeyes",
+    "lat": 18.3799,
+    "lon": -66.0555
+  },
+  {
+    "id": "434A",
+    "direccion": "Carr. #176 Entrada San Gerardo Opuesto Popeyes",
+    "lat": 18.381416666666667,
+    "lon": -66.05626666666667
+  },
+  {
+    "id": "434A",
+    "direccion": "Carr. #176 Entrada San Gerardo Opuesto Popeyes",
+    "lat": 18.381416666666667,
+    "lon": -66.05626666666667
+  },
+  {
+    "id": "434B",
+    "direccion": "Carr. #176 Entrada San Gerardo Opuesto Popeyes",
+    "lat": 18.381416666666667,
+    "lon": -66.05626666666667
+  },
+  {
+    "id": "434B",
+    "direccion": "Carr. #176 Entrada San Gerardo Opuesto Popeyes",
+    "lat": 18.381416666666667,
+    "lon": -66.05626666666667
+  },
+  {
+    "id": "458",
+    "direccion": "Carr. #845 Fte a Garage Mobil (Cupey)",
+    "lat": 18.378383333333332,
+    "lon": -66.05088333333333
+  },
+  {
+    "id": "458",
+    "direccion": "Carr. #845 Fte a Garage Mobil (Cupey)",
+    "lat": 18.378383333333332,
+    "lon": -66.05088333333333
+  },
+  {
+    "id": "491",
+    "direccion": "Carr. #176 opuesto UAGM",
+    "lat": 18.38675,
+    "lon": -66.06123333333333
+  },
+  {
+    "id": "491",
+    "direccion": "Carr. #176 opuesto UAGM",
+    "lat": 18.38675,
+    "lon": -66.06123333333333
+  },
+  {
+    "id": "508",
+    "direccion": "Carr. #845 int. 176 Fte Sup. Pueblo antes de Wendys (Cupey)",
+    "lat": 18.3789,
+    "lon": -66.054
+  },
+  {
+    "id": "508",
+    "direccion": "Carr. #845 int. 176 Fte Sup. Pueblo antes de Wendys (Cupey)",
+    "lat": 18.3789,
+    "lon": -66.054
+  },
+  {
+    "id": "617",
+    "direccion": "Carr. #176 antes de Mc Donalds de Paseos",
+    "lat": 18.3596,
+    "lon": -66.05423333333333
+  },
+  {
+    "id": "617",
+    "direccion": "Carr. #176 antes de Mc Donalds de Paseos",
+    "lat": 18.3596,
+    "lon": -66.05423333333333
+  },
+  {
+    "id": "650",
+    "direccion": "Ave. Los Romeros opuesto a Montehiedra Town Center",
+    "lat": 18.338816666666666,
+    "lon": -66.06968333333333
+  },
+  {
+    "id": "650",
+    "direccion": "Ave. Los Romeros opuesto a Montehiedra Town Center",
+    "lat": 18.338816666666666,
+    "lon": -66.06968333333333
+  },
+  {
+    "id": "671A",
+    "direccion": "Ave. Los Romeros fte a The Outlets Montehiedra",
+    "lat": 18.338466666666665,
+    "lon": -66.06925
+  },
+  {
+    "id": "671A",
+    "direccion": "Ave. Los Romeros fte a The Outlets Montehiedra",
+    "lat": 18.338466666666665,
+    "lon": -66.06925
+  },
+  {
+    "id": "671B",
+    "direccion": "Ave. Los Romeros fte a The Outlets Montehiedra",
+    "lat": 18.338466666666665,
+    "lon": -66.06925
+  },
+  {
+    "id": "671B",
+    "direccion": "Ave. Los Romeros fte a The Outlets Montehiedra",
+    "lat": 18.338466666666665,
+    "lon": -66.06925
+  },
+  {
+    "id": "674",
+    "direccion": "Ave. Los Romeros Fte. a Escuela Quiñonez Vidal",
+    "lat": 18.334483333333335,
+    "lon": -66.06733333333334
+  },
+  {
+    "id": "674",
+    "direccion": "Ave. Los Romeros Fte. a Escuela Quiñonez Vidal",
+    "lat": 18.334483333333335,
+    "lon": -66.06733333333334
+  },
+  {
+    "id": "690",
+    "direccion": "Ave. Los Romeros Opuesto a Escuela Quiñonez Vidal",
+    "lat": 18.3347,
+    "lon": -66.06721666666667
+  },
+  {
+    "id": "690",
+    "direccion": "Ave. Los Romeros Opuesto a Escuela Quiñonez Vidal",
+    "lat": 18.3347,
+    "lon": -66.06721666666667
+  },
+  {
+    "id": "691",
+    "direccion": "Ave. Los Romeros Opuesto a Montehiedra Office Center",
+    "lat": 18.335683333333332,
+    "lon": -66.06825
+  },
+  {
+    "id": "691",
+    "direccion": "Ave. Los Romeros Opuesto a Montehiedra Office Center",
+    "lat": 18.335683333333332,
+    "lon": -66.06825
+  },
+  {
+    "id": "219",
+    "direccion": "Carr. #177 Esq Calle Amarillo, El Señorial",
+    "lat": 18.37205,
+    "lon": -66.06733333333334
+  },
+  {
+    "id": "219",
+    "direccion": "Carr. #177 Esq Calle Amarillo, El Señorial",
+    "lat": 18.37205,
+    "lon": -66.06733333333334
+  },
+  {
+    "id": "326A",
+    "direccion": "Carr. #177 Ave. Fte BPPR",
+    "lat": 18.3692,
+    "lon": -66.07323333333333
+  },
+  {
+    "id": "326A",
+    "direccion": "Carr. #177 Ave. Fte BPPR",
+    "lat": 18.3692,
+    "lon": -66.07323333333333
+  },
+  {
+    "id": "326B",
+    "direccion": "Carr. #177 Ave. Fte BPPR",
+    "lat": 18.3692,
+    "lon": -66.07323333333333
+  },
+  {
+    "id": "326B",
+    "direccion": "Carr. #177 Ave. Fte BPPR",
+    "lat": 18.3692,
+    "lon": -66.07323333333333
+  },
+  {
+    "id": "425A",
+    "direccion": "Carr. #177 fte. Residencia de Estudiantes Inter Cupey",
+    "lat": 18.368366666666667,
+    "lon": -66.0756
+  },
+  {
+    "id": "425A",
+    "direccion": "Carr. #177 fte. Residencia de Estudiantes Inter Cupey",
+    "lat": 18.368366666666667,
+    "lon": -66.0756
+  },
+  {
+    "id": "425B",
+    "direccion": "Carr. #177 fte. Residencia de Estudiantes Inter Cupey",
+    "lat": 18.368366666666667,
+    "lon": -66.0756
+  },
+  {
+    "id": "425B",
+    "direccion": "Carr. #177 fte. Residencia de Estudiantes Inter Cupey",
+    "lat": 18.368366666666667,
+    "lon": -66.0756
+  },
+  {
+    "id": "426",
+    "direccion": "Carr. #177 Fte Plaza Olmedo, opuesto BPPR",
+    "lat": 18.369483333333335,
+    "lon": -66.07311666666666
+  },
+  {
+    "id": "426",
+    "direccion": "Carr. #177 Fte Plaza Olmedo, opuesto BPPR",
+    "lat": 18.369483333333335,
+    "lon": -66.07311666666666
+  },
+  {
+    "id": "428B",
+    "direccion": "Carr. #177 Opuesto antiguo Col. Nuestra S. Del P",
+    "lat": 18.368166666666667,
+    "lon": -66.07553333333334
+  },
+  {
+    "id": "445",
+    "direccion": "Carr. #177 Opuesto a estacionamiento UIA",
+    "lat": 18.366983333333334,
+    "lon": -66.07895
+  },
+  {
+    "id": "445",
+    "direccion": "Carr. #177 Opuesto a estacionamiento UIA",
+    "lat": 18.366983333333334,
+    "lon": -66.07895
+  },
+  {
+    "id": "460",
+    "direccion": "Calle Parana fte shopping El Señorial",
+    "lat": 18.370516666666667,
+    "lon": -66.06685
+  },
+  {
+    "id": "460",
+    "direccion": "Calle Parana fte shopping El Señorial",
+    "lat": 18.370516666666667,
+    "lon": -66.06685
+  },
+  {
+    "id": "467A",
+    "direccion": "Ave. Santa Rosa Fte Universidad Interamericana",
+    "lat": 18.36865,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "467A",
+    "direccion": "Ave. Santa Rosa Fte Universidad Interamericana",
+    "lat": 18.36865,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "467B",
+    "direccion": "Ave. Santa Rosa Fte Universidad Interamericana",
+    "lat": 18.36865,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "467B",
+    "direccion": "Ave. Santa Rosa Fte Universidad Interamericana",
+    "lat": 18.36865,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "512",
+    "direccion": "Carr. #177 antes entrada Coop Vapr",
+    "lat": 18.37517,
+    "lon": -66.09082
+  },
+  {
+    "id": "512",
+    "direccion": "Carr. #177 antes entrada Coop Vapr",
+    "lat": 18.37517,
+    "lon": -66.09082
+  },
+  {
+    "id": "526",
+    "direccion": "Carr. #177 Interseccion Entrada a Urb. Santa Maria",
+    "lat": 18.37385,
+    "lon": -66.08815
+  },
+  {
+    "id": "526",
+    "direccion": "Carr. #177 Interseccion Entrada a Urb. Santa Maria",
+    "lat": 18.37385,
+    "lon": -66.08815
+  },
+  {
+    "id": "592A",
+    "direccion": "Carr. #177 Fte Farmacia Caridad",
+    "lat": 18.369266666666668,
+    "lon": -66.08366666666667
+  },
+  {
+    "id": "592A",
+    "direccion": "Carr. #177 Fte Farmacia Caridad",
+    "lat": 18.369266666666668,
+    "lon": -66.08366666666667
+  },
+  {
+    "id": "592B",
+    "direccion": "Carr. #177 Fte Farmacia Caridad",
+    "lat": 18.369266666666668,
+    "lon": -66.08366666666667
+  },
+  {
+    "id": "592B",
+    "direccion": "Carr. #177 Fte Farmacia Caridad",
+    "lat": 18.369266666666668,
+    "lon": -66.08366666666667
+  },
+  {
+    "id": "593",
+    "direccion": "Carr. Alejandrino Opuesto al Garage Shell",
+    "lat": 18.37025,
+    "lon": -66.08705
+  },
+  {
+    "id": "593",
+    "direccion": "Carr. Alejandrino Opuesto al Garage Shell",
+    "lat": 18.37025,
+    "lon": -66.08705
+  },
+  {
+    "id": "599",
+    "direccion": "Carr. Alejandrino despues del Garage Shell",
+    "lat": 18.370116666666668,
+    "lon": -66.0874
+  },
+  {
+    "id": "599",
+    "direccion": "Carr. Alejandrino despues del Garage Shell",
+    "lat": 18.370116666666668,
+    "lon": -66.0874
+  },
+  {
+    "id": "632",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632A",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632B",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632C",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632D",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632E",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632F",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632G",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "632H",
+    "direccion": "Calle Parana Opuesto al Shopping El Señorial (DIGITAL)",
+    "lat": 18.371116666666666,
+    "lon": -66.06671666666666
+  },
+  {
+    "id": "649",
+    "direccion": "Carr. #177 Interseccion Opuesto a Urb.Santa María",
+    "lat": 18.374133333333333,
+    "lon": -66.08815
+  },
+  {
+    "id": "649",
+    "direccion": "Carr. #177 Interseccion Opuesto a Urb.Santa María",
+    "lat": 18.374133333333333,
+    "lon": -66.08815
+  },
+  {
+    "id": "459",
+    "direccion": "Ave. Santa Rosa Esq Emiliano Pol opt Panaderia Pannera",
+    "lat": 18.363616666666665,
+    "lon": -66.07423333333334
+  },
+  {
+    "id": "459",
+    "direccion": "Ave. Santa Rosa Esq Emiliano Pol opt Panaderia Pannera",
+    "lat": 18.363616666666665,
+    "lon": -66.07423333333334
+  },
+  {
+    "id": "470A",
+    "direccion": "Ave. Las Cumbers Opuesto Oriental Bank",
+    "lat": 18.358266666666665,
+    "lon": -66.07705
+  },
+  {
+    "id": "470A",
+    "direccion": "Ave. Las Cumbers Opuesto Oriental Bank",
+    "lat": 18.358266666666665,
+    "lon": -66.07705
+  },
+  {
+    "id": "470B",
+    "direccion": "Ave. Las Cumbers Opuesto Oriental Bank",
+    "lat": 18.358266666666665,
+    "lon": -66.07705
+  },
+  {
+    "id": "470B",
+    "direccion": "Ave. Las Cumbers Opuesto Oriental Bank",
+    "lat": 18.358266666666665,
+    "lon": -66.07705
+  },
+  {
+    "id": "521",
+    "direccion": "Ave. Santa Rosa entrada Urb. Mansiones de Romani",
+    "lat": 18.364733333333334,
+    "lon": -66.07505
+  },
+  {
+    "id": "521",
+    "direccion": "Ave. Santa Rosa entrada Urb. Mansiones de Romani",
+    "lat": 18.364733333333334,
+    "lon": -66.07505
+  },
+  {
+    "id": "525",
+    "direccion": "Ave. Emiliano Pol opuesto Residencial Villa Esperanza",
+    "lat": 18.35895,
+    "lon": -66.07588333333334
+  },
+  {
+    "id": "525",
+    "direccion": "Ave. Emiliano Pol opuesto Residencial Villa Esperanza",
+    "lat": 18.35895,
+    "lon": -66.07588333333334
+  },
+  {
+    "id": "528",
+    "direccion": "OPUESTO MANSIONES DE ROMANI",
+    "lat": 18.3657,
+    "lon": -66.07573333333333
+  },
+  {
+    "id": "528",
+    "direccion": "OPUESTO MANSIONES DE ROMANI",
+    "lat": 18.3657,
+    "lon": -66.07573333333333
+  },
+  {
+    "id": "529",
+    "direccion": "Ave. Emiliano Pol fte. Residencial Villa Esperanza",
+    "lat": 18.359183333333334,
+    "lon": -66.07571666666666
+  },
+  {
+    "id": "529",
+    "direccion": "Ave. Emiliano Pol fte. Residencial Villa Esperanza",
+    "lat": 18.359183333333334,
+    "lon": -66.07571666666666
+  },
+  {
+    "id": "552",
+    "direccion": "Ave. Las Cumbres fte Urb Extension Alameda",
+    "lat": 18.3571333333333,
+    "lon": -66.0787
+  },
+  {
+    "id": "552",
+    "direccion": "Ave. Las Cumbres fte Urb Extension Alameda",
+    "lat": 18.3571333333333,
+    "lon": -66.0787
+  },
+  {
+    "id": "582",
+    "direccion": "Ave. Las Cumbres Fte. Entrada Urb. Hillside",
+    "lat": 18.357483333333334,
+    "lon": -66.0856
+  },
+  {
+    "id": "582",
+    "direccion": "Ave. Las Cumbres Fte. Entrada Urb. Hillside",
+    "lat": 18.357483333333334,
+    "lon": -66.0856
+  },
+  {
+    "id": "629",
+    "direccion": "Carr. #199 Fte a Metro Pavia y Kidney Clinic",
+    "lat": 18.3572,
+    "lon": -66.04561666666666
+  },
+  {
+    "id": "629",
+    "direccion": "Carr. #199 Fte a Metro Pavia y Kidney Clinic",
+    "lat": 18.3572,
+    "lon": -66.04561666666666
+  },
+  {
+    "id": "701",
+    "direccion": "Ave. Las Cumbres despues entrada Urb. Hillside",
+    "lat": 18.35643333333333,
+    "lon": -66.08368333333334
+  },
+  {
+    "id": "701",
+    "direccion": "Ave. Las Cumbres despues entrada Urb. Hillside",
+    "lat": 18.35643333333333,
+    "lon": -66.08368333333334
+  },
+  {
+    "id": "735",
+    "direccion": "Ave. Las Cumbres Int carr #176 antes de McDonalds de Paseos",
+    "lat": 18.358066666666666,
+    "lon": -66.05301666666666
+  },
+  {
+    "id": "735",
+    "direccion": "Ave. Las Cumbres Int carr #176 antes de McDonalds de Paseos",
+    "lat": 18.358066666666666,
+    "lon": -66.05301666666666
+  },
+  {
+    "id": "736",
+    "direccion": "Ave. Las Cumbres Fte. Urb. Adoquines",
+    "lat": 18.357916666666668,
+    "lon": -66.04845
+  },
+  {
+    "id": "736",
+    "direccion": "Ave. Las Cumbres Fte. Urb. Adoquines",
+    "lat": 18.357916666666668,
+    "lon": -66.04845
+  },
+  {
+    "id": "737",
+    "direccion": "Ave. Las Cumbres Opuesto Urb. Adoquines",
+    "lat": 18.357666666666667,
+    "lon": -66.0489
+  },
+  {
+    "id": "737",
+    "direccion": "Ave. Las Cumbres Opuesto Urb. Adoquines",
+    "lat": 18.357666666666667,
+    "lon": -66.0489
+  },
+  {
+    "id": "738",
+    "direccion": "Las Cumbres Int. #176 Opuesto McDonalds de Paseos",
+    "lat": 18.357783333333334,
+    "lon": -66.05286666666667
+  },
+  {
+    "id": "738",
+    "direccion": "Las Cumbres Int. #176 Opuesto McDonalds de Paseos",
+    "lat": 18.357783333333334,
+    "lon": -66.05286666666667
+  },
+  {
+    "id": "743",
+    "direccion": "Ave Winston Churchill Int. #176  fte Alturas de Senorial",
+    "lat": 18.361383333333333,
+    "lon": -66.05456666666667
+  },
+  {
+    "id": "743",
+    "direccion": "Ave Winston Churchill Int. #176  fte Alturas de Senorial",
+    "lat": 18.361383333333333,
+    "lon": -66.05456666666667
+  },
+  {
+    "id": "744",
+    "direccion": "Ave Winston Churchill opuesto Dr. Pool",
+    "lat": 18.364716666666666,
+    "lon": -66.0593
+  },
+  {
+    "id": "744",
+    "direccion": "Ave Winston Churchill opuesto Dr. Pool",
+    "lat": 18.364716666666666,
+    "lon": -66.0593
+  },
+  {
+    "id": "563",
+    "direccion": "Carr. #838 Esq. De Diego al lado del Fondo de Seguro del Estado",
+    "lat": 18.38235,
+    "lon": -66.06716666666667
+  },
+  {
+    "id": "563",
+    "direccion": "Carr. #838 Esq. De Diego al lado del Fondo de Seguro del Estado",
+    "lat": 18.38235,
+    "lon": -66.06716666666667
+  },
+  {
+    "id": "221",
+    "direccion": "Fte Escuela Juan B. Huyke",
+    "lat": 18.379183333333334,
+    "lon": -66.094
+  },
+  {
+    "id": "221",
+    "direccion": "Fte Escuela Juan B. Huyke",
+    "lat": 18.379183333333334,
+    "lon": -66.094
+  },
+  {
+    "id": "179",
+    "direccion": "Ave. San Patricio Fte Teselta",
+    "lat": 18.393266666666666,
+    "lon": -66.08313333333334
+  },
+  {
+    "id": "179",
+    "direccion": "Ave. San Patricio Fte Teselta",
+    "lat": 18.393266666666666,
+    "lon": -66.08313333333334
+  },
+  {
+    "id": "182",
+    "direccion": "Ave. San Patricio Esq Piñeiro fte Supermercado",
+    "lat": 18.39965,
+    "lon": -66.0975
+  },
+  {
+    "id": "182",
+    "direccion": "Ave. San Patricio Esq Piñeiro fte Supermercado",
+    "lat": 18.39965,
+    "lon": -66.0975
+  },
+  {
+    "id": "184",
+    "direccion": "Ave. San Patricio Fte Residencial Vista Hermosa",
+    "lat": 18.39292,
+    "lon": -66.08742
+  },
+  {
+    "id": "184",
+    "direccion": "Ave. San Patricio Fte Residencial Vista Hermosa",
+    "lat": 18.39292,
+    "lon": -66.08742
+  },
+  {
+    "id": "185",
+    "direccion": "Ave. San Patricio Esq Piñero Opuesto Pasta to Go",
+    "lat": 18.39893,
+    "lon": -66.0971
+  },
+  {
+    "id": "185",
+    "direccion": "Ave. San Patricio Esq Piñero Opuesto Pasta to Go",
+    "lat": 18.39893,
+    "lon": -66.0971
+  },
+  {
+    "id": "189",
+    "direccion": "Ave. San Patricio Esq Ave. Central Fte Pasta to Go",
+    "lat": 18.39882,
+    "lon": -66.0968
+  },
+  {
+    "id": "189",
+    "direccion": "Ave. San Patricio Esq Ave. Central Fte Pasta to Go",
+    "lat": 18.39882,
+    "lon": -66.0968
+  },
+  {
+    "id": "256",
+    "direccion": "Ave. San Patricio Esq Piñero antes Garage Puma",
+    "lat": 18.399733333333334,
+    "lon": -66.09766666666667
+  },
+  {
+    "id": "256",
+    "direccion": "Ave. San Patricio Esq Piñero antes Garage Puma",
+    "lat": 18.399733333333334,
+    "lon": -66.09766666666667
+  },
+  {
+    "id": "347",
+    "direccion": "Ave. San Patricio Fte a Suiza Dairy",
+    "lat": 18.393083333333333,
+    "lon": -66.08451666666667
+  },
+  {
+    "id": "347",
+    "direccion": "Ave. San Patricio Fte a Suiza Dairy",
+    "lat": 18.393083333333333,
+    "lon": -66.08451666666667
+  },
+  {
+    "id": "421",
+    "direccion": "Ave. San Patrcio Opuesto a Suiza Dairy, La Riviera",
+    "lat": 18.39312,
+    "lon": -66.0855
+  },
+  {
+    "id": "421",
+    "direccion": "Ave. San Patrcio Opuesto a Suiza Dairy, La Riviera",
+    "lat": 18.39312,
+    "lon": -66.0855
+  },
+  {
+    "id": "536",
+    "direccion": "Ave. San Patricio Fte Iglesia CDA opt a Res. Santa Elena",
+    "lat": 18.39356666666667,
+    "lon": -66.09065
+  },
+  {
+    "id": "536",
+    "direccion": "Ave. San Patricio Fte Iglesia CDA opt a Res. Santa Elena",
+    "lat": 18.39356666666667,
+    "lon": -66.09065
+  },
+  {
+    "id": "537",
+    "direccion": "Ave. San Patricio fte. Residencial Santa Elena",
+    "lat": 18.393483333333332,
+    "lon": -66.09061666666666
+  },
+  {
+    "id": "537",
+    "direccion": "Ave. San Patricio fte. Residencial Santa Elena",
+    "lat": 18.393483333333332,
+    "lon": -66.09061666666666
+  },
+  {
+    "id": "597",
+    "direccion": "Ave. San Patricio Fte a Caribbean Cancer Care Services",
+    "lat": 18.4001,
+    "lon": -66.09777
+  },
+  {
+    "id": "597",
+    "direccion": "Ave. San Patricio Fte a Caribbean Cancer Care Services",
+    "lat": 18.4001,
+    "lon": -66.09777
+  },
+  {
+    "id": "598",
+    "direccion": "Ave. San Patricio Fte Garage Puma Int. Ave Central",
+    "lat": 18.39955,
+    "lon": -66.09753333333333
+  },
+  {
+    "id": "598",
+    "direccion": "Ave. San Patricio Fte Garage Puma Int. Ave Central",
+    "lat": 18.39955,
+    "lon": -66.09753333333333
+  },
+  {
+    "id": "626",
+    "direccion": "Ave. San Patricio Opuesto Teselta, fte Westside Gym",
+    "lat": 18.393366666666665,
+    "lon": -66.08311666666667
+  },
+  {
+    "id": "626",
+    "direccion": "Ave. San Patricio Opuesto Teselta, fte Westside Gym",
+    "lat": 18.393366666666665,
+    "lon": -66.08311666666667
+  },
+  {
+    "id": "186",
+    "direccion": "Ave. 65 Inf. Opuesto a Ponce de León Gun Shop",
+    "lat": 18.39615,
+    "lon": -66.02481666666667
+  },
+  {
+    "id": "186",
+    "direccion": "Ave. 65 Inf. Opuesto a Ponce de León Gun Shop",
+    "lat": 18.39615,
+    "lon": -66.02481666666667
+  },
+  {
+    "id": "187",
+    "direccion": "Ave. 65 Inf. Fte Concordia Shopping, antes de Oldach",
+    "lat": 18.39535,
+    "lon": -66.02866666666667
+  },
+  {
+    "id": "187",
+    "direccion": "Ave. 65 Inf. Fte Concordia Shopping, antes de Oldach",
+    "lat": 18.39535,
+    "lon": -66.02866666666667
+  },
+  {
+    "id": "188",
+    "direccion": "Ave. 65 Inf. Fte Dominguez Auto",
+    "lat": 18.39675,
+    "lon": -66.0184
+  },
+  {
+    "id": "188",
+    "direccion": "Ave. 65 Inf. Fte Dominguez Auto",
+    "lat": 18.39675,
+    "lon": -66.0184
+  },
+  {
+    "id": "190",
+    "direccion": "Ave. 65 Inf. Fte Dealer Chrysler/ Dodge",
+    "lat": 18.3961,
+    "lon": -66.02618333333334
+  },
+  {
+    "id": "190",
+    "direccion": "Ave. 65 Inf. Fte Dealer Chrysler/ Dodge",
+    "lat": 18.3961,
+    "lon": -66.02618333333334
+  },
+  {
+    "id": "191",
+    "direccion": "Ave. 65 Inf. Opuesto a Centro Comercial Plaza 65",
+    "lat": 18.397,
+    "lon": -66.00895
+  },
+  {
+    "id": "191",
+    "direccion": "Ave. 65 Inf. Opuesto a Centro Comercial Plaza 65",
+    "lat": 18.397,
+    "lon": -66.00895
+  },
+  {
+    "id": "193",
+    "direccion": "Ave. 65 Inf. Esq De Diego Fte Dealer Toyota",
+    "lat": 18.396633333333334,
+    "lon": -66.0234
+  },
+  {
+    "id": "193",
+    "direccion": "Ave. 65 Inf. Esq De Diego Fte Dealer Toyota",
+    "lat": 18.396633333333334,
+    "lon": -66.0234
+  },
+  {
+    "id": "194",
+    "direccion": "Ave. 65 Inf. Fte Escuela Gerardo Selles Sola",
+    "lat": 18.397116666666665,
+    "lon": -66.01436666666666
+  },
+  {
+    "id": "194",
+    "direccion": "Ave. 65 Inf. Fte Escuela Gerardo Selles Sola",
+    "lat": 18.397116666666665,
+    "lon": -66.01436666666666
+  },
+  {
+    "id": "196",
+    "direccion": "Ave. 65 Inf. Fte Iglesia de Dios Pentecostal Mi 65 y Church's",
+    "lat": 18.396966666666668,
+    "lon": -66.01826666666666
+  },
+  {
+    "id": "196",
+    "direccion": "Ave. 65 Inf. Fte Iglesia de Dios Pentecostal Mi 65 y Church's",
+    "lat": 18.396966666666668,
+    "lon": -66.01826666666666
+  },
+  {
+    "id": "237",
+    "direccion": "Ave. 65 Inf. Despues del US Post Office",
+    "lat": 18.397166666666667,
+    "lon": -66.01226666666666
+  },
+  {
+    "id": "237",
+    "direccion": "Ave. 65 Inf. Despues del US Post Office",
+    "lat": 18.397166666666667,
+    "lon": -66.01226666666666
+  },
+  {
+    "id": "341A",
+    "direccion": "Ave. 65 Inf. A Coop Zeno Gandía",
+    "lat": 18.394766666666666,
+    "lon": -66.03443333333334
+  },
+  {
+    "id": "341A",
+    "direccion": "Ave. 65 Inf. A Coop Zeno Gandía",
+    "lat": 18.394766666666666,
+    "lon": -66.03443333333334
+  },
+  {
+    "id": "341B",
+    "direccion": "Ave. 65 Inf. A Coop Zeno Gandía",
+    "lat": 18.394766666666666,
+    "lon": -66.03443333333334
+  },
+  {
+    "id": "341B",
+    "direccion": "Ave. 65 Inf. A Coop Zeno Gandía",
+    "lat": 18.394766666666666,
+    "lon": -66.03443333333334
+  },
+  {
+    "id": "345",
+    "direccion": "Ave. 65 Inf. Antes del Plaza 65 Shopping Center",
+    "lat": 18.397333333333332,
+    "lon": -66.00636666666666
+  },
+  {
+    "id": "345",
+    "direccion": "Ave. 65 Inf. Antes del Plaza 65 Shopping Center",
+    "lat": 18.397333333333332,
+    "lon": -66.00636666666666
+  },
+  {
+    "id": "363",
+    "direccion": "Ave. 65 Inf. Fte Residencial Monte Hatillo",
+    "lat": 18.39695,
+    "lon": -66.01255
+  },
+  {
+    "id": "363",
+    "direccion": "Ave. 65 Inf. Fte Residencial Monte Hatillo",
+    "lat": 18.39695,
+    "lon": -66.01255
+  },
+  {
+    "id": "369",
+    "direccion": "Ave. 65 Inf. Fte Acai Express, opuesto La Peninsula",
+    "lat": 18.39475,
+    "lon": -66.0376
+  },
+  {
+    "id": "369",
+    "direccion": "Ave. 65 Inf. Fte Acai Express, opuesto La Peninsula",
+    "lat": 18.39475,
+    "lon": -66.0376
+  },
+  {
+    "id": "503",
+    "direccion": "Ave. 65 Inf. Fte US Post Office",
+    "lat": 18.397283333333334,
+    "lon": -66.0106
+  },
+  {
+    "id": "503",
+    "direccion": "Ave. 65 Inf. Fte US Post Office",
+    "lat": 18.397283333333334,
+    "lon": -66.0106
+  },
+  {
+    "id": "513",
+    "direccion": "Ave. 65 Inf. Fte First Bank",
+    "lat": 18.3945,
+    "lon": -66.0358
+  },
+  {
+    "id": "513",
+    "direccion": "Ave. 65 Inf. Fte First Bank",
+    "lat": 18.3945,
+    "lon": -66.0358
+  },
+  {
+    "id": "556",
+    "direccion": "Ave. 65 Inf. Fte Academy of SJ",
+    "lat": 18.396833333333333,
+    "lon": -66.01466666666667
+  },
+  {
+    "id": "556",
+    "direccion": "Ave. 65 Inf. Fte Academy of SJ",
+    "lat": 18.396833333333333,
+    "lon": -66.01466666666667
+  },
+  {
+    "id": "557A",
+    "direccion": "Ave. 65 Inf. Antes Centro Comercial 65 Inf.",
+    "lat": 18.394983333333332,
+    "lon": -66.04051666666666
+  },
+  {
+    "id": "557A",
+    "direccion": "Ave. 65 Inf. Antes Centro Comercial 65 Inf.",
+    "lat": 18.394983333333332,
+    "lon": -66.04051666666666
+  },
+  {
+    "id": "557B",
+    "direccion": "Ave. 65 Inf. Antes Centro Comercial 65 Inf.",
+    "lat": 18.394983333333332,
+    "lon": -66.04051666666666
+  },
+  {
+    "id": "557B",
+    "direccion": "Ave. 65 Inf. Antes Centro Comercial 65 Inf.",
+    "lat": 18.394983333333332,
+    "lon": -66.04051666666666
+  },
+  {
+    "id": "558",
+    "direccion": "Ave. 65 Inf. Opuesto Concordia Norte Shopping Center",
+    "lat": 18.395433333333333,
+    "lon": -66.02953333333333
+  },
+  {
+    "id": "558",
+    "direccion": "Ave. 65 Inf. Opuesto Concordia Norte Shopping Center",
+    "lat": 18.395433333333333,
+    "lon": -66.02953333333333
+  },
+  {
+    "id": "573",
+    "direccion": "Ave. 65 Inf. Fte al McDonalds",
+    "lat": 18.394833333333334,
+    "lon": -66.04128333333334
+  },
+  {
+    "id": "573",
+    "direccion": "Ave. 65 Inf. Fte al McDonalds",
+    "lat": 18.394833333333334,
+    "lon": -66.04128333333334
+  },
+  {
+    "id": "722",
+    "direccion": "Ave. 65 Inf. Fte Burlington",
+    "lat": 18.396816666666666,
+    "lon": -66.02166666666666
+  },
+  {
+    "id": "722",
+    "direccion": "Ave. 65 Inf. Fte Burlington",
+    "lat": 18.396816666666666,
+    "lon": -66.02166666666666
+  },
+  {
+    "id": "723",
+    "direccion": "Ave. 65 Inf. Opueto Burlington",
+    "lat": 18.396466666666665,
+    "lon": -66.02271666666667
+  },
+  {
+    "id": "723",
+    "direccion": "Ave. 65 Inf. Opueto Burlington",
+    "lat": 18.396466666666665,
+    "lon": -66.02271666666667
+  },
+  {
+    "id": "006",
+    "direccion": "Ave. Kennedy Fte Edificio ILA San Juan",
+    "lat": 18.4337,
+    "lon": -66.08743333333334
+  },
+  {
+    "id": "006",
+    "direccion": "Ave. Kennedy Fte Edificio ILA San Juan",
+    "lat": 18.4337,
+    "lon": -66.08743333333334
+  },
+  {
+    "id": "099",
+    "direccion": "Ave. R.H. Todd Opuesto Walmart Santurce",
+    "lat": 18.447433333333333,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "099",
+    "direccion": "Ave. R.H. Todd Opuesto Walmart Santurce",
+    "lat": 18.447433333333333,
+    "lon": -66.07653333333333
+  },
+  {
+    "id": "365",
+    "direccion": "Ave. R.H. Todd Opuesto Junta Regl. Telecomunicaciones",
+    "lat": 18.449483333333333,
+    "lon": -66.07533333333333
+  },
+  {
+    "id": "365",
+    "direccion": "Ave. R.H. Todd Opuesto Junta Regl. Telecomunicaciones",
+    "lat": 18.449483333333333,
+    "lon": -66.07533333333333
+  },
+  {
+    "id": "465A",
+    "direccion": "Ave. R.H. Todd Fte Walmart Santurce",
+    "lat": 18.44805,
+    "lon": -66.07606666666666
+  },
+  {
+    "id": "465A",
+    "direccion": "Ave. R.H. Todd Fte Walmart Santurce",
+    "lat": 18.44805,
+    "lon": -66.07606666666666
+  },
+  {
+    "id": "465B",
+    "direccion": "Ave. R.H. Todd Fte Walmart Santurce",
+    "lat": 18.44805,
+    "lon": -66.07606666666666
+  },
+  {
+    "id": "465B",
+    "direccion": "Ave. R.H. Todd Fte Walmart Santurce",
+    "lat": 18.44805,
+    "lon": -66.07606666666666
+  },
+  {
+    "id": "493",
+    "direccion": "Ave. R.H. Todd Fte First Bank",
+    "lat": 18.4524,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "493",
+    "direccion": "Ave. R.H. Todd Fte First Bank",
+    "lat": 18.4524,
+    "lon": -66.07386666666666
+  },
+  {
+    "id": "607",
+    "direccion": "Ave. FJ Kennedy fte a Trebol Motors",
+    "lat": 18.421866666666666,
+    "lon": -66.09826666666666
+  },
+  {
+    "id": "607",
+    "direccion": "Ave. FJ Kennedy fte a Trebol Motors",
+    "lat": 18.421866666666666,
+    "lon": -66.09826666666666
+  },
+  {
+    "id": "608",
+    "direccion": "Ave. FJ Kennedy antes Dealer Land Rover",
+    "lat": 18.420666666666666,
+    "lon": -66.09815
+  },
+  {
+    "id": "608",
+    "direccion": "Ave. FJ Kennedy antes Dealer Land Rover",
+    "lat": 18.420666666666666,
+    "lon": -66.09815
+  },
+  {
+    "id": "610",
+    "direccion": "Ave. FJ Kennedy Fte al Dealer Lincoln of San Juan",
+    "lat": 18.424116666666666,
+    "lon": -66.09628333333333
+  },
+  {
+    "id": "610",
+    "direccion": "Ave. FJ Kennedy Fte al Dealer Lincoln of San Juan",
+    "lat": 18.424116666666666,
+    "lon": -66.09628333333333
+  },
+  {
+    "id": "610",
+    "direccion": "Ave. FJ Kennedy Fte al Dealer Lincoln of San Juan",
+    "lat": 18.424116666666666,
+    "lon": -66.09628333333333
+  },
+  {
+    "id": "358",
+    "direccion": "Ave. Prudencio Rivera Mtnez Opuesto a Centro de Transferencia",
+    "lat": 18.429666666666666,
+    "lon": -66.0591
+  },
+  {
+    "id": "358",
+    "direccion": "Ave. Prudencio Rivera Mtnez Opuesto a Centro de Transferencia",
+    "lat": 18.429666666666666,
+    "lon": -66.0591
+  },
+  {
+    "id": "332",
+    "direccion": "Calle Loíza Fte Parque Pasivo Luis Llorens Torres",
+    "lat": 18.449583333333333,
+    "lon": -66.04828333333333
+  },
+  {
+    "id": "332",
+    "direccion": "Calle Loíza Fte Parque Pasivo Luis Llorens Torres",
+    "lat": 18.449583333333333,
+    "lon": -66.04828333333333
+  },
+  {
+    "id": "364",
+    "direccion": "Calle Loíza Fte estacion Shell Ocean Park",
+    "lat": 18.4516,
+    "lon": -66.03983333333333
+  },
+  {
+    "id": "364",
+    "direccion": "Calle Loíza Fte estacion Shell Ocean Park",
+    "lat": 18.4516,
+    "lon": -66.03983333333333
+  },
+  {
+    "id": "437A",
+    "direccion": "Calle Loíza Fte To Go 24 Hrs Opuesto a Banco Santander",
+    "lat": 18.451866666666668,
+    "lon": -66.06205
+  },
+  {
+    "id": "437A",
+    "direccion": "Calle Loíza Fte To Go 24 Hrs Opuesto a Banco Santander",
+    "lat": 18.451866666666668,
+    "lon": -66.06205
+  },
+  {
+    "id": "437B",
+    "direccion": "Calle Loíza Fte To Go 24 Hrs Opuesto a Banco Santander",
+    "lat": 18.451866666666668,
+    "lon": -66.06205
+  },
+  {
+    "id": "437B",
+    "direccion": "Calle Loíza Fte To Go 24 Hrs Opuesto a Banco Santander",
+    "lat": 18.451866666666668,
+    "lon": -66.06205
+  },
+  {
+    "id": "488",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488A",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488B",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488C",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488D",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488E",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488F",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488G",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "488H",
+    "direccion": "Calle Loíza Esq Taft Fte Kamoli (DIGITAL)",
+    "lat": 18.451716666666666,
+    "lon": -66.06101666666666
+  },
+  {
+    "id": "492",
+    "direccion": "Calle Loíza Fte Parrioquia Santa Teresita",
+    "lat": 18.450033333333334,
+    "lon": -66.05151666666667
+  },
+  {
+    "id": "492",
+    "direccion": "Calle Loíza Fte Parrioquia Santa Teresita",
+    "lat": 18.450033333333334,
+    "lon": -66.05151666666667
+  },
+  {
+    "id": "505",
+    "direccion": "Calle Loíza Fte a Walgreens Opuesto KFC",
+    "lat": 18.451116666666667,
+    "lon": -66.05496666666667
+  },
+  {
+    "id": "505",
+    "direccion": "Calle Loíza Fte a Walgreens Opuesto KFC",
+    "lat": 18.451116666666667,
+    "lon": -66.05496666666667
+  },
+  {
+    "id": "570",
+    "direccion": "Calle Loíza #2253 Opuesto a Supermercado Plaza Loiza",
+    "lat": 18.449366666666666,
+    "lon": -66.0442
+  },
+  {
+    "id": "570",
+    "direccion": "Calle Loíza #2253 Opuesto a Supermercado Plaza Loiza",
+    "lat": 18.449366666666666,
+    "lon": -66.0442
+  },
+  {
+    "id": "590",
+    "direccion": "Calle Loíza Opt Santa Teresita Fte Escuela Ramón Power",
+    "lat": 18.449933333333334,
+    "lon": -66.05106666666667
+  },
+  {
+    "id": "590",
+    "direccion": "Calle Loíza Opt Santa Teresita Fte Escuela Ramón Power",
+    "lat": 18.449933333333334,
+    "lon": -66.05106666666667
+  },
+  {
+    "id": "625",
+    "direccion": "Calle Loíza Fte a Supermercados Plaza Loiza",
+    "lat": 18.449483333333333,
+    "lon": -66.04408333333333
+  },
+  {
+    "id": "625",
+    "direccion": "Calle Loíza Fte a Supermercados Plaza Loiza",
+    "lat": 18.449483333333333,
+    "lon": -66.04408333333333
+  },
+  {
+    "id": "726",
+    "direccion": "Ave. Baldorioty de Castro Marginal Fte Norte Shopping",
+    "lat": 18.44745,
+    "lon": -66.0513
+  },
+  {
+    "id": "726",
+    "direccion": "Ave. Baldorioty de Castro Marginal Fte Norte Shopping",
+    "lat": 18.44745,
+    "lon": -66.0513
+  },
+  {
+    "id": "734",
+    "direccion": "Parada Trolley fte parque Balompie",
+    "lat": 18.452466666666666,
+    "lon": -66.04875
+  },
+  {
+    "id": "734",
+    "direccion": "Parada Trolley fte parque Balompie",
+    "lat": 18.452466666666666,
+    "lon": -66.04875
+  },
+  {
+    "id": "747A",
+    "direccion": "Ave. Isla Verde Opuesto Pollo Tropical",
+    "lat": 18.45035,
+    "lon": -66.03825
+  },
+  {
+    "id": "747A",
+    "direccion": "Ave. Isla Verde Opuesto Pollo Tropical",
+    "lat": 18.45035,
+    "lon": -66.03825
+  },
+  {
+    "id": "747B",
+    "direccion": "Ave. Isla Verde Opuesto Pollo Tropical",
+    "lat": 18.45035,
+    "lon": -66.03825
+  },
+  {
+    "id": "747B",
+    "direccion": "Ave. Isla Verde Opuesto Pollo Tropical",
+    "lat": 18.45035,
+    "lon": -66.03825
+  },
+  {
+    "id": "748",
+    "direccion": "Calle Loíza final (Punta las Marias) opuesto Mobil",
+    "lat": 18.451433333333334,
+    "lon": -66.04035
+  },
+  {
+    "id": "748",
+    "direccion": "Calle Loíza final (Punta las Marias) opuesto Mobil",
+    "lat": 18.451433333333334,
+    "lon": -66.04035
+  },
+  {
+    "id": "749",
+    "direccion": "PR #73 Ave. Isla Verde antes de Bistro Cafe",
+    "lat": 18.4492,
+    "lon": -66.0375
+  },
+  {
+    "id": "749",
+    "direccion": "PR #73 Ave. Isla Verde antes de Bistro Cafe",
+    "lat": 18.4492,
+    "lon": -66.0375
+  },
+  {
+    "id": "031A",
+    "direccion": "Ave.  Las Americas Opuesto Parking Macys",
+    "lat": 18.41995,
+    "lon": -66.07523333333333
+  },
+  {
+    "id": "031A",
+    "direccion": "Ave.  Las Americas Opuesto Parking Macys",
+    "lat": 18.41995,
+    "lon": -66.07523333333333
+  },
+  {
+    "id": "031B",
+    "direccion": "Ave.  Las Americas Opuesto Parking Macys",
+    "lat": 18.41995,
+    "lon": -66.07523333333333
+  },
+  {
+    "id": "031B",
+    "direccion": "Ave.  Las Americas Opuesto Parking Macys",
+    "lat": 18.41995,
+    "lon": -66.07523333333333
+  },
+  {
+    "id": "046A",
+    "direccion": "Ave. Las Americas Fte estacionamiento de JC Penney",
+    "lat": 18.4214,
+    "lon": -66.07602
+  },
+  {
+    "id": "046A",
+    "direccion": "Ave. Las Americas Fte estacionamiento de JC Penney",
+    "lat": 18.4214,
+    "lon": -66.07602
+  },
+  {
+    "id": "046B",
+    "direccion": "Ave. Las Americas Fte estacionamiento de JC Penney",
+    "lat": 18.4214,
+    "lon": -66.07602
+  },
+  {
+    "id": "046B",
+    "direccion": "Ave. Las Americas Fte estacionamiento de JC Penney",
+    "lat": 18.4214,
+    "lon": -66.07602
+  },
+  {
+    "id": "047A",
+    "direccion": "Ave. Calaf Detrás de Sears Plaza las Americas",
+    "lat": 18.42522,
+    "lon": -66.07568
+  },
+  {
+    "id": "047A",
+    "direccion": "Ave. Calaf Detrás de Sears Plaza las Americas",
+    "lat": 18.42522,
+    "lon": -66.07568
+  },
+  {
+    "id": "047B",
+    "direccion": "Ave. Calaf Detrás de Sears Plaza las Americas",
+    "lat": 18.42522,
+    "lon": -66.07568
+  },
+  {
+    "id": "047B",
+    "direccion": "Ave. Calaf Detrás de Sears Plaza las Americas",
+    "lat": 18.42522,
+    "lon": -66.07568
+  },
+  {
+    "id": "441",
+    "direccion": "Ave. Calaf Despues del Acua Expresso",
+    "lat": 18.428866666666668,
+    "lon": -66.06338333333333
+  },
+  {
+    "id": "441",
+    "direccion": "Ave. Calaf Despues del Acua Expresso",
+    "lat": 18.428866666666668,
+    "lon": -66.06338333333333
+  },
+  {
+    "id": "501",
+    "direccion": "Ave. Calaf Fte Depto de Corrección y Rehabilitación",
+    "lat": 18.42722,
+    "lon": -66.06915
+  },
+  {
+    "id": "501",
+    "direccion": "Ave. Calaf Fte Depto de Corrección y Rehabilitación",
+    "lat": 18.42722,
+    "lon": -66.06915
+  },
+  {
+    "id": "504",
+    "direccion": "Ave. Calaf fte Rooms to Go  opuesto a Sears",
+    "lat": 18.42525,
+    "lon": -66.07577
+  },
+  {
+    "id": "504",
+    "direccion": "Ave. Calaf fte Rooms to Go  opuesto a Sears",
+    "lat": 18.42525,
+    "lon": -66.07577
+  },
+  {
+    "id": "514",
+    "direccion": "Alterial Hostos Opuesto Cap. Center y Banco Santander",
+    "lat": 18.42595,
+    "lon": -66.06421666666667
+  },
+  {
+    "id": "514",
+    "direccion": "Alterial Hostos Opuesto Cap. Center y Banco Santander",
+    "lat": 18.42595,
+    "lon": -66.06421666666667
+  },
+  {
+    "id": "516",
+    "direccion": "Ave. Calaf fte Egida Del Abogado",
+    "lat": 18.427616666666665,
+    "lon": -66.06765
+  },
+  {
+    "id": "516",
+    "direccion": "Ave. Calaf fte Egida Del Abogado",
+    "lat": 18.427616666666665,
+    "lon": -66.06765
+  },
+  {
+    "id": "517",
+    "direccion": "Ave. Calaf fte a Cond. La Morada Antes del Choliseo",
+    "lat": 18.428266666666666,
+    "lon": -66.06553333333333
+  },
+  {
+    "id": "517",
+    "direccion": "Ave. Calaf fte a Cond. La Morada Antes del Choliseo",
+    "lat": 18.428266666666666,
+    "lon": -66.06553333333333
+  },
+  {
+    "id": "539",
+    "direccion": "Ave. Calaf fte a Burlington y Pueblo Xtra",
+    "lat": 18.42388,
+    "lon": -66.0773
+  },
+  {
+    "id": "539",
+    "direccion": "Ave. Calaf fte a Burlington y Pueblo Xtra",
+    "lat": 18.42388,
+    "lon": -66.0773
+  },
+  {
+    "id": "703",
+    "direccion": "Ave. Calaf Opuesto a la Egida del Abogado",
+    "lat": 18.42778,
+    "lon": -66.06767
+  },
+  {
+    "id": "703",
+    "direccion": "Ave. Calaf Opuesto a la Egida del Abogado",
+    "lat": 18.42778,
+    "lon": -66.06767
+  },
+  {
+    "id": "704",
+    "direccion": "Ave. Calaf Fte A DTOP",
+    "lat": 18.42697,
+    "lon": -66.07005
+  },
+  {
+    "id": "704",
+    "direccion": "Ave. Calaf Fte A DTOP",
+    "lat": 18.42697,
+    "lon": -66.07005
+  },
+  {
+    "id": "705",
+    "direccion": "Ave. Calaf Opuesto Mueblerias Berrios",
+    "lat": 18.426333333333332,
+    "lon": -66.07216666666666
+  },
+  {
+    "id": "705",
+    "direccion": "Ave. Calaf Opuesto Mueblerias Berrios",
+    "lat": 18.426333333333332,
+    "lon": -66.07216666666666
+  },
+  {
+    "id": "740",
+    "direccion": "Ave. Calaf opuesto Burlington y Pueblo Xtra",
+    "lat": 18.42405,
+    "lon": -66.07721666666667
+  },
+  {
+    "id": "740",
+    "direccion": "Ave. Calaf opuesto Burlington y Pueblo Xtra",
+    "lat": 18.42405,
+    "lon": -66.07721666666667
+  },
+  {
+    "id": "011",
+    "direccion": "Ave. Iturregu 4ta Ext Country Club hacia Rio Piedras",
+    "lat": 18.40887,
+    "lon": -66.00765
+  },
+  {
+    "id": "011",
+    "direccion": "Ave. Iturregu 4ta Ext Country Club hacia Rio Piedras",
+    "lat": 18.40887,
+    "lon": -66.00765
+  },
+  {
+    "id": "018",
+    "direccion": "Carr. #8 Int Ave. Campo Rico",
+    "lat": 18.40505,
+    "lon": -66.00311666666667
+  },
+  {
+    "id": "018",
+    "direccion": "Carr. #8 Int Ave. Campo Rico",
+    "lat": 18.40505,
+    "lon": -66.00311666666667
+  },
+  {
+    "id": "019",
+    "direccion": "Carr. #8 Ent. Country Club llegando a Plaza Escorial",
+    "lat": 18.40155,
+    "lon": -65.99855
+  },
+  {
+    "id": "019",
+    "direccion": "Carr. #8 Ent. Country Club llegando a Plaza Escorial",
+    "lat": 18.40155,
+    "lon": -65.99855
+  },
+  {
+    "id": "020",
+    "direccion": "Ave. Campo Rico Interseccion Carr. #8 Fte Pizzaria",
+    "lat": 18.405666666666665,
+    "lon": -66.00335
+  },
+  {
+    "id": "020",
+    "direccion": "Ave. Campo Rico Interseccion Carr. #8 Fte Pizzaria",
+    "lat": 18.405666666666665,
+    "lon": -66.00335
+  },
+  {
+    "id": "116",
+    "direccion": "Ave. Campo Rico opuesto a Walgreens, Fte Jardines Country Club",
+    "lat": 18.398383333333335,
+    "lon": -66.00545
+  },
+  {
+    "id": "116",
+    "direccion": "Ave. Campo Rico opuesto a Walgreens",
+    "lat": 18.398383333333335,
+    "lon": -66.00545
+  },
+  {
+    "id": "117",
+    "direccion": "Ave. Campo Rico Fte a Walgreens",
+    "lat": 18.39825,
+    "lon": -66.0054
+  },
+  {
+    "id": "117",
+    "direccion": "Ave. Campo Rico Fte a Walgreens",
+    "lat": 18.39825,
+    "lon": -66.0054
+  },
+  {
+    "id": "AMA01",
+    "direccion": "Ave. Magdalena Fte a Parque del Condado",
+    "lat": 18.454166666666666,
+    "lon": -66.06956666666666
+  },
+  {
+    "id": "AMA01",
+    "direccion": "Ave. Magdalena Fte a Parque del Condado",
+    "lat": 18.454166666666666,
+    "lon": -66.06956666666666
+  },
+  {
+    "id": "AMA02A",
+    "direccion": "Ave. Ponce de León Pda 18 Fte al MAC - (DIGITAL)",
+    "lat": 18.4505,
+    "lon": -66.07415
+  },
+  {
+    "id": "AMA02B",
+    "direccion": "Ave. Ponce de León Pda 18 Fte al MAC - (DIGITAL)",
+    "lat": 18.4505,
+    "lon": -66.07415
+  },
+  {
+    "id": "AMA03",
+    "direccion": "Ave. Chardon Fte Parking Empl Choliseo",
+    "lat": 18.4258,
+    "lon": -66.06052
+  },
+  {
+    "id": "AMA03",
+    "direccion": "Ave. Chardon Fte Parking Empl Choliseo",
+    "lat": 18.4258,
+    "lon": -66.06052
+  },
+  {
+    "id": "AMA04",
+    "direccion": "Ave. Roosevelt Fte al antiguo Conservatorio de Música",
+    "lat": 18.420783333333333,
+    "lon": -66.06865
+  },
+  {
+    "id": "AMA04",
+    "direccion": "Ave. Roosevelt Fte al antiguo Conservatorio de Música",
+    "lat": 18.420783333333333,
+    "lon": -66.06865
+  },
+  {
+    "id": "AMA05",
+    "direccion": "Ave. Roosevelt Fte al Estadio Hiram Bithorn",
+    "lat": 18.417333333333332,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "AMA05",
+    "direccion": "Ave. Roosevelt Fte al Estadio Hiram Bithorn",
+    "lat": 18.417333333333332,
+    "lon": -66.07658333333333
+  },
+  {
+    "id": "AMA06",
+    "direccion": "Ave. Roosevelt Fte al Cuartel General",
+    "lat": 18.417033333333332,
+    "lon": -66.07673333333334
+  },
+  {
+    "id": "AMA06",
+    "direccion": "Ave. Roosevelt Fte al Cuartel General",
+    "lat": 18.417033333333332,
+    "lon": -66.07673333333334
+  },
+  {
+    "id": "AMA07",
+    "direccion": "Ave. Roosevelt Opuesto Correo General Hato Rey",
+    "lat": 18.417033333333332,
+    "lon": -66.07673333333334
+  },
+  {
+    "id": "AMA09",
+    "direccion": "Ave. Muñoz Rivera Esq Roosevelt Fte Tranf Ama",
+    "lat": 18.424016666666667,
+    "lon": -66.05805
+  },
+  {
+    "id": "AMA09",
+    "direccion": "Ave. Muñoz Rivera Esq Roosevelt Fte Tranf Ama",
+    "lat": 18.424016666666667,
+    "lon": -66.05805
+  },
+  {
+    "id": "AMA10",
+    "direccion": "Ave. FD Roosevelt Fte a Fomento al lado Telemundo",
+    "lat": 18.421133333333334,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "AMA10",
+    "direccion": "Ave. FD Roosevelt Fte a Fomento al lado Telemundo",
+    "lat": 18.421133333333334,
+    "lon": -66.06841666666666
+  },
+  {
+    "id": "AMA11",
+    "direccion": "Ave. Prudencio Rivera Fte Centro Transferencia",
+    "lat": 18.429633333333335,
+    "lon": -66.05871666666667
+  },
+  {
+    "id": "AMA11",
+    "direccion": "Ave. Prudencio Rivera Fte Centro Transferencia",
+    "lat": 18.429633333333335,
+    "lon": -66.05871666666667
+  }
+]

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import ParadasMap from "@/components/ParadasMap";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -314,12 +315,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="bg-white border-8 border-[#1a4d3c] p-4 max-w-4xl mx-auto">
-            <img 
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/BxAXZqPEOziuAcZC.png"
-              alt="Mapa de ubicaciones de Paradas en San Juan"
-              className="w-full h-[500px] object-contain bg-white"
-            />
+          <div className="max-w-6xl mx-auto">
+            <ParadasMap />
           </div>
         </div>
       </section>

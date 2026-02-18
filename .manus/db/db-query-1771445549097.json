@@ -1,0 +1,19 @@
+{
+  "query": "\n-- First, let's check how many paradas currently have coordinates\nSELECT COUNT(*) as with_coords FROM paradas WHERE coordenadas_lat IS NOT NULL AND coordenadas_lng IS NOT NULL;\n\n-- Check total paradas\nSELECT COUNT(*) as total FROM paradas;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- First, let's check how many paradas currently have coordinates\nSELECT COUNT(*) as with_coords FROM paradas WHERE coordenadas_lat IS NOT NULL AND coordenadas_lng IS NOT NULL;\n\n-- Check total paradas\nSELECT COUNT(*) as total FROM paradas;\n",
+  "rows": [
+    {
+      "with_coords": "958"
+    },
+    {
+      "with_coords": "total"
+    },
+    {
+      "with_coords": "1075"
+    }
+  ],
+  "messages": [],
+  "stdout": "with_coords\n958\ntotal\n1075\n",
+  "stderr": "",
+  "execution_time_ms": 448
+}

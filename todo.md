@@ -707,3 +707,13 @@
 
 ## Home Page - New Format Addition
 - [x] Add Troqueles format card to formats section with description
+
+## Interactive Map Implementation
+- [x] Read Excel file with paradas coordinates (1039 paradas extracted)
+- [x] Add latitude/longitude fields to paradas database schema (already exists: coordenadasLat, coordenadasLng)
+- [x] Import coordinates data from Excel into database (using JSON file approach for map)
+- [x] Create custom bus stop SVG icon with brand colors (#1a4d3c, #ff6b35)
+- [x] Implement interactive Google Map component on Home page
+- [x] Add info windows showing parada ID and direccion on marker click
+- [x] Center map on San Juan, Puerto Rico with appropriate zoom level
+- [x] Make map responsive for mobile devices
