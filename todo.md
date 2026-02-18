@@ -704,3 +704,6 @@
 - [x] Add "Costo" column to Excel export showing price for each anuncio
 - [x] Display "Bonificación - Sin Costo" for anuncios with tipo "Bonificación" in Excel
 - [x] Add "Costo" column to print report with same bonificación handling
+
+## Home Page - New Format Addition
+- [x] Add Troqueles format card to formats section with description

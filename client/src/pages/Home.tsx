@@ -255,7 +255,7 @@ export default function Home() {
             Formatos:
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto mt-16">
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mt-16">
             <Card className="border-4 border-[#1a4d3c] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
               <h3 className="text-display text-3xl text-[#1a4d3c] mb-4">
                 PARADA FIJA
@@ -271,6 +271,15 @@ export default function Home() {
               </h3>
               <p className="text-body text-lg text-[#2a2a2a]">
                 Conecte con su audiencia mediante nuestras pantallas electrónicas controladas por computadora. Este formato le ofrece la flexibilidad total de actualizar su arte y cambiar mensajes sin costo de producción. Su anuncio se mantiene dinámico rotando cada 8 segundos en un circuito de hasta 8 clientes, con disponibilidad de diferentes tamaños para adaptarse a su estrategia.
+              </p>
+            </Card>
+            
+            <Card className="border-4 border-[#1a4d3c] p-8 bg-white shadow-none hover:shadow-2xl transition-shadow">
+              <h3 className="text-display text-3xl text-[#1a4d3c] mb-4">
+                TROQUELES
+              </h3>
+              <p className="text-body text-lg text-[#2a2a2a]">
+                Rompa los límites del marco estándar con ejecuciones personalizadas. Este formato permite integrar figuras que sobresalen del anuncio para crear un efecto visual de mayor dimensión. Además, ofrece opciones de Cabezales en la parte superior de la estructura y rotulación en los Cristales Traseros, garantizando que su creatividad domine el entorno desde todos los ángulos, capturando tanto al tráfico como al peatón.
               </p>
             </Card>
           </div>
