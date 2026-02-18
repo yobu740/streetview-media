@@ -88,9 +88,9 @@ export default function ParadasMap() {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {paradas.map((parada) => (
+        {paradas.map((parada, index) => (
           <Marker
-            key={parada.id}
+            key={`${parada.id}-${index}`}
             position={[parada.lat, parada.lon]}
             icon={busStopIcon}
           >

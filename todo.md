@@ -731,3 +731,6 @@
 - [x] Implement info popups showing parada ID and direccion
 - [x] Replace ParadasMap component to use Leaflet
 - [x] Test map displays all 1039 paradas correctly
+
+## Bug Fix - Map Duplicate Keys
+- [x] Fix React duplicate key error in ParadasMap caused by duplicate parada IDs (e.g., AMA11)
