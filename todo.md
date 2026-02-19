@@ -775,3 +775,9 @@
 - [x] Check server logs for detailed error message
 - [x] Verify SMTP credentials are correctly configured
 - [x] Fix email sending functionality (changed from address to use authenticated SMTP_USER)
+
+## Contact Form Improvements
+
+- [x] Remove cesteves@streetviewmediapr.com from email recipients (only send to sales@)
+- [x] Add toast notification for successful form submission
+- [x] Implement Google reCAPTCHA v3 for spam protection

@@ -35,7 +35,7 @@ export async function sendContactEmail(data: ContactFormData): Promise<void> {
 
   const mailOptions = {
     from: `"Streetview Media" <${process.env.SMTP_USER}>`, // Use authenticated email as sender
-    to: ['sales@streetviewmediapr.com', 'cesteves@streetviewmediapr.com'],
+    to: 'sales@streetviewmediapr.com',
     subject: `Nuevo mensaje de contacto de ${data.nombre}`,
     html: emailHtml,
     replyTo: data.email, // User's email for replies

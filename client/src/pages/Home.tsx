@@ -10,7 +10,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Menu, X } from "lucide-react";
+import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import ParadasMap from "@/components/ParadasMap";
 import { trpc } from "@/lib/trpc";
 
@@ -35,11 +37,17 @@ export default function Home() {
   
   const sendEmailMutation = trpc.contact.sendEmail.useMutation({
     onSuccess: () => {
-      alert("¡Mensaje enviado correctamente! Nos pondremos en contacto pronto.");
+      toast.success("¡Mensaje enviado correctamente!", {
+        description: "Nos pondremos en contacto pronto. Gracias por su interés.",
+        duration: 5000,
+      });
       setFormData({ nombre: "", email: "", telefono: "", mensaje: "" });
     },
     onError: (error) => {
-      alert("Error al enviar el mensaje. Por favor intente nuevamente.");
+      toast.error("Error al enviar el mensaje", {
+        description: "Por favor intente nuevamente o contáctenos directamente al (787) 708-5115.",
+        duration: 5000,
+      });
       console.error("Contact form error:", error);
     },
   });
@@ -87,9 +95,33 @@ export default function Home() {
     return () => observer.disconnect();
   }, [hasAnimated]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sendEmailMutation.mutate(formData);
+    
+    if (!executeRecaptcha) {
+      toast.error("Error de seguridad", {
+        description: "Por favor recargue la página e intente nuevamente.",
+      });
+      return;
+    }
+    
+    try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await executeRecaptcha('contact_form');
+      
+      // Submit form with token
+      sendEmailMutation.mutate({
+        ...formData,
+        recaptchaToken,
+      });
+    } catch (error) {
+      toast.error("Error de seguridad", {
+        description: "Por favor intente nuevamente.",
+      });
+      console.error("reCAPTCHA error:", error);
+    }
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

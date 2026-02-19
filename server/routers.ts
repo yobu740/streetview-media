@@ -622,15 +622,26 @@ export const appRouter = router({
   }),
 
   // Contact form router
-  contact: router({    sendEmail: publicProcedure
+  contact: router({
+    sendEmail: publicProcedure
       .input(z.object({
         nombre: z.string(),
         email: z.string().email(),
         telefono: z.string(),
         mensaje: z.string(),
+        recaptchaToken: z.string(),
       }))
       .mutation(async ({ input }) => {
         try {
+          // Verify reCAPTCHA token
+          const { verifyRecaptcha } = await import("./recaptcha-service");
+          const isValid = await verifyRecaptcha(input.recaptchaToken);
+          
+          if (!isValid) {
+            throw new Error("Verificación de seguridad fallida. Por favor intente nuevamente.");
+          }
+          
+          // Send email
           const { sendContactEmail } = await import("./email-service");
           await sendContactEmail({
             nombre: input.nombre,
@@ -642,7 +653,7 @@ export const appRouter = router({
           return { success: true, message: "Mensaje enviado correctamente" };
         } catch (error) {
           console.error("[Contact Form] Error:", error);
-          throw new Error("Error al enviar el mensaje");
+          throw new Error(error instanceof Error ? error.message : "Error al enviar el mensaje");
         }
       }),
   }),

@@ -4,6 +4,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Calendar from "./pages/Calendar";
@@ -32,14 +33,18 @@ function Router() {
 }
 
 function App() {
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+  
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <GoogleReCaptchaProvider reCaptchaKey={recaptchaSiteKey || ""}>
+        <ThemeProvider defaultTheme="light">
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeProvider>
+      </GoogleReCaptchaProvider>
     </ErrorBoundary>
   );
 }
