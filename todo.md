@@ -800,6 +800,8 @@
 
 ## OAuth Custom Domain Migration
 
-- [ ] Update Microsoft Azure OAuth redirect URIs to include www.streetviewmediapr.com
+- [x] Update Microsoft Azure OAuth redirect URIs to include www.streetviewmediapr.com
+- [x] Add reCAPTCHA domains (streetview-mediapr.manus.space and www.streetviewmediapr.com)
+- [x] Fix OAuth redirect to maintain custom domain after authentication (use req.get('host') instead of PUBLIC_URL)
 - [ ] Test authentication on custom domain
 - [ ] Document the process for future reference
