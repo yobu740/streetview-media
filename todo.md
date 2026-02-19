@@ -790,7 +790,14 @@
 
 ## Date Display Bug
 
+- [x] Re-investigate date formatting function (fixed to parse ISO strings directly)
 - [x] Fix date showing day before in Gestor de Anuncios table
 - [x] Fix date showing day before in Panel Principal "Anuncio Actual" column
 - [x] Fix date showing day before in Parada detail view in Panel Principal
 - [x] Verify invoice generation shows correct dates (already working)
+
+## OAuth Custom Domain Migration
+
+- [ ] Update Microsoft Azure OAuth redirect URIs to include www.streetviewmediapr.com
+- [ ] Test authentication on custom domain
+- [ ] Document the process for future reference

@@ -8,13 +8,22 @@
  * @returns Formatted date string
  */
 export function formatDateDisplay(date: Date | string, locale: string = 'es-PR'): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  let year: number, month: number, day: number;
   
-  // Extract year, month, day directly from the Date object
-  // This avoids timezone conversion issues
-  const year = d.getFullYear();
-  const month = d.getMonth();
-  const day = d.getDate();
+  if (typeof date === 'string') {
+    // Parse ISO string directly without timezone conversion
+    // Extract YYYY-MM-DD from ISO string (e.g., "2024-02-19T00:00:00.000Z")
+    const datePart = date.split('T')[0]; // Get "2024-02-19"
+    const [y, m, d] = datePart.split('-').map(Number);
+    year = y;
+    month = m - 1; // JavaScript months are 0-indexed
+    day = d;
+  } else {
+    // Extract from Date object
+    year = date.getFullYear();
+    month = date.getMonth();
+    day = date.getDate();
+  }
   
   // Create a new date with these components in local timezone
   const localDate = new Date(year, month, day);
@@ -31,11 +40,14 @@ export function formatDateDisplay(date: Date | string, locale: string = 'es-PR')
  * Useful for date inputs and CSV exports
  */
 export function formatDateISO(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  if (typeof date === 'string') {
+    // Already in ISO format, just extract the date part
+    return date.split('T')[0];
+  }
   
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   
   return `${year}-${month}-${day}`;
 }
