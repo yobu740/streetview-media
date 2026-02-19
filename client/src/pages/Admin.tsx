@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
+import { formatDateDisplay } from "@/lib/dateUtils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -539,8 +540,8 @@ export default function Admin() {
           'Estado': status,
           'Anuncio Actual': parada.anuncioProducto || '',
           'Cliente Actual': anuncio ? anuncio.cliente : '',
-          'Fecha Inicio': anuncio ? new Date(anuncio.fechaInicio).toLocaleDateString() : '',
-          'Fecha Fin': anuncio ? new Date(anuncio.fechaFin).toLocaleDateString() : '',
+          'Fecha Inicio': anuncio ? formatDateDisplay(anuncio.fechaInicio) : '',
+          'Fecha Fin': anuncio ? formatDateDisplay(anuncio.fechaFin) : '',
           'Tipo Anuncio': anuncio ? anuncio.tipo : '',
           'Coordenadas': parada.coordenadasLat && parada.coordenadasLng ? `${parada.coordenadasLat}, ${parada.coordenadasLng}` : '',
         };
@@ -879,8 +880,8 @@ export default function Admin() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                             <div><span className="font-medium">Parada:</span> {parada?.cobertizoId} - {parada?.localizacion}</div>
                             <div><span className="font-medium">Tipo:</span> {anuncio.tipo}</div>
-                            <div><span className="font-medium">Inicio:</span> {new Date(anuncio.fechaInicio).toLocaleDateString('es-PR')}</div>
-                            <div><span className="font-medium">Fin:</span> {new Date(anuncio.fechaFin).toLocaleDateString('es-PR')}</div>
+                            <div><span className="font-medium">Inicio:</span> {formatDateDisplay(anuncio.fechaInicio)}</div>
+                            <div><span className="font-medium">Fin:</span> {formatDateDisplay(anuncio.fechaFin)}</div>
                           </div>
                           {anuncio.notas && (
                             <div className="mt-2 text-sm text-gray-500">
@@ -975,7 +976,7 @@ export default function Admin() {
                             Parada: {anuncio.parada?.cobertizoId} - {anuncio.parada?.localizacion}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Fecha fin: {new Date(anuncio.fechaFin).toLocaleDateString('es-PR')}
+                            Fecha fin: {formatDateDisplay(anuncio.fechaFin)}
                           </div>
                         </div>
                       </div>
@@ -1215,7 +1216,7 @@ export default function Admin() {
                                 <div className="text-sm">
                                   <div className="font-medium">{parada.anuncioProducto || parada.producto || anuncio.cliente}</div>
                                   <div className="text-gray-500 text-xs">
-                                    {new Date(anuncio.fechaInicio).toLocaleDateString()} - {new Date(anuncio.fechaFin).toLocaleDateString()}
+                                    {formatDateDisplay(anuncio.fechaInicio)} - {formatDateDisplay(anuncio.fechaFin)}
                                   </div>
                                 </div>
                               ) : (
@@ -1455,11 +1456,11 @@ export default function Admin() {
                                             <div className="grid grid-cols-2 gap-4">
                                               <div>
                                                 <Label className="text-gray-500">Fecha Inicio</Label>
-                                                <p className="font-medium">{new Date(anuncio.fechaInicio).toLocaleDateString()}</p>
+                                                <p className="font-medium">{formatDateDisplay(anuncio.fechaInicio)}</p>
                                               </div>
                                               <div>
                                                 <Label className="text-gray-500">Fecha Fin</Label>
-                                                <p className="font-medium">{new Date(anuncio.fechaFin).toLocaleDateString()}</p>
+                                                <p className="font-medium">{formatDateDisplay(anuncio.fechaFin)}</p>
                                               </div>
                                             </div>
 

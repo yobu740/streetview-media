@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import AdminSidebar from "@/components/AdminSidebar";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { formatDateDisplay } from "@/lib/dateUtils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -278,8 +279,8 @@ export default function Anuncios() {
       a.cliente,
       a.producto,
       a.tipo,
-      new Date(a.fechaInicio).toLocaleDateString(),
-      new Date(a.fechaFin).toLocaleDateString(),
+      formatDateDisplay(a.fechaInicio),
+      formatDateDisplay(a.fechaFin),
       a.estado,
       a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`,
     ]);
@@ -350,8 +351,8 @@ export default function Anuncios() {
                   <td>${a.cliente}</td>
                   <td>${a.producto}</td>
                   <td>${a.tipo}</td>
-                  <td>${new Date(a.fechaInicio).toLocaleDateString()}</td>
-                  <td>${new Date(a.fechaFin).toLocaleDateString()}</td>
+                  <td>${formatDateDisplay(a.fechaInicio)}</td>
+                  <td>${formatDateDisplay(a.fechaFin)}</td>
                   <td>${a.estado}</td>
                   <td>${a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`}</td>
                 </tr>
@@ -616,10 +617,10 @@ export default function Anuncios() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {new Date(anuncio.fechaInicio).toLocaleDateString("es-PR")}
+                        {formatDateDisplay(anuncio.fechaInicio)}
                       </TableCell>
                       <TableCell>
-                        {new Date(anuncio.fechaFin).toLocaleDateString("es-PR")}
+                        {formatDateDisplay(anuncio.fechaFin)}
                       </TableCell>
                       <TableCell>
                         <Badge variant={getEstadoBadgeVariant(anuncio.estado)}>

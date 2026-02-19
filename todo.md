@@ -787,3 +787,10 @@
 - [x] Debug reCAPTCHA verification failure error (browser-error in dev, works in production)
 - [x] Check server logs for detailed error information
 - [x] Add development mode bypass for easier testing
+
+## Date Display Bug
+
+- [x] Fix date showing day before in Gestor de Anuncios table
+- [x] Fix date showing day before in Panel Principal "Anuncio Actual" column
+- [x] Fix date showing day before in Parada detail view in Panel Principal
+- [x] Verify invoice generation shows correct dates (already working)
