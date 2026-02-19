@@ -763,3 +763,8 @@
 - [x] Verify SMTP credentials with test
 - [ ] Update map section title to "Nuestras Ubicaciones"
 - [ ] Update map section description to "Presencia estratégica en todo el área metropolitana de San Juan y en sus principales avenidas. Contamos con mas de 400 paradas con diferentes formatos."
+
+## Navigation Update
+
+- [x] Remove Admin link from header navigation (desktop and mobile)
+- [x] Add Admin link to footer Enlaces section
