@@ -810,6 +810,10 @@
 
 - [x] Review code for hardcoded domain references (none found)
 - [x] Identified issue: req.get('host') returns Cloud Run domain, not custom domain
-- [x] Find correct header for custom domain detection (x-forwarded-host or x-original-host)
-- [x] Update OAuth code to check forwarded headers first
-- [ ] Test authentication with custom domain and review logs
+- [x] Find correct header for custom domain detection (headers not passed by Manus proxy)
+- [x] Update OAuth code to check forwarded headers first (didn't work)
+- [x] New approach: Frontend passes window.location.origin to backend
+- [x] Update getLoginUrl() to include origin parameter and in state
+- [x] Update backend to use origin from query parameter
+- [x] Update callback to redirect to absolute URL with custom domain
+- [ ] Test authentication with custom domain

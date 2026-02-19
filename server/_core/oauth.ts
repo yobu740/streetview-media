@@ -25,14 +25,11 @@ export function registerOAuthRoutes(app: Express) {
   app.get("/api/auth/login", async (req: Request, res: Response) => {
     console.log("[OAuth Login] Received request to /api/auth/login");
     const state = getQueryParam(req, "state") || "";
-    // Check forwarded headers for custom domain support
-    const origin = getOriginFromRequest(req);
-    console.log("[OAuth Login] Origin:", origin);
-    console.log("[OAuth Login] Headers:", {
-      host: req.get('host'),
-      'x-forwarded-host': req.get('x-forwarded-host'),
-      'x-original-host': req.get('x-original-host')
-    });
+    // Use origin from query parameter (passed by frontend) to support custom domains
+    const originParam = getQueryParam(req, "origin");
+    const origin = originParam || getOriginFromRequest(req);
+    console.log("[OAuth Login] Origin from param:", originParam);
+    console.log("[OAuth Login] Final origin:", origin);
     
     try {
       const authUrl = await microsoftOAuth.getAuthorizationUrl(state, origin);
@@ -100,17 +97,21 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      // Parse state to get returnPath
+      // Parse state to get returnPath and origin
       let returnPath = "/";
+      let stateOrigin = "";
       try {
         const stateData = JSON.parse(atob(state));
         returnPath = stateData.returnPath || "/";
+        stateOrigin = stateData.origin || "";
       } catch (e) {
         console.error("[OAuth Callback] Failed to parse state:", e);
       }
       
-      console.log("[OAuth Callback] Redirecting to:", returnPath);
-      res.redirect(302, returnPath);
+      // If origin was stored in state, use it for absolute redirect to maintain custom domain
+      const redirectUrl = stateOrigin ? `${stateOrigin}${returnPath}` : returnPath;
+      console.log("[OAuth Callback] Redirecting to:", redirectUrl);
+      res.redirect(302, redirectUrl);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });
