@@ -34,11 +34,11 @@ export async function sendContactEmail(data: ContactFormData): Promise<void> {
   `;
 
   const mailOptions = {
-    from: process.env.SMTP_FROM || '"Streetview Media Website" <noreply@streetviewmediapr.com>',
+    from: `"Streetview Media" <${process.env.SMTP_USER}>`, // Use authenticated email as sender
     to: ['sales@streetviewmediapr.com', 'cesteves@streetviewmediapr.com'],
     subject: `Nuevo mensaje de contacto de ${data.nombre}`,
     html: emailHtml,
-    replyTo: data.email,
+    replyTo: data.email, // User's email for replies
   };
 
   try {

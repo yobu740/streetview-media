@@ -768,3 +768,10 @@
 
 - [x] Remove Admin link from header navigation (desktop and mobile)
 - [x] Add Admin link to footer Enlaces section
+
+## Contact Form Bug Fix
+
+- [x] Debug 500 error when sending contact form emails
+- [x] Check server logs for detailed error message
+- [x] Verify SMTP credentials are correctly configured
+- [x] Fix email sending functionality (changed from address to use authenticated SMTP_USER)
