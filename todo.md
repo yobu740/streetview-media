@@ -817,3 +817,10 @@
 - [x] Update backend to use origin from query parameter
 - [x] Update callback to redirect to absolute URL with custom domain
 - [ ] Test authentication with custom domain
+
+## OAuth Callback Error
+
+- [x] Check server logs for OAuth callback error details
+- [x] Identify root cause of "OAuth callback failed" error (callback was using Cloud Run domain instead of custom domain)
+- [x] Fix the issue (parse origin from state before calling getTokenFromCode)
+- [ ] Deploy and test authentication flow in production

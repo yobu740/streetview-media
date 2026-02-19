@@ -60,14 +60,20 @@ export function registerOAuthRoutes(app: Express) {
     }
 
     try {
-      // Check forwarded headers for custom domain support
-      const origin = getOriginFromRequest(req);
-      console.log("[OAuth Callback] Origin:", origin);
-      console.log("[OAuth Callback] Headers:", {
-        host: req.get('host'),
-        'x-forwarded-host': req.get('x-forwarded-host'),
-        'x-original-host': req.get('x-original-host')
-      });
+      // Parse state first to get origin from frontend
+      let stateOrigin = "";
+      try {
+        const stateData = JSON.parse(atob(state));
+        stateOrigin = stateData.origin || "";
+      } catch (e) {
+        console.error("[OAuth Callback] Failed to parse state for origin:", e);
+      }
+      
+      // Use origin from state (frontend) or fallback to request headers
+      const origin = stateOrigin || getOriginFromRequest(req);
+      console.log("[OAuth Callback] Origin from state:", stateOrigin);
+      console.log("[OAuth Callback] Final origin:", origin);
+      
       const tokenResponse = await microsoftOAuth.getTokenFromCode(code, origin);
       const userInfo = await microsoftOAuth.getUserInfo(tokenResponse.accessToken);
 
@@ -97,15 +103,13 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      // Parse state to get returnPath and origin
+      // Parse state to get returnPath (origin already parsed above)
       let returnPath = "/";
-      let stateOrigin = "";
       try {
         const stateData = JSON.parse(atob(state));
         returnPath = stateData.returnPath || "/";
-        stateOrigin = stateData.origin || "";
       } catch (e) {
-        console.error("[OAuth Callback] Failed to parse state:", e);
+        console.error("[OAuth Callback] Failed to parse state for returnPath:", e);
       }
       
       // If origin was stored in state, use it for absolute redirect to maintain custom domain
