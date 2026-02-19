@@ -75,12 +75,13 @@ export async function getAllParadas() {
         createdAt: parada.createdAt,
         updatedAt: parada.updatedAt,
         // Current anuncio fields (null if no anuncio)
+        // Convert dates to ISO strings to avoid timezone issues
         anuncioId: currentAnuncio?.id || null,
         anuncioProducto: currentAnuncio?.producto || null,
         anuncioCliente: currentAnuncio?.cliente || null,
         anuncioTipo: currentAnuncio?.tipo || null,
-        anuncioFechaInicio: currentAnuncio?.fechaInicio || null,
-        anuncioFechaFin: currentAnuncio?.fechaFin || null,
+        anuncioFechaInicio: currentAnuncio?.fechaInicio ? currentAnuncio.fechaInicio.toISOString().split('T')[0] + 'T00:00:00.000Z' : null,
+        anuncioFechaFin: currentAnuncio?.fechaFin ? currentAnuncio.fechaFin.toISOString().split('T')[0] + 'T00:00:00.000Z' : null,
         anuncioEstado: currentAnuncio?.estado || null,
       };
     })
@@ -204,7 +205,16 @@ export async function deleteParada(id: number) {
 export async function getAllAnuncios() {
   const db = await getDb();
   if (!db) return [];
-  return await db.select().from(anuncios).orderBy(desc(anuncios.createdAt));
+  const results = await db.select().from(anuncios).orderBy(desc(anuncios.createdAt));
+  
+  // Convert Date objects to ISO strings to avoid timezone issues
+  return results.map(anuncio => ({
+    ...anuncio,
+    fechaInicio: anuncio.fechaInicio?.toISOString().split('T')[0] + 'T00:00:00.000Z',
+    fechaFin: anuncio.fechaFin?.toISOString().split('T')[0] + 'T00:00:00.000Z',
+    createdAt: anuncio.createdAt,
+    updatedAt: anuncio.updatedAt,
+  }));
 }
 
 export async function getAnunciosByParadaId(paradaId: number) {

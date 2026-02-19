@@ -791,10 +791,12 @@
 ## Date Display Bug
 
 - [x] Re-investigate date formatting function (fixed to parse ISO strings directly)
-- [x] Fix date showing day before in Gestor de Anuncios table
-- [x] Fix date showing day before in Panel Principal "Anuncio Actual" column
-- [x] Fix date showing day before in Parada detail view in Panel Principal
-- [x] Verify invoice generation shows correct dates (already working)
+- [x] Fix date showing day before in Gestor de Anuncios table (backend conversion)
+- [x] Fix date showing day before in Panel Principal "Anuncio Actual" column (backend conversion)
+- [x] Fix date showing day before in reports/exports (backend conversion)
+- [x] Fix Parada detail view in Panel Principal
+- [x] Verify invoice generation shows correct dates (working)
+- [x] Verify Detalle del anuncio shows correct dates (working)
 
 ## OAuth Custom Domain Migration
 
