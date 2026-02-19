@@ -621,6 +621,32 @@ export const appRouter = router({
       }),
   }),
 
+  // Contact form router
+  contact: router({    sendEmail: publicProcedure
+      .input(z.object({
+        nombre: z.string(),
+        email: z.string().email(),
+        telefono: z.string(),
+        mensaje: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const { sendContactEmail } = await import("./email-service");
+          await sendContactEmail({
+            nombre: input.nombre,
+            email: input.email,
+            telefono: input.telefono,
+            mensaje: input.mensaje,
+          });
+          
+          return { success: true, message: "Mensaje enviado correctamente" };
+        } catch (error) {
+          console.error("[Contact Form] Error:", error);
+          throw new Error("Error al enviar el mensaje");
+        }
+      }),
+  }),
+
   // Invoices router
   invoices: router({
     generate: protectedProcedure

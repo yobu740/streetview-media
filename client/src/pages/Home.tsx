@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import ParadasMap from "@/components/ParadasMap";
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,6 +24,25 @@ export default function Home() {
   
   const statsRef = useRef<HTMLDivElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  
+  // Contact form state
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    telefono: "",
+    mensaje: "",
+  });
+  
+  const sendEmailMutation = trpc.contact.sendEmail.useMutation({
+    onSuccess: () => {
+      alert("¡Mensaje enviado correctamente! Nos pondremos en contacto pronto.");
+      setFormData({ nombre: "", email: "", telefono: "", mensaje: "" });
+    },
+    onError: (error) => {
+      alert("Error al enviar el mensaje. Por favor intente nuevamente.");
+      console.error("Contact form error:", error);
+    },
+  });
 
   // Animated counter for stats
   useEffect(() => {
@@ -69,8 +89,7 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Form submission logic here
-    alert("Formulario enviado. Nos pondremos en contacto pronto.");
+    sendEmailMutation.mutate(formData);
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -323,7 +342,7 @@ export default function Home() {
               Nuestras Ubicaciones
             </h2>
             <p className="text-body text-lg text-[#2a2a2a]">
-              Presencia estratégica en todo el área metropolitana de San Juan y principales municipios de Puerto Rico.
+              Presencia estratégica en todo el área metropolitana de San Juan y en sus principales avenidas. Contamos con mas de 400 paradas con diferentes formatos.
             </p>
           </div>
           
@@ -349,15 +368,20 @@ export default function Home() {
                   </label>
                   <Input 
                     required
+                    value={formData.nombre}
+                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                     className="border-2 border-[#1a4d3c] focus:border-[#ff6b35] h-12"
                   />
                 </div>
                 <div>
                   <label className="text-body font-semibold text-[#1a4d3c] mb-2 block">
-                    Apellido<span className="text-[#ff6b35]">*</span>
+                    Teléfono<span className="text-[#ff6b35]">*</span>
                   </label>
                   <Input 
                     required
+                    type="tel"
+                    value={formData.telefono}
+                    onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                     className="border-2 border-[#1a4d3c] focus:border-[#ff6b35] h-12"
                   />
                 </div>
@@ -370,16 +394,8 @@ export default function Home() {
                 <Input 
                   type="email"
                   required
-                  className="border-2 border-[#1a4d3c] focus:border-[#ff6b35] h-12"
-                />
-              </div>
-              
-              <div>
-                <label className="text-body font-semibold text-[#1a4d3c] mb-2 block">
-                  Compañía<span className="text-[#ff6b35]">*</span>
-                </label>
-                <Input 
-                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="border-2 border-[#1a4d3c] focus:border-[#ff6b35] h-12"
                 />
               </div>
@@ -391,16 +407,19 @@ export default function Home() {
                 <Textarea 
                   required
                   rows={6}
+                  value={formData.mensaje}
+                  onChange={(e) => setFormData({ ...formData, mensaje: e.target.value })}
                   className="border-2 border-[#1a4d3c] focus:border-[#ff6b35]"
                 />
               </div>
               
               <Button 
                 type="submit"
+                disabled={sendEmailMutation.isPending}
                 size="lg"
                 className="w-full bg-[#ff6b35] hover:bg-[#e65a25] text-white text-display text-2xl py-6 h-auto border-4 border-[#ff6b35] hover:border-[#1a4d3c] transition-all"
               >
-                Enviar Mensaje
+                {sendEmailMutation.isPending ? "Enviando..." : "Enviar Mensaje"}
               </Button>
             </form>
           </div>
@@ -426,7 +445,7 @@ export default function Home() {
               <h3 className="text-display text-2xl mb-4">Contacto</h3>
               <div className="space-y-2 text-body text-sm">
                 <p>(787)708-5115</p>
-                <p>sales@streetviewpr.com</p>
+                <p>sales@streetviewmediapr.com</p>
                 <p>130 Ave. Winston Churchill<br/>PMB 167<br/>San Juan, PR 00926</p>
               </div>
             </div>

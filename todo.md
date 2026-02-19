@@ -743,3 +743,23 @@
 - [ ] Create filter controls for Tipo de Formato (Fija/Digital/Troqueles) - DEFERRED: requires database integration
 - [ ] Create filter controls for Disponibilidad (Disponible/Ocupada) - DEFERRED: requires database integration
 - [ ] Update map markers in real-time based on selected filters - DEFERRED: requires database integration
+
+## Contact Form Email Implementation
+- [x] Fix footer email address to sales@streetviewmediapr.com
+- [x] Create backend tRPC procedure to send contact form emails
+- [x] Configure email sending to sales@streetviewmediapr.com and cesteves@streetviewmediapr.com
+- [ ] Connect frontend contact form to backend email procedure
+- [ ] Add success/error toast notifications for form submission
+
+## Map Section Text Update
+- [x] Update "Nuestras Ubicaciones" section description text
+
+## Contact Form and Landing Page Updates
+
+- [x] Implement contact form email functionality with Outlook SMTP
+- [x] Configure email service to send to sales@streetviewmediapr.com and cesteves@streetviewmediapr.com
+- [x] Connect form inputs to tRPC mutation
+- [x] Add loading state and success/error handling
+- [x] Verify SMTP credentials with test
+- [ ] Update map section title to "Nuestras Ubicaciones"
+- [ ] Update map section description to "Presencia estratégica en todo el área metropolitana de San Juan y en sus principales avenidas. Contamos con mas de 400 paradas con diferentes formatos."
