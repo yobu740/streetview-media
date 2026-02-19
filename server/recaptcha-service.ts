@@ -15,6 +15,12 @@ export async function verifyRecaptcha(token: string): Promise<boolean> {
     throw new Error('reCAPTCHA not configured');
   }
 
+  // In development mode, bypass reCAPTCHA verification for easier testing
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[reCAPTCHA] Development mode: bypassing verification');
+    return true;
+  }
+
   try {
     const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',

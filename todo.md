@@ -781,3 +781,9 @@
 - [x] Remove cesteves@streetviewmediapr.com from email recipients (only send to sales@)
 - [x] Add toast notification for successful form submission
 - [x] Implement Google reCAPTCHA v3 for spam protection
+
+## reCAPTCHA Verification Bug
+
+- [x] Debug reCAPTCHA verification failure error (browser-error in dev, works in production)
+- [x] Check server logs for detailed error information
+- [x] Add development mode bypass for easier testing
