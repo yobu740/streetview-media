@@ -10,14 +10,29 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+function getOriginFromRequest(req: Request): string {
+  // Check for forwarded host (used by proxies/CDNs like Manus)
+  const forwardedHost = req.get('x-forwarded-host') || req.get('x-original-host');
+  if (forwardedHost) {
+    return `https://${forwardedHost}`;
+  }
+  // Fallback to direct host
+  return `https://${req.get('host')}`;
+}
+
 export function registerOAuthRoutes(app: Express) {
   // Login route - redirects to Microsoft
   app.get("/api/auth/login", async (req: Request, res: Response) => {
     console.log("[OAuth Login] Received request to /api/auth/login");
     const state = getQueryParam(req, "state") || "";
-    // Always use the request host to support multiple domains (custom domain + manus domain)
-    const origin = `https://${req.get('host')}`;
+    // Check forwarded headers for custom domain support
+    const origin = getOriginFromRequest(req);
     console.log("[OAuth Login] Origin:", origin);
+    console.log("[OAuth Login] Headers:", {
+      host: req.get('host'),
+      'x-forwarded-host': req.get('x-forwarded-host'),
+      'x-original-host': req.get('x-original-host')
+    });
     
     try {
       const authUrl = await microsoftOAuth.getAuthorizationUrl(state, origin);
@@ -48,9 +63,14 @@ export function registerOAuthRoutes(app: Express) {
     }
 
     try {
-      // Always use the request host to support multiple domains (custom domain + manus domain)
-      const origin = `https://${req.get('host')}`;
+      // Check forwarded headers for custom domain support
+      const origin = getOriginFromRequest(req);
       console.log("[OAuth Callback] Origin:", origin);
+      console.log("[OAuth Callback] Headers:", {
+        host: req.get('host'),
+        'x-forwarded-host': req.get('x-forwarded-host'),
+        'x-original-host': req.get('x-original-host')
+      });
       const tokenResponse = await microsoftOAuth.getTokenFromCode(code, origin);
       const userInfo = await microsoftOAuth.getUserInfo(tokenResponse.accessToken);
 

@@ -805,3 +805,11 @@
 - [x] Fix OAuth redirect to maintain custom domain after authentication (use req.get('host') instead of PUBLIC_URL)
 - [ ] Test authentication on custom domain
 - [ ] Document the process for future reference
+
+## Domain Redirect Investigation
+
+- [x] Review code for hardcoded domain references (none found)
+- [x] Identified issue: req.get('host') returns Cloud Run domain, not custom domain
+- [x] Find correct header for custom domain detection (x-forwarded-host or x-original-host)
+- [x] Update OAuth code to check forwarded headers first
+- [ ] Test authentication with custom domain and review logs
