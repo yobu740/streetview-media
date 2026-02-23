@@ -868,3 +868,17 @@
 - [ ] Implement automatic email reminders for overdue invoices
 - [ ] Add scheduled job to check and send notifications daily
 - [ ] Create notification preferences/settings page
+
+## Facturacion Page Fixes
+
+- [x] Fix page layout - add proper header/title
+- [x] Restore delete invoice button
+- [x] Add search/filter functionality for invoices
+- [x] Add export report button with options (por mes, por cliente)
+
+## Facturacion Page Fixes
+
+- [x] Fix page layout - add proper header/title
+- [x] Restore delete invoice button
+- [x] Add search/filter functionality for invoices
+- [x] Add export report button with options (por mes, por cliente)
