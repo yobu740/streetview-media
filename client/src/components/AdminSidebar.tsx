@@ -78,7 +78,7 @@ export default function AdminSidebar({
     {
       label: "Facturación",
       icon: Receipt,
-      href: "/facturas",
+      href: "/facturacion",
       adminOnly: true,
     },
     {

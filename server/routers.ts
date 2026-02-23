@@ -660,6 +660,40 @@ export const appRouter = router({
 
   // Invoices router
   invoices: router({
+    list: protectedProcedure.query(async () => {
+      const { getDb } = await import("./db");
+      const { facturas } = await import("../drizzle/schema");
+      const { desc } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+      
+      const results = await db.select().from(facturas).orderBy(desc(facturas.createdAt));
+      return results;
+    }),
+    
+    updatePaymentStatus: adminProcedure
+      .input(z.object({
+        facturaId: z.number(),
+        estadoPago: z.enum(["Pendiente", "Pagada", "Vencida"]),
+        fechaPago: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(facturas)
+          .set({
+            estadoPago: input.estadoPago,
+            fechaPago: input.fechaPago ? new Date(input.fechaPago) : null,
+          })
+          .where(eq(facturas.id, input.facturaId));
+        
+        return { success: true };
+      }),
+    
     generate: protectedProcedure
       .input(z.object({
         anuncioIds: z.array(z.number()),

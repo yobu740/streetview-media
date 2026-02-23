@@ -840,3 +840,31 @@
 - [ ] Create backend router for history queries
 - [ ] Add history view in anuncio detail modal
 - [ ] Display history timeline with dates and changes
+
+## Invoicing System Improvements
+
+- [x] Add payment status column to facturas table (Pagada/Pendiente/Vencida)
+- [x] Add payment date column to facturas table
+- [x] Create Facturación page with invoices table
+- [x] Add status badges with colors in invoices table
+- [x] Implement mark as paid functionality with date picker
+- [ ] Create invoice preview modal before PDF generation
+- [ ] Show all included anuncios in preview with calculations
+- [ ] Add email sending functionality for invoices
+- [ ] Implement email customization modal
+- [ ] Create reporting dashboard page
+- [ ] Add monthly income charts
+- [ ] Add client comparison analytics
+- [ ] Add additional services analysis
+- [ ] Implement customizable invoice templates system
+- [ ] Add template selector (corporativo vs. pequeño negocio)
+- [ ] Allow logo and terms customization per template
+
+## Notification System
+
+- [ ] Create notification for overdue unpaid invoices
+- [ ] Create notification for clients without invoice in last month
+- [ ] Add notification dashboard/panel in admin
+- [ ] Implement automatic email reminders for overdue invoices
+- [ ] Add scheduled job to check and send notifications daily
+- [ ] Create notification preferences/settings page

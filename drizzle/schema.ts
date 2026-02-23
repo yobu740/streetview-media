@@ -148,6 +148,8 @@ export const facturas = mysqlTable("facturas", {
   vendedor: varchar("vendedor", { length: 255 }), // Salesperson name
   pdfUrl: text("pdf_url").notNull(), // S3 URL to PDF
   cantidadAnuncios: int("cantidad_anuncios").notNull(), // Number of anuncios in invoice
+  estadoPago: mysqlEnum("estado_pago", ["Pendiente", "Pagada", "Vencida"]).default("Pendiente").notNull(), // Payment status
+  fechaPago: timestamp("fecha_pago"), // Payment date (null if not paid)
   createdBy: int("created_by").notNull(), // FK to users - who created the invoice
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
