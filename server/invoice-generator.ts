@@ -45,11 +45,7 @@ export async function generateInvoiceFromAnuncios(
     const cost = parseFloat(anuncio.costoPorUnidad || "0");
     console.log(`[Invoice] Anuncio #${anuncio.id}: cost=${cost}, tipo=${anuncio.tipo}`);
     
-    // Skip bonificaciones (cost = 0)
-    if (cost === 0) {
-      console.log(`[Invoice] Skipping anuncio #${anuncio.id} (Bonificación)`);
-      continue;
-    }
+    // Include bonificaciones (cost = 0) in invoice - they should appear with $0.00
 
     const parada = await db
       .select()

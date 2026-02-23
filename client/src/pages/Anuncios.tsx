@@ -70,6 +70,7 @@ export default function Anuncios() {
   const [otherServicesDescription, setOtherServicesDescription] = useState("");
   const [otherServicesCost, setOtherServicesCost] = useState("");
   const [salespersonName, setSalespersonName] = useState("");
+  const [selectedInvoiceClient, setSelectedInvoiceClient] = useState("");
 
   const filteredAnuncios = anuncios?.filter((a) => {
     const matchesSearch =
@@ -162,12 +163,20 @@ export default function Anuncios() {
 
     // Include only billable estados: Activo, Programado, Finalizado
     // Exclude: Disponible, Inactivo
-    const billableAnuncios = filteredAnuncios.filter(a => 
+    let billableAnuncios = filteredAnuncios.filter(a => 
       a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado"
     );
     
+    // If a specific client is selected, filter to only that client's anuncios
+    if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
+      billableAnuncios = billableAnuncios.filter(a => a.cliente === selectedInvoiceClient);
+    }
+    
     if (billableAnuncios.length === 0) {
-      toast.error("No hay anuncios facturables (Activo/Programado/Finalizado) en los filtros actuales.");
+      const msg = selectedInvoiceClient 
+        ? `No hay anuncios facturables para el cliente "${selectedInvoiceClient}"`
+        : "No hay anuncios facturables (Activo/Programado/Finalizado) en los filtros actuales.";
+      toast.error(msg);
       return;
     }
 
@@ -213,6 +222,7 @@ export default function Anuncios() {
           setOtherServicesDescription("");
           setOtherServicesCost("");
           setSalespersonName("");
+          setSelectedInvoiceClient("");
         },
         onError: (error: any) => {
           toast.error(error.message || "Error al generar factura");
@@ -272,18 +282,23 @@ export default function Anuncios() {
       return;
     }
 
-    const headers = ["ID", "Parada", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo"];
-    const rows = filteredAnuncios.map((a) => [
-      a.id,
-      getParadaInfo(a.paradaId),
-      a.cliente,
-      a.producto,
-      a.tipo,
-      formatDateDisplay(a.fechaInicio),
-      formatDateDisplay(a.fechaFin),
-      a.estado,
-      a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`,
-    ]);
+    const headers = ["ID", "Parada", "Orientación", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
+    const rows = filteredAnuncios.map((a) => {
+      const parada = paradas?.find(p => p.id === a.paradaId);
+      return [
+        a.id,
+        getParadaInfo(a.paradaId),
+        parada?.orientacion || "N/A",
+        a.cliente,
+        a.producto,
+        a.tipo,
+        formatDateDisplay(a.fechaInicio),
+        formatDateDisplay(a.fechaFin),
+        a.estado,
+        a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`,
+        a.notas || "",
+      ];
+    });
 
     let csv = headers.join(",") + "\n";
     rows.forEach((row) => {
@@ -332,6 +347,7 @@ export default function Anuncios() {
               <tr>
                 <th>ID</th>
                 <th>Parada</th>
+                <th>Orientación</th>
                 <th>Cliente</th>
                 <th>Producto</th>
                 <th>Tipo</th>
@@ -339,15 +355,19 @@ export default function Anuncios() {
                 <th>Fecha Fin</th>
                 <th>Estado</th>
                 <th>Costo</th>
+                <th>Notas</th>
               </tr>
             </thead>
             <tbody>
               ${filteredAnuncios
                 .map(
-                  (a) => `
+                  (a) => {
+                    const parada = paradas?.find(p => p.id === a.paradaId);
+                    return `
                 <tr>
                   <td>${a.id}</td>
                   <td>${getParadaInfo(a.paradaId)}</td>
+                  <td>${parada?.orientacion || "N/A"}</td>
                   <td>${a.cliente}</td>
                   <td>${a.producto}</td>
                   <td>${a.tipo}</td>
@@ -355,8 +375,10 @@ export default function Anuncios() {
                   <td>${formatDateDisplay(a.fechaFin)}</td>
                   <td>${a.estado}</td>
                   <td>${a.tipo === "Bonificación" ? "Bonificación - Sin Costo" : `$${a.costoPorUnidad || "0.00"}`}</td>
+                  <td>${a.notas || ""}</td>
                 </tr>
-              `
+              `;
+                  }
                 )
                 .join("")}
             </tbody>
@@ -860,6 +882,20 @@ export default function Anuncios() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
+              <Label htmlFor="invoice-client">Cliente</Label>
+              <Select value={selectedInvoiceClient} onValueChange={setSelectedInvoiceClient}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar cliente (opcional - todos si vacío)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">Todos los clientes</SelectItem>
+                  {Array.from(new Set(filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").map(a => a.cliente))).sort().map(cliente => (
+                    <SelectItem key={cliente} value={cliente}>{cliente}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="invoice-title">Título de Factura (opcional)</Label>
               <Input
                 id="invoice-title"
@@ -919,9 +955,18 @@ export default function Anuncios() {
             </div>
             <div className="text-sm text-gray-600">
               <p><strong>Anuncios filtrados:</strong> {filteredAnuncios?.length || 0}</p>
-              <p><strong>Anuncios facturables (Activo/Programado/Finalizado):</strong> {filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado").length || 0}</p>
+              <p><strong>Anuncios facturables (Activo/Programado/Finalizado):</strong> {(() => {
+                let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
+                  billable = billable.filter(a => a.cliente === selectedInvoiceClient);
+                }
+                return billable.length;
+              })()}</p>
               <p><strong>Total estimado:</strong> ${(() => {
-                const billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
+                  billable = billable.filter(a => a.cliente === selectedInvoiceClient);
+                }
                 const subtotal = billable.reduce((sum, a) => {
                   const cost = parseFloat(a.costoPorUnidad || "0");
                   return sum + cost;

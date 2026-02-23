@@ -824,3 +824,19 @@
 - [x] Identify root cause of "OAuth callback failed" error (callback was using Cloud Run domain instead of custom domain)
 - [x] Fix the issue (parse origin from state before calling getTokenFromCode)
 - [ ] Deploy and test authentication flow in production
+
+## Invoice and Export Improvements
+
+- [x] Fix invoice to include bonification items (price $0) in the invoice
+- [x] Add client selector in invoice modal when multiple clients are selected
+- [x] Add "Notas" column to Excel exports in Gestor de Anuncios
+- [x] Add "Orientación (I/O)" column to Excel exports in Gestor de Anuncios
+
+## Historial de Anuncios Feature
+
+- [ ] Create database table for anuncio history (anuncio_historial)
+- [ ] Track location changes (parada relocations) with timestamps
+- [ ] Track state changes (Activo, Programado, Finalizado, Inactivo) with timestamps
+- [ ] Create backend router for history queries
+- [ ] Add history view in anuncio detail modal
+- [ ] Display history timeline with dates and changes
