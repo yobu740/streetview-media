@@ -882,3 +882,8 @@
 - [x] Restore delete invoice button
 - [x] Add search/filter functionality for invoices
 - [x] Add export report button with options (por mes, por cliente)
+
+## Facturacion Header Fix
+
+- [x] Add same header layout as Panel Principal (logo + notification bell)
+- [x] Remove "Volver" button (Facturacion is a main section, not a sub-page)
