@@ -891,3 +891,7 @@
 ## Facturacion Scroll Issue
 
 - [x] Fix unnecessary vertical scroll in Facturacion page - adjust padding/spacing
+
+## Facturacion React Hooks Error
+
+- [x] Fix "Rendered more hooks than during the previous render" error in Facturacion page

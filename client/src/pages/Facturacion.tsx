@@ -44,8 +44,9 @@ export default function Facturacion() {
   const { data: notifications } = trpc.notifications.list.useQuery(undefined, { enabled: !!user });
   const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: !!user });
   const markAsRead = trpc.notifications.markAsRead.useMutation();
+  
+  // All useState hooks
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
-
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedFactura, setSelectedFactura] = useState<any>(null);
   const [fechaPago, setFechaPago] = useState("");
@@ -56,14 +57,6 @@ export default function Facturacion() {
   const [exportCliente, setExportCliente] = useState("");
   
   const deleteFactura = trpc.facturas.delete.useMutation();
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Cargando...</p>
-      </div>
-    );
-  }
 
   const handleMarkAsPaid = (factura: any) => {
     setSelectedFactura(factura);
@@ -218,6 +211,14 @@ export default function Facturacion() {
         return <Badge>{estado}</Badge>;
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Cargando...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
