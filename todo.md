@@ -895,3 +895,8 @@
 ## Facturacion React Hooks Error
 
 - [x] Fix "Rendered more hooks than during the previous render" error in Facturacion page
+
+## Facturacion Layout Fix
+
+- [x] Remove header with logo (should only have sidebar like other admin sections)
+- [x] Fix large empty space before "Facturación" title causing scroll

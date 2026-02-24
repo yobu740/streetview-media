@@ -23,7 +23,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2, Bell, X } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import {
@@ -40,13 +40,7 @@ export default function Facturacion() {
   const updatePaymentStatus = trpc.invoices.updatePaymentStatus.useMutation();
   const utils = trpc.useUtils();
   
-  // Notification queries
-  const { data: notifications } = trpc.notifications.list.useQuery(undefined, { enabled: !!user });
-  const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: !!user });
-  const markAsRead = trpc.notifications.markAsRead.useMutation();
-  
   // All useState hooks
-  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedFactura, setSelectedFactura] = useState<any>(null);
   const [fechaPago, setFechaPago] = useState("");
@@ -221,135 +215,43 @@ export default function Facturacion() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header with Logo and Notification Bell */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/">
-            <img 
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" 
-              alt="Streetview Media" 
-              className="h-12 cursor-pointer"
-            />
-          </Link>
-          {/* Desktop - Notification Bell */}
-          <div className="hidden lg:flex items-center gap-3">
-            {user?.role === 'admin' && (
-              <div className="relative">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
-                  className="relative"
+    <div className="flex min-h-screen bg-[#f5f5f5]">
+      {/* Sidebar */}
+      <AdminSidebar />
+      
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
+        <div className="container py-8">
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Facturación</h1>
+                <p className="text-body text-gray-600">Gestión de facturas y pagos</p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsExportDialogOpen(true)}
+                  className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
                 >
-                  <Bell className="h-4 w-4" />
-                  {unreadCount && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
+                  <Download size={16} className="mr-2" />
+                  Exportar Reporte
                 </Button>
               </div>
-            )}
+            </div>
           </div>
-          
-          {/* Mobile - Notification Bell */}
-          <div className="flex lg:hidden items-center gap-2">
-            {user?.role === 'admin' && (
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
-                className="relative"
-              >
-                <Bell className="h-4 w-4" />
-                {unreadCount && unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
-                    {unreadCount}
-                  </span>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Notification Panel */}
-      {isNotificationPanelOpen && user?.role === 'admin' && (
-        <div className="fixed top-20 right-4 w-96 bg-white border-2 border-[#1a4d3c] shadow-2xl z-50 max-h-[600px] overflow-y-auto">
-          <div className="p-4 border-b-2 border-[#1a4d3c] flex justify-between items-center">
-            <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
-            <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="divide-y">
-            {notifications && notifications.length > 0 ? (
-              notifications.map((notif) => (
-                <div 
-                  key={notif.id} 
-                  className={`p-4 hover:bg-gray-50 cursor-pointer ${
-                    notif.read === 0 ? 'bg-[#fff5f0]' : ''
-                  }`}
-                  onClick={() => {
-                    if (notif.read === 0) {
-                      markAsRead.mutate({ id: notif.id });
-                    }
-                  }}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-[#1a4d3c]">{notif.title}</h4>
-                    {notif.read === 0 && (
-                      <span className="w-2 h-2 bg-[#ff6b35] rounded-full"></span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600">{notif.message}</p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    {new Date(notif.createdAt).toLocaleString('es-PR')}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                No hay notificaciones
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <AdminSidebar />
-      <div className="ml-64 p-6 pt-4">
-        <div className="mb-4 space-y-3">
-          <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-[#1a4d3c]">Facturación</h1>
-            <p className="text-gray-600 mt-1">Gestión de facturas y pagos</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => setIsExportDialogOpen(true)}
-              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
-            >
-              <Download size={16} className="mr-2" />
-              Exportar Reporte
-            </Button>
-          </div>
-        </div>
         
-        {/* Search Bar */}
-        <div className="mb-4 flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <Input
-              placeholder="Buscar por cliente, número de factura o vendedor..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          {/* Search Bar */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Input
+                placeholder="Buscar por cliente, número de factura o vendedor..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
           </div>
-        </div>
-      </div>
 
         {isLoading ? (
           <div className="text-center py-12">
@@ -562,6 +464,7 @@ export default function Facturacion() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
     </div>
   );
