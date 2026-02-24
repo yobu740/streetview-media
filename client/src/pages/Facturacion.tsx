@@ -318,8 +318,8 @@ export default function Facturacion() {
       )}
 
       <AdminSidebar />
-      <div className="ml-64 p-8">
-        <div className="mb-6 space-y-4">
+      <div className="ml-64 p-6 pt-4">
+        <div className="mb-4 space-y-3">
           <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[#1a4d3c]">Facturación</h1>

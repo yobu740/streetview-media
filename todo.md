@@ -887,3 +887,7 @@
 
 - [x] Add same header layout as Panel Principal (logo + notification bell)
 - [x] Remove "Volver" button (Facturacion is a main section, not a sub-page)
+
+## Facturacion Scroll Issue
+
+- [x] Fix unnecessary vertical scroll in Facturacion page - adjust padding/spacing
