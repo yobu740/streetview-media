@@ -253,12 +253,78 @@ export async function createAnuncio(data: InsertAnuncio) {
     )
     .orderBy(desc(anuncios.id))
     .limit(1);
-  return inserted[0]?.id || 0;
+  
+  const anuncioId = inserted[0]?.id || 0;
+  
+  // Log creation in history
+  if (anuncioId) {
+    const { createAnuncioHistoryEntry } = await import("./db");
+    await createAnuncioHistoryEntry({
+      anuncioId,
+      userId: data.createdBy || undefined,
+      accion: "Creado",
+      detalles: `Anuncio creado para cliente ${data.cliente} en parada ${data.paradaId}`,
+    });
+  }
+  
+  return anuncioId;
 }
 
-export async function updateAnuncio(id: number, data: Partial<InsertAnuncio>) {
+export async function updateAnuncio(id: number, data: Partial<InsertAnuncio>, userId?: number, userName?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  
+  // Get current anuncio data before update
+  const currentAnuncio = await db.select().from(anuncios).where(eq(anuncios.id, id)).limit(1);
+  const current = currentAnuncio[0];
+  
+  if (current) {
+    const { createAnuncioHistoryEntry } = await import("./db");
+    
+    // Log significant changes
+    if (data.estado && data.estado !== current.estado) {
+      await createAnuncioHistoryEntry({
+        anuncioId: id,
+        userId,
+        userName,
+        accion: "Estado cambiado",
+        campoModificado: "estado",
+        valorAnterior: current.estado,
+        valorNuevo: data.estado,
+        detalles: `Estado cambiado de ${current.estado} a ${data.estado}`,
+      });
+    }
+    
+    if (data.paradaId && data.paradaId !== current.paradaId) {
+      await createAnuncioHistoryEntry({
+        anuncioId: id,
+        userId,
+        userName,
+        accion: "Ubicación cambiada",
+        campoModificado: "paradaId",
+        valorAnterior: current.paradaId.toString(),
+        valorNuevo: data.paradaId.toString(),
+        detalles: `Anuncio relocalizado de parada ${current.paradaId} a parada ${data.paradaId}`,
+      });
+    }
+    
+    // Log other field changes
+    const fieldsToTrack = ['producto', 'cliente', 'tipo', 'fechaInicio', 'fechaFin'] as const;
+    for (const field of fieldsToTrack) {
+      if (data[field] !== undefined && data[field] !== current[field]) {
+        await createAnuncioHistoryEntry({
+          anuncioId: id,
+          userId,
+          userName,
+          accion: "Editado",
+          campoModificado: field,
+          valorAnterior: String(current[field]),
+          valorNuevo: String(data[field]),
+          detalles: `Campo ${field} actualizado`,
+        });
+      }
+    }
+  }
   
   await db.update(anuncios).set(data).where(eq(anuncios.id, id));
   return true;

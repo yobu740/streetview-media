@@ -86,7 +86,7 @@ export type InsertAnuncio = typeof anuncios.$inferInsert;
 export const notifications = mysqlTable("notifications", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("user_id").notNull(), // FK to users - recipient
-  type: mysqlEnum("type", ["reservation_pending", "reservation_approved", "reservation_rejected"]).notNull(),
+  type: mysqlEnum("type", ["reservation_pending", "reservation_approved", "reservation_rejected", "invoice_overdue", "client_no_invoice"]).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   message: text("message").notNull(),
   relatedId: int("related_id"), // FK to anuncios or other entities
@@ -156,3 +156,22 @@ export const facturas = mysqlTable("facturas", {
 
 export type Factura = typeof facturas.$inferSelect;
 export type InsertFactura = typeof facturas.$inferInsert;
+
+/**
+ * Anuncio history table to track all changes to advertisements
+ */
+export const anuncioHistorial = mysqlTable("anuncio_historial", {
+  id: int("id").autoincrement().primaryKey(),
+  anuncioId: int("anuncio_id").notNull(), // FK to anuncios
+  userId: int("user_id"), // FK to users - who made the change
+  userName: varchar("user_name", { length: 255 }), // User name for display
+  accion: varchar("accion", { length: 100 }).notNull(), // Action type: "Creado", "Estado cambiado", "Ubicación cambiada", "Editado", "Eliminado"
+  campoModificado: varchar("campo_modificado", { length: 100 }), // Field that was modified (if applicable)
+  valorAnterior: text("valor_anterior"), // Previous value (JSON or string)
+  valorNuevo: text("valor_nuevo"), // New value (JSON or string)
+  detalles: text("detalles"), // Additional details or notes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type AnuncioHistorial = typeof anuncioHistorial.$inferSelect;
+export type InsertAnuncioHistorial = typeof anuncioHistorial.$inferInsert;

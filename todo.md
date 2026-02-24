@@ -900,3 +900,29 @@
 
 - [x] Remove header with logo (should only have sidebar like other admin sections)
 - [x] Fix large empty space before "Facturación" title causing scroll
+
+## New Features Implementation
+
+### Date Filters in Facturacion
+- [x] Add date range picker component to Facturacion page
+- [x] Implement filtering logic for invoices by date range
+- [x] Add quick filter buttons (Este mes, Último mes, Últimos 3 meses)
+
+### Ad History Audit System
+- [x] Create anuncioHistorial table in database schema
+- [x] Add tRPC procedures for logging and querying history
+- [x] Automatically log changes when ad status or location changes
+- [ ] Create UI component to display history table for each ad (can be added later when needed)
+
+### Invoice Preview Modal
+- [x] Create modal component with invoice preview
+- [x] Display all included ads with individual costs
+- [x] Show calculated totals (subtotal, production, other services, total)
+- [x] Add editable fields for adjustments before PDF generation
+- [x] Integrate with existing invoice generation flow
+
+### Automatic Notification System
+- [x] Create background job to check overdue invoices daily
+- [x] Send notifications for invoices past due date without payment
+- [x] Check clients without invoices in last 30 days
+- [x] Create notification entries in database for admin review

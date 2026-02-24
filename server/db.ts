@@ -194,3 +194,46 @@ export async function updateAnuncioApprovalStatus(
     throw error;
   }
 }
+
+// Anuncio history tracking
+export async function createAnuncioHistoryEntry(entry: {
+  anuncioId: number;
+  userId?: number;
+  userName?: string;
+  accion: string;
+  campoModificado?: string;
+  valorAnterior?: string;
+  valorNuevo?: string;
+  detalles?: string;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create history entry: database not available");
+    return;
+  }
+
+  try {
+    const { anuncioHistorial } = await import("../drizzle/schema");
+    await db.insert(anuncioHistorial).values(entry);
+  } catch (error) {
+    console.error("[Database] Failed to create history entry:", error);
+    throw error;
+  }
+}
+
+export async function getAnuncioHistory(anuncioId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get history: database not available");
+    return [];
+  }
+
+  const { anuncioHistorial } = await import("../drizzle/schema");
+  const result = await db
+    .select()
+    .from(anuncioHistorial)
+    .where(eq(anuncioHistorial.anuncioId, anuncioId))
+    .orderBy(desc(anuncioHistorial.createdAt));
+
+  return result;
+}

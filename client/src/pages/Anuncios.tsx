@@ -953,28 +953,76 @@ export default function Anuncios() {
                 placeholder="Ej: Juan Pérez"
               />
             </div>
-            <div className="text-sm text-gray-600">
-              <p><strong>Anuncios filtrados:</strong> {filteredAnuncios?.length || 0}</p>
-              <p><strong>Anuncios facturables (Activo/Programado/Finalizado):</strong> {(() => {
+            {/* Preview of billable ads */}
+            <div className="border rounded-lg p-4 bg-gray-50 max-h-64 overflow-y-auto">
+              <h4 className="font-semibold text-sm mb-3">Vista Previa de Anuncios a Facturar</h4>
+              {(() => {
                 let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
                 if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
                   billable = billable.filter(a => a.cliente === selectedInvoiceClient);
                 }
-                return billable.length;
-              })()}</p>
-              <p><strong>Total estimado:</strong> ${(() => {
-                let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
-                if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
-                  billable = billable.filter(a => a.cliente === selectedInvoiceClient);
+                
+                if (billable.length === 0) {
+                  return <p className="text-sm text-gray-500 italic">No hay anuncios facturables con los filtros actuales</p>;
                 }
-                const subtotal = billable.reduce((sum, a) => {
-                  const cost = parseFloat(a.costoPorUnidad || "0");
-                  return sum + cost;
-                }, 0);
-                const prodCost = parseFloat(productionCost || "0");
-                const otherCost = parseFloat(otherServicesCost || "0");
-                return (subtotal + prodCost + otherCost).toFixed(2);
-              })()}</p>
+                
+                return (
+                  <div className="space-y-2">
+                    {billable.map((a, idx) => (
+                      <div key={a.id} className="flex justify-between items-start text-xs bg-white p-2 rounded border">
+                        <div className="flex-1">
+                          <p className="font-medium">{idx + 1}. {a.producto}</p>
+                          <p className="text-gray-600">{a.cliente} - Parada #{a.paradaId}</p>
+                          <p className="text-gray-500">{formatDateDisplay(a.fechaInicio)} a {formatDateDisplay(a.fechaFin)}</p>
+                        </div>
+                        <div className="text-right font-semibold">
+                          ${parseFloat(a.costoPorUnidad || "0").toFixed(2)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            {/* Totals Summary */}
+            <div className="border-t pt-4 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal (Anuncios):</span>
+                <span className="font-semibold">${(() => {
+                  let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                  if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
+                    billable = billable.filter(a => a.cliente === selectedInvoiceClient);
+                  }
+                  const subtotal = billable.reduce((sum, a) => sum + parseFloat(a.costoPorUnidad || "0"), 0);
+                  return subtotal.toFixed(2);
+                })()}</span>
+              </div>
+              {productionCost && parseFloat(productionCost) > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Costo de Producción:</span>
+                  <span className="font-semibold">${parseFloat(productionCost).toFixed(2)}</span>
+                </div>
+              )}
+              {otherServicesCost && parseFloat(otherServicesCost) > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Otros Servicios:</span>
+                  <span className="font-semibold">${parseFloat(otherServicesCost).toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-base font-bold border-t pt-2">
+                <span>TOTAL:</span>
+                <span className="text-[#1a4d3c]">${(() => {
+                  let billable = filteredAnuncios?.filter(a => a.estado === "Activo" || a.estado === "Programado" || a.estado === "Finalizado") || [];
+                  if (selectedInvoiceClient && selectedInvoiceClient !== "__all__") {
+                    billable = billable.filter(a => a.cliente === selectedInvoiceClient);
+                  }
+                  const subtotal = billable.reduce((sum, a) => sum + parseFloat(a.costoPorUnidad || "0"), 0);
+                  const prodCost = parseFloat(productionCost || "0");
+                  const otherCost = parseFloat(otherServicesCost || "0");
+                  return (subtotal + prodCost + otherCost).toFixed(2);
+                })()}</span>
+              </div>
             </div>
           </div>
           <DialogFooter>

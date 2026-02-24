@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { formatDateDisplay } from "@/lib/dateUtils";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -20,7 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { FileText, Check, Calendar, Search, Download, Trash2 } from "lucide-react";
@@ -49,6 +49,10 @@ export default function Facturacion() {
   const [exportType, setExportType] = useState<"mes" | "cliente">("mes");
   const [exportMonth, setExportMonth] = useState("");
   const [exportCliente, setExportCliente] = useState("");
+  
+  // Date range filters
+  const [dateFilterStart, setDateFilterStart] = useState("");
+  const [dateFilterEnd, setDateFilterEnd] = useState("");
   
   const deleteFactura = trpc.facturas.delete.useMutation();
 
@@ -180,18 +184,36 @@ export default function Facturacion() {
     );
   };
 
-  // Filter facturas based on search term
+  // Filter facturas based on search term and date range
   const filteredFacturas = useMemo(() => {
     if (!facturas) return [];
-    if (!searchTerm) return facturas;
     
-    const term = searchTerm.toLowerCase();
-    return facturas.filter((f: any) =>
-      f.numeroFactura.toLowerCase().includes(term) ||
-      f.cliente.toLowerCase().includes(term) ||
-      (f.vendedor && f.vendedor.toLowerCase().includes(term))
-    );
-  }, [facturas, searchTerm]);
+    let filtered = facturas;
+    
+    // Apply search filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter((f: any) =>
+        f.numeroFactura.toLowerCase().includes(term) ||
+        f.cliente.toLowerCase().includes(term) ||
+        (f.vendedor && f.vendedor.toLowerCase().includes(term))
+      );
+    }
+    
+    // Apply date range filter
+    if (dateFilterStart) {
+      const startDate = new Date(dateFilterStart);
+      filtered = filtered.filter((f: any) => new Date(f.createdAt) >= startDate);
+    }
+    
+    if (dateFilterEnd) {
+      const endDate = new Date(dateFilterEnd);
+      endDate.setHours(23, 59, 59, 999); // Include entire end day
+      filtered = filtered.filter((f: any) => new Date(f.createdAt) <= endDate);
+    }
+    
+    return filtered;
+  }, [facturas, searchTerm, dateFilterStart, dateFilterEnd]);
   
   const getStatusBadge = (estado: string) => {
     switch (estado) {
@@ -240,16 +262,86 @@ export default function Facturacion() {
             </div>
           </div>
         
-          {/* Search Bar */}
+          {/* Search and Filters */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <Input
-                placeholder="Buscar por cliente, número de factura o vendedor..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Input
+                  placeholder="Buscar por cliente, número de factura o vendedor..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-gray-600 mb-1 block">Fecha Inicio</Label>
+                <Input
+                  type="date"
+                  value={dateFilterStart}
+                  onChange={(e) => setDateFilterStart(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label className="text-sm text-gray-600 mb-1 block">Fecha Fin</Label>
+                <Input
+                  type="date"
+                  value={dateFilterEnd}
+                  onChange={(e) => setDateFilterEnd(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            {/* Quick Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = new Date();
+                  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                  setDateFilterStart(firstDay.toISOString().split('T')[0]);
+                  setDateFilterEnd(today.toISOString().split('T')[0]);
+                }}
+              >
+                Este Mes
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = new Date();
+                  const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                  const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+                  setDateFilterStart(lastMonth.toISOString().split('T')[0]);
+                  setDateFilterEnd(lastDay.toISOString().split('T')[0]);
+                }}
+              >
+                Último Mes
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const today = new Date();
+                  const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+                  setDateFilterStart(threeMonthsAgo.toISOString().split('T')[0]);
+                  setDateFilterEnd(today.toISOString().split('T')[0]);
+                }}
+              >
+                Últimos 3 Meses
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setDateFilterStart("");
+                  setDateFilterEnd("");
+                  setSearchTerm("");
+                }}
+              >
+                Limpiar Filtros
+              </Button>
             </div>
           </div>
 
