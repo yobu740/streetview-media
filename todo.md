@@ -975,3 +975,9 @@
 ## Invoice Numbering Update
 
 - [x] Update invoice numbering to start from INV-1000 for consistent 4-digit format
+
+## Migrate Existing Invoices
+
+- [x] Create migration script to renumber all existing invoices to 4-digit format
+- [x] Execute migration on database
+- [x] Verify all invoices have new numbering format (10 invoices migrated: INV-1000 to INV-1009)
