@@ -971,3 +971,7 @@
 
 - [x] Add Streetview Media address below logo in PDF invoices (130 Ave. Winston Churchill, PMB 167, San Juan, PR 00926)
 - [x] Change invoice numbering to short sequential format (INV-190, INV-191, etc.)
+
+## Invoice Numbering Update
+
+- [x] Update invoice numbering to start from INV-1000 for consistent 4-digit format

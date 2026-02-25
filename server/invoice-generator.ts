@@ -86,7 +86,7 @@ export async function generateInvoiceFromAnuncios(
     .orderBy(sql`${facturas.id} DESC`)
     .limit(1);
   
-  let nextNumber = 1;
+  let nextNumber = 1000; // Start from 1000 for 4-digit format
   if (lastInvoice.length > 0) {
     const lastNumber = lastInvoice[0].numeroFactura;
     const match = lastNumber.match(/INV-(\d+)/);
