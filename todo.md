@@ -981,3 +981,8 @@
 - [x] Create migration script to renumber all existing invoices to 4-digit format
 - [x] Execute migration on database
 - [x] Verify all invoices have new numbering format (10 invoices migrated: INV-1000 to INV-1009)
+
+## Invoice PDF Footer Fix
+
+- [x] Move thank you message from separate page to footer of last page
+- [x] Ensure message appears at bottom of final page regardless of invoice length
