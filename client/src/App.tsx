@@ -14,6 +14,7 @@ import Anuncios from "./pages/Anuncios";
 import Mantenimiento from "./pages/Mantenimiento";
 import Facturas from "./pages/Facturas";
 import Facturacion from "./pages/Facturacion";
+import Seguimientos from "./pages/Seguimientos";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -28,6 +29,7 @@ function Router() {
       <Route path={"/mantenimiento"} component={Mantenimiento} />
       <Route path={"/facturas"} component={Facturas} />
       <Route path={"/facturacion"} component={Facturacion} />
+      <Route path={"/seguimientos"} component={Seguimientos} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

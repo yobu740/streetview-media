@@ -175,3 +175,40 @@ export const anuncioHistorial = mysqlTable("anuncio_historial", {
 
 export type AnuncioHistorial = typeof anuncioHistorial.$inferSelect;
 export type InsertAnuncioHistorial = typeof anuncioHistorial.$inferInsert;
+
+/**
+ * Client follow-ups table for CRM system
+ */
+export const seguimientos = mysqlTable("seguimientos", {
+  id: int("id").autoincrement().primaryKey(),
+  anuncioId: int("anuncio_id").notNull(), // FK to anuncios - campaign being followed up
+  vendedorId: int("vendedor_id").notNull(), // FK to users - assigned salesperson
+  cliente: varchar("cliente", { length: 255 }).notNull(), // Client name
+  producto: varchar("producto", { length: 255 }), // Product/campaign name
+  fechaVencimiento: timestamp("fecha_vencimiento").notNull(), // Campaign end date
+  estado: mysqlEnum("estado", ["Pendiente", "Contactado", "Interesado", "Renovado", "No Renovará"]).default("Pendiente").notNull(),
+  fechaContacto: timestamp("fecha_contacto"), // When client was contacted
+  proximoSeguimiento: timestamp("proximo_seguimiento"), // Next scheduled follow-up
+  resultado: text("resultado"), // Result of last contact
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Seguimiento = typeof seguimientos.$inferSelect;
+export type InsertSeguimiento = typeof seguimientos.$inferInsert;
+
+/**
+ * Client conversation notes table
+ */
+export const notasCliente = mysqlTable("notas_cliente", {
+  id: int("id").autoincrement().primaryKey(),
+  seguimientoId: int("seguimiento_id").notNull(), // FK to seguimientos
+  vendedorId: int("vendedor_id").notNull(), // FK to users - who wrote the note
+  vendedorNombre: varchar("vendedor_nombre", { length: 255 }), // Salesperson name for display
+  nota: text("nota").notNull(), // Conversation notes
+  tipoContacto: mysqlEnum("tipo_contacto", ["Llamada", "Email", "Reunión", "WhatsApp", "Otro"]).default("Llamada").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type NotaCliente = typeof notasCliente.$inferSelect;
+export type InsertNotaCliente = typeof notasCliente.$inferInsert;

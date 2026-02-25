@@ -1029,6 +1029,135 @@ export const appRouter = router({
       };
     }),
   }),
+  
+  // CRM System for Vendedores
+  seguimientos: router({
+    // Get all follow-ups for current user (vendedor)
+    myFollowUps: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { seguimientos } = await import("../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+      
+      return await db.select().from(seguimientos)
+        .where(eq(seguimientos.vendedorId, ctx.user!.id))
+        .orderBy(desc(seguimientos.fechaVencimiento));
+    }),
+    
+    // Get pending follow-ups (campaigns ending soon without contact)
+    pending: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { seguimientos } = await import("../drizzle/schema");
+      const { and, eq, or } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+      
+      return await db.select().from(seguimientos)
+        .where(
+          and(
+            eq(seguimientos.vendedorId, ctx.user!.id),
+            or(
+              eq(seguimientos.estado, "Pendiente"),
+              eq(seguimientos.estado, "Contactado")
+            )
+          )
+        );
+    }),
+    
+    // Create new follow-up
+    create: protectedProcedure
+      .input(z.object({
+        anuncioId: z.number(),
+        cliente: z.string(),
+        producto: z.string().optional(),
+        fechaVencimiento: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [result] = await db.insert(seguimientos).values({
+          anuncioId: input.anuncioId,
+          vendedorId: ctx.user!.id,
+          cliente: input.cliente,
+          producto: input.producto || null,
+          fechaVencimiento: new Date(input.fechaVencimiento),
+          estado: "Pendiente",
+        });
+        
+        return { success: true, id: result.insertId };
+      }),
+    
+    // Update follow-up status
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        estado: z.enum(["Pendiente", "Contactado", "Interesado", "Renovado", "No Renovará"]),
+        fechaContacto: z.string().optional(),
+        resultado: z.string().optional(),
+        proximoSeguimiento: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(seguimientos)
+          .set({
+            estado: input.estado,
+            fechaContacto: input.fechaContacto ? new Date(input.fechaContacto) : undefined,
+            resultado: input.resultado || undefined,
+            proximoSeguimiento: input.proximoSeguimiento ? new Date(input.proximoSeguimiento) : undefined,
+          })
+          .where(eq(seguimientos.id, input.id));
+        
+        return { success: true };
+      }),
+    
+    // Get notes for a follow-up
+    getNotes: protectedProcedure
+      .input(z.object({ seguimientoId: z.number() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { notasCliente } = await import("../drizzle/schema");
+        const { eq, desc } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+        
+        return await db.select().from(notasCliente)
+          .where(eq(notasCliente.seguimientoId, input.seguimientoId))
+          .orderBy(desc(notasCliente.createdAt));
+      }),
+    
+    // Add note to follow-up
+    addNote: protectedProcedure
+      .input(z.object({
+        seguimientoId: z.number(),
+        nota: z.string(),
+        tipoContacto: z.enum(["Llamada", "Email", "Reunión", "WhatsApp", "Otro"]),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import("./db");
+        const { notasCliente } = await import("../drizzle/schema");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        const [result] = await db.insert(notasCliente).values({
+          seguimientoId: input.seguimientoId,
+          vendedorId: ctx.user!.id,
+          vendedorNombre: ctx.user!.name || "Usuario",
+          nota: input.nota,
+          tipoContacto: input.tipoContacto,
+        });
+        
+        return { success: true, id: result.insertId };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

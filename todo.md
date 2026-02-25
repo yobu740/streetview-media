@@ -944,3 +944,25 @@
 - [x] Create procedure to check campaigns ending soon
 - [x] Integrate with existing notification system
 - [x] Send notifications to sales team/admins
+
+## CRM System for Vendedores
+
+### Database Schema
+- [x] Create seguimientos table (client follow-ups tracking)
+- [x] Create notas_cliente table (conversation notes)
+- [x] Add follow-up status enum (Pendiente, Contactado, Interesado, Renovado, No Renovará)
+
+### Backend (tRPC)
+- [x] Create seguimientos router with CRUD procedures
+- [x] Add procedure to get pending follow-ups for vendedor
+- [x] Add procedure to mark client as contacted
+- [x] Add procedure to schedule future calls
+- [x] Add procedure to save conversation notes
+
+### Frontend
+- [x] Create Vendedor dashboard page with sidebar access
+- [x] Build task list showing clients with campaigns ending soon
+- [x] Add contact registration form with date and result
+- [x] Create follow-up scheduling interface with calendar
+- [x] Build notes editor for conversation details
+- [x] Add status badges and filters

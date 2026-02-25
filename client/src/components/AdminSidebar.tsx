@@ -17,6 +17,7 @@ import {
   X,
   Menu,
   Wrench,
+  UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -80,6 +81,11 @@ export default function AdminSidebar({
       icon: Receipt,
       href: "/facturacion",
       adminOnly: true,
+    },
+    {
+      label: "Seguimientos",
+      icon: UserCheck,
+      href: "/seguimientos",
     },
     {
       label: "Mis Reservas",
