@@ -932,3 +932,8 @@
 - [x] Add mini dashboard with invoice statistics (Total, Pagadas, No Pagadas) to Facturacion page
 - [x] Create UI component to display ad history audit logs
 - [x] Add button/link to view history for each ad in Anuncios page
+
+## Notification System Test
+
+- [x] Add manual test button in Admin panel to trigger notification check
+- [x] Display toast with results showing how many notifications were created

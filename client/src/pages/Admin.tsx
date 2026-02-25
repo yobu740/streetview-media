@@ -32,6 +32,7 @@ export default function Admin() {
   const bulkApprove = trpc.approvals.bulkApprove.useMutation();
   const bulkReject = trpc.approvals.bulkReject.useMutation();
   const logActivity = trpc.activity.log.useMutation();
+  const checkNotifications = trpc.invoices.checkAndNotify.useMutation();
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState("");
   const [productoSearch, setProductoSearch] = useState("");
@@ -703,10 +704,32 @@ export default function Admin() {
       {/* Notification Panel */}
       {isNotificationPanelOpen && user?.role === 'admin' && (
         <div className="fixed top-20 right-4 w-96 bg-white border-2 border-[#1a4d3c] shadow-2xl z-50 max-h-[600px] overflow-y-auto">
-          <div className="p-4 border-b-2 border-[#1a4d3c] flex justify-between items-center">
-            <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
-            <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
-              <X className="h-4 w-4" />
+          <div className="p-4 border-b-2 border-[#1a4d3c]">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
+              <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="w-full text-xs"
+              onClick={async () => {
+                try {
+                  const result = await checkNotifications.mutateAsync();
+                  utils.notifications.list.invalidate();
+                  utils.notifications.unreadCount.invalidate();
+                  toast.success(
+                    `Verificación completada: ${result.overdueCount} facturas vencidas, ${result.clientsWithoutInvoiceCount} clientes sin factura. ${result.totalNotifications} notificaciones creadas.`
+                  );
+                } catch (error) {
+                  toast.error("Error al verificar notificaciones");
+                }
+              }}
+              disabled={checkNotifications.isPending}
+            >
+              {checkNotifications.isPending ? "Verificando..." : "🔍 Verificar Facturas Ahora"}
             </Button>
           </div>
           <div className="divide-y">

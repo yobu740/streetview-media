@@ -832,6 +832,94 @@ export const appRouter = router({
       
       return { success: true, clientCount: clientsWithoutInvoice.length, notificationCount };
     }),
+    
+    // Combined check for both overdue invoices and clients without invoices
+    checkAndNotify: adminProcedure.mutation(async () => {
+      const { getDb, createNotification } = await import("./db");
+      const { facturas, anuncios, users } = await import("../drizzle/schema");
+      const { and, eq, lt, gte } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      const today = new Date();
+      let totalNotifications = 0;
+      
+      // Check overdue invoices
+      const overdueInvoices = await db.select().from(facturas)
+        .where(
+          and(
+            eq(facturas.estadoPago, "Pendiente"),
+            lt(facturas.createdAt, new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000))
+          )
+        );
+      
+      // Check clients without invoices
+      const activeAnuncios = await db.select().from(anuncios)
+        .where(
+          and(
+            eq(anuncios.approvalStatus, "approved"),
+            eq(anuncios.estado, "Activo")
+          )
+        );
+      
+      const activeClients = Array.from(new Set(activeAnuncios.map(a => a.cliente)));
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const clientsWithoutInvoice: string[] = [];
+      
+      for (const cliente of activeClients) {
+        const recentInvoices = await db.select().from(facturas)
+          .where(
+            and(
+              eq(facturas.cliente, cliente),
+              gte(facturas.createdAt, thirtyDaysAgo)
+            )
+          );
+        
+        if (recentInvoices.length === 0) {
+          clientsWithoutInvoice.push(cliente);
+        }
+      }
+      
+      // Get all admin users
+      const admins = await db.select().from(users).where(eq(users.role, "admin"));
+      
+      // Create notifications for overdue invoices
+      for (const invoice of overdueInvoices) {
+        for (const admin of admins) {
+          await createNotification({
+            userId: admin.id,
+            type: "invoice_overdue",
+            title: "Factura Vencida",
+            message: `La factura ${invoice.numeroFactura} para ${invoice.cliente} está vencida (${Math.floor((today.getTime() - new Date(invoice.createdAt).getTime()) / (24 * 60 * 60 * 1000))} días sin pago).`,
+            relatedId: invoice.id,
+            read: 0,
+          });
+          totalNotifications++;
+        }
+      }
+      
+      // Create notifications for clients without invoices
+      for (const cliente of clientsWithoutInvoice) {
+        for (const admin of admins) {
+          await createNotification({
+            userId: admin.id,
+            type: "client_no_invoice",
+            title: "Cliente Sin Factura",
+            message: `El cliente ${cliente} tiene anuncios activos pero no se ha generado factura en los últimos 30 días.`,
+            relatedId: null,
+            read: 0,
+          });
+          totalNotifications++;
+        }
+      }
+      
+      return { 
+        success: true, 
+        overdueCount: overdueInvoices.length, 
+        clientsWithoutInvoiceCount: clientsWithoutInvoice.length,
+        totalNotifications 
+      };
+    }),
   }),
 });
 
