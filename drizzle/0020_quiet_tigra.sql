@@ -1,0 +1,1 @@
+ALTER TABLE `notifications` MODIFY COLUMN `type` enum('reservation_pending','reservation_approved','reservation_rejected','invoice_overdue','client_no_invoice','campaign_ending_21d','campaign_ending_14d','campaign_ending_7d') NOT NULL;

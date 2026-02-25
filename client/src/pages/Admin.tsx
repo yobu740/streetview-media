@@ -721,7 +721,7 @@ export default function Admin() {
                   utils.notifications.list.invalidate();
                   utils.notifications.unreadCount.invalidate();
                   toast.success(
-                    `Verificación completada: ${result.overdueCount} facturas vencidas, ${result.clientsWithoutInvoiceCount} clientes sin factura. ${result.totalNotifications} notificaciones creadas.`
+                    `Verificación completada: ${result.overdueCount} facturas vencidas, ${result.clientsWithoutInvoiceCount} clientes sin factura, ${result.campaignsEndingSoonCount || 0} campañas por vencer. ${result.totalNotifications} notificaciones creadas.`
                   );
                 } catch (error) {
                   toast.error("Error al verificar notificaciones");
@@ -729,7 +729,7 @@ export default function Admin() {
               }}
               disabled={checkNotifications.isPending}
             >
-              {checkNotifications.isPending ? "Verificando..." : "🔍 Verificar Facturas Ahora"}
+              {checkNotifications.isPending ? "Verificando..." : "🔍 Verificar Notificaciones"}
             </Button>
           </div>
           <div className="divide-y">

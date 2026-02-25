@@ -86,7 +86,7 @@ export type InsertAnuncio = typeof anuncios.$inferInsert;
 export const notifications = mysqlTable("notifications", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("user_id").notNull(), // FK to users - recipient
-  type: mysqlEnum("type", ["reservation_pending", "reservation_approved", "reservation_rejected", "invoice_overdue", "client_no_invoice"]).notNull(),
+  type: mysqlEnum("type", ["reservation_pending", "reservation_approved", "reservation_rejected", "invoice_overdue", "client_no_invoice", "campaign_ending_21d", "campaign_ending_14d", "campaign_ending_7d"]).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   message: text("message").notNull(),
   relatedId: int("related_id"), // FK to anuncios or other entities

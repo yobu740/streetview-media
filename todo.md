@@ -937,3 +937,10 @@
 
 - [x] Add manual test button in Admin panel to trigger notification check
 - [x] Display toast with results showing how many notifications were created
+
+## Campaign Expiration Alerts
+
+- [x] Add notification types for campaign expiration (21, 14, 7 days before end)
+- [x] Create procedure to check campaigns ending soon
+- [x] Integrate with existing notification system
+- [x] Send notifications to sales team/admins

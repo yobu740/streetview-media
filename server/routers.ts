@@ -837,7 +837,7 @@ export const appRouter = router({
     checkAndNotify: adminProcedure.mutation(async () => {
       const { getDb, createNotification } = await import("./db");
       const { facturas, anuncios, users } = await import("../drizzle/schema");
-      const { and, eq, lt, gte } = await import("drizzle-orm");
+      const { and, eq, lt, gte, lte } = await import("drizzle-orm");
       const db = await getDb();
       if (!db) throw new Error("Database not available");
       
@@ -913,11 +913,119 @@ export const appRouter = router({
         }
       }
       
+      // Check for campaigns ending soon (21, 14, 7 days)
+      const intervals = [
+        { days: 21, type: "campaign_ending_21d" as const, label: "21 días" },
+        { days: 14, type: "campaign_ending_14d" as const, label: "14 días" },
+        { days: 7, type: "campaign_ending_7d" as const, label: "7 días" },
+      ];
+      
+      let campaignsEndingSoonCount = 0;
+      
+      for (const interval of intervals) {
+        const targetDate = new Date(today.getTime() + interval.days * 24 * 60 * 60 * 1000);
+        const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+        const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+        
+        const endingCampaigns = await db.select().from(anuncios)
+          .where(
+            and(
+              eq(anuncios.approvalStatus, "approved"),
+              eq(anuncios.estado, "Activo"),
+              gte(anuncios.fechaFin, startOfDay),
+              lte(anuncios.fechaFin, endOfDay)
+            )
+          );
+        
+        for (const campaign of endingCampaigns) {
+          campaignsEndingSoonCount++;
+          
+          for (const admin of admins) {
+            await createNotification({
+              userId: admin.id,
+              type: interval.type,
+              title: "Campaña por Vencer",
+              message: `La campaña de ${campaign.cliente} (${campaign.producto}) termina en ${interval.label}. Contactar para renovación.`,
+              relatedId: campaign.id,
+              read: 0,
+            });
+            totalNotifications++;
+          }
+        }
+      }
+      
       return { 
         success: true, 
         overdueCount: overdueInvoices.length, 
         clientsWithoutInvoiceCount: clientsWithoutInvoice.length,
+        campaignsEndingSoonCount,
         totalNotifications 
+      };
+    }),
+    
+    // Check for campaigns ending soon (21, 14, 7 days before)
+    checkCampaignsEndingSoon: adminProcedure.mutation(async () => {
+      const { getDb, createNotification } = await import("./db");
+      const { anuncios, users } = await import("../drizzle/schema");
+      const { and, eq, gte, lte } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      
+      const today = new Date();
+      const intervals = [
+        { days: 21, type: "campaign_ending_21d" as const, label: "21 días" },
+        { days: 14, type: "campaign_ending_14d" as const, label: "14 días" },
+        { days: 7, type: "campaign_ending_7d" as const, label: "7 días" },
+      ];
+      
+      let totalNotifications = 0;
+      const campaignsEndingSoon: any[] = [];
+      
+      // Get all admin and vendedor users
+      const recipients = await db.select().from(users).where(
+        eq(users.role, "admin")
+      );
+      
+      // Check for each interval
+      for (const interval of intervals) {
+        const targetDate = new Date(today.getTime() + interval.days * 24 * 60 * 60 * 1000);
+        const startOfDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+        const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+        
+        // Find active campaigns ending on this date
+        const endingCampaigns = await db.select().from(anuncios)
+          .where(
+            and(
+              eq(anuncios.approvalStatus, "approved"),
+              eq(anuncios.estado, "Activo"),
+              gte(anuncios.fechaFin, startOfDay),
+              lte(anuncios.fechaFin, endOfDay)
+            )
+          );
+        
+        // Create notifications for each campaign
+        for (const campaign of endingCampaigns) {
+          campaignsEndingSoon.push({ ...campaign, daysRemaining: interval.days });
+          
+          for (const recipient of recipients) {
+            await createNotification({
+              userId: recipient.id,
+              type: interval.type,
+              title: "Campaña por Vencer",
+              message: `La campaña de ${campaign.cliente} (${campaign.producto}) termina en ${interval.label}. Contactar para renovación.`,
+              relatedId: campaign.id,
+              read: 0,
+            });
+            totalNotifications++;
+          }
+        }
+      }
+      
+      return { 
+        success: true, 
+        campaignsCount: campaignsEndingSoon.length,
+        totalNotifications,
+        campaigns: campaignsEndingSoon
       };
     }),
   }),
