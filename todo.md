@@ -986,3 +986,12 @@
 
 - [x] Move thank you message from separate page to footer of last page
 - [x] Ensure message appears at bottom of final page regardless of invoice length
+- [x] Fix: Footer still appearing on second page - need to place dynamically after content
+
+## Invoice Archiving System
+
+- [ ] Add 'archivada' boolean field to facturas table schema
+- [ ] Create tRPC procedures for archiving/unarchiving invoices
+- [ ] Add archive button to Facturacion table for paid invoices
+- [ ] Add filter toggle to show/hide archived invoices
+- [ ] Create archived invoices view section

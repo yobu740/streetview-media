@@ -320,16 +320,17 @@ async function createPDFBuffer(
       .fontSize(15)
       .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
     
-    // Footer - place at bottom of current page
-    // Letter size page height is 792 points, with 50 margin = 742 usable
-    const footerY = 740;
+    // Move y position down after total
+    y += 40;
+    
+    // Footer - place dynamically after content
     doc
       .fontSize(8)
       .fillColor("#999999")
       .text(
         "Gracias por su preferencia. Para consultas, contáctenos.",
         50,
-        footerY,
+        y,
         { align: "center", width: 512 }
       );
 
