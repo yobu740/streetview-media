@@ -345,6 +345,57 @@ export default function Facturacion() {
             </div>
           </div>
 
+          {/* Statistics Dashboard */}
+          {!isLoading && facturas && facturas.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* Total Facturas */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium uppercase tracking-wide">Total Facturas</p>
+                    <p className="text-3xl font-bold text-blue-900 mt-2">{filteredFacturas?.length || 0}</p>
+                    <p className="text-sm text-blue-700 mt-1">
+                      ${filteredFacturas?.reduce((sum, f) => sum + (parseFloat(f.total || "0")), 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <FileText size={40} className="text-blue-500 opacity-50" />
+                </div>
+              </div>
+
+              {/* Total Pagadas */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-green-600 font-medium uppercase tracking-wide">Pagadas</p>
+                    <p className="text-3xl font-bold text-green-900 mt-2">
+                      {filteredFacturas?.filter(f => f.estadoPago === "Pagada").length || 0}
+                    </p>
+                    <p className="text-sm text-green-700 mt-1">
+                      ${filteredFacturas?.filter(f => f.estadoPago === "Pagada").reduce((sum, f) => sum + parseFloat(f.total || "0"), 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <Check size={40} className="text-green-500 opacity-50" />
+                </div>
+              </div>
+
+              {/* Total No Pagadas */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg shadow-md p-6 border-l-4 border-orange-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-orange-600 font-medium uppercase tracking-wide">No Pagadas</p>
+                    <p className="text-3xl font-bold text-orange-900 mt-2">
+                      {filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").length || 0}
+                    </p>
+                    <p className="text-sm text-orange-700 mt-1">
+                      ${filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").reduce((sum, f) => sum + parseFloat(f.total || "0"), 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <Calendar size={40} className="text-orange-500 opacity-50" />
+                </div>
+              </div>
+            </div>
+          )}
+
         {isLoading ? (
           <div className="text-center py-12">
             <p className="text-gray-600">Cargando facturas...</p>

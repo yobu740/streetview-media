@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 
@@ -71,6 +71,14 @@ export default function Anuncios() {
   const [otherServicesCost, setOtherServicesCost] = useState("");
   const [salespersonName, setSalespersonName] = useState("");
   const [selectedInvoiceClient, setSelectedInvoiceClient] = useState("");
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [selectedAnuncioForHistory, setSelectedAnuncioForHistory] = useState<number | null>(null);
+  
+  // Query history for selected anuncio
+  const { data: historyData } = trpc.anuncios.getHistory.useQuery(
+    { anuncioId: selectedAnuncioForHistory! },
+    { enabled: !!selectedAnuncioForHistory }
+  );
 
   const filteredAnuncios = anuncios?.filter((a) => {
     const matchesSearch =
@@ -655,6 +663,17 @@ export default function Anuncios() {
                             <Button
                               variant="ghost"
                               size="sm"
+                              onClick={() => {
+                                setSelectedAnuncioForHistory(anuncio.id);
+                                setIsHistoryDialogOpen(true);
+                              }}
+                              title="Ver Historial"
+                            >
+                              <History size={16} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleEdit(anuncio)}
                             >
                               <Edit size={16} />
@@ -1062,6 +1081,84 @@ export default function Anuncios() {
               setSelectedAnuncios([]);
             }}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* History Dialog */}
+      <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Historial de Cambios del Anuncio</DialogTitle>
+            <DialogDescription>
+              Registro completo de todos los cambios realizados a este anuncio
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {!historyData || historyData.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <History size={48} className="mx-auto mb-4 opacity-50" />
+                <p>No hay historial registrado para este anuncio</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {historyData.map((entry: any, idx: number) => (
+                  <div key={entry.id} className="border rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="outline" className="text-xs">
+                            {entry.accion}
+                          </Badge>
+                          <span className="text-xs text-gray-500">
+                            {new Date(entry.fecha).toLocaleString('es-PR', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium text-gray-700">
+                          {entry.usuarioNombre || 'Usuario desconocido'}
+                        </p>
+                      </div>
+                    </div>
+                    {entry.detalles && (
+                      <div className="mt-2 text-sm text-gray-600 bg-white p-2 rounded border">
+                        <pre className="whitespace-pre-wrap font-sans">{entry.detalles}</pre>
+                      </div>
+                    )}
+                    {entry.campoModificado && (
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-500">Campo:</span>
+                          <span className="ml-1 font-medium">{entry.campoModificado}</span>
+                        </div>
+                        {entry.valorAnterior && (
+                          <div>
+                            <span className="text-gray-500">Anterior:</span>
+                            <span className="ml-1 line-through text-red-600">{entry.valorAnterior}</span>
+                          </div>
+                        )}
+                        {entry.valorNuevo && (
+                          <div className="col-span-2">
+                            <span className="text-gray-500">Nuevo:</span>
+                            <span className="ml-1 text-green-600 font-medium">{entry.valorNuevo}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsHistoryDialogOpen(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       </div>

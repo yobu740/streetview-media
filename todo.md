@@ -926,3 +926,9 @@
 - [x] Send notifications for invoices past due date without payment
 - [x] Check clients without invoices in last 30 days
 - [x] Create notification entries in database for admin review
+
+## Statistics Dashboard and History UI
+
+- [x] Add mini dashboard with invoice statistics (Total, Pagadas, No Pagadas) to Facturacion page
+- [x] Create UI component to display ad history audit logs
+- [x] Add button/link to view history for each ad in Anuncios page
