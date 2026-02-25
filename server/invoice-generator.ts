@@ -78,7 +78,26 @@ export async function generateInvoiceFromAnuncios(
   if (productionCost) finalTotal += productionCost;
   if (otherServicesCost) finalTotal += otherServicesCost;
 
-  // Generate PDF
+  // Generate sequential invoice number
+  const { facturas } = await import("../drizzle/schema");
+  const lastInvoice = await db
+    .select({ numeroFactura: facturas.numeroFactura })
+    .from(facturas)
+    .orderBy(sql`${facturas.id} DESC`)
+    .limit(1);
+  
+  let nextNumber = 1;
+  if (lastInvoice.length > 0) {
+    const lastNumber = lastInvoice[0].numeroFactura;
+    const match = lastNumber.match(/INV-(\d+)/);
+    if (match) {
+      nextNumber = parseInt(match[1]) + 1;
+    }
+  }
+  
+  const invoiceNumber = `INV-${nextNumber}`;
+  
+  // Generate PDF with invoice number
   const pdfBuffer = await createPDFBuffer(
     clientName, 
     invoiceTitle, 
@@ -89,16 +108,14 @@ export async function generateInvoiceFromAnuncios(
     otherServicesDescription,
     otherServicesCost,
     salespersonName,
-    finalTotal
+    finalTotal,
+    invoiceNumber
   );
-
-  // Upload to S3
-  const invoiceNumber = `INV-${Date.now()}`;
+  
   const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}.pdf`;
   const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
 
   // Save invoice record to database
-  const { facturas } = await import("../drizzle/schema");
   await db.insert(facturas).values({
     numeroFactura: invoiceNumber,
     cliente: clientName,
@@ -128,7 +145,8 @@ async function createPDFBuffer(
   otherServicesDescription?: string,
   otherServicesCost?: number,
   salespersonName?: string,
-  total?: number
+  total?: number,
+  invoiceNumber?: string
 ): Promise<Buffer> {
   return new Promise(async (resolve, reject) => {
     const doc = new PDFDocument({ size: "LETTER", margin: 50 });
@@ -159,11 +177,12 @@ async function createPDFBuffer(
     doc
       .fontSize(10)
       .fillColor("#666666")
-      .text("Red de Publicidad Exterior", 50, 95)
-      .text("Puerto Rico", 50, 110);
+      .text("130 Ave. Winston Churchill", 50, 95)
+      .text("PMB 167", 50, 108)
+      .text("San Juan, PR 00926", 50, 121);
 
     // Invoice info
-    const invoiceNumber = `INV-${Date.now()}`;
+    const displayInvoiceNumber = invoiceNumber || `INV-${Date.now()}`;
 
     doc
       .fontSize(12)
@@ -174,7 +193,7 @@ async function createPDFBuffer(
     doc
       .fontSize(10)
       .fillColor("#666666")
-      .text(`No. ${invoiceNumber}`, 400, headerY, { align: "right" });
+      .text(`No. ${displayInvoiceNumber}`, 400, headerY, { align: "right" });
     headerY += 15;
     doc.text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, headerY, { align: "right" });
     headerY += 15;

@@ -966,3 +966,8 @@
 - [x] Create follow-up scheduling interface with calendar
 - [x] Build notes editor for conversation details
 - [x] Add status badges and filters
+
+## Invoice Improvements
+
+- [x] Add Streetview Media address below logo in PDF invoices (130 Ave. Winston Churchill, PMB 167, San Juan, PR 00926)
+- [x] Change invoice numbering to short sequential format (INV-190, INV-191, etc.)
