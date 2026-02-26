@@ -1028,6 +1028,40 @@ export const appRouter = router({
         campaigns: campaignsEndingSoon
       };
     }),
+    
+    // Archive invoice
+    archive: adminProcedure
+      .input(z.object({ facturaId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(facturas)
+          .set({ archivada: 1 })
+          .where(eq(facturas.id, input.facturaId));
+        
+        return { success: true };
+      }),
+    
+    // Unarchive invoice
+    unarchive: adminProcedure
+      .input(z.object({ facturaId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        await db.update(facturas)
+          .set({ archivada: 0 })
+          .where(eq(facturas.id, input.facturaId));
+        
+        return { success: true };
+      }),
   }),
   
   // CRM System for Vendedores

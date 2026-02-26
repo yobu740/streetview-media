@@ -54,7 +54,12 @@ export default function Facturacion() {
   const [dateFilterStart, setDateFilterStart] = useState("");
   const [dateFilterEnd, setDateFilterEnd] = useState("");
   
+  // Archive toggle
+  const [showArchived, setShowArchived] = useState(false);
+  
   const deleteFactura = trpc.facturas.delete.useMutation();
+  const archiveFactura = trpc.invoices.archive.useMutation();
+  const unarchiveFactura = trpc.invoices.unarchive.useMutation();
 
   const handleMarkAsPaid = (factura: any) => {
     setSelectedFactura(factura);
@@ -76,6 +81,40 @@ export default function Facturacion() {
         },
         onError: (error: any) => {
           toast.error(error.message || "Error al eliminar factura");
+        },
+      }
+    );
+  };
+  
+  const handleArchiveFactura = (facturaId: number, numeroFactura: string) => {
+    if (!confirm(`¿Archivar la factura ${numeroFactura}?`)) {
+      return;
+    }
+    
+    archiveFactura.mutate(
+      { facturaId },
+      {
+        onSuccess: () => {
+          toast.success("Factura archivada correctamente");
+          utils.invoices.list.invalidate();
+        },
+        onError: (error: any) => {
+          toast.error(error.message || "Error al archivar factura");
+        },
+      }
+    );
+  };
+  
+  const handleUnarchiveFactura = (facturaId: number, numeroFactura: string) => {
+    unarchiveFactura.mutate(
+      { facturaId },
+      {
+        onSuccess: () => {
+          toast.success("Factura restaurada correctamente");
+          utils.invoices.list.invalidate();
+        },
+        onError: (error: any) => {
+          toast.error(error.message || "Error al restaurar factura");
         },
       }
     );
@@ -212,8 +251,11 @@ export default function Facturacion() {
       filtered = filtered.filter((f: any) => new Date(f.createdAt) <= endDate);
     }
     
+    // Apply archive filter
+    filtered = filtered.filter((f: any) => showArchived ? f.archivada === 1 : f.archivada === 0);
+    
     return filtered;
-  }, [facturas, searchTerm, dateFilterStart, dateFilterEnd]);
+  }, [facturas, searchTerm, dateFilterStart, dateFilterEnd, showArchived]);
   
   const getStatusBadge = (estado: string) => {
     switch (estado) {
@@ -342,6 +384,14 @@ export default function Facturacion() {
               >
                 Limpiar Filtros
               </Button>
+              <Button
+                variant={showArchived ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowArchived(!showArchived)}
+                className={showArchived ? "bg-[#1a4d3c] hover:bg-[#0f3a2a]" : ""}
+              >
+                {showArchived ? "Ver Activas" : "Ver Archivadas"}
+              </Button>
             </div>
           </div>
 
@@ -466,14 +516,37 @@ export default function Facturacion() {
                             Marcar Pagada
                           </Button>
                         )}
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDeleteFactura(factura.id, factura.numeroFactura)}
-                        >
-                          <Trash2 size={16} className="mr-1" />
-                          Eliminar
-                        </Button>
+                        {showArchived ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-blue-50 hover:bg-blue-100 border-blue-300"
+                            onClick={() => handleUnarchiveFactura(factura.id, factura.numeroFactura)}
+                          >
+                            Restaurar
+                          </Button>
+                        ) : (
+                          <>
+                            {factura.estadoPago === "Pagada" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="bg-amber-50 hover:bg-amber-100 border-amber-300"
+                                onClick={() => handleArchiveFactura(factura.id, factura.numeroFactura)}
+                              >
+                                Archivar
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDeleteFactura(factura.id, factura.numeroFactura)}
+                            >
+                              <Trash2 size={16} className="mr-1" />
+                              Eliminar
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

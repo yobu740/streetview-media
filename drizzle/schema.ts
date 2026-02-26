@@ -150,6 +150,7 @@ export const facturas = mysqlTable("facturas", {
   cantidadAnuncios: int("cantidad_anuncios").notNull(), // Number of anuncios in invoice
   estadoPago: mysqlEnum("estado_pago", ["Pendiente", "Pagada", "Vencida"]).default("Pendiente").notNull(), // Payment status
   fechaPago: timestamp("fecha_pago"), // Payment date (null if not paid)
+  archivada: int("archivada").default(0).notNull(), // 1 = archived, 0 = active
   createdBy: int("created_by").notNull(), // FK to users - who created the invoice
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

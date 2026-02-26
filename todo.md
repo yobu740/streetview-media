@@ -990,8 +990,17 @@
 
 ## Invoice Archiving System
 
-- [ ] Add 'archivada' boolean field to facturas table schema
-- [ ] Create tRPC procedures for archiving/unarchiving invoices
-- [ ] Add archive button to Facturacion table for paid invoices
-- [ ] Add filter toggle to show/hide archived invoices
-- [ ] Create archived invoices view section
+- [x] Add 'archivada' boolean field to facturas table schema
+- [x] Create tRPC procedures for archiving/unarchiving invoices
+- [x] Add archive button to Facturacion table for paid invoices
+- [x] Add filter toggle to show/hide archived invoices
+- [x] Create archived invoices view section
+
+## Ad Relocation Tracking Enhancement
+
+- [x] Implement automatic detection of parada_id changes in update logic
+- [x] Update history logging to capture old and new parada names (not just IDs)
+- [x] Add "Relocalizado" action type to history with from/to parada details
+- [x] Enhance edit modal to show warning when parada is being changed
+- [x] Add optional "Motivo de relocalización" field in edit modal
+- [x] Update history display UI to clearly show relocation events with parada names (already shows in history dialog)

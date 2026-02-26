@@ -1,0 +1,1 @@
+ALTER TABLE `facturas` ADD `archivada` int DEFAULT 0 NOT NULL;

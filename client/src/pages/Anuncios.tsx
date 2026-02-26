@@ -62,7 +62,9 @@ export default function Anuncios() {
     tipo: "Fijo" as "Fijo" | "Bonificación",
     costoPorUnidad: "",
     notas: "",
+    motivoRelocalizacion: "",
   });
+  const [originalParadaId, setOriginalParadaId] = useState<number | null>(null);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [invoiceDescription, setInvoiceDescription] = useState("");
@@ -108,6 +110,7 @@ export default function Anuncios() {
 
   const handleEdit = (anuncio: any) => {
     setSelectedAnuncio(anuncio);
+    setOriginalParadaId(anuncio.paradaId);
     setEditForm({
       paradaId: anuncio.paradaId,
       producto: anuncio.producto || "",
@@ -118,6 +121,7 @@ export default function Anuncios() {
       tipo: anuncio.tipo,
       costoPorUnidad: anuncio.costoPorUnidad?.toString() || "",
       notas: anuncio.notas || "",
+      motivoRelocalizacion: "",
     });
     setIsEditDialogOpen(true);
   };
@@ -761,6 +765,35 @@ export default function Anuncios() {
                     ))}
                 </SelectContent>
               </Select>
+              
+              {/* Relocation Warning */}
+              {originalParadaId && editForm.paradaId !== originalParadaId && (
+                <div className="mt-3 p-4 bg-amber-50 border-l-4 border-amber-500 rounded">
+                  <div className="flex items-start">
+                    <span className="text-amber-600 text-xl mr-2">⚠️</span>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-amber-800 mb-1">
+                        Estás relocalizando este anuncio
+                      </p>
+                      <p className="text-sm text-amber-700">
+                        De: <span className="font-medium">{paradas?.find(p => p.id === originalParadaId)?.localizacion || `Parada #${originalParadaId}`}</span>
+                        <br />
+                        A: <span className="font-medium">{paradas?.find(p => p.id === editForm.paradaId)?.localizacion || `Parada #${editForm.paradaId}`}</span>
+                      </p>
+                      <div className="mt-3">
+                        <Label htmlFor="motivo-relocalizacion" className="text-amber-800">Motivo de relocalización (opcional)</Label>
+                        <Input
+                          id="motivo-relocalizacion"
+                          placeholder="Ej: Cliente solicitó cambio de ubicación"
+                          value={editForm.motivoRelocalizacion}
+                          onChange={(e) => setEditForm({ ...editForm, motivoRelocalizacion: e.target.value })}
+                          className="mt-1 bg-white border-amber-300 focus:border-amber-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <Label htmlFor="edit-producto">Producto *</Label>

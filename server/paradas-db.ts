@@ -296,15 +296,22 @@ export async function updateAnuncio(id: number, data: Partial<InsertAnuncio>, us
     }
     
     if (data.paradaId && data.paradaId !== current.paradaId) {
+      // Get parada names for better history tracking
+      const oldParada = await db.select().from(paradas).where(eq(paradas.id, current.paradaId)).limit(1);
+      const newParada = await db.select().from(paradas).where(eq(paradas.id, data.paradaId)).limit(1);
+      
+      const oldParadaName = oldParada[0]?.localizacion || `Parada #${current.paradaId}`;
+      const newParadaName = newParada[0]?.localizacion || `Parada #${data.paradaId}`;
+      
       await createAnuncioHistoryEntry({
         anuncioId: id,
         userId,
         userName,
-        accion: "Ubicación cambiada",
+        accion: "Relocalizado",
         campoModificado: "paradaId",
-        valorAnterior: current.paradaId.toString(),
-        valorNuevo: data.paradaId.toString(),
-        detalles: `Anuncio relocalizado de parada ${current.paradaId} a parada ${data.paradaId}`,
+        valorAnterior: oldParadaName,
+        valorNuevo: newParadaName,
+        detalles: `Anuncio relocalizado de "${oldParadaName}" a "${newParadaName}"`,
       });
     }
     
