@@ -320,21 +320,6 @@ async function createPDFBuffer(
       .fontSize(15)
       .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
     
-    // Footer - place on same page, close to total
-    // Only add spacing if we have room, otherwise place immediately after
-    const footerSpacing = (y + 30 < 750) ? 30 : 15;
-    y += footerSpacing;
-    
-    doc
-      .fontSize(8)
-      .fillColor("#999999")
-      .text(
-        "Gracias por su preferencia. Para consultas, contáctenos.",
-        50,
-        y,
-        { align: "center", width: 512 }
-      );
-
     doc.end();
   });
 }

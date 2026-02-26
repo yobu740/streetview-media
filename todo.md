@@ -1010,3 +1010,7 @@
 - [x] Remove doc.addPage() call that creates second page (no addPage found - was spacing issue)
 - [x] Place footer directly after content on same page with reduced spacing
 - [ ] Test with actual invoice to verify single-page output
+
+## Remove Invoice Footer Message
+
+- [x] Remove "Gracias por su preferencia" message from invoice PDF completely
