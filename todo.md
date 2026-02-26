@@ -1004,3 +1004,9 @@
 - [x] Enhance edit modal to show warning when parada is being changed
 - [x] Add optional "Motivo de relocalización" field in edit modal
 - [x] Update history display UI to clearly show relocation events with parada names (already shows in history dialog)
+
+## Invoice PDF Footer Fix (Second Attempt)
+
+- [x] Remove doc.addPage() call that creates second page (no addPage found - was spacing issue)
+- [x] Place footer directly after content on same page with reduced spacing
+- [ ] Test with actual invoice to verify single-page output

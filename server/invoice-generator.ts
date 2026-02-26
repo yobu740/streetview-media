@@ -320,10 +320,11 @@ async function createPDFBuffer(
       .fontSize(15)
       .text(`$${finalTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 480, y, { align: "right" });
     
-    // Move y position down after total
-    y += 40;
+    // Footer - place on same page, close to total
+    // Only add spacing if we have room, otherwise place immediately after
+    const footerSpacing = (y + 30 < 750) ? 30 : 15;
+    y += footerSpacing;
     
-    // Footer - place dynamically after content
     doc
       .fontSize(8)
       .fillColor("#999999")
