@@ -1088,3 +1088,7 @@
 ## Correcciones Urgentes
 - [x] Pagos parciales: columna Balance debe mostrar monto adeudado (total - abonos), no el total original
 - [x] Reporte PDF: logo no carga en producción porque usa ruta local del servidor - cambiar a CDN URL
+
+## Facturación - Dashboard Stats Fix
+- [x] Tarjeta "Pago Parcial": mostrar total de abonos recibidos (no el total de la factura)
+- [x] Tarjeta "No Pagadas": mostrar suma de balances adeudados (Pendiente + Vencida + balance restante de Pago Parcial)

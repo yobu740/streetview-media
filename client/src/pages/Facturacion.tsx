@@ -473,16 +473,26 @@ export default function Facturacion() {
                   {filteredFacturas?.filter(f => f.estadoPago === "Pago Parcial").length || 0}
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pago Parcial").reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                  {/* Show total abonos received (total - balance remaining) */}
+                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pago Parcial").reduce((s, f) => {
+                    const total = parseFloat(f.total || "0");
+                    const balance = f.balance != null ? f.balance : total;
+                    return s + (total - balance); // abonos recibidos
+                  }, 0) || 0)}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg shadow-md p-5 border-l-4 border-orange-500">
                 <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">No Pagadas</p>
                 <p className="text-3xl font-bold text-orange-900 mt-1">
-                  {filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").length || 0}
+                  {filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida" || f.estadoPago === "Pago Parcial").length || 0}
                 </p>
                 <p className="text-xs text-orange-700 mt-1">
-                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                  {/* Show total balance owed: Pendiente + Vencida full totals + Pago Parcial remaining balance */}
+                  {formatMoney(filteredFacturas?.reduce((s, f) => {
+                    if (f.estadoPago === "Pagada") return s;
+                    const balance = f.balance != null ? f.balance : parseFloat(f.total || "0");
+                    return s + balance;
+                  }, 0) || 0)}
                 </p>
               </div>
             </div>
