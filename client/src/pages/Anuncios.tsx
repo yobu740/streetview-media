@@ -44,8 +44,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check } from "lucide-react";
-import { Link } from "wouter";
-import { useState } from "react";
+import { Link, useSearch } from "wouter";
+import { useState, useEffect } from "react";
 
 export default function Anuncios() {
   const { user } = useAuth();
@@ -89,6 +89,44 @@ export default function Anuncios() {
   const [selectedInvoiceClient, setSelectedInvoiceClient] = useState("");
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [selectedAnuncioForHistory, setSelectedAnuncioForHistory] = useState<number | null>(null);
+  const [highlightAnuncioId, setHighlightAnuncioId] = useState<number | null>(null);
+
+  // Support ?anuncioId=X URL param from Mantenimiento relocalizar button
+  const searchString = useSearch();
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const anuncioIdParam = params.get("anuncioId");
+    if (anuncioIdParam) {
+      const id = parseInt(anuncioIdParam, 10);
+      if (!isNaN(id)) {
+        setHighlightAnuncioId(id);
+      }
+    }
+  }, [searchString]);
+
+  // Auto-open edit dialog when anuncios load and a highlight ID is set
+  useEffect(() => {
+    if (!highlightAnuncioId || !anuncios) return;
+    const target = anuncios.find((a: any) => a.id === highlightAnuncioId);
+    if (target) {
+      setSelectedAnuncio(target);
+      setEditForm({
+        paradaId: target.paradaId,
+        producto: target.producto || "",
+        cliente: target.cliente || "",
+        fechaInicio: target.fechaInicio ? new Date(target.fechaInicio).toISOString().split("T")[0] : "",
+        fechaFin: target.fechaFin ? new Date(target.fechaFin).toISOString().split("T")[0] : "",
+        estado: target.estado || "Activo",
+        tipo: target.tipo || "Fijo",
+        costoPorUnidad: target.costoPorUnidad?.toString() || "",
+        notas: target.notas || "",
+        motivoRelocalizacion: "",
+      });
+      setOriginalParadaId(target.paradaId);
+      setIsEditDialogOpen(true);
+      setHighlightAnuncioId(null); // clear so it doesn't re-open
+    }
+  }, [highlightAnuncioId, anuncios]);
   
   // Query history for selected anuncio
   const { data: historyData } = trpc.anuncios.getHistory.useQuery(

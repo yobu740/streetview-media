@@ -27,13 +27,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function Mantenimiento() {
   const { user } = useAuth();
+  const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCondicion, setFilterCondicion] = useState<string>("all");
   const [selectedParada, setSelectedParada] = useState<any>(null);
@@ -634,13 +636,26 @@ export default function Mantenimiento() {
                   </p>
                   <ul className="space-y-1">
                     {activeAnunciosForParada.map((a: any) => (
-                      <li key={a.id} className="text-xs text-red-700">
-                        <strong>{a.cliente}</strong> — {a.producto || a.tipo}
-                        {a.fechaFin && (
-                          <span className="text-red-500">
-                            {" "}(hasta {new Date(a.fechaFin).toLocaleDateString("es-PR")})
-                          </span>
-                        )}
+                      <li key={a.id} className="text-xs text-red-700 flex items-center justify-between gap-2">
+                        <span>
+                          <strong>{a.cliente}</strong> — {a.producto || a.tipo}
+                          {a.fechaFin && (
+                            <span className="text-red-500">
+                              {" "}(hasta {new Date(a.fechaFin).toLocaleDateString("es-PR")})
+                            </span>
+                          )}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setIsConstruccionDialogOpen(false);
+                            navigate(`/anuncios?anuncioId=${a.id}`);
+                          }}
+                          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 underline whitespace-nowrap"
+                          title="Abrir anuncio en Gestor de Anuncios para relocalizarlo"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Relocalizar
+                        </button>
                       </li>
                     ))}
                   </ul>

@@ -1039,3 +1039,9 @@
 - [x] Mostrar badge "En Construcción" en columna Condición del panel principal
 - [x] Al marcar en construcción: verificar si hay anuncio activo/programado y alertar para relocalizar
 - [x] Bloquear marcado en construcción si hay anuncio activo hasta que se relocalice o cancele
+
+## En Construcción - Próximos Pasos
+- [x] Bloquear creación y aprobación de anuncios en caras En Construcción (backend)
+- [x] Mostrar mensaje de error con fecha estimada al intentar reservar cara En Construcción
+- [x] Botón "Relocalizar" en el aviso de anuncio activo en Mantenimiento
+- [x] Notificación automática al admin cuando vence la fecha estimada de disponibilidad

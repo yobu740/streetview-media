@@ -1,4 +1,5 @@
 import { COOKIE_NAME } from "@shared/const";
+import { TRPCError } from "@trpc/server";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, adminProcedure, vendedorProcedure, router } from "./_core/trpc";
@@ -257,6 +258,18 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         const isAdmin = ctx.user.role === "admin";
         
+        // CRITICAL: Check if parada is En Construccion BEFORE creating
+        const parada = await paradasDb.getParadaById(input.paradaId);
+        if (parada?.enConstruccion) {
+          const fechaDisp = parada.fechaDisponibilidad
+            ? new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')
+            : 'fecha no especificada';
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Esta cara está En Construcción y no está disponible para reservas. Fecha estimada de disponibilidad: ${fechaDisp}.`,
+          });
+        }
+        
         // CRITICAL: Check for overlapping reservations BEFORE creating
         const availability = await paradasDb.checkParadaDisponibilidad(
           input.paradaId,
@@ -437,7 +450,22 @@ export const appRouter = router({
       .input(z.object({ anuncioId: z.number() }))
       .mutation(async ({ input, ctx }) => {
         const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
-        const { getAnuncioById } = await import("./paradas-db");
+        const { getAnuncioById, getParadaById } = await import("./paradas-db");
+        
+        // Check if the parada is En Construccion before approving
+        const anuncioToApprove = await getAnuncioById(input.anuncioId);
+        if (anuncioToApprove?.paradaId) {
+          const paradaCheck = await getParadaById(anuncioToApprove.paradaId);
+          if (paradaCheck?.enConstruccion) {
+            const fechaDisp = paradaCheck.fechaDisponibilidad
+              ? new Date(paradaCheck.fechaDisponibilidad).toLocaleDateString('es-PR')
+              : 'fecha no especificada';
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `No se puede aprobar: la cara está En Construcción. Fecha estimada de disponibilidad: ${fechaDisp}.`,
+            });
+          }
+        }
         
         await updateAnuncioApprovalStatus(input.anuncioId, "approved", ctx.user.id);
         
