@@ -20,7 +20,8 @@ export async function generateInvoiceFromAnuncios(
   productionCost?: number,
   otherServicesDescription?: string,
   otherServicesCost?: number,
-  salespersonName?: string
+  salespersonName?: string,
+  clienteNombre?: string
 ): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -69,8 +70,8 @@ export async function generateInvoiceFromAnuncios(
     total += cost;
   }
 
-  // Get client name from first anuncio
-  const clientName = clientAnuncios[0]?.cliente || "Cliente";
+  // Get client name: use provided name (e.g. "Todos los clientes") or fall back to first anuncio's client
+  const clientName = clienteNombre || clientAnuncios[0]?.cliente || "Cliente";
   const invoiceTitle = title || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
 
   // Add production cost and other services to total

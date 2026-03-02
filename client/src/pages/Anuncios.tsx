@@ -247,6 +247,12 @@ export default function Anuncios() {
     const anuncioIds = billableAnuncios.map(a => a.id);
     const title = invoiceTitle || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
 
+    // Determine the client name for the invoice header
+    // If "__all__" is selected or no specific client, use "Todos los clientes"
+    const clienteNombre = (!selectedInvoiceClient || selectedInvoiceClient === "__all__")
+      ? "Todos los clientes"
+      : selectedInvoiceClient;
+
     generateInvoice.mutate(
       {
         anuncioIds,
@@ -256,6 +262,7 @@ export default function Anuncios() {
         otherServicesDescription: otherServicesDescription || undefined,
         otherServicesCost: otherServicesCost ? parseFloat(otherServicesCost) : undefined,
         salespersonName: salespersonName || undefined,
+        clienteNombre,
       },
       {
         onSuccess: (data: any) => {

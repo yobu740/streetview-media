@@ -1048,3 +1048,6 @@
 
 ## Historial de Anuncios - Nombre de Usuario
 - [x] Corregir historial de anuncios para mostrar nombre real del usuario en lugar de "usuario desconocido"
+
+## Facturación - Correcciones
+- [x] Corregir campo "Facturado a" en factura: mostrar "Todos los clientes" cuando se selecciona esa opción en el modal de preview
