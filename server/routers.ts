@@ -723,6 +723,40 @@ export const appRouter = router({
       return results;
     }),
     
+    generateReport: adminProcedure
+      .input(z.object({
+        facturaIds: z.array(z.number()).optional(), // if provided, only include these
+        filtroDescripcion: z.string().optional(),
+        titulo: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const { getDb } = await import("./db");
+          const { facturas } = await import("../drizzle/schema");
+          const { desc, inArray } = await import("drizzle-orm");
+          const db = await getDb();
+          if (!db) throw new Error("Database not available");
+          
+          let query = db.select().from(facturas).$dynamic();
+          if (input.facturaIds && input.facturaIds.length > 0) {
+            query = query.where(inArray(facturas.id, input.facturaIds));
+          }
+          const facturaList = await query.orderBy(desc(facturas.createdAt));
+          
+          const { generateFacturacionReportPDF } = await import("./facturacion-report-generator");
+          const pdfUrl = await generateFacturacionReportPDF({
+            facturas: facturaList,
+            titulo: input.titulo || "Reporte de Facturación",
+            filtroDescripcion: input.filtroDescripcion,
+          });
+          
+          return { pdfUrl };
+        } catch (error) {
+          console.error("[Invoice Report] Error generating report:", error);
+          throw error;
+        }
+      }),
+    
     updatePaymentStatus: adminProcedure
       .input(z.object({
         facturaId: z.number(),

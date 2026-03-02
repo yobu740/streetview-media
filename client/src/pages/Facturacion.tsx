@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2 } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2, FileDown } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import {
@@ -60,6 +60,8 @@ export default function Facturacion() {
   const deleteFactura = trpc.facturas.delete.useMutation();
   const archiveFactura = trpc.invoices.archive.useMutation();
   const unarchiveFactura = trpc.invoices.unarchive.useMutation();
+  const generateReport = trpc.invoices.generateReport.useMutation();
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   const handleMarkAsPaid = (factura: any) => {
     setSelectedFactura(factura);
@@ -120,6 +122,56 @@ export default function Facturacion() {
     );
   };
   
+  const handleExportReportPDF = async () => {
+    if (filteredFacturas.length === 0) {
+      toast.error("No hay facturas para exportar con los filtros actuales");
+      return;
+    }
+    
+    setIsGeneratingReport(true);
+    
+    // Build a description of active filters
+    const parts: string[] = [];
+    if (searchTerm) parts.push(`Búsqueda: "${searchTerm}"`);
+    if (dateFilterStart) parts.push(`Desde: ${dateFilterStart}`);
+    if (dateFilterEnd) parts.push(`Hasta: ${dateFilterEnd}`);
+    if (showArchived) parts.push("Archivadas");
+    const filtroDescripcion = parts.length > 0 ? parts.join(" | ") : "Todas las facturas";
+    
+    const facturaIds = filteredFacturas.map((f: any) => f.id);
+    
+    generateReport.mutate(
+      { facturaIds, filtroDescripcion },
+      {
+        onSuccess: (data: any) => {
+          setIsGeneratingReport(false);
+          // Download the PDF
+          fetch(data.pdfUrl)
+            .then(r => r.blob())
+            .then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = `Reporte-Facturacion-${new Date().toISOString().split("T")[0]}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+              toast.success("Reporte PDF generado correctamente");
+            })
+            .catch(() => {
+              window.open(data.pdfUrl, "_blank");
+              toast.success("Reporte PDF generado correctamente");
+            });
+        },
+        onError: (error: any) => {
+          setIsGeneratingReport(false);
+          toast.error(error.message || "Error al generar el reporte PDF");
+        },
+      }
+    );
+  };
+
   const handleExportReport = () => {
     if (exportType === "mes" && !exportMonth) {
       toast.error("Debe seleccionar un mes");
@@ -294,11 +346,19 @@ export default function Facturacion() {
               </div>
               <div className="flex gap-2">
                 <Button
+                  onClick={handleExportReportPDF}
+                  disabled={isGeneratingReport || !filteredFacturas || filteredFacturas.length === 0}
+                  className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+                >
+                  <FileDown size={16} className="mr-2" />
+                  {isGeneratingReport ? "Generando PDF..." : "Reporte PDF"}
+                </Button>
+                <Button
                   onClick={() => setIsExportDialogOpen(true)}
                   className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
                 >
                   <Download size={16} className="mr-2" />
-                  Exportar Reporte
+                  Exportar CSV
                 </Button>
               </div>
             </div>

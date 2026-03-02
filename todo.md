@@ -1051,3 +1051,8 @@
 
 ## Facturación - Correcciones
 - [x] Corregir campo "Facturado a" en factura: mostrar "Todos los clientes" cuando se selecciona esa opción en el modal de preview
+
+## Facturación - Exportar Reporte PDF
+- [x] Añadir botón "Exportar Reporte PDF" en el módulo de Facturación
+- [x] Generar PDF con listado completo de facturas (número, cliente, fecha, total, estado de pago)
+- [x] Incluir resumen de totales al final: total pagadas, pendientes, vencidas y gran total
