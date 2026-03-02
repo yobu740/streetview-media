@@ -1,5 +1,10 @@
 import PDFDocument from "pdfkit";
 import { storagePut } from "./storage";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const LOGO_PATH = path.join(__dirname, "streetview-logo.png");
 
 interface FacturaItem {
   numeroFactura: string;
@@ -68,13 +73,26 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     const LIGHT_GRAY = "#f5f5f5";
     const pageWidth = doc.page.width - 100; // margins 50 each side
 
-    // ── Header bar ──────────────────────────────────────────────────────────
-    doc.rect(50, 50, pageWidth, 70).fill(GREEN);
-    doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
-    doc.font("Helvetica").fontSize(11).text("Donde Puerto Rico Mira", 70, 92);
+    // ── Header bar ────────────────────────────────────────────────────────
+    doc.rect(50, 50, pageWidth, 80).fill(GREEN);
+
+    // Logo image on the left
+    try {
+      // Logo is 900x231 px; scale to fit height ~55px inside the green bar
+      const logoH = 52;
+      const logoW = Math.round(logoH * (900 / 231));
+      doc.image(LOGO_PATH, 60, 59, { width: logoW, height: logoH });
+    } catch {
+      // Fallback to text if image fails to load
+      doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
+    }
+
+    // Slogan below logo area
+    doc.fillColor("white").font("Helvetica-Oblique").fontSize(9)
+      .text("Tu Marca en el Camino", 60, 115);
 
     // Report title on right
-    doc.font("Helvetica-Bold").fontSize(14).text(titulo, 50, 65, { align: "right", width: pageWidth });
+    doc.fillColor("white").font("Helvetica-Bold").fontSize(14).text(titulo, 50, 65, { align: "right", width: pageWidth });
     doc.font("Helvetica").fontSize(10).fillColor("white").text(
       `Generado: ${formatDate(new Date())}`,
       50, 90, { align: "right", width: pageWidth }

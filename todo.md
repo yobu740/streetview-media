@@ -1077,3 +1077,7 @@
 - [x] Diálogo de historial de abonos con resumen de balance
 - [x] Tarjeta "Pago Parcial" en estadísticas de Facturación
 - [x] Reporte PDF actualizado con columna Balance y total adeudado
+
+## Reporte PDF Facturación - Logo y Slogan
+- [x] Usar logo real de Streetview Media (imagen PNG) en el encabezado del reporte PDF
+- [x] Actualizar slogan a "Tu Marca en el Camino" en el reporte PDF
