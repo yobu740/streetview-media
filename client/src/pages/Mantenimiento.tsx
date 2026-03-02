@@ -22,11 +22,12 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat } from "lucide-react";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -38,6 +39,11 @@ export default function Mantenimiento() {
   const [selectedParada, setSelectedParada] = useState<any>(null);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
+  // En Construccion dialog state
+  const [isConstruccionDialogOpen, setIsConstruccionDialogOpen] = useState(false);
+  const [construccionParada, setConstruccionParada] = useState<any>(null);
+  const [fechaDisponibilidad, setFechaDisponibilidad] = useState<string>("");
+
   const { data: paradas, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: history } = trpc.mantenimiento.getHistory.useQuery(
     { paradaId: selectedParada?.id || 0 },
@@ -45,16 +51,11 @@ export default function Mantenimiento() {
   );
 
   const utils = trpc.useUtils();
-  
+
   const updateCondicion = trpc.paradas.updateCondicion.useMutation({
     onMutate: async (variables) => {
-      // Cancel outgoing refetches
       await utils.paradas.list.cancel();
-      
-      // Snapshot previous value
       const previousParadas = utils.paradas.list.getData();
-      
-      // Optimistically update to new value
       utils.paradas.list.setData(undefined, (old) => {
         if (!old) return old;
         return old.map((p) => {
@@ -64,11 +65,9 @@ export default function Mantenimiento() {
           return p;
         });
       });
-      
       return { previousParadas };
     },
     onError: (error, variables, context) => {
-      // Rollback on error
       if (context?.previousParadas) {
         utils.paradas.list.setData(undefined, context.previousParadas);
       }
@@ -78,7 +77,6 @@ export default function Mantenimiento() {
       toast.success("Condición actualizada");
     },
     onSettled: () => {
-      // Always refetch after error or success to ensure sync
       utils.paradas.list.invalidate();
     },
   });
@@ -95,7 +93,8 @@ export default function Mantenimiento() {
     const matchesCondicion =
       filterCondicion === "all" ||
       (filterCondicion === "renovada" && isRenovada) ||
-      (filterCondicion === "pendiente" && !isRenovada) ||
+      (filterCondicion === "pendiente" && !isRenovada && !p.enConstruccion) ||
+      (filterCondicion === "construccion" && p.enConstruccion) ||
       (filterCondicion === "pintada" && p.condicionPintada) ||
       (filterCondicion === "arreglada" && p.condicionArreglada) ||
       (filterCondicion === "limpia" && p.condicionLimpia);
@@ -117,6 +116,52 @@ export default function Mantenimiento() {
     });
   };
 
+  const openConstruccionDialog = (parada: any) => {
+    setConstruccionParada(parada);
+    // Pre-fill date if already set
+    if (parada.fechaDisponibilidad) {
+      const d = new Date(parada.fechaDisponibilidad);
+      setFechaDisponibilidad(d.toISOString().split("T")[0]);
+    } else {
+      setFechaDisponibilidad("");
+    }
+    setIsConstruccionDialogOpen(true);
+  };
+
+  const handleSetConstruccion = () => {
+    if (!construccionParada) return;
+
+    // Activating "En construcción" requires a date
+    if (!construccionParada.enConstruccion && !fechaDisponibilidad) {
+      toast.error("Por favor ingresa la fecha estimada de disponibilidad");
+      return;
+    }
+
+    const isActivating = !construccionParada.enConstruccion;
+
+    updateCondicion.mutate(
+      {
+        paradaId: construccionParada.id,
+        enConstruccion: isActivating ? 1 : 0,
+        fechaDisponibilidad: isActivating && fechaDisponibilidad
+          ? new Date(fechaDisponibilidad + "T00:00:00")
+          : null,
+      },
+      {
+        onSuccess: () => {
+          toast.success(
+            isActivating
+              ? "Cara marcada como En construcción"
+              : "Estado En construcción removido"
+          );
+          setIsConstruccionDialogOpen(false);
+          setConstruccionParada(null);
+          setFechaDisponibilidad("");
+        },
+      }
+    );
+  };
+
   const handleExportExcel = () => {
     if (!filteredParadas || filteredParadas.length === 0) {
       toast.error("No hay datos para exportar");
@@ -132,6 +177,8 @@ export default function Mantenimiento() {
       "Arreglada",
       "Limpia",
       "Display",
+      "En Construcción",
+      "Fecha Disponibilidad",
       "Estado General",
     ];
 
@@ -144,19 +191,23 @@ export default function Mantenimiento() {
       p.condicionArreglada ? "Sí" : "No",
       p.condicionLimpia ? "Sí" : "No",
       p.displayPublicidad,
-      p.condicionPintada && p.condicionArreglada && p.condicionLimpia
+      p.enConstruccion ? "Sí" : "No",
+      p.fechaDisponibilidad
+        ? new Date(p.fechaDisponibilidad).toLocaleDateString("es-PR")
+        : "",
+      p.enConstruccion
+        ? "En Construcción"
+        : p.condicionPintada && p.condicionArreglada && p.condicionLimpia
         ? "Renovada"
         : "Pendiente de renovación",
     ]);
 
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
-
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `mantenimiento_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
-
     toast.success("Reporte exportado exitosamente");
   };
 
@@ -183,6 +234,7 @@ export default function Mantenimiento() {
             tr:nth-child(even) { background-color: #f5f5f5; }
             .renovada { color: green; font-weight: bold; }
             .pendiente { color: orange; font-weight: bold; }
+            .construccion { color: #b45309; font-weight: bold; }
             @media print { button { display: none; } }
           </style>
         </head>
@@ -202,6 +254,7 @@ export default function Mantenimiento() {
                 <th>Limpia</th>
                 <th>Display</th>
                 <th>Estado</th>
+                <th>Fecha Disponibilidad</th>
               </tr>
             </thead>
             <tbody>
@@ -209,6 +262,16 @@ export default function Mantenimiento() {
                 .map((p) => {
                   const isRenovada =
                     p.condicionPintada && p.condicionArreglada && p.condicionLimpia;
+                  const estadoClass = p.enConstruccion
+                    ? "construccion"
+                    : isRenovada
+                    ? "renovada"
+                    : "pendiente";
+                  const estadoLabel = p.enConstruccion
+                    ? "En Construcción"
+                    : isRenovada
+                    ? "Renovada"
+                    : "Pendiente";
                   return `
                 <tr>
                   <td>${p.cobertizoId}</td>
@@ -219,9 +282,8 @@ export default function Mantenimiento() {
                   <td>${p.condicionArreglada ? "✓" : "✗"}</td>
                   <td>${p.condicionLimpia ? "✓" : "✗"}</td>
                   <td>${p.displayPublicidad}</td>
-                  <td class="${isRenovada ? "renovada" : "pendiente"}">
-                    ${isRenovada ? "Renovada" : "Pendiente"}
-                  </td>
+                  <td class="${estadoClass}">${estadoLabel}</td>
+                  <td>${p.fechaDisponibilidad && p.enConstruccion ? new Date(p.fechaDisponibilidad).toLocaleDateString('es-PR') : '—'}</td>
                 </tr>
               `;
                 })
@@ -243,12 +305,13 @@ export default function Mantenimiento() {
     total: filteredParadas?.length || 0,
     renovadas:
       filteredParadas?.filter(
-        (p) => p.condicionPintada && p.condicionArreglada && p.condicionLimpia
+        (p) => !p.enConstruccion && p.condicionPintada && p.condicionArreglada && p.condicionLimpia
       ).length || 0,
     pendientes:
       filteredParadas?.filter(
-        (p) => !(p.condicionPintada && p.condicionArreglada && p.condicionLimpia)
+        (p) => !p.enConstruccion && !(p.condicionPintada && p.condicionArreglada && p.condicionLimpia)
       ).length || 0,
+    enConstruccion: filteredParadas?.filter((p) => p.enConstruccion).length || 0,
     displayFuncional: filteredParadas?.filter((p) => p.displayPublicidad === "Si").length || 0,
   };
 
@@ -266,7 +329,7 @@ export default function Mantenimiento() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow-md p-6">
               <p className="text-sm text-gray-600 mb-1">Total Paradas</p>
               <p className="text-3xl font-bold text-[#1a4d3c]">{stats.total}</p>
@@ -278,6 +341,10 @@ export default function Mantenimiento() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <p className="text-sm text-gray-600 mb-1">Pendientes</p>
               <p className="text-3xl font-bold text-orange-600">{stats.pendientes}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500">
+              <p className="text-sm text-gray-600 mb-1">En Construcción</p>
+              <p className="text-3xl font-bold text-amber-600">{stats.enConstruccion}</p>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
               <p className="text-sm text-gray-600 mb-1">Display Funcional</p>
@@ -296,7 +363,7 @@ export default function Mantenimiento() {
                     size={20}
                   />
                   <Input
-                    placeholder="ID, localización o dirección..."
+                    placeholder="Buscar por ID, localización o dirección..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -313,6 +380,7 @@ export default function Mantenimiento() {
                     <SelectItem value="all">Todas</SelectItem>
                     <SelectItem value="renovada">Renovadas</SelectItem>
                     <SelectItem value="pendiente">Pendientes de renovación</SelectItem>
+                    <SelectItem value="construccion">En Construcción</SelectItem>
                     <SelectItem value="pintada">Pintadas</SelectItem>
                     <SelectItem value="arreglada">Arregladas</SelectItem>
                     <SelectItem value="limpia">Limpias</SelectItem>
@@ -357,8 +425,12 @@ export default function Mantenimiento() {
                         parada.condicionPintada &&
                         parada.condicionArreglada &&
                         parada.condicionLimpia;
+                      const isConstruccion = !!parada.enConstruccion;
                       return (
-                        <TableRow key={parada.id}>
+                        <TableRow
+                          key={parada.id}
+                          className={isConstruccion ? "bg-amber-50" : ""}
+                        >
                           <TableCell className="font-medium">{parada.cobertizoId}</TableCell>
                           <TableCell>{parada.localizacion}</TableCell>
                           <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
@@ -370,14 +442,15 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                user?.role === 'admin' && handleToggleCondicion(
+                                user?.role === "admin" &&
+                                handleToggleCondicion(
                                   parada.id,
                                   "condicionPintada",
                                   parada.condicionPintada
                                 )
                               }
-                              disabled={user?.role !== 'admin'}
-                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+                              disabled={user?.role !== "admin"}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === "admin" ? "hover:opacity-70 cursor-pointer" : "cursor-not-allowed opacity-60"}`}
                             >
                               {parada.condicionPintada ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -389,14 +462,15 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                user?.role === 'admin' && handleToggleCondicion(
+                                user?.role === "admin" &&
+                                handleToggleCondicion(
                                   parada.id,
                                   "condicionArreglada",
                                   parada.condicionArreglada
                                 )
                               }
-                              disabled={user?.role !== 'admin'}
-                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+                              disabled={user?.role !== "admin"}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === "admin" ? "hover:opacity-70 cursor-pointer" : "cursor-not-allowed opacity-60"}`}
                             >
                               {parada.condicionArreglada ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -408,14 +482,15 @@ export default function Mantenimiento() {
                           <TableCell>
                             <button
                               onClick={() =>
-                                user?.role === 'admin' && handleToggleCondicion(
+                                user?.role === "admin" &&
+                                handleToggleCondicion(
                                   parada.id,
                                   "condicionLimpia",
                                   parada.condicionLimpia
                                 )
                               }
-                              disabled={user?.role !== 'admin'}
-                              className={`flex items-center gap-1 transition-opacity ${user?.role === 'admin' ? 'hover:opacity-70 cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+                              disabled={user?.role !== "admin"}
+                              className={`flex items-center gap-1 transition-opacity ${user?.role === "admin" ? "hover:opacity-70 cursor-pointer" : "cursor-not-allowed opacity-60"}`}
                             >
                               {parada.condicionLimpia ? (
                                 <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -428,9 +503,9 @@ export default function Mantenimiento() {
                             <Select
                               value={parada.displayPublicidad}
                               onValueChange={(value: "Si" | "No" | "N/A") =>
-                                user?.role === 'admin' && handleDisplayChange(parada.id, value)
+                                user?.role === "admin" && handleDisplayChange(parada.id, value)
                               }
-                              disabled={user?.role !== 'admin'}
+                              disabled={user?.role !== "admin"}
                             >
                               <SelectTrigger className="w-[100px]">
                                 <SelectValue />
@@ -443,9 +518,47 @@ export default function Mantenimiento() {
                             </Select>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={isRenovada ? "default" : "secondary"}>
-                              {isRenovada ? "Renovada" : "Pendiente"}
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              {isConstruccion ? (
+                                <>
+                                  <Badge className="bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-1 w-fit">
+                                    <HardHat className="h-3 w-3" />
+                                    En Construcción
+                                  </Badge>
+                                  {parada.fechaDisponibilidad && (
+                                    <span className="text-xs text-amber-700">
+                                      Disp.:{" "}
+                                      {new Date(parada.fechaDisponibilidad).toLocaleDateString(
+                                        "es-PR"
+                                      )}
+                                    </span>
+                                  )}
+                                  {user?.role === "admin" && (
+                                    <button
+                                      onClick={() => openConstruccionDialog(parada)}
+                                      className="text-xs text-gray-500 underline hover:text-gray-700 text-left"
+                                    >
+                                      Quitar estado
+                                    </button>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={isRenovada ? "default" : "secondary"}>
+                                    {isRenovada ? "Renovada" : "Pendiente"}
+                                  </Badge>
+                                  {user?.role === "admin" && (
+                                    <button
+                                      onClick={() => openConstruccionDialog(parada)}
+                                      title="Marcar como En Construcción"
+                                      className="text-amber-600 hover:text-amber-800 transition-colors"
+                                    >
+                                      <HardHat className="h-4 w-4" />
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Button
@@ -475,6 +588,87 @@ export default function Mantenimiento() {
           </div>
         </div>
       </div>
+
+      {/* En Construccion Dialog */}
+      <Dialog open={isConstruccionDialogOpen} onOpenChange={setIsConstruccionDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <HardHat className="h-5 w-5 text-amber-600" />
+              {construccionParada?.enConstruccion
+                ? "Quitar Estado En Construcción"
+                : "Marcar como En Construcción"}
+            </DialogTitle>
+            <DialogDescription>
+              Cara: {construccionParada?.cobertizoId} — {construccionParada?.localizacion}
+            </DialogDescription>
+          </DialogHeader>
+
+          {!construccionParada?.enConstruccion ? (
+            <div className="py-2">
+              <p className="text-sm text-gray-600 mb-4">
+                Esta cara quedará marcada como <strong>En Construcción</strong> y no estará
+                disponible para asignación de anuncios hasta que se remueva el estado.
+              </p>
+              <div>
+                <Label htmlFor="fecha-disponibilidad" className="text-sm font-medium">
+                  Fecha estimada de disponibilidad <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fecha-disponibilidad"
+                  type="date"
+                  value={fechaDisponibilidad}
+                  onChange={(e) => setFechaDisponibilidad(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Fecha en que se espera que la cara esté disponible nuevamente.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="py-2">
+              <p className="text-sm text-gray-600">
+                ¿Confirmas que deseas remover el estado <strong>En Construcción</strong> de esta
+                cara? Volverá a estar disponible para asignación de anuncios.
+              </p>
+              {construccionParada?.fechaDisponibilidad && (
+                <p className="text-sm text-amber-700 mt-2">
+                  Fecha estimada registrada:{" "}
+                  <strong>
+                    {new Date(construccionParada.fechaDisponibilidad).toLocaleDateString("es-PR")}
+                  </strong>
+                </p>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConstruccionDialogOpen(false);
+                setConstruccionParada(null);
+                setFechaDisponibilidad("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSetConstruccion}
+              className={
+                construccionParada?.enConstruccion
+                  ? "bg-gray-600 hover:bg-gray-700"
+                  : "bg-amber-600 hover:bg-amber-700"
+              }
+              disabled={updateCondicion.isPending}
+            >
+              {construccionParada?.enConstruccion ? "Quitar Estado" : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* History Dialog */}
       <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>

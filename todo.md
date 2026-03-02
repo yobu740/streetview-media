@@ -1020,3 +1020,16 @@
 - [ ] Implement combobox with search for parada selection in ad edit modal
 - [ ] Change "Ubicacion" column to "Direccion" in Gestor de Anuncios table
 - [ ] Update Panel Principal stats: "Total Paradas" → "Total Caras", "Paradas Disponibles" → "Caras Disponibles", "Paradas Ocupadas" → "Caras Ocupadas"
+
+## Estado "En Construcción" en Mantenimiento
+- [x] Añadir campos enConstruccion y fechaDisponibilidad al schema de paradas
+- [x] Ejecutar migración de base de datos (pnpm db:push)
+- [x] Actualizar procedimiento updateCondicion para aceptar nuevos campos
+- [x] Registrar cambio de estado En Construcción en historial de mantenimiento
+- [x] Actualizar getAllParadas en paradas-db.ts para incluir nuevos campos
+- [x] Añadir botón/ícono de casco en columna Estado General de Mantenimiento
+- [x] Crear diálogo para marcar/desmarcar En Construcción con fecha estimada
+- [x] Mostrar badge amarillo "En Construcción" con fecha de disponibilidad en listado
+- [x] Añadir filtro "En Construcción" en el selector de condición
+- [x] Añadir contador "En Construcción" en las tarjetas de estadísticas
+- [x] Incluir estado En Construcción en exportación Excel y reporte impreso

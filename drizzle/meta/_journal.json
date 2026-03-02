@@ -162,6 +162,13 @@
       "when": 1772067026071,
       "tag": "0022_mature_black_bolt",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1772459543277,
+      "tag": "0023_sour_arachne",
+      "breakpoints": true
     }
   ]
 }

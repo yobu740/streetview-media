@@ -115,6 +115,8 @@ export const appRouter = router({
         condicionArreglada: z.number().optional(),
         condicionLimpia: z.number().optional(),
         displayPublicidad: z.enum(["Si", "No", "N/A"]).optional(),
+        enConstruccion: z.number().optional(),
+        fechaDisponibilidad: z.date().nullable().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         const { paradaId, ...updates } = input;
@@ -182,6 +184,20 @@ export const appRouter = router({
             valorAnterior: currentParada.displayPublicidad,
             valorNuevo: updates.displayPublicidad,
             notas: null,
+          });
+        }
+        
+        if (updates.enConstruccion !== undefined && updates.enConstruccion !== currentParada.enConstruccion) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "En Construcción",
+            valorAnterior: currentParada.enConstruccion ? "Sí" : "No",
+            valorNuevo: updates.enConstruccion ? "Sí" : "No",
+            notas: updates.fechaDisponibilidad
+              ? `Fecha estimada: ${new Date(updates.fechaDisponibilidad).toLocaleDateString('es-PR')}`
+              : null,
           });
         }
         
