@@ -28,9 +28,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 
@@ -65,6 +78,7 @@ export default function Anuncios() {
     motivoRelocalizacion: "",
   });
   const [originalParadaId, setOriginalParadaId] = useState<number | null>(null);
+  const [isParadaComboboxOpen, setIsParadaComboboxOpen] = useState(false);
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [invoiceTitle, setInvoiceTitle] = useState("");
   const [invoiceDescription, setInvoiceDescription] = useState("");
@@ -609,7 +623,7 @@ export default function Anuncios() {
                     />
                   </TableHead>
                   <TableHead>Cobertizo</TableHead>
-                  <TableHead>Ubicación</TableHead>
+                  <TableHead>Dirección</TableHead>
                   <TableHead>Producto</TableHead>
                   <TableHead>Cliente</TableHead>
                   <TableHead>Tipo</TableHead>
@@ -641,7 +655,7 @@ export default function Anuncios() {
                         {paradas?.find(p => p.id === anuncio.paradaId)?.cobertizoId || anuncio.paradaId}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
-                        {paradas?.find(p => p.id === anuncio.paradaId)?.localizacion || "—"}
+                        {paradas?.find(p => p.id === anuncio.paradaId)?.direccion || paradas?.find(p => p.id === anuncio.paradaId)?.localizacion || "—"}
                       </TableCell>
                       <TableCell>{anuncio.producto || "—"}</TableCell>
                       <TableCell>{anuncio.cliente || "—"}</TableCell>
@@ -722,49 +736,68 @@ export default function Anuncios() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="edit-parada">Parada *</Label>
-              <Select
-                value={editForm.paradaId?.toString()}
-                onValueChange={(value) =>
-                  setEditForm({ ...editForm, paradaId: parseInt(value) })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una parada">
-                    {editForm.paradaId && paradas?.find(p => p.id === editForm.paradaId)
-                      ? `${paradas.find(p => p.id === editForm.paradaId)?.cobertizoId} [${paradas.find(p => p.id === editForm.paradaId)?.orientacion}] - ${paradas.find(p => p.id === editForm.paradaId)?.localizacion}`
-                      : "Selecciona una parada"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {paradas
-                    ?.filter((parada) => {
-                      // Only show paradas that are available in the selected date range
-                      if (!editForm.fechaInicio || !editForm.fechaFin) return true;
-                      
-                      const startDate = new Date(editForm.fechaInicio);
-                      const endDate = new Date(editForm.fechaFin);
-                      
-                      // Check if parada has any conflicting anuncios (excluding current one)
-                      const hasConflict = anuncios?.some((a) => {
-                        if (a.id === selectedAnuncio?.id) return false; // Exclude current anuncio
-                        if (a.paradaId !== parada.id) return false; // Different parada
-                        
-                        const aStart = new Date(a.fechaInicio);
-                        const aEnd = new Date(a.fechaFin);
-                        
-                        // Check for date overlap
-                        return aStart <= endDate && aEnd >= startDate;
-                      });
-                      
-                      return !hasConflict;
-                    })
-                    .map((parada) => (
-                      <SelectItem key={parada.id} value={parada.id.toString()}>
-                        {parada.cobertizoId} [{parada.orientacion}] - {parada.localizacion}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+              <Popover open={isParadaComboboxOpen} onOpenChange={setIsParadaComboboxOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={isParadaComboboxOpen}
+                    className="w-full justify-between font-normal bg-background"
+                  >
+                    <span className="truncate">
+                      {editForm.paradaId && paradas?.find(p => p.id === editForm.paradaId)
+                        ? (() => {
+                            const p = paradas.find(p => p.id === editForm.paradaId)!;
+                            return `${p.cobertizoId} [${p.orientacion}] - ${p.localizacion}`;
+                          })()
+                        : "Selecciona una parada..."}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[500px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Buscar parada por nombre, dirección o ID..." />
+                    <CommandList className="max-h-[300px]">
+                      <CommandEmpty>No se encontró ninguna parada.</CommandEmpty>
+                      <CommandGroup>
+                        {paradas
+                          ?.filter((parada) => {
+                            if (!editForm.fechaInicio || !editForm.fechaFin) return true;
+                            const startDate = new Date(editForm.fechaInicio);
+                            const endDate = new Date(editForm.fechaFin);
+                            const hasConflict = anuncios?.some((a) => {
+                              if (a.id === selectedAnuncio?.id) return false;
+                              if (a.paradaId !== parada.id) return false;
+                              const aStart = new Date(a.fechaInicio);
+                              const aEnd = new Date(a.fechaFin);
+                              return aStart <= endDate && aEnd >= startDate;
+                            });
+                            return !hasConflict;
+                          })
+                          .map((parada) => (
+                            <CommandItem
+                              key={parada.id}
+                              value={`${parada.cobertizoId} ${parada.orientacion} ${parada.localizacion} ${parada.direccion || ""}`}
+                              onSelect={() => {
+                                setEditForm({ ...editForm, paradaId: parada.id });
+                                setIsParadaComboboxOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${editForm.paradaId === parada.id ? "opacity-100" : "opacity-0"}`}
+                              />
+                              <div className="flex flex-col">
+                                <span className="font-medium">{parada.cobertizoId} [{parada.orientacion}]</span>
+                                <span className="text-xs text-muted-foreground">{parada.localizacion}{parada.direccion ? ` - ${parada.direccion}` : ""}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               
               {/* Relocation Warning */}
               {originalParadaId && editForm.paradaId !== originalParadaId && (

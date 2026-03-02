@@ -1014,3 +1014,9 @@
 ## Remove Invoice Footer Message
 
 - [x] Remove "Gracias por su preferencia" message from invoice PDF completely
+
+## UI Improvements - Combobox, Direccion Column, Caras Labels
+
+- [ ] Implement combobox with search for parada selection in ad edit modal
+- [ ] Change "Ubicacion" column to "Direccion" in Gestor de Anuncios table
+- [ ] Update Panel Principal stats: "Total Paradas" → "Total Caras", "Paradas Disponibles" → "Caras Disponibles", "Paradas Ocupadas" → "Caras Ocupadas"

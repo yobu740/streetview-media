@@ -1103,7 +1103,7 @@ export default function Admin() {
           >
             <CardHeader>
               <CardTitle className="text-2xl">{paradas?.length || 0}</CardTitle>
-              <CardDescription>Total Paradas</CardDescription>
+              <CardDescription>Total Caras</CardDescription>
             </CardHeader>
           </Card>
           <Card 
@@ -1114,7 +1114,7 @@ export default function Admin() {
               <CardTitle className="text-2xl text-green-600">
                 {disponiblesCount}
               </CardTitle>
-              <CardDescription>Paradas Disponibles</CardDescription>
+              <CardDescription>Caras Disponibles</CardDescription>
             </CardHeader>
           </Card>
           <Card 
@@ -1125,7 +1125,7 @@ export default function Admin() {
               <CardTitle className="text-2xl text-orange-600">
                 {ocupadasCount}
               </CardTitle>
-              <CardDescription>Paradas Ocupadas</CardDescription>
+              <CardDescription>Caras Ocupadas</CardDescription>
             </CardHeader>
           </Card>
         </div>
