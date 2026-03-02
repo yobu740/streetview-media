@@ -1,10 +1,7 @@
 import PDFDocument from "pdfkit";
 import { storagePut } from "./storage";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LOGO_PATH = path.join(__dirname, "streetview-logo-white.png");
+const LOGO_CDN_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
 interface FacturaItem {
   numeroFactura: string;
@@ -58,6 +55,17 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
   const formatMoney = (n: number) =>
     `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+  // Pre-load logo from CDN before building PDF (fetch must be outside the sync Promise callback)
+  let logoBuffer: Buffer | null = null;
+  try {
+    const logoResponse = await fetch(LOGO_CDN_URL);
+    if (logoResponse.ok) {
+      logoBuffer = Buffer.from(await logoResponse.arrayBuffer());
+    }
+  } catch {
+    // Will fall back to text in the PDF
+  }
+
   // Build PDF
   const doc = new PDFDocument({ margin: 50, size: "LETTER" });
   const chunks: Buffer[] = [];
@@ -76,14 +84,18 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     // ── Header bar ────────────────────────────────────────────────────────
     doc.rect(50, 50, pageWidth, 80).fill(GREEN);
 
-    // Logo image on the left
-    try {
-      // Logo is 900x231 px; scale to fit height ~55px inside the green bar
-      const logoH = 52;
-      const logoW = Math.round(logoH * (900 / 231));
-      doc.image(LOGO_PATH, 60, 59, { width: logoW, height: logoH });
-    } catch {
-      // Fallback to text if image fails to load
+    // Logo image on the left - use pre-loaded buffer from CDN
+    if (logoBuffer) {
+      try {
+        // Logo is 900x231 px; scale to fit height ~55px inside the green bar
+        const logoH = 52;
+        const logoW = Math.round(logoH * (900 / 231));
+        doc.image(logoBuffer, 60, 59, { width: logoW, height: logoH });
+      } catch {
+        doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
+      }
+    } else {
+      // Fallback to text if image failed to load
       doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
     }
 

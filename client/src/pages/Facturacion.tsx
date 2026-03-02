@@ -516,11 +516,15 @@ export default function Facturacion() {
                 <TableBody>
                   {filteredFacturas.map((factura: any) => {
                     const total = parseFloat(factura.total || "0");
-                    // Balance is shown as pending for non-fully-paid invoices
-                    // We don't have real-time pagos sum here, so show total for Pendiente/Vencida,
-                    // show 0 for Pagada, and show "Ver abonos" for Pago Parcial
+                    // Balance comes from backend (total - sum of pagos)
+                    const balance = factura.balance != null ? factura.balance : total;
                     const isPagada = factura.estadoPago === "Pagada";
                     const isParcial = factura.estadoPago === "Pago Parcial";
+                    const balanceColor = isPagada
+                      ? "text-green-600"
+                      : isParcial
+                      ? "text-blue-600"
+                      : "text-orange-600";
                     return (
                       <TableRow key={factura.id} className={isParcial ? "bg-blue-50/40" : ""}>
                         <TableCell className="font-medium">{factura.numeroFactura}</TableCell>
@@ -528,18 +532,9 @@ export default function Facturacion() {
                         <TableCell>{formatDateDisplay(factura.createdAt)}</TableCell>
                         <TableCell className="font-semibold">{formatMoney(total)}</TableCell>
                         <TableCell>
-                          {isPagada ? (
-                            <span className="text-green-600 font-semibold text-sm">$0.00</span>
-                          ) : isParcial ? (
-                            <button
-                              onClick={() => handleOpenPagos(factura)}
-                              className="text-blue-600 underline text-sm font-medium hover:text-blue-800"
-                            >
-                              Ver abonos
-                            </button>
-                          ) : (
-                            <span className="text-orange-600 font-semibold text-sm">{formatMoney(total)}</span>
-                          )}
+                          <span className={`font-semibold text-sm ${balanceColor}`}>
+                            {formatMoney(isPagada ? 0 : balance)}
+                          </span>
                         </TableCell>
                         <TableCell>{getStatusBadge(factura.estadoPago)}</TableCell>
                         <TableCell>{factura.fechaPago ? formatDateDisplay(factura.fechaPago) : "-"}</TableCell>

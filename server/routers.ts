@@ -714,13 +714,33 @@ export const appRouter = router({
   invoices: router({
     list: protectedProcedure.query(async () => {
       const { getDb } = await import("./db");
-      const { facturas } = await import("../drizzle/schema");
-      const { desc } = await import("drizzle-orm");
+      const { facturas, pagos } = await import("../drizzle/schema");
+      const { desc, eq, sql } = await import("drizzle-orm");
       const db = await getDb();
       if (!db) return [];
       
       const results = await db.select().from(facturas).orderBy(desc(facturas.createdAt));
-      return results;
+      
+      // For each factura, calculate totalPagado from pagos table
+      const facturaIds = results.map(f => f.id);
+      let pagosSums: Record<number, number> = {};
+      if (facturaIds.length > 0) {
+        const { inArray } = await import("drizzle-orm");
+        const pagosList = await db
+          .select({ facturaId: pagos.facturaId, monto: pagos.monto })
+          .from(pagos)
+          .where(inArray(pagos.facturaId, facturaIds));
+        for (const p of pagosList) {
+          pagosSums[p.facturaId] = (pagosSums[p.facturaId] || 0) + parseFloat(p.monto);
+        }
+      }
+      
+      return results.map(f => {
+        const total = parseFloat(f.total || "0");
+        const totalPagado = pagosSums[f.id] || 0;
+        const balance = Math.max(0, total - totalPagado);
+        return { ...f, totalPagado, balance };
+      });
     }),
     
     generateReport: adminProcedure
@@ -732,7 +752,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         try {
           const { getDb } = await import("./db");
-          const { facturas } = await import("../drizzle/schema");
+          const { facturas, pagos } = await import("../drizzle/schema");
           const { desc, inArray } = await import("drizzle-orm");
           const db = await getDb();
           if (!db) throw new Error("Database not available");
@@ -743,9 +763,29 @@ export const appRouter = router({
           }
           const facturaList = await query.orderBy(desc(facturas.createdAt));
           
+          // Calculate balance for each factura (total - sum of pagos)
+          const facturaIds = facturaList.map(f => f.id);
+          let pagosSums: Record<number, number> = {};
+          if (facturaIds.length > 0) {
+            const pagosList = await db
+              .select({ facturaId: pagos.facturaId, monto: pagos.monto })
+              .from(pagos)
+              .where(inArray(pagos.facturaId, facturaIds));
+            for (const p of pagosList) {
+              pagosSums[p.facturaId] = (pagosSums[p.facturaId] || 0) + parseFloat(p.monto);
+            }
+          }
+          
+          const facturaListWithBalance = facturaList.map(f => {
+            const total = parseFloat(f.total || "0");
+            const totalPagado = pagosSums[f.id] || 0;
+            const balance = Math.max(0, total - totalPagado);
+            return { ...f, balance };
+          });
+          
           const { generateFacturacionReportPDF } = await import("./facturacion-report-generator");
           const pdfUrl = await generateFacturacionReportPDF({
-            facturas: facturaList,
+            facturas: facturaListWithBalance,
             titulo: input.titulo || "Reporte de Facturación",
             filtroDescripcion: input.filtroDescripcion,
           });

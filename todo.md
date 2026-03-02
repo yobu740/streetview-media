@@ -1084,3 +1084,7 @@
 
 ## Reporte PDF - Logo Blanco
 - [x] Convertir logo a versión blanca para que sea visible sobre el fondo verde del encabezado del reporte PDF
+
+## Correcciones Urgentes
+- [x] Pagos parciales: columna Balance debe mostrar monto adeudado (total - abonos), no el total original
+- [x] Reporte PDF: logo no carga en producción porque usa ruta local del servidor - cambiar a CDN URL
