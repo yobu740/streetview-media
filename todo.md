@@ -1092,3 +1092,6 @@
 ## Facturación - Dashboard Stats Fix
 - [x] Tarjeta "Pago Parcial": mostrar total de abonos recibidos (no el total de la factura)
 - [x] Tarjeta "No Pagadas": mostrar suma de balances adeudados (Pendiente + Vencida + balance restante de Pago Parcial)
+
+## Reporte PDF - Orientación Horizontal
+- [x] Cambiar reporte de facturación a orientación horizontal (landscape) para que todas las columnas quepan sin cortarse

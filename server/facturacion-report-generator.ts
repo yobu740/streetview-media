@@ -35,7 +35,12 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
   const totalPagadas = pagadas.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
   const totalPendientes = pendientes.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
   const totalVencidas = vencidas.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
-  const totalParciales = parciales.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
+  // Pago Parcial card: total abonos received
+  const totalParcialesAbonos = parciales.reduce((s, f) => {
+    const total = parseFloat(f.total || "0");
+    const balance = f.balance != null ? f.balance : total;
+    return s + (total - balance);
+  }, 0);
   // Total balance owed (unpaid + partial remaining)
   const totalBalance = facturas.reduce((s, f) => {
     if (f.estadoPago === "Pagada") return s;
@@ -66,8 +71,8 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     // Will fall back to text in the PDF
   }
 
-  // Build PDF
-  const doc = new PDFDocument({ margin: 50, size: "LETTER" });
+  // Build PDF — LANDSCAPE orientation for wider table
+  const doc = new PDFDocument({ margin: 50, size: "LETTER", layout: "landscape" });
   const chunks: Buffer[] = [];
   doc.on("data", (chunk: Buffer) => chunks.push(chunk));
 
@@ -79,83 +84,87 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     const ORANGE = "#ff6b35";
     const GRAY = "#666666";
     const LIGHT_GRAY = "#f5f5f5";
-    const pageWidth = doc.page.width - 100; // margins 50 each side
+    // In landscape Letter: 792pt wide, 612pt tall; margins 50 each side → 692pt usable width
+    const pageWidth = doc.page.width - 100;
 
     // ── Header bar ────────────────────────────────────────────────────────
-    doc.rect(50, 50, pageWidth, 80).fill(GREEN);
+    doc.rect(50, 50, pageWidth, 70).fill(GREEN);
 
     // Logo image on the left - use pre-loaded buffer from CDN
     if (logoBuffer) {
       try {
-        // Logo is 900x231 px; scale to fit height ~55px inside the green bar
-        const logoH = 52;
+        // Logo is 900x231 px; scale to fit height ~48px inside the green bar
+        const logoH = 48;
         const logoW = Math.round(logoH * (900 / 231));
-        doc.image(logoBuffer, 60, 59, { width: logoW, height: logoH });
+        doc.image(logoBuffer, 60, 57, { width: logoW, height: logoH });
       } catch {
-        doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
+        doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 62);
       }
     } else {
       // Fallback to text if image failed to load
-      doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 65);
+      doc.fillColor("white").font("Helvetica-Bold").fontSize(22).text("STREETVIEW MEDIA", 70, 62);
     }
 
     // Slogan below logo area
     doc.fillColor("white").font("Helvetica-Oblique").fontSize(9)
-      .text("Tu Marca en el Camino", 60, 115);
+      .text("Tu Marca en el Camino", 60, 108);
 
     // Report title on right
-    doc.fillColor("white").font("Helvetica-Bold").fontSize(14).text(titulo, 50, 65, { align: "right", width: pageWidth });
-    doc.font("Helvetica").fontSize(10).fillColor("white").text(
-      `Generado: ${formatDate(new Date())}`,
-      50, 90, { align: "right", width: pageWidth }
-    );
+    doc.fillColor("white").font("Helvetica-Bold").fontSize(14)
+      .text(titulo, 50, 62, { align: "right", width: pageWidth });
+    doc.font("Helvetica").fontSize(10).fillColor("white")
+      .text(`Generado: ${formatDate(new Date())}`, 50, 84, { align: "right", width: pageWidth });
 
     // ── Filter description ──────────────────────────────────────────────────
-    let y = 140;
+    let y = 132;
     if (filtroDescripcion) {
       doc.fillColor(GRAY).font("Helvetica-Oblique").fontSize(10)
         .text(`Filtro aplicado: ${filtroDescripcion}`, 50, y);
       y += 20;
     }
 
-    // ── Summary cards ───────────────────────────────────────────────────────
-    const cardW = (pageWidth - 30) / 4;
+    // ── Summary cards (5 cards across the wider landscape page) ─────────────
+    const cardW = (pageWidth - 40) / 5;
     const cards = [
       { label: "Total Facturas", count: totalFacturas, amount: totalMonto, color: "#2563eb" },
       { label: "Pagadas", count: pagadas.length, amount: totalPagadas, color: "#16a34a" },
-      { label: "Pago Parcial", count: parciales.length, amount: totalParciales, color: "#2563eb" },
-      { label: "No Pagadas", count: pendientes.length + vencidas.length, amount: totalPendientes + totalVencidas, color: "#dc2626" },
+      { label: "Pago Parcial", count: parciales.length, amount: totalParcialesAbonos, color: "#2563eb" },
+      { label: "Pendientes", count: pendientes.length, amount: totalPendientes, color: "#d97706" },
+      { label: "Vencidas", count: vencidas.length, amount: totalVencidas, color: "#dc2626" },
     ];
 
     cards.forEach((card, i) => {
       const cx = 50 + i * (cardW + 10);
-      doc.rect(cx, y, cardW, 60).fill(LIGHT_GRAY);
-      doc.rect(cx, y, 4, 60).fill(card.color);
-      doc.fillColor(card.color).font("Helvetica-Bold").fontSize(9)
-        .text(card.label.toUpperCase(), cx + 10, y + 8, { width: cardW - 15 });
-      doc.fillColor("#111111").font("Helvetica-Bold").fontSize(20)
-        .text(String(card.count), cx + 10, y + 22);
-      doc.fillColor(GRAY).font("Helvetica").fontSize(9)
-        .text(formatMoney(card.amount), cx + 10, y + 44);
+      doc.rect(cx, y, cardW, 55).fill(LIGHT_GRAY);
+      doc.rect(cx, y, 4, 55).fill(card.color);
+      doc.fillColor(card.color).font("Helvetica-Bold").fontSize(8)
+        .text(card.label.toUpperCase(), cx + 10, y + 7, { width: cardW - 15 });
+      doc.fillColor("#111111").font("Helvetica-Bold").fontSize(18)
+        .text(String(card.count), cx + 10, y + 20);
+      doc.fillColor(GRAY).font("Helvetica").fontSize(8)
+        .text(formatMoney(card.amount), cx + 10, y + 40);
     });
 
-    y += 80;
+    y += 70;
 
-    // ── Table header ────────────────────────────────────────────────────────
+    // ── Table columns — distributed across 692pt landscape width ─────────────
+    // No. Factura: 80 | Cliente: 150 | Fecha: 75 | Total: 75 | Balance: 75 | Estado: 80 | Fecha Pago: 80 | Vendedor: remaining
     const cols = [
-      { label: "No. Factura", x: 50, w: 75 },
-      { label: "Cliente", x: 128, w: 120 },
-      { label: "Fecha", x: 252, w: 65 },
-      { label: "Total", x: 320, w: 65 },
-      { label: "Balance", x: 388, w: 65 },
-      { label: "Estado", x: 456, w: 65 },
-      { label: "Fecha Pago", x: 524, w: 0 }, // last col, auto width
+      { label: "No. Factura", x: 50,  w: 80  },
+      { label: "Cliente",     x: 133, w: 150 },
+      { label: "Fecha",       x: 286, w: 75  },
+      { label: "Total",       x: 364, w: 75  },
+      { label: "Balance",     x: 442, w: 75  },
+      { label: "Estado",      x: 520, w: 80  },
+      { label: "Fecha Pago",  x: 603, w: 80  },
+      { label: "Vendedor",    x: 686, w: 56  },
     ];
 
+    // ── Table header ────────────────────────────────────────────────────────
     doc.rect(50, y, pageWidth, 20).fill(GREEN);
     cols.forEach(col => {
       doc.fillColor("white").font("Helvetica-Bold").fontSize(8)
-        .text(col.label, col.x + 3, y + 6, { width: col.w || 80, ellipsis: true });
+        .text(col.label, col.x + 3, y + 6, { width: col.w, ellipsis: true });
     });
     y += 20;
 
@@ -167,18 +176,21 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
       "Pago Parcial": "#2563eb",
     };
 
+    const drawTableHeader = (yPos: number) => {
+      doc.rect(50, yPos, pageWidth, 20).fill(GREEN);
+      cols.forEach(col => {
+        doc.fillColor("white").font("Helvetica-Bold").fontSize(8)
+          .text(col.label, col.x + 3, yPos + 6, { width: col.w, ellipsis: true });
+      });
+      return yPos + 20;
+    };
+
     facturas.forEach((f, idx) => {
-      // Page break check
-      if (y > doc.page.height - 120) {
-        doc.addPage();
+      // Page break check — landscape height is 612pt
+      if (y > doc.page.height - 100) {
+        doc.addPage({ layout: "landscape" });
         y = 50;
-        // Repeat table header
-        doc.rect(50, y, pageWidth, 20).fill(GREEN);
-        cols.forEach(col => {
-          doc.fillColor("white").font("Helvetica-Bold").fontSize(8)
-            .text(col.label, col.x + 3, y + 6, { width: col.w || 80, ellipsis: true });
-        });
-        y += 20;
+        y = drawTableHeader(y);
       }
 
       const rowBg = idx % 2 === 0 ? "white" : LIGHT_GRAY;
@@ -198,13 +210,18 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
       doc.fillColor(balanceColor).font("Helvetica-Bold").fontSize(8)
         .text(formatMoney(balanceAmt), cols[4].x + 3, rowY, { width: cols[4].w });
 
-      // Status badge
+      // Status
       const statusColor = statusColors[f.estadoPago] || GRAY;
       doc.fillColor(statusColor).font("Helvetica-Bold").fontSize(7)
         .text(f.estadoPago, cols[5].x + 3, rowY + 1, { width: cols[5].w });
 
+      // Fecha Pago
       doc.fillColor("#111111").font("Helvetica").fontSize(8)
-        .text(formatDate(f.fechaPago), cols[6].x + 3, rowY, { width: 80 });
+        .text(formatDate(f.fechaPago), cols[6].x + 3, rowY, { width: cols[6].w });
+
+      // Vendedor
+      doc.font("Helvetica").fontSize(8)
+        .text(f.vendedor || "-", cols[7].x + 3, rowY, { width: cols[7].w, ellipsis: true });
 
       // Thin bottom border
       doc.moveTo(50, y + 18).lineTo(50 + pageWidth, y + 18).strokeColor("#e5e7eb").lineWidth(0.5).stroke();
@@ -216,7 +233,7 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     doc.rect(50, y, pageWidth, 22).fill(GREEN);
     doc.fillColor("white").font("Helvetica-Bold").fontSize(10)
       .text("TOTAL GENERAL", 53, y + 6, { width: 300 });
-    doc.text(formatMoney(totalMonto), cols[4].x + 3, y + 6, { width: cols[4].w });
+    doc.text(formatMoney(totalMonto), cols[3].x + 3, y + 6, { width: cols[3].w });
     y += 30;
 
     // ── Summary breakdown ────────────────────────────────────────────────────
@@ -228,10 +245,18 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
 
     const summaryRows = [
       { label: "Pagadas", count: pagadas.length, amount: totalPagadas, color: "#16a34a" },
-      { label: "Pago Parcial", count: parciales.length, amount: totalParciales, color: "#2563eb" },
+      { label: "Pago Parcial (abonos recibidos)", count: parciales.length, amount: totalParcialesAbonos, color: "#2563eb" },
       { label: "Pendientes", count: pendientes.length, amount: totalPendientes, color: "#d97706" },
       { label: "Vencidas", count: vencidas.length, amount: totalVencidas, color: "#dc2626" },
     ];
+
+    summaryRows.forEach(row => {
+      doc.fillColor(row.color).font("Helvetica-Bold").fontSize(9)
+        .text(`● ${row.label}`, 60, y);
+      doc.fillColor("#111111").font("Helvetica").fontSize(9)
+        .text(`${row.count} factura${row.count !== 1 ? "s" : ""}  —  ${formatMoney(row.amount)}`, 260, y);
+      y += 16;
+    });
 
     // Total balance owed
     y += 8;
@@ -243,19 +268,11 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
       .text(formatMoney(totalBalance), 60, y + 6, { align: "right", width: pageWidth - 20 });
     y += 30;
 
-    summaryRows.forEach(row => {
-      doc.fillColor(row.color).font("Helvetica-Bold").fontSize(9)
-        .text(`● ${row.label}`, 60, y);
-      doc.fillColor("#111111").font("Helvetica").fontSize(9)
-        .text(`${row.count} factura${row.count !== 1 ? "s" : ""}  —  ${formatMoney(row.amount)}`, 140, y);
-      y += 16;
-    });
-
     // ── Footer ───────────────────────────────────────────────────────────────
-    const footerY = doc.page.height - 50;
+    const footerY = doc.page.height - 40;
     doc.rect(50, footerY - 10, pageWidth, 1).fill("#e5e7eb");
     doc.fillColor(GRAY).font("Helvetica").fontSize(8)
-      .text("Streetview Media — Donde Puerto Rico Mira  |  (787) 708-5115", 50, footerY, { align: "center", width: pageWidth });
+      .text("Streetview Media — Tu Marca en el Camino  |  (787) 708-5115", 50, footerY, { align: "center", width: pageWidth });
 
     doc.end();
   });
