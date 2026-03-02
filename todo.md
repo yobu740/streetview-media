@@ -1033,3 +1033,9 @@
 - [x] Añadir filtro "En Construcción" en el selector de condición
 - [x] Añadir contador "En Construcción" en las tarjetas de estadísticas
 - [x] Incluir estado En Construcción en exportación Excel y reporte impreso
+
+## En Construcción - Integración con Panel Principal
+- [x] Caras en construcción deben contarse como no disponibles en stats del panel principal
+- [x] Mostrar badge "En Construcción" en columna Condición del panel principal
+- [x] Al marcar en construcción: verificar si hay anuncio activo/programado y alertar para relocalizar
+- [x] Bloquear marcado en construcción si hay anuncio activo hasta que se relocalice o cancele

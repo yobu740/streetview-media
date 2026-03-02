@@ -64,13 +64,13 @@ export default function Admin() {
   const itemsPerPage = 20;
   
   // Filter state
-  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
   
   // Print filter state
-  const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada">("all");
+  const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
   const [printFilterTipo, setPrintFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [printFilterRuta, setPrintFilterRuta] = useState("");
   const [printDateFrom, setPrintDateFrom] = useState("");
@@ -356,12 +356,29 @@ export default function Admin() {
   };
 
   const getParadaStatus = (parada: any) => {
+    // En Construccion takes priority — not available regardless of anuncios
+    if (parada.enConstruccion) {
+      return {
+        status: "En Construcción" as const,
+        anuncio: parada.anuncioId && parada.anuncioCliente &&
+          (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")
+          ? {
+              id: parada.anuncioId,
+              cliente: parada.anuncioCliente,
+              tipo: parada.anuncioTipo,
+              fechaInicio: parada.anuncioFechaInicio,
+              fechaFin: parada.anuncioFechaFin,
+              estado: parada.anuncioEstado,
+            }
+          : null,
+      };
+    }
     // Check if parada has an active anuncio from the joined data
     // Only show as Ocupada if the anuncio estado is Activo or Programado
     if (parada.anuncioId && parada.anuncioCliente && 
         (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")) {
       return { 
-        status: "Ocupada", 
+        status: "Ocupada" as const, 
         anuncio: {
           id: parada.anuncioId,
           cliente: parada.anuncioCliente,
@@ -373,7 +390,7 @@ export default function Admin() {
       };
     }
     
-    return { status: "Disponible", anuncio: null };
+    return { status: "Disponible" as const, anuncio: null };
   };
 
   // Apply all filters
@@ -413,7 +430,8 @@ export default function Admin() {
     const { status } = getParadaStatus(p);
     const matchesStatus = filterStatus === "all" || 
       (filterStatus === "disponible" && status === "Disponible") ||
-      (filterStatus === "ocupada" && status === "Ocupada");
+      (filterStatus === "ocupada" && status === "Ocupada") ||
+      (filterStatus === "construccion" && status === "En Construcción");
     
     // Tipo filter
     const matchesTipo = filterTipo === "all" || 
@@ -438,7 +456,8 @@ export default function Admin() {
       const { status } = getParadaStatus(p);
       const matchesStatus = printFilterStatus === "all" || 
         (printFilterStatus === "disponible" && status === "Disponible") ||
-        (printFilterStatus === "ocupada" && status === "Ocupada");
+        (printFilterStatus === "ocupada" && status === "Ocupada") ||
+        (printFilterStatus === "construccion" && status === "En Construcción");
       
       const matchesTipo = printFilterTipo === "all" || 
         (printFilterTipo === "Fija" && p.tipoFormato === "Fija") ||
@@ -635,6 +654,7 @@ export default function Admin() {
   
   const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
+  const construccionCount = filteredParadas.filter(p => getParadaStatus(p).status === "En Construcción").length;
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -1096,7 +1116,7 @@ export default function Admin() {
         </Card>
 
         {/* Stats Cards - Now clickable filters */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-lg ${filterStatus === "all" ? "ring-2 ring-[#1a4d3c]" : ""}`}
             onClick={() => { setFilterStatus("all"); handleFilterChange(); }}
@@ -1126,6 +1146,17 @@ export default function Admin() {
                 {ocupadasCount}
               </CardTitle>
               <CardDescription>Caras Ocupadas</CardDescription>
+            </CardHeader>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-amber-500 ${filterStatus === "construccion" ? "ring-2 ring-amber-500" : ""}`}
+            onClick={() => { setFilterStatus("construccion"); handleFilterChange(); }}
+          >
+            <CardHeader>
+              <CardTitle className="text-2xl text-amber-600">
+                {construccionCount}
+              </CardTitle>
+              <CardDescription>En Construcción</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -1219,12 +1250,32 @@ export default function Admin() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={status === "Disponible" ? "outline" : "destructive"}>
-                                {status}
-                              </Badge>
+                              {status === "Disponible" && (
+                                <Badge variant="outline" className="border-green-600 text-green-700">{status}</Badge>
+                              )}
+                              {status === "Ocupada" && (
+                                <Badge variant="destructive">{status}</Badge>
+                              )}
+                              {status === "En Construcción" && (
+                                <Badge className="bg-amber-500 hover:bg-amber-600 text-white">{status}</Badge>
+                              )}
                             </TableCell>
                             <TableCell>
                               {(() => {
+                                if (parada.enConstruccion) {
+                                  return (
+                                    <div className="flex flex-col gap-1">
+                                      <Badge className="bg-amber-500 hover:bg-amber-600 text-white text-xs w-fit">
+                                        En Construcción
+                                      </Badge>
+                                      {parada.fechaDisponibilidad && (
+                                        <span className="text-xs text-amber-700">
+                                          Disp.: {new Date(parada.fechaDisponibilidad).toLocaleDateString("es-PR")}
+                                        </span>
+                                      )}
+                                    </div>
+                                  );
+                                }
                                 const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
                                 return (
                                   <Badge variant={isLista ? "default" : "secondary"} className={isLista ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"}>
@@ -1818,6 +1869,7 @@ export default function Admin() {
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="disponible">Solo Disponibles</SelectItem>
                   <SelectItem value="ocupada">Solo Ocupadas</SelectItem>
+                  <SelectItem value="construccion">En Construcción</SelectItem>
                 </SelectContent>
               </Select>
             </div>

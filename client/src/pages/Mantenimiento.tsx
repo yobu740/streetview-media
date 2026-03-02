@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +43,14 @@ export default function Mantenimiento() {
   const [isConstruccionDialogOpen, setIsConstruccionDialogOpen] = useState(false);
   const [construccionParada, setConstruccionParada] = useState<any>(null);
   const [fechaDisponibilidad, setFechaDisponibilidad] = useState<string>("");
+  const [activeAnunciosForParada, setActiveAnunciosForParada] = useState<any[]>([]);
+  const [loadingAnunciosCheck, setLoadingAnunciosCheck] = useState(false);
 
   const { data: paradas, refetch: refetchParadas } = trpc.paradas.list.useQuery();
+  const { data: anunciosByParada } = trpc.anuncios.getByParadaId.useQuery(
+    { paradaId: construccionParada?.id || 0 },
+    { enabled: !!construccionParada && !construccionParada.enConstruccion && isConstruccionDialogOpen }
+  );
   const { data: history } = trpc.mantenimiento.getHistory.useQuery(
     { paradaId: selectedParada?.id || 0 },
     { enabled: !!selectedParada && isHistoryDialogOpen }
@@ -118,6 +124,7 @@ export default function Mantenimiento() {
 
   const openConstruccionDialog = (parada: any) => {
     setConstruccionParada(parada);
+    setActiveAnunciosForParada([]);
     // Pre-fill date if already set
     if (parada.fechaDisponibilidad) {
       const d = new Date(parada.fechaDisponibilidad);
@@ -127,6 +134,19 @@ export default function Mantenimiento() {
     }
     setIsConstruccionDialogOpen(true);
   };
+
+  // When anuncios load for the selected parada, filter active/programado ones
+  useEffect(() => {
+    if (!anunciosByParada || construccionParada?.enConstruccion) return;
+    const now = new Date();
+    const active = anunciosByParada.filter(
+      (a: any) =>
+        (a.estado === "Activo" || a.estado === "Programado") &&
+        a.approvalStatus === "approved" &&
+        new Date(a.fechaFin) >= now
+    );
+    setActiveAnunciosForParada(active);
+  }, [anunciosByParada, construccionParada]);
 
   const handleSetConstruccion = () => {
     if (!construccionParada) return;
@@ -606,6 +626,29 @@ export default function Mantenimiento() {
 
           {!construccionParada?.enConstruccion ? (
             <div className="py-2">
+              {/* Alert: active anuncios exist */}
+              {activeAnunciosForParada.length > 0 && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg">
+                  <p className="text-sm font-semibold text-red-700 mb-2">
+                    ⚠️ Esta cara tiene {activeAnunciosForParada.length} anuncio{activeAnunciosForParada.length > 1 ? "s" : ""} activo{activeAnunciosForParada.length > 1 ? "s" : ""}:
+                  </p>
+                  <ul className="space-y-1">
+                    {activeAnunciosForParada.map((a: any) => (
+                      <li key={a.id} className="text-xs text-red-700">
+                        <strong>{a.cliente}</strong> — {a.producto || a.tipo}
+                        {a.fechaFin && (
+                          <span className="text-red-500">
+                            {" "}(hasta {new Date(a.fechaFin).toLocaleDateString("es-PR")})
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-red-600 mt-2 font-medium">
+                    Debes relocalizar o cancelar {activeAnunciosForParada.length > 1 ? "estos anuncios" : "este anuncio"} antes de marcar la cara como En Construcción.
+                  </p>
+                </div>
+              )}
               <p className="text-sm text-gray-600 mb-4">
                 Esta cara quedará marcada como <strong>En Construcción</strong> y no estará
                 disponible para asignación de anuncios hasta que se remueva el estado.
@@ -621,6 +664,7 @@ export default function Mantenimiento() {
                   onChange={(e) => setFechaDisponibilidad(e.target.value)}
                   min={new Date().toISOString().split("T")[0]}
                   className="mt-1"
+                  disabled={activeAnunciosForParada.length > 0}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Fecha en que se espera que la cara esté disponible nuevamente.
@@ -662,7 +706,8 @@ export default function Mantenimiento() {
                   ? "bg-gray-600 hover:bg-gray-700"
                   : "bg-amber-600 hover:bg-amber-700"
               }
-              disabled={updateCondicion.isPending}
+              disabled={updateCondicion.isPending || (!construccionParada?.enConstruccion && activeAnunciosForParada.length > 0)}
+              title={!construccionParada?.enConstruccion && activeAnunciosForParada.length > 0 ? "Relocaliza o cancela los anuncios activos primero" : undefined}
             >
               {construccionParada?.enConstruccion ? "Quitar Estado" : "Confirmar"}
             </Button>
