@@ -165,7 +165,8 @@ export async function getUnreadNotificationCount(userId: number): Promise<number
 export async function updateAnuncioApprovalStatus(
   anuncioId: number,
   approvalStatus: "pending" | "approved" | "rejected",
-  approvedBy: number
+  approvedBy: number,
+  approvedByName?: string
 ): Promise<void> {
   const db = await getDb();
   if (!db) {
@@ -189,6 +190,23 @@ export async function updateAnuncioApprovalStatus(
       .update(anuncios)
       .set(updateData)
       .where(eq(anuncios.id, anuncioId));
+    
+    // Record history entry for approval/rejection
+    const accionMap: Record<string, string> = {
+      approved: "Aprobado",
+      rejected: "Rechazado",
+      pending: "Pendiente",
+    };
+    await createAnuncioHistoryEntry({
+      anuncioId,
+      userId: approvedBy,
+      userName: approvedByName,
+      accion: accionMap[approvalStatus] || approvalStatus,
+      campoModificado: "approvalStatus",
+      valorAnterior: "pending",
+      valorNuevo: approvalStatus,
+      detalles: `Reserva ${accionMap[approvalStatus]?.toLowerCase() || approvalStatus} por ${approvedByName || `Usuario #${approvedBy}`}`,
+    });
   } catch (error) {
     console.error("[Database] Failed to update approval status:", error);
     throw error;

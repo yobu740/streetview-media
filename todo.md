@@ -1045,3 +1045,6 @@
 - [x] Mostrar mensaje de error con fecha estimada al intentar reservar cara En Construcción
 - [x] Botón "Relocalizar" en el aviso de anuncio activo en Mantenimiento
 - [x] Notificación automática al admin cuando vence la fecha estimada de disponibilidad
+
+## Historial de Anuncios - Nombre de Usuario
+- [x] Corregir historial de anuncios para mostrar nombre real del usuario en lugar de "usuario desconocido"

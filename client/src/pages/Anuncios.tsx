@@ -1224,7 +1224,7 @@ export default function Anuncios() {
                           </span>
                         </div>
                         <p className="text-sm font-medium text-gray-700">
-                          {entry.usuarioNombre || 'Usuario desconocido'}
+                          {entry.userName || 'Usuario desconocido'}
                         </p>
                       </div>
                     </div>

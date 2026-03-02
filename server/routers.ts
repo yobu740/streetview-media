@@ -314,13 +314,13 @@ export const appRouter = router({
         estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
         notas: z.string().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { id, costoPorUnidad, ...data } = input;
         const updateData = {
           ...data,
           ...(costoPorUnidad !== undefined && { costoPorUnidad: costoPorUnidad.toString() }),
         };
-        await paradasDb.updateAnuncio(id, updateData);
+        await paradasDb.updateAnuncio(id, updateData, ctx.user.id, ctx.user.name || ctx.user.openId);
         return { success: true };
       }),
     
@@ -335,12 +335,12 @@ export const appRouter = router({
           cliente: z.string().optional(),
         }),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { anuncioIds, updates } = input;
         
         // Update each anuncio
         for (const id of anuncioIds) {
-          await paradasDb.updateAnuncio(id, updates);
+          await paradasDb.updateAnuncio(id, updates, ctx.user.id, ctx.user.name || ctx.user.openId);
         }
         
         return { success: true, count: anuncioIds.length };
@@ -355,10 +355,10 @@ export const appRouter = router({
     
     cancel: adminProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         // Cancel anuncio by setting estado to "Inactivo"
         // This frees up the parada while keeping history
-        await paradasDb.updateAnuncio(input.id, { estado: "Inactivo" });
+        await paradasDb.updateAnuncio(input.id, { estado: "Inactivo" }, ctx.user.id, ctx.user.name || ctx.user.openId);
         return { success: true };
       }),
     
@@ -367,8 +367,8 @@ export const appRouter = router({
         id: z.number(),
         estado: z.enum(["Disponible", "Activo", "Programado", "Inactivo", "Finalizado"])
       }))
-      .mutation(async ({ input }) => {
-        await paradasDb.updateAnuncio(input.id, { estado: input.estado });
+      .mutation(async ({ input, ctx }) => {
+        await paradasDb.updateAnuncio(input.id, { estado: input.estado }, ctx.user.id, ctx.user.name || ctx.user.openId);
         return { success: true };
       }),
     
@@ -467,7 +467,7 @@ export const appRouter = router({
           }
         }
         
-        await updateAnuncioApprovalStatus(input.anuncioId, "approved", ctx.user.id);
+        await updateAnuncioApprovalStatus(input.anuncioId, "approved", ctx.user.id, ctx.user.name || ctx.user.openId);
         
         // Notify the creator
         const anuncio = await getAnuncioById(input.anuncioId);
@@ -491,7 +491,7 @@ export const appRouter = router({
         const { updateAnuncioApprovalStatus, createNotification } = await import("./db");
         const { getAnuncioById } = await import("./paradas-db");
         
-        await updateAnuncioApprovalStatus(input.anuncioId, "rejected", ctx.user.id);
+        await updateAnuncioApprovalStatus(input.anuncioId, "rejected", ctx.user.id, ctx.user.name || ctx.user.openId);
         
         // Notify the creator
         const anuncio = await getAnuncioById(input.anuncioId);
@@ -516,7 +516,7 @@ export const appRouter = router({
         const { getAnuncioById } = await import("./paradas-db");
         
         for (const anuncioId of input.anuncioIds) {
-          await updateAnuncioApprovalStatus(anuncioId, "approved", ctx.user.id);
+          await updateAnuncioApprovalStatus(anuncioId, "approved", ctx.user.id, ctx.user.name || ctx.user.openId);
           
           // Notify the creator
           const anuncio = await getAnuncioById(anuncioId);
@@ -542,7 +542,7 @@ export const appRouter = router({
         const { getAnuncioById } = await import("./paradas-db");
         
         for (const anuncioId of input.anuncioIds) {
-          await updateAnuncioApprovalStatus(anuncioId, "rejected", ctx.user.id);
+          await updateAnuncioApprovalStatus(anuncioId, "rejected", ctx.user.id, ctx.user.name || ctx.user.openId);
           
           // Notify the creator
           const anuncio = await getAnuncioById(anuncioId);
