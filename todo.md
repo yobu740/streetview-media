@@ -1081,3 +1081,6 @@
 ## Reporte PDF Facturación - Logo y Slogan
 - [x] Usar logo real de Streetview Media (imagen PNG) en el encabezado del reporte PDF
 - [x] Actualizar slogan a "Tu Marca en el Camino" en el reporte PDF
+
+## Reporte PDF - Logo Blanco
+- [x] Convertir logo a versión blanca para que sea visible sobre el fondo verde del encabezado del reporte PDF

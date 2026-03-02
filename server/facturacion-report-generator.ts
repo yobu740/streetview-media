@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LOGO_PATH = path.join(__dirname, "streetview-logo.png");
+const LOGO_PATH = path.join(__dirname, "streetview-logo-white.png");
 
 interface FacturaItem {
   numeroFactura: string;

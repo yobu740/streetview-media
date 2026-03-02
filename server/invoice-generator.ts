@@ -157,8 +157,8 @@ async function createPDFBuffer(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    // Header with logo from S3
-    const logoUrl = "https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/aXdEhASWaNhvKWjP.png";
+    // Header with logo from CDN (white version for dark header backgrounds)
+    const logoUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
     try {
       // Download logo from S3 using fetch
       const response = await fetch(logoUrl);
