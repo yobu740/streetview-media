@@ -1142,6 +1142,116 @@ export const appRouter = router({
         
         return { success: true };
       }),
+
+    // List all pagos (abonos) for a specific factura
+    listPagos: protectedProcedure
+      .input(z.object({ facturaId: z.number() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { pagos } = await import("../drizzle/schema");
+        const { eq, asc } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+        return await db.select().from(pagos)
+          .where(eq(pagos.facturaId, input.facturaId))
+          .orderBy(asc(pagos.fechaPago));
+      }),
+
+    // Register a new abono (partial payment)
+    registrarAbono: adminProcedure
+      .input(z.object({
+        facturaId: z.number(),
+        monto: z.number().positive(),
+        fechaPago: z.string(), // ISO date string
+        metodoPago: z.enum(["Efectivo", "Transferencia", "Cheque", "Tarjeta", "Otro"]),
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import("./db");
+        const { pagos, facturas } = await import("../drizzle/schema");
+        const { eq, sum } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get the factura to check total
+        const [factura] = await db.select().from(facturas).where(eq(facturas.id, input.facturaId));
+        if (!factura) throw new TRPCError({ code: "NOT_FOUND", message: "Factura no encontrada" });
+
+        // Insert the new pago
+        await db.insert(pagos).values({
+          facturaId: input.facturaId,
+          monto: input.monto.toFixed(2),
+          fechaPago: new Date(input.fechaPago),
+          metodoPago: input.metodoPago,
+          notas: input.notas || null,
+          registradoPor: ctx.user?.name || "Admin",
+        });
+
+        // Recalculate total paid and update factura status
+        const pagosList = await db.select().from(pagos).where(eq(pagos.facturaId, input.facturaId));
+        const totalPagado = pagosList.reduce((acc, p) => acc + parseFloat(p.monto), 0);
+        const totalFactura = parseFloat(factura.total);
+        const balance = totalFactura - totalPagado;
+
+        let nuevoEstado: "Pendiente" | "Pagada" | "Vencida" | "Pago Parcial";
+        if (balance <= 0) {
+          nuevoEstado = "Pagada";
+        } else if (totalPagado > 0) {
+          nuevoEstado = "Pago Parcial";
+        } else {
+          nuevoEstado = factura.estadoPago === "Vencida" ? "Vencida" : "Pendiente";
+        }
+
+        await db.update(facturas)
+          .set({
+            estadoPago: nuevoEstado,
+            fechaPago: nuevoEstado === "Pagada" ? new Date(input.fechaPago) : factura.fechaPago,
+          })
+          .where(eq(facturas.id, input.facturaId));
+
+        return { success: true, nuevoEstado, totalPagado, balance: Math.max(0, balance) };
+      }),
+
+    // Delete an abono
+    deleteAbono: adminProcedure
+      .input(z.object({ pagoId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { pagos, facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Get the pago to find its facturaId before deleting
+        const [pago] = await db.select().from(pagos).where(eq(pagos.id, input.pagoId));
+        if (!pago) throw new TRPCError({ code: "NOT_FOUND", message: "Abono no encontrado" });
+
+        await db.delete(pagos).where(eq(pagos.id, input.pagoId));
+
+        // Recalculate balance after deletion
+        const [factura] = await db.select().from(facturas).where(eq(facturas.id, pago.facturaId));
+        if (!factura) return { success: true };
+
+        const pagosList = await db.select().from(pagos).where(eq(pagos.facturaId, pago.facturaId));
+        const totalPagado = pagosList.reduce((acc, p) => acc + parseFloat(p.monto), 0);
+        const totalFactura = parseFloat(factura.total);
+        const balance = totalFactura - totalPagado;
+
+        let nuevoEstado: "Pendiente" | "Pagada" | "Vencida" | "Pago Parcial";
+        if (balance <= 0) {
+          nuevoEstado = "Pagada";
+        } else if (totalPagado > 0) {
+          nuevoEstado = "Pago Parcial";
+        } else {
+          nuevoEstado = factura.estadoPago === "Vencida" ? "Vencida" : "Pendiente";
+        }
+
+        await db.update(facturas)
+          .set({ estadoPago: nuevoEstado })
+          .where(eq(facturas.id, pago.facturaId));
+
+        return { success: true, nuevoEstado, balance: Math.max(0, balance) };
+      }),
   }),
   
   // CRM System for Vendedores

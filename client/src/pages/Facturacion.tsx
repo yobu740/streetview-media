@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2, FileDown } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import {
@@ -38,42 +38,130 @@ export default function Facturacion() {
   const { user } = useAuth();
   const { data: facturas, isLoading } = trpc.invoices.list.useQuery();
   const updatePaymentStatus = trpc.invoices.updatePaymentStatus.useMutation();
+  const registrarAbono = trpc.invoices.registrarAbono.useMutation();
+  const deleteAbono = trpc.invoices.deleteAbono.useMutation();
   const utils = trpc.useUtils();
-  
-  // All useState hooks
+
+  // ── State ──────────────────────────────────────────────────────────────────
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedFactura, setSelectedFactura] = useState<any>(null);
   const [fechaPago, setFechaPago] = useState("");
+
+  // Abono (partial payment) dialog
+  const [isAbonoDialogOpen, setIsAbonoDialogOpen] = useState(false);
+  const [abonoFactura, setAbonoFactura] = useState<any>(null);
+  const [abonoMonto, setAbonoMonto] = useState("");
+  const [abonoFecha, setAbonoFecha] = useState(new Date().toISOString().split("T")[0]);
+  const [abonoMetodo, setAbonoMetodo] = useState<"Efectivo" | "Transferencia" | "Cheque" | "Tarjeta" | "Otro">("Transferencia");
+  const [abonoNotas, setAbonoNotas] = useState("");
+
+  // Pagos history dialog
+  const [isPagosDialogOpen, setIsPagosDialogOpen] = useState(false);
+  const [pagosFactura, setPagosFactura] = useState<any>(null);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const [exportType, setExportType] = useState<"mes" | "cliente">("mes");
   const [exportMonth, setExportMonth] = useState("");
   const [exportCliente, setExportCliente] = useState("");
-  
-  // Date range filters
   const [dateFilterStart, setDateFilterStart] = useState("");
   const [dateFilterEnd, setDateFilterEnd] = useState("");
-  
-  // Archive toggle
   const [showArchived, setShowArchived] = useState(false);
-  
+
   const deleteFactura = trpc.facturas.delete.useMutation();
   const archiveFactura = trpc.invoices.archive.useMutation();
   const unarchiveFactura = trpc.invoices.unarchive.useMutation();
   const generateReport = trpc.invoices.generateReport.useMutation();
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
+  // Query pagos for the selected factura in the history dialog
+  const { data: pagosData, refetch: refetchPagos } = trpc.invoices.listPagos.useQuery(
+    { facturaId: pagosFactura?.id ?? 0 },
+    { enabled: !!pagosFactura }
+  );
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
   const handleMarkAsPaid = (factura: any) => {
     setSelectedFactura(factura);
     setFechaPago(new Date().toISOString().split("T")[0]);
     setIsPaymentDialogOpen(true);
   };
 
-  const handleDeleteFactura = (facturaId: number, numeroFactura: string) => {
-    if (!confirm(`¿Está seguro de eliminar la factura ${numeroFactura}?`)) {
+  const handleOpenAbono = (factura: any) => {
+    setAbonoFactura(factura);
+    setAbonoMonto("");
+    setAbonoFecha(new Date().toISOString().split("T")[0]);
+    setAbonoMetodo("Transferencia");
+    setAbonoNotas("");
+    setIsAbonoDialogOpen(true);
+  };
+
+  const handleOpenPagos = (factura: any) => {
+    setPagosFactura(factura);
+    setIsPagosDialogOpen(true);
+  };
+
+  const confirmRegistrarAbono = () => {
+    const monto = parseFloat(abonoMonto);
+    if (!abonoMonto || isNaN(monto) || monto <= 0) {
+      toast.error("Ingrese un monto válido mayor a 0");
       return;
     }
-    
+    if (!abonoFecha) {
+      toast.error("Seleccione una fecha de pago");
+      return;
+    }
+
+    const totalFactura = parseFloat(abonoFactura?.total || "0");
+    if (monto > totalFactura) {
+      toast.error(`El abono ($${monto.toFixed(2)}) no puede superar el total de la factura ($${totalFactura.toFixed(2)})`);
+      return;
+    }
+
+    registrarAbono.mutate(
+      {
+        facturaId: abonoFactura.id,
+        monto,
+        fechaPago: abonoFecha,
+        metodoPago: abonoMetodo,
+        notas: abonoNotas || undefined,
+      },
+      {
+        onSuccess: (data: any) => {
+          const msg = data.nuevoEstado === "Pagada"
+            ? "¡Factura marcada como Pagada! El abono completó el total."
+            : `Abono registrado. Balance restante: $${data.balance.toFixed(2)}`;
+          toast.success(msg);
+          setIsAbonoDialogOpen(false);
+          utils.invoices.list.invalidate();
+          if (pagosFactura?.id === abonoFactura.id) refetchPagos();
+        },
+        onError: (error: any) => {
+          toast.error(error.message || "Error al registrar el abono");
+        },
+      }
+    );
+  };
+
+  const handleDeleteAbono = (pagoId: number) => {
+    if (!confirm("¿Eliminar este abono? El balance de la factura se recalculará.")) return;
+    deleteAbono.mutate(
+      { pagoId },
+      {
+        onSuccess: () => {
+          toast.success("Abono eliminado");
+          utils.invoices.list.invalidate();
+          refetchPagos();
+        },
+        onError: (error: any) => {
+          toast.error(error.message || "Error al eliminar el abono");
+        },
+      }
+    );
+  };
+
+  const handleDeleteFactura = (facturaId: number, numeroFactura: string) => {
+    if (!confirm(`¿Está seguro de eliminar la factura ${numeroFactura}?`)) return;
     deleteFactura.mutate(
       { id: facturaId },
       {
@@ -87,12 +175,9 @@ export default function Facturacion() {
       }
     );
   };
-  
+
   const handleArchiveFactura = (facturaId: number, numeroFactura: string) => {
-    if (!confirm(`¿Archivar la factura ${numeroFactura}?`)) {
-      return;
-    }
-    
+    if (!confirm(`¿Archivar la factura ${numeroFactura}?`)) return;
     archiveFactura.mutate(
       { facturaId },
       {
@@ -106,8 +191,8 @@ export default function Facturacion() {
       }
     );
   };
-  
-  const handleUnarchiveFactura = (facturaId: number, numeroFactura: string) => {
+
+  const handleUnarchiveFactura = (facturaId: number, _: string) => {
     unarchiveFactura.mutate(
       { facturaId },
       {
@@ -121,31 +206,25 @@ export default function Facturacion() {
       }
     );
   };
-  
+
   const handleExportReportPDF = async () => {
     if (filteredFacturas.length === 0) {
       toast.error("No hay facturas para exportar con los filtros actuales");
       return;
     }
-    
     setIsGeneratingReport(true);
-    
-    // Build a description of active filters
     const parts: string[] = [];
     if (searchTerm) parts.push(`Búsqueda: "${searchTerm}"`);
     if (dateFilterStart) parts.push(`Desde: ${dateFilterStart}`);
     if (dateFilterEnd) parts.push(`Hasta: ${dateFilterEnd}`);
     if (showArchived) parts.push("Archivadas");
     const filtroDescripcion = parts.length > 0 ? parts.join(" | ") : "Todas las facturas";
-    
     const facturaIds = filteredFacturas.map((f: any) => f.id);
-    
     generateReport.mutate(
       { facturaIds, filtroDescripcion },
       {
         onSuccess: (data: any) => {
           setIsGeneratingReport(false);
-          // Download the PDF
           fetch(data.pdfUrl)
             .then(r => r.blob())
             .then(blob => {
@@ -173,93 +252,42 @@ export default function Facturacion() {
   };
 
   const handleExportReport = () => {
-    if (exportType === "mes" && !exportMonth) {
-      toast.error("Debe seleccionar un mes");
-      return;
-    }
-    if (exportType === "cliente" && !exportCliente) {
-      toast.error("Debe ingresar un cliente");
-      return;
-    }
-    
-    // Filter facturas based on export type
-    let filteredFacturas = facturas || [];
-    
+    if (exportType === "mes" && !exportMonth) { toast.error("Debe seleccionar un mes"); return; }
+    if (exportType === "cliente" && !exportCliente) { toast.error("Debe ingresar un cliente"); return; }
+    let filtered = facturas || [];
     if (exportType === "mes") {
       const [year, month] = exportMonth.split("-");
-      filteredFacturas = filteredFacturas.filter((f: any) => {
-        const facturaDate = new Date(f.createdAt);
-        return (
-          facturaDate.getFullYear() === parseInt(year) &&
-          facturaDate.getMonth() + 1 === parseInt(month)
-        );
+      filtered = filtered.filter((f: any) => {
+        const d = new Date(f.createdAt);
+        return d.getFullYear() === parseInt(year) && d.getMonth() + 1 === parseInt(month);
       });
     } else {
-      filteredFacturas = filteredFacturas.filter((f: any) =>
-        f.cliente.toLowerCase().includes(exportCliente.toLowerCase())
-      );
+      filtered = filtered.filter((f: any) => f.cliente.toLowerCase().includes(exportCliente.toLowerCase()));
     }
-    
-    if (filteredFacturas.length === 0) {
-      toast.error("No hay facturas para exportar con los criterios seleccionados");
-      return;
-    }
-    
-    // Generate CSV
-    const headers = [
-      "No. Factura",
-      "Cliente",
-      "Fecha",
-      "Total",
-      "Estado",
-      "Fecha Pago",
-      "Vendedor",
-    ];
-    
-    const rows = filteredFacturas.map((f: any) => [
-      f.numeroFactura,
-      f.cliente,
-      formatDateDisplay(f.createdAt),
-      parseFloat(f.total).toFixed(2),
-      f.estadoPago,
-      f.fechaPago ? formatDateDisplay(f.fechaPago) : "-",
-      f.vendedor || "-",
+    if (filtered.length === 0) { toast.error("No hay facturas para exportar"); return; }
+    const headers = ["No. Factura", "Cliente", "Fecha", "Total", "Estado", "Fecha Pago", "Vendedor"];
+    const rows = filtered.map((f: any) => [
+      f.numeroFactura, f.cliente, formatDateDisplay(f.createdAt),
+      parseFloat(f.total).toFixed(2), f.estadoPago,
+      f.fechaPago ? formatDateDisplay(f.fechaPago) : "-", f.vendedor || "-",
     ]);
-    
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-    
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const csv = [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `reporte_facturas_${exportType === "mes" ? exportMonth : exportCliente}_${new Date().toISOString().split("T")[0]}.csv`
-    );
+    link.href = URL.createObjectURL(blob);
+    link.download = `reporte_facturas_${exportType === "mes" ? exportMonth : exportCliente}_${new Date().toISOString().split("T")[0]}.csv`;
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
     toast.success("Reporte exportado correctamente");
     setIsExportDialogOpen(false);
   };
-  
-  const confirmMarkAsPaid = () => {
-    if (!selectedFactura || !fechaPago) {
-      toast.error("Debe seleccionar una fecha de pago");
-      return;
-    }
 
+  const confirmMarkAsPaid = () => {
+    if (!selectedFactura || !fechaPago) { toast.error("Debe seleccionar una fecha de pago"); return; }
     updatePaymentStatus.mutate(
-      {
-        facturaId: selectedFactura.id,
-        estadoPago: "Pagada",
-        fechaPago: new Date(fechaPago).toISOString(),
-      },
+      { facturaId: selectedFactura.id, estadoPago: "Pagada", fechaPago: new Date(fechaPago).toISOString() },
       {
         onSuccess: () => {
           toast.success("Factura marcada como pagada");
@@ -275,13 +303,10 @@ export default function Facturacion() {
     );
   };
 
-  // Filter facturas based on search term and date range
+  // ── Filtered data ──────────────────────────────────────────────────────────
   const filteredFacturas = useMemo(() => {
     if (!facturas) return [];
-    
     let filtered = facturas;
-    
-    // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter((f: any) =>
@@ -290,37 +315,43 @@ export default function Facturacion() {
         (f.vendedor && f.vendedor.toLowerCase().includes(term))
       );
     }
-    
-    // Apply date range filter
     if (dateFilterStart) {
       const startDate = new Date(dateFilterStart);
       filtered = filtered.filter((f: any) => new Date(f.createdAt) >= startDate);
     }
-    
     if (dateFilterEnd) {
       const endDate = new Date(dateFilterEnd);
-      endDate.setHours(23, 59, 59, 999); // Include entire end day
+      endDate.setHours(23, 59, 59, 999);
       filtered = filtered.filter((f: any) => new Date(f.createdAt) <= endDate);
     }
-    
-    // Apply archive filter
     filtered = filtered.filter((f: any) => showArchived ? f.archivada === 1 : f.archivada === 0);
-    
     return filtered;
   }, [facturas, searchTerm, dateFilterStart, dateFilterEnd, showArchived]);
-  
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
   const getStatusBadge = (estado: string) => {
     switch (estado) {
       case "Pagada":
-        return <Badge className="bg-green-600 hover:bg-green-700">Pagada</Badge>;
+        return <Badge className="bg-green-600 hover:bg-green-700 text-white">Pagada</Badge>;
       case "Pendiente":
-        return <Badge className="bg-yellow-600 hover:bg-yellow-700">Pendiente</Badge>;
+        return <Badge className="bg-yellow-600 hover:bg-yellow-700 text-white">Pendiente</Badge>;
       case "Vencida":
-        return <Badge className="bg-red-600 hover:bg-red-700">Vencida</Badge>;
+        return <Badge className="bg-red-600 hover:bg-red-700 text-white">Vencida</Badge>;
+      case "Pago Parcial":
+        return <Badge className="bg-blue-600 hover:bg-blue-700 text-white">Pago Parcial</Badge>;
       default:
         return <Badge>{estado}</Badge>;
     }
   };
+
+  const formatMoney = (n: number) =>
+    `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Compute total paid for a factura from the pagos list (used in history dialog)
+  const totalPagadoFromList = useMemo(() => {
+    if (!pagosData) return 0;
+    return pagosData.reduce((acc, p) => acc + parseFloat(p.monto), 0);
+  }, [pagosData]);
 
   if (!user) {
     return (
@@ -332,12 +363,10 @@ export default function Facturacion() {
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
-      {/* Sidebar */}
       <AdminSidebar />
-      
-      {/* Main Content */}
       <div className="flex-1 min-w-0">
         <div className="container py-8">
+          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
@@ -363,7 +392,7 @@ export default function Facturacion() {
               </div>
             </div>
           </div>
-        
+
           {/* Search and Filters */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -378,70 +407,34 @@ export default function Facturacion() {
               </div>
               <div>
                 <Label className="text-sm text-gray-600 mb-1 block">Fecha Inicio</Label>
-                <Input
-                  type="date"
-                  value={dateFilterStart}
-                  onChange={(e) => setDateFilterStart(e.target.value)}
-                />
+                <Input type="date" value={dateFilterStart} onChange={(e) => setDateFilterStart(e.target.value)} />
               </div>
               <div>
                 <Label className="text-sm text-gray-600 mb-1 block">Fecha Fin</Label>
-                <Input
-                  type="date"
-                  value={dateFilterEnd}
-                  onChange={(e) => setDateFilterEnd(e.target.value)}
-                />
+                <Input type="date" value={dateFilterEnd} onChange={(e) => setDateFilterEnd(e.target.value)} />
               </div>
             </div>
-            
-            {/* Quick Filter Buttons */}
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = new Date();
-                  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                  setDateFilterStart(firstDay.toISOString().split('T')[0]);
-                  setDateFilterEnd(today.toISOString().split('T')[0]);
-                }}
-              >
-                Este Mes
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = new Date();
-                  const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                  const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
-                  setDateFilterStart(lastMonth.toISOString().split('T')[0]);
-                  setDateFilterEnd(lastDay.toISOString().split('T')[0]);
-                }}
-              >
-                Último Mes
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const today = new Date();
-                  const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-                  setDateFilterStart(threeMonthsAgo.toISOString().split('T')[0]);
-                  setDateFilterEnd(today.toISOString().split('T')[0]);
-                }}
-              >
-                Últimos 3 Meses
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setDateFilterStart("");
-                  setDateFilterEnd("");
-                  setSearchTerm("");
-                }}
-              >
+              <Button variant="outline" size="sm" onClick={() => {
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                setDateFilterStart(firstDay.toISOString().split('T')[0]);
+                setDateFilterEnd(today.toISOString().split('T')[0]);
+              }}>Este Mes</Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                const today = new Date();
+                const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+                setDateFilterStart(lastMonth.toISOString().split('T')[0]);
+                setDateFilterEnd(lastDay.toISOString().split('T')[0]);
+              }}>Último Mes</Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                const today = new Date();
+                const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+                setDateFilterStart(threeMonthsAgo.toISOString().split('T')[0]);
+                setDateFilterEnd(today.toISOString().split('T')[0]);
+              }}>Últimos 3 Meses</Button>
+              <Button variant="outline" size="sm" onClick={() => { setDateFilterStart(""); setDateFilterEnd(""); setSearchTerm(""); }}>
                 Limpiar Filtros
               </Button>
               <Button
@@ -457,289 +450,396 @@ export default function Facturacion() {
 
           {/* Statistics Dashboard */}
           {!isLoading && facturas && facturas.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* Total Facturas */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-blue-600 font-medium uppercase tracking-wide">Total Facturas</p>
-                    <p className="text-3xl font-bold text-blue-900 mt-2">{filteredFacturas?.length || 0}</p>
-                    <p className="text-sm text-blue-700 mt-1">
-                      ${filteredFacturas?.reduce((sum, f) => sum + (parseFloat(f.total || "0")), 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <FileText size={40} className="text-blue-500 opacity-50" />
-                </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-md p-5 border-l-4 border-blue-500">
+                <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Total Facturas</p>
+                <p className="text-3xl font-bold text-blue-900 mt-1">{filteredFacturas?.length || 0}</p>
+                <p className="text-xs text-blue-700 mt-1">
+                  {formatMoney(filteredFacturas?.reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                </p>
               </div>
-
-              {/* Total Pagadas */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-md p-6 border-l-4 border-green-500">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-green-600 font-medium uppercase tracking-wide">Pagadas</p>
-                    <p className="text-3xl font-bold text-green-900 mt-2">
-                      {filteredFacturas?.filter(f => f.estadoPago === "Pagada").length || 0}
-                    </p>
-                    <p className="text-sm text-green-700 mt-1">
-                      ${filteredFacturas?.filter(f => f.estadoPago === "Pagada").reduce((sum, f) => sum + parseFloat(f.total || "0"), 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <Check size={40} className="text-green-500 opacity-50" />
-                </div>
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-md p-5 border-l-4 border-green-500">
+                <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Pagadas</p>
+                <p className="text-3xl font-bold text-green-900 mt-1">
+                  {filteredFacturas?.filter(f => f.estadoPago === "Pagada").length || 0}
+                </p>
+                <p className="text-xs text-green-700 mt-1">
+                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pagada").reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                </p>
               </div>
-
-              {/* Total No Pagadas */}
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-orange-600 font-medium uppercase tracking-wide">No Pagadas</p>
-                    <p className="text-3xl font-bold text-orange-900 mt-2">
-                      {filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").length || 0}
-                    </p>
-                    <p className="text-sm text-orange-700 mt-1">
-                      ${filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").reduce((sum, f) => sum + parseFloat(f.total || "0"), 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <Calendar size={40} className="text-orange-500 opacity-50" />
-                </div>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg shadow-md p-5 border-l-4 border-blue-400">
+                <p className="text-xs text-blue-600 font-medium uppercase tracking-wide">Pago Parcial</p>
+                <p className="text-3xl font-bold text-blue-900 mt-1">
+                  {filteredFacturas?.filter(f => f.estadoPago === "Pago Parcial").length || 0}
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pago Parcial").reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg shadow-md p-5 border-l-4 border-orange-500">
+                <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">No Pagadas</p>
+                <p className="text-3xl font-bold text-orange-900 mt-1">
+                  {filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").length || 0}
+                </p>
+                <p className="text-xs text-orange-700 mt-1">
+                  {formatMoney(filteredFacturas?.filter(f => f.estadoPago === "Pendiente" || f.estadoPago === "Vencida").reduce((s, f) => s + parseFloat(f.total || "0"), 0) || 0)}
+                </p>
               </div>
             </div>
           )}
 
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Cargando facturas...</p>
-          </div>
-        ) : !filteredFacturas || filteredFacturas.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border">
-            <FileText size={48} className="mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600 mb-4">No hay facturas generadas</p>
-            <Link href="/anuncios">
-              <Button>Ir a Gestor de Anuncios</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>No. Factura</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Fecha Pago</TableHead>
-                  <TableHead>Vendedor</TableHead>
-                  <TableHead>Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredFacturas.map((factura: any) => (
-                  <TableRow key={factura.id}>
-                    <TableCell className="font-medium">
-                      {factura.numeroFactura}
-                    </TableCell>
-                    <TableCell>{factura.cliente}</TableCell>
-                    <TableCell>
-                      {formatDateDisplay(factura.createdAt)}
-                    </TableCell>
-                    <TableCell className="font-semibold">
-                      ${parseFloat(factura.total).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(factura.estadoPago)}</TableCell>
-                    <TableCell>
-                      {factura.fechaPago
-                        ? formatDateDisplay(factura.fechaPago)
-                        : "-"}
-                    </TableCell>
-                    <TableCell>{factura.vendedor || "-"}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => window.open(factura.pdfUrl, "_blank")}
-                        >
-                          <FileText size={16} className="mr-1" />
-                          Ver PDF
-                        </Button>
-                        {factura.estadoPago !== "Pagada" && (
-                          <Button
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700"
-                            onClick={() => handleMarkAsPaid(factura)}
-                          >
-                            <Check size={16} className="mr-1" />
-                            Marcar Pagada
-                          </Button>
-                        )}
-                        {showArchived ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="bg-blue-50 hover:bg-blue-100 border-blue-300"
-                            onClick={() => handleUnarchiveFactura(factura.id, factura.numeroFactura)}
-                          >
-                            Restaurar
-                          </Button>
-                        ) : (
-                          <>
-                            {factura.estadoPago === "Pagada" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="bg-amber-50 hover:bg-amber-100 border-amber-300"
-                                onClick={() => handleArchiveFactura(factura.id, factura.numeroFactura)}
-                              >
-                                Archivar
+          {/* Table */}
+          {isLoading ? (
+            <div className="text-center py-12"><p className="text-gray-600">Cargando facturas...</p></div>
+          ) : !filteredFacturas || filteredFacturas.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-lg border">
+              <FileText size={48} className="mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-600 mb-4">No hay facturas generadas</p>
+              <Link href="/anuncios"><Button>Ir a Gestor de Anuncios</Button></Link>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>No. Factura</TableHead>
+                    <TableHead>Cliente</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Balance</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Fecha Pago</TableHead>
+                    <TableHead>Vendedor</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredFacturas.map((factura: any) => {
+                    const total = parseFloat(factura.total || "0");
+                    // Balance is shown as pending for non-fully-paid invoices
+                    // We don't have real-time pagos sum here, so show total for Pendiente/Vencida,
+                    // show 0 for Pagada, and show "Ver abonos" for Pago Parcial
+                    const isPagada = factura.estadoPago === "Pagada";
+                    const isParcial = factura.estadoPago === "Pago Parcial";
+                    return (
+                      <TableRow key={factura.id} className={isParcial ? "bg-blue-50/40" : ""}>
+                        <TableCell className="font-medium">{factura.numeroFactura}</TableCell>
+                        <TableCell>{factura.cliente}</TableCell>
+                        <TableCell>{formatDateDisplay(factura.createdAt)}</TableCell>
+                        <TableCell className="font-semibold">{formatMoney(total)}</TableCell>
+                        <TableCell>
+                          {isPagada ? (
+                            <span className="text-green-600 font-semibold text-sm">$0.00</span>
+                          ) : isParcial ? (
+                            <button
+                              onClick={() => handleOpenPagos(factura)}
+                              className="text-blue-600 underline text-sm font-medium hover:text-blue-800"
+                            >
+                              Ver abonos
+                            </button>
+                          ) : (
+                            <span className="text-orange-600 font-semibold text-sm">{formatMoney(total)}</span>
+                          )}
+                        </TableCell>
+                        <TableCell>{getStatusBadge(factura.estadoPago)}</TableCell>
+                        <TableCell>{factura.fechaPago ? formatDateDisplay(factura.fechaPago) : "-"}</TableCell>
+                        <TableCell>{factura.vendedor || "-"}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            <Button size="sm" variant="outline" onClick={() => window.open(factura.pdfUrl, "_blank")}>
+                              <FileText size={14} className="mr-1" />Ver PDF
+                            </Button>
+                            {factura.estadoPago !== "Pagada" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                                  onClick={() => handleOpenAbono(factura)}
+                                >
+                                  <PlusCircle size={14} className="mr-1" />Abono
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  onClick={() => handleMarkAsPaid(factura)}
+                                >
+                                  <Check size={14} className="mr-1" />Pagada
+                                </Button>
+                              </>
+                            )}
+                            {isParcial && (
+                              <Button size="sm" variant="outline" onClick={() => handleOpenPagos(factura)}>
+                                <CreditCard size={14} className="mr-1" />Abonos
                               </Button>
                             )}
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleDeleteFactura(factura.id, factura.numeroFactura)}
-                            >
-                              <Trash2 size={16} className="mr-1" />
-                              Eliminar
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                            {showArchived ? (
+                              <Button size="sm" variant="outline" className="bg-blue-50 hover:bg-blue-100 border-blue-300"
+                                onClick={() => handleUnarchiveFactura(factura.id, factura.numeroFactura)}>
+                                Restaurar
+                              </Button>
+                            ) : (
+                              <>
+                                {factura.estadoPago === "Pagada" && (
+                                  <Button size="sm" variant="outline" className="bg-amber-50 hover:bg-amber-100 border-amber-300"
+                                    onClick={() => handleArchiveFactura(factura.id, factura.numeroFactura)}>
+                                    Archivar
+                                  </Button>
+                                )}
+                                <Button size="sm" variant="destructive"
+                                  onClick={() => handleDeleteFactura(factura.id, factura.numeroFactura)}>
+                                  <Trash2 size={14} className="mr-1" />Eliminar
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
-        {/* Mark as Paid Dialog */}
-        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Marcar Factura como Pagada</DialogTitle>
-              <DialogDescription>
-                Confirma el pago de la factura {selectedFactura?.numeroFactura}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label htmlFor="cliente">Cliente</Label>
-                <Input
-                  id="cliente"
-                  value={selectedFactura?.cliente || ""}
-                  disabled
-                />
+          {/* ── Mark as Paid Dialog ─────────────────────────────────────────── */}
+          <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Marcar Factura como Pagada</DialogTitle>
+                <DialogDescription>Confirma el pago total de la factura {selectedFactura?.numeroFactura}</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div>
+                  <Label>Cliente</Label>
+                  <Input value={selectedFactura?.cliente || ""} disabled />
+                </div>
+                <div>
+                  <Label>Total</Label>
+                  <Input value={formatMoney(parseFloat(selectedFactura?.total || "0"))} disabled />
+                </div>
+                <div>
+                  <Label>Fecha de Pago</Label>
+                  <Input type="date" value={fechaPago} onChange={(e) => setFechaPago(e.target.value)} />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="total">Total</Label>
-                <Input
-                  id="total"
-                  value={`$${parseFloat(selectedFactura?.total || "0").toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`}
-                  disabled
-                />
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>Cancelar</Button>
+                <Button className="bg-green-600 hover:bg-green-700" onClick={confirmMarkAsPaid}>
+                  <Check size={16} className="mr-2" />Confirmar Pago Total
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* ── Registrar Abono Dialog ──────────────────────────────────────── */}
+          <Dialog open={isAbonoDialogOpen} onOpenChange={setIsAbonoDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Banknote size={20} className="text-blue-600" />
+                  Registrar Abono
+                </DialogTitle>
+                <DialogDescription>
+                  Factura {abonoFactura?.numeroFactura} — Total: {formatMoney(parseFloat(abonoFactura?.total || "0"))}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div>
+                  <Label>Monto del Abono *</Label>
+                  <div className="relative mt-1">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
+                    <Input
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={abonoMonto}
+                      onChange={(e) => setAbonoMonto(e.target.value)}
+                      className="pl-7"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Fecha de Pago *</Label>
+                  <Input type="date" value={abonoFecha} onChange={(e) => setAbonoFecha(e.target.value)} className="mt-1" />
+                </div>
+                <div>
+                  <Label>Método de Pago *</Label>
+                  <Select value={abonoMetodo} onValueChange={(v: any) => setAbonoMetodo(v)}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Efectivo">Efectivo</SelectItem>
+                      <SelectItem value="Transferencia">Transferencia</SelectItem>
+                      <SelectItem value="Cheque">Cheque</SelectItem>
+                      <SelectItem value="Tarjeta">Tarjeta</SelectItem>
+                      <SelectItem value="Otro">Otro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Notas / Referencia</Label>
+                  <Input
+                    placeholder="Número de cheque, referencia de transferencia..."
+                    value={abonoNotas}
+                    onChange={(e) => setAbonoNotas(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                {abonoMonto && !isNaN(parseFloat(abonoMonto)) && parseFloat(abonoMonto) > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm">
+                    <p className="text-blue-800 font-medium">
+                      Balance restante estimado:{" "}
+                      <span className={parseFloat(abonoFactura?.total || "0") - parseFloat(abonoMonto) <= 0 ? "text-green-700" : "text-blue-700"}>
+                        {formatMoney(Math.max(0, parseFloat(abonoFactura?.total || "0") - parseFloat(abonoMonto)))}
+                      </span>
+                    </p>
+                    {parseFloat(abonoFactura?.total || "0") - parseFloat(abonoMonto) <= 0 && (
+                      <p className="text-green-700 mt-1">✓ Este abono completará el pago de la factura</p>
+                    )}
+                  </div>
+                )}
               </div>
-              <div>
-                <Label htmlFor="fecha-pago">Fecha de Pago</Label>
-                <Input
-                  id="fecha-pago"
-                  type="date"
-                  value={fechaPago}
-                  onChange={(e) => setFechaPago(e.target.value)}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsPaymentDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                className="bg-green-600 hover:bg-green-700"
-                onClick={confirmMarkAsPaid}
-              >
-                <Check size={16} className="mr-2" />
-                Confirmar Pago
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        
-        {/* Export Report Dialog */}
-        <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Exportar Reporte de Facturas</DialogTitle>
-              <DialogDescription>
-                Seleccione el tipo de reporte que desea generar
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label htmlFor="export-type">Tipo de Reporte</Label>
-                <Select
-                  value={exportType}
-                  onValueChange={(value: "mes" | "cliente") => setExportType(value)}
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsAbonoDialogOpen(false)}>Cancelar</Button>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={confirmRegistrarAbono}
+                  disabled={registrarAbono.isPending}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mes">Por Mes</SelectItem>
-                    <SelectItem value="cliente">Por Cliente</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <PlusCircle size={16} className="mr-2" />
+                  {registrarAbono.isPending ? "Registrando..." : "Registrar Abono"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* ── Pagos History Dialog ────────────────────────────────────────── */}
+          <Dialog open={isPagosDialogOpen} onOpenChange={setIsPagosDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <CreditCard size={20} className="text-blue-600" />
+                  Historial de Abonos
+                </DialogTitle>
+                <DialogDescription>
+                  Factura {pagosFactura?.numeroFactura} — {pagosFactura?.cliente} — Total: {formatMoney(parseFloat(pagosFactura?.total || "0"))}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-2">
+                {!pagosData || pagosData.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <CreditCard size={32} className="mx-auto mb-2 opacity-40" />
+                    <p>No hay abonos registrados</p>
+                  </div>
+                ) : (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Monto</TableHead>
+                          <TableHead>Método</TableHead>
+                          <TableHead>Notas</TableHead>
+                          <TableHead>Registrado por</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pagosData.map((pago) => (
+                          <TableRow key={pago.id}>
+                            <TableCell>{formatDateDisplay(pago.fechaPago)}</TableCell>
+                            <TableCell className="font-semibold text-green-700">{formatMoney(parseFloat(pago.monto))}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{pago.metodoPago}</Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray-600">{pago.notas || "-"}</TableCell>
+                            <TableCell className="text-sm">{pago.registradoPor || "-"}</TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDeleteAbono(pago.id)}
+                              >
+                                <X size={14} />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    {/* Summary */}
+                    <div className="mt-4 bg-gray-50 rounded-md p-4 flex justify-between items-center">
+                      <div>
+                        <p className="text-sm text-gray-600">Total abonado</p>
+                        <p className="text-xl font-bold text-green-700">{formatMoney(totalPagadoFromList)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Balance pendiente</p>
+                        <p className={`text-xl font-bold ${Math.max(0, parseFloat(pagosFactura?.total || "0") - totalPagadoFromList) === 0 ? "text-green-700" : "text-orange-600"}`}>
+                          {formatMoney(Math.max(0, parseFloat(pagosFactura?.total || "0") - totalPagadoFromList))}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-              
-              {exportType === "mes" && (
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsPagosDialogOpen(false)}>Cerrar</Button>
+                {pagosFactura?.estadoPago !== "Pagada" && (
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => { setIsPagosDialogOpen(false); handleOpenAbono(pagosFactura); }}
+                  >
+                    <PlusCircle size={16} className="mr-2" />Nuevo Abono
+                  </Button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* ── Export CSV Dialog ───────────────────────────────────────────── */}
+          <Dialog open={isExportDialogOpen} onOpenChange={setIsExportDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Exportar Reporte de Facturas</DialogTitle>
+                <DialogDescription>Seleccione el tipo de reporte que desea generar</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
                 <div>
-                  <Label htmlFor="export-month">Mes</Label>
-                  <Input
-                    id="export-month"
-                    type="month"
-                    value={exportMonth}
-                    onChange={(e) => setExportMonth(e.target.value)}
-                  />
+                  <Label>Tipo de Reporte</Label>
+                  <Select value={exportType} onValueChange={(value: "mes" | "cliente") => setExportType(value)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mes">Por Mes</SelectItem>
+                      <SelectItem value="cliente">Por Cliente</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
-              
-              {exportType === "cliente" && (
-                <div>
-                  <Label htmlFor="export-cliente">Cliente</Label>
-                  <Input
-                    id="export-cliente"
-                    placeholder="Nombre del cliente"
-                    value={exportCliente}
-                    onChange={(e) => setExportCliente(e.target.value)}
-                  />
-                </div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsExportDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
-                onClick={handleExportReport}
-              >
-                <Download size={16} className="mr-2" />
-                Exportar CSV
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+                {exportType === "mes" && (
+                  <div>
+                    <Label>Mes</Label>
+                    <Input type="month" value={exportMonth} onChange={(e) => setExportMonth(e.target.value)} />
+                  </div>
+                )}
+                {exportType === "cliente" && (
+                  <div>
+                    <Label>Cliente</Label>
+                    <Input placeholder="Nombre del cliente" value={exportCliente} onChange={(e) => setExportCliente(e.target.value)} />
+                  </div>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>Cancelar</Button>
+                <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a]" onClick={handleExportReport}>
+                  <Download size={16} className="mr-2" />Exportar CSV
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </div>
       </div>
     </div>

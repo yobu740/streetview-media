@@ -1056,3 +1056,24 @@
 - [x] Añadir botón "Exportar Reporte PDF" en el módulo de Facturación
 - [x] Generar PDF con listado completo de facturas (número, cliente, fecha, total, estado de pago)
 - [x] Incluir resumen de totales al final: total pagadas, pendientes, vencidas y gran total
+
+## Facturación - Pagos Parciales
+- [ ] Añadir tabla `pagos` al schema (facturaId, monto, fechaPago, metodoPago, notas)
+- [ ] Añadir procedimientos backend: registrar abono, listar pagos por factura, eliminar abono
+- [ ] Calcular balance adeudado automáticamente (total - suma de abonos)
+- [ ] Estado "Pago Parcial" (badge azul) cuando hay abonos pero no está pagada completamente
+- [ ] Auto-marcar como "Pagada" cuando suma de abonos iguala el total
+- [ ] Columna "Balance" en tabla de facturas
+- [ ] Diálogo de historial de abonos con botón "Registrar Abono"
+- [ ] Actualizar reporte PDF para incluir columna balance y totales de deuda parcial
+
+## Facturación - Pagos Parciales
+- [x] Añadir tabla `pagos` en schema y ejecutar db:push
+- [x] Procedimientos backend: registrarAbono, listPagos, deleteAbono
+- [x] Estado "Pago Parcial" (badge azul) en facturas
+- [x] Columna "Balance" en tabla de facturas
+- [x] Botón "Abono" por factura no pagada
+- [x] Diálogo de registro de abono con monto, fecha, método y notas
+- [x] Diálogo de historial de abonos con resumen de balance
+- [x] Tarjeta "Pago Parcial" en estadísticas de Facturación
+- [x] Reporte PDF actualizado con columna Balance y total adeudado

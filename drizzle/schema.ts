@@ -150,7 +150,7 @@ export const facturas = mysqlTable("facturas", {
   vendedor: varchar("vendedor", { length: 255 }), // Salesperson name
   pdfUrl: text("pdf_url").notNull(), // S3 URL to PDF
   cantidadAnuncios: int("cantidad_anuncios").notNull(), // Number of anuncios in invoice
-  estadoPago: mysqlEnum("estado_pago", ["Pendiente", "Pagada", "Vencida"]).default("Pendiente").notNull(), // Payment status
+  estadoPago: mysqlEnum("estado_pago", ["Pendiente", "Pagada", "Vencida", "Pago Parcial"]).default("Pendiente").notNull(), // Payment status
   fechaPago: timestamp("fecha_pago"), // Payment date (null if not paid)
   archivada: int("archivada").default(0).notNull(), // 1 = archived, 0 = active
   createdBy: int("created_by").notNull(), // FK to users - who created the invoice
@@ -215,3 +215,20 @@ export const notasCliente = mysqlTable("notas_cliente", {
 
 export type NotaCliente = typeof notasCliente.$inferSelect;
 export type InsertNotaCliente = typeof notasCliente.$inferInsert;
+
+/**
+ * Pagos (partial payments / abonos) table for invoices
+ */
+export const pagos = mysqlTable("pagos", {
+  id: int("id").autoincrement().primaryKey(),
+  facturaId: int("factura_id").notNull(), // FK to facturas
+  monto: varchar("monto", { length: 20 }).notNull(), // Payment amount
+  fechaPago: timestamp("fecha_pago").notNull(), // Payment date
+  metodoPago: mysqlEnum("metodo_pago", ["Efectivo", "Transferencia", "Cheque", "Tarjeta", "Otro"]).default("Transferencia").notNull(),
+  notas: text("notas"), // Reference number or notes
+  registradoPor: varchar("registrado_por", { length: 255 }), // User name who registered the payment
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Pago = typeof pagos.$inferSelect;
+export type InsertPago = typeof pagos.$inferInsert;

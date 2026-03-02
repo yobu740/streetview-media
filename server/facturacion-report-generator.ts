@@ -11,6 +11,7 @@ interface FacturaItem {
   vendedor?: string | null;
   titulo?: string | null;
   cantidadAnuncios?: number | null;
+  balance?: number | null; // remaining balance (for partial payments)
 }
 
 interface ReportOptions {
@@ -28,9 +29,17 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
   const pagadas = facturas.filter(f => f.estadoPago === "Pagada");
   const pendientes = facturas.filter(f => f.estadoPago === "Pendiente");
   const vencidas = facturas.filter(f => f.estadoPago === "Vencida");
+  const parciales = facturas.filter(f => f.estadoPago === "Pago Parcial");
   const totalPagadas = pagadas.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
   const totalPendientes = pendientes.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
   const totalVencidas = vencidas.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
+  const totalParciales = parciales.reduce((s, f) => s + parseFloat(f.total || "0"), 0);
+  // Total balance owed (unpaid + partial remaining)
+  const totalBalance = facturas.reduce((s, f) => {
+    if (f.estadoPago === "Pagada") return s;
+    if (f.balance != null) return s + f.balance;
+    return s + parseFloat(f.total || "0");
+  }, 0);
 
   const formatDate = (d: Date | string | null | undefined) => {
     if (!d) return "-";
@@ -84,8 +93,8 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     const cards = [
       { label: "Total Facturas", count: totalFacturas, amount: totalMonto, color: "#2563eb" },
       { label: "Pagadas", count: pagadas.length, amount: totalPagadas, color: "#16a34a" },
-      { label: "Pendientes", count: pendientes.length, amount: totalPendientes, color: "#d97706" },
-      { label: "Vencidas", count: vencidas.length, amount: totalVencidas, color: "#dc2626" },
+      { label: "Pago Parcial", count: parciales.length, amount: totalParciales, color: "#2563eb" },
+      { label: "No Pagadas", count: pendientes.length + vencidas.length, amount: totalPendientes + totalVencidas, color: "#dc2626" },
     ];
 
     cards.forEach((card, i) => {
@@ -104,13 +113,13 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
 
     // ── Table header ────────────────────────────────────────────────────────
     const cols = [
-      { label: "No. Factura", x: 50, w: 80 },
-      { label: "Cliente", x: 135, w: 130 },
-      { label: "Fecha", x: 270, w: 75 },
-      { label: "Anuncios", x: 350, w: 55 },
-      { label: "Total", x: 410, w: 75 },
-      { label: "Estado", x: 490, w: 65 },
-      { label: "Fecha Pago", x: 560, w: 0 }, // last col, auto width
+      { label: "No. Factura", x: 50, w: 75 },
+      { label: "Cliente", x: 128, w: 120 },
+      { label: "Fecha", x: 252, w: 65 },
+      { label: "Total", x: 320, w: 65 },
+      { label: "Balance", x: 388, w: 65 },
+      { label: "Estado", x: 456, w: 65 },
+      { label: "Fecha Pago", x: 524, w: 0 }, // last col, auto width
     ];
 
     doc.rect(50, y, pageWidth, 20).fill(GREEN);
@@ -125,6 +134,7 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
       Pagada: "#16a34a",
       Pendiente: "#d97706",
       Vencida: "#dc2626",
+      "Pago Parcial": "#2563eb",
     };
 
     facturas.forEach((f, idx) => {
@@ -150,8 +160,13 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
       doc.font("Helvetica").fontSize(8)
         .text(f.cliente, cols[1].x + 3, rowY, { width: cols[1].w, ellipsis: true });
       doc.text(formatDate(f.createdAt), cols[2].x + 3, rowY, { width: cols[2].w });
-      doc.text(String(f.cantidadAnuncios ?? "-"), cols[3].x + 3, rowY, { width: cols[3].w });
-      doc.font("Helvetica-Bold").text(formatMoney(parseFloat(f.total || "0")), cols[4].x + 3, rowY, { width: cols[4].w });
+      doc.font("Helvetica-Bold").text(formatMoney(parseFloat(f.total || "0")), cols[3].x + 3, rowY, { width: cols[3].w });
+
+      // Balance column
+      const balanceAmt = f.estadoPago === "Pagada" ? 0 : (f.balance != null ? f.balance : parseFloat(f.total || "0"));
+      const balanceColor = balanceAmt === 0 ? "#16a34a" : (f.estadoPago === "Pago Parcial" ? "#2563eb" : "#d97706");
+      doc.fillColor(balanceColor).font("Helvetica-Bold").fontSize(8)
+        .text(formatMoney(balanceAmt), cols[4].x + 3, rowY, { width: cols[4].w });
 
       // Status badge
       const statusColor = statusColors[f.estadoPago] || GRAY;
@@ -183,9 +198,20 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
 
     const summaryRows = [
       { label: "Pagadas", count: pagadas.length, amount: totalPagadas, color: "#16a34a" },
+      { label: "Pago Parcial", count: parciales.length, amount: totalParciales, color: "#2563eb" },
       { label: "Pendientes", count: pendientes.length, amount: totalPendientes, color: "#d97706" },
       { label: "Vencidas", count: vencidas.length, amount: totalVencidas, color: "#dc2626" },
     ];
+
+    // Total balance owed
+    y += 8;
+    doc.rect(50, y, pageWidth, 22).fill("#fff3cd");
+    doc.rect(50, y, 4, 22).fill("#d97706");
+    doc.fillColor("#92400e").font("Helvetica-Bold").fontSize(10)
+      .text("TOTAL BALANCE ADEUDADO", 60, y + 6, { width: 300 });
+    doc.fillColor("#dc2626").font("Helvetica-Bold").fontSize(10)
+      .text(formatMoney(totalBalance), 60, y + 6, { align: "right", width: pageWidth - 20 });
+    y += 30;
 
     summaryRows.forEach(row => {
       doc.fillColor(row.color).font("Helvetica-Bold").fontSize(9)
