@@ -1095,3 +1095,18 @@
 
 ## Reporte PDF - Orientación Horizontal
 - [x] Cambiar reporte de facturación a orientación horizontal (landscape) para que todas las columnas quepan sin cortarse
+
+## Caras Destacadas (Estrella Manual)
+- [x] Añadir campo `destacada` boolean en tabla paradas (schema + db:push)
+- [x] Procedimiento backend para toggle de destacada
+- [x] Estrella dorada clickeable en panel principal para marcar/desmarcar
+- [x] Badge/indicador visual en filas destacadas
+- [x] Filtro "Solo Destacadas" en el panel principal
+
+## Notificaciones Toast Flotante
+- [x] Tabla `announcements` en schema (mensaje, tipo, activo, fechas)
+- [x] Procedimientos backend: crear, editar, activar/desactivar, eliminar, getActive
+- [x] Toast flotante en esquina inferior derecha al entrar a la plataforma (con botón cerrar)
+- [x] Se recuerda en sessionStorage para no repetirse en la misma sesión
+- [x] Página "Anuncios Sistema" para admin (crear, editar, activar/desactivar, eliminar)
+- [x] Enlace "Anuncios Sistema" en el sidebar (solo admin)

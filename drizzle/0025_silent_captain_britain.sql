@@ -1,0 +1,1 @@
+ALTER TABLE `paradas` ADD `destacada` int DEFAULT 0 NOT NULL;

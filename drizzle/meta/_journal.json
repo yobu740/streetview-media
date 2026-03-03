@@ -176,6 +176,20 @@
       "when": 1772486733019,
       "tag": "0024_vengeful_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1772561075825,
+      "tag": "0025_silent_captain_britain",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1772562418901,
+      "tag": "0026_familiar_hellcat",
+      "breakpoints": true
     }
   ]
 }

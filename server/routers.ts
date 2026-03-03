@@ -220,6 +220,22 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await paradasDb.getParadasDisponibles(input.fechaInicio, input.fechaFin);
       }),
+    
+    toggleDestacada: protectedProcedure
+      .input(z.object({ paradaId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN', message: 'Solo administradores pueden marcar caras destacadas.' });
+        const { getDb } = await import('./db');
+        const { paradas } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const [current] = await db.select({ destacada: paradas.destacada }).from(paradas).where(eq(paradas.id, input.paradaId)).limit(1);
+        if (!current) throw new TRPCError({ code: 'NOT_FOUND', message: 'Cara no encontrada.' });
+        const newValue = current.destacada ? 0 : 1;
+        await db.update(paradas).set({ destacada: newValue }).where(eq(paradas.id, input.paradaId));
+        return { success: true, destacada: newValue };
+      }),
   }),
   
   // Anuncios management router
@@ -1420,6 +1436,124 @@ export const appRouter = router({
         });
         
         return { success: true, id: result.insertId };
+      }),
+  }),
+
+  // Announcements (toast notifications) router
+  announcements: router({
+    // Public: get active announcement to show on platform entry
+    getActive: publicProcedure.query(async () => {
+      const { getDb } = await import('./db');
+      const { announcements } = await import('../drizzle/schema');
+      const { and, eq, or, isNull, lte, gte } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) return null;
+      const now = new Date();
+      const [announcement] = await db
+        .select()
+        .from(announcements)
+        .where(
+          and(
+            eq(announcements.activo, 1),
+            or(isNull(announcements.fechaInicio), lte(announcements.fechaInicio, now)),
+            or(isNull(announcements.fechaFin), gte(announcements.fechaFin, now))
+          )
+        )
+        .orderBy(announcements.createdAt)
+        .limit(1);
+      return announcement || null;
+    }),
+
+    // Admin: list all announcements
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+      const { getDb } = await import('./db');
+      const { announcements } = await import('../drizzle/schema');
+      const { desc } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) return [];
+      return await db.select().from(announcements).orderBy(desc(announcements.createdAt));
+    }),
+
+    // Admin: create announcement
+    create: protectedProcedure
+      .input(z.object({
+        titulo: z.string().min(1),
+        mensaje: z.string().min(1),
+        tipo: z.enum(['info', 'alerta', 'exito', 'urgente']).default('info'),
+        activo: z.number().default(1),
+        fechaInicio: z.date().nullable().optional(),
+        fechaFin: z.date().nullable().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getDb } = await import('./db');
+        const { announcements } = await import('../drizzle/schema');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const [result] = await db.insert(announcements).values({
+          titulo: input.titulo,
+          mensaje: input.mensaje,
+          tipo: input.tipo,
+          activo: input.activo,
+          fechaInicio: input.fechaInicio || null,
+          fechaFin: input.fechaFin || null,
+          creadoPor: ctx.user.name || 'Admin',
+        });
+        return { success: true, id: result.insertId };
+      }),
+
+    // Admin: update announcement
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        titulo: z.string().min(1).optional(),
+        mensaje: z.string().min(1).optional(),
+        tipo: z.enum(['info', 'alerta', 'exito', 'urgente']).optional(),
+        activo: z.number().optional(),
+        fechaInicio: z.date().nullable().optional(),
+        fechaFin: z.date().nullable().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getDb } = await import('./db');
+        const { announcements } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const { id, ...updates } = input;
+        await db.update(announcements).set(updates).where(eq(announcements.id, id));
+        return { success: true };
+      }),
+
+    // Admin: delete announcement
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getDb } = await import('./db');
+        const { announcements } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        await db.delete(announcements).where(eq(announcements.id, input.id));
+        return { success: true };
+      }),
+
+    // Admin: toggle active status
+    toggleActive: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== 'admin') throw new TRPCError({ code: 'FORBIDDEN' });
+        const { getDb } = await import('./db');
+        const { announcements } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const [current] = await db.select({ activo: announcements.activo }).from(announcements).where(eq(announcements.id, input.id)).limit(1);
+        if (!current) throw new TRPCError({ code: 'NOT_FOUND' });
+        await db.update(announcements).set({ activo: current.activo ? 0 : 1 }).where(eq(announcements.id, input.id));
+        return { success: true, activo: current.activo ? 0 : 1 };
       }),
   }),
 });

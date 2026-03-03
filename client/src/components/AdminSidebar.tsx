@@ -18,6 +18,7 @@ import {
   Menu,
   Wrench,
   UserCheck,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -92,6 +93,12 @@ export default function AdminSidebar({
       icon: FileText,
       href: "/mis-reservas",
       userOnly: true,
+    },
+    {
+      label: "Anuncios Sistema",
+      icon: Bell,
+      href: "/anuncios-config",
+      adminOnly: true,
     },
   ];
 

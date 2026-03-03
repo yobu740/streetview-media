@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -64,7 +64,12 @@ export default function Admin() {
   const itemsPerPage = 20;
   
   // Filter state
-  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion" | "destacada">("all");
+  const [filterDestacada, setFilterDestacada] = useState(false);
+  const toggleDestacada = trpc.paradas.toggleDestacada.useMutation({
+    onSuccess: () => { utils.paradas.list.invalidate(); },
+    onError: (err) => toast.error(err.message),
+  });
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
@@ -431,7 +436,8 @@ export default function Admin() {
     const matchesStatus = filterStatus === "all" || 
       (filterStatus === "disponible" && status === "Disponible") ||
       (filterStatus === "ocupada" && status === "Ocupada") ||
-      (filterStatus === "construccion" && status === "En Construcción");
+      (filterStatus === "construccion" && status === "En Construcción") ||
+      (filterStatus === "destacada" && (p as any).destacada);
     
     // Tipo filter
     const matchesTipo = filterTipo === "all" || 
@@ -655,6 +661,7 @@ export default function Admin() {
   const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
   const construccionCount = filteredParadas.filter(p => getParadaStatus(p).status === "En Construcción").length;
+  const destacadasCount = (paradas || []).filter(p => (p as any).destacada).length;
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -1116,7 +1123,7 @@ export default function Admin() {
         </Card>
 
         {/* Stats Cards - Now clickable filters */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-5 gap-6 mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-lg ${filterStatus === "all" ? "ring-2 ring-[#1a4d3c]" : ""}`}
             onClick={() => { setFilterStatus("all"); handleFilterChange(); }}
@@ -1159,6 +1166,18 @@ export default function Admin() {
               <CardDescription>En Construcción</CardDescription>
             </CardHeader>
           </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-yellow-400 ${filterStatus === "destacada" ? "ring-2 ring-yellow-400" : ""}`}
+            onClick={() => { setFilterStatus(filterStatus === "destacada" ? "all" : "destacada"); handleFilterChange(); }}
+          >
+            <CardHeader>
+              <CardTitle className="text-2xl text-yellow-500 flex items-center gap-2">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                {destacadasCount}
+              </CardTitle>
+              <CardDescription>Caras Destacadas</CardDescription>
+            </CardHeader>
+          </Card>
         </div>
 
         {/* Paradas Table */}
@@ -1195,6 +1214,7 @@ export default function Admin() {
                             className="cursor-pointer"
                           />
                         </TableHead>
+                        <TableHead className="w-10 print:hidden"><Star className="h-4 w-4 text-yellow-400" /></TableHead>
                         <TableHead>ID Cobertizo</TableHead>
                         <TableHead>Orient.</TableHead>
                         <TableHead>Localización</TableHead>
@@ -1225,6 +1245,21 @@ export default function Admin() {
                                 }}
                                 className="cursor-pointer"
                               />
+                            </TableCell>
+                            <TableCell className="print:hidden">
+                              <button
+                                onClick={() => toggleDestacada.mutate({ paradaId: parada.id })}
+                                title={(parada as any).destacada ? "Quitar destacada" : "Marcar como destacada"}
+                                className="p-1 rounded hover:bg-yellow-50 transition-colors"
+                              >
+                                <Star
+                                  className={`h-4 w-4 transition-colors ${
+                                    (parada as any).destacada
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300 hover:text-yellow-300"
+                                  }`}
+                                />
+                              </button>
                             </TableCell>
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-2">

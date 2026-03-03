@@ -50,6 +50,7 @@ export const paradas = mysqlTable("paradas", {
   displayPublicidad: mysqlEnum("display_publicidad", ["Si", "No", "N/A"]).default("N/A").notNull(), // Display status
   enConstruccion: int("en_construccion").default(0).notNull(), // 1 = en construccion, 0 = normal
   fechaDisponibilidad: timestamp("fecha_disponibilidad"), // Estimated availability date when en construccion
+  destacada: int("destacada").default(0).notNull(), // 1 = destacada (profitable/featured), 0 = normal
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
@@ -232,3 +233,22 @@ export const pagos = mysqlTable("pagos", {
 
 export type Pago = typeof pagos.$inferSelect;
 export type InsertPago = typeof pagos.$inferInsert;
+
+/**
+ * Announcements table for configurable toast notifications shown on platform entry
+ */
+export const announcements = mysqlTable("announcements", {
+  id: int("id").autoincrement().primaryKey(),
+  titulo: varchar("titulo", { length: 255 }).notNull(), // Announcement title
+  mensaje: text("mensaje").notNull(), // Announcement message body
+  tipo: mysqlEnum("tipo", ["info", "alerta", "exito", "urgente"]).default("info").notNull(), // Visual type
+  activo: int("activo").default(1).notNull(), // 1 = active (shown), 0 = inactive
+  fechaInicio: timestamp("fecha_inicio"), // Optional: show from this date
+  fechaFin: timestamp("fecha_fin"), // Optional: stop showing after this date
+  creadoPor: varchar("creado_por", { length: 255 }), // Admin who created it
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = typeof announcements.$inferInsert;
