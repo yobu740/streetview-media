@@ -1119,3 +1119,6 @@
 - [x] Añadir botón "Marcar todas como leídas"
 - [x] Añadir procedimiento backend markAllAsRead
 - [x] Backdrop para cerrar panel al hacer clic fuera
+
+## Fix Estrella - Actualización Instantánea
+- [x] Implementar optimistic update en toggleDestacada para respuesta inmediata sin esperar servidor

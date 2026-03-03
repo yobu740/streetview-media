@@ -78,8 +78,31 @@ export default function Admin() {
   const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion" | "destacada">("all");
   const [filterDestacada, setFilterDestacada] = useState(false);
   const toggleDestacada = trpc.paradas.toggleDestacada.useMutation({
-    onSuccess: () => { utils.paradas.list.invalidate(); },
-    onError: (err) => toast.error(err.message),
+    onMutate: async ({ paradaId }) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await utils.paradas.list.cancel();
+      // Snapshot the previous value
+      const previousParadas = utils.paradas.list.getData();
+      // Optimistically update the cache immediately
+      // destacada is stored as 0/1 (int) in DB
+      utils.paradas.list.setData(undefined, (old) =>
+        old?.map((p) =>
+          p.id === paradaId ? { ...p, destacada: p.destacada ? 0 : 1 } : p
+        )
+      );
+      return { previousParadas };
+    },
+    onError: (err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousParadas) {
+        utils.paradas.list.setData(undefined, context.previousParadas);
+      }
+      toast.error(err.message);
+    },
+    onSettled: () => {
+      // Sync with server after mutation
+      utils.paradas.list.invalidate();
+    },
   });
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
