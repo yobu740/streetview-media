@@ -455,6 +455,13 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    markAllAsRead: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const { markAllNotificationsAsRead } = await import("./db");
+        await markAllNotificationsAsRead(ctx.user.id);
+        return { success: true };
+      }),
+    
     expiringAnuncios: adminProcedure.query(async () => {
       return await paradasDb.checkExpiringAnuncios(7);
     }),

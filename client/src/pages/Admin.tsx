@@ -26,7 +26,18 @@ export default function Admin() {
   const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: isAuthenticated });
   const { data: pendingReservations } = trpc.approvals.pending.useQuery(undefined, { enabled: isAuthenticated && user?.role === 'admin' });
   const { data: expiringAnuncios } = trpc.notifications.expiringAnuncios.useQuery(undefined, { enabled: isAuthenticated && user?.role === 'admin' });
-  const markAsRead = trpc.notifications.markAsRead.useMutation();
+  const markAsRead = trpc.notifications.markAsRead.useMutation({
+    onSuccess: () => {
+      utils.notifications.list.invalidate();
+      utils.notifications.unreadCount.invalidate();
+    },
+  });
+  const markAllAsRead = trpc.notifications.markAllAsRead.useMutation({
+    onSuccess: () => {
+      utils.notifications.list.invalidate();
+      utils.notifications.unreadCount.invalidate();
+    },
+  });
   const approveReservation = trpc.approvals.approve.useMutation();
   const rejectReservation = trpc.approvals.reject.useMutation();
   const bulkApprove = trpc.approvals.bulkApprove.useMutation();
@@ -437,7 +448,7 @@ export default function Admin() {
       (filterStatus === "disponible" && status === "Disponible") ||
       (filterStatus === "ocupada" && status === "Ocupada") ||
       (filterStatus === "construccion" && status === "En Construcción") ||
-      (filterStatus === "destacada" && (p as any).destacada);
+      (filterStatus === "destacada" && p.destacada);
     
     // Tipo filter
     const matchesTipo = filterTipo === "all" || 
@@ -661,7 +672,7 @@ export default function Admin() {
   const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
   const construccionCount = filteredParadas.filter(p => getParadaStatus(p).status === "En Construcción").length;
-  const destacadasCount = (paradas || []).filter(p => (p as any).destacada).length;
+  const destacadasCount = (paradas || []).filter(p => p.destacada).length;
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -730,68 +741,101 @@ export default function Admin() {
 
       {/* Notification Panel */}
       {isNotificationPanelOpen && user?.role === 'admin' && (
-        <div className="fixed top-20 right-4 w-96 bg-white border-2 border-[#1a4d3c] shadow-2xl z-50 max-h-[600px] overflow-y-auto">
-          <div className="p-4 border-b-2 border-[#1a4d3c]">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
-              <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="w-full text-xs"
-              onClick={async () => {
-                try {
-                  const result = await checkNotifications.mutateAsync();
-                  utils.notifications.list.invalidate();
-                  utils.notifications.unreadCount.invalidate();
-                  toast.success(
-                    `Verificación completada: ${result.overdueCount} facturas vencidas, ${result.clientsWithoutInvoiceCount} clientes sin factura, ${result.campaignsEndingSoonCount || 0} campañas por vencer. ${result.totalNotifications} notificaciones creadas.`
-                  );
-                } catch (error) {
-                  toast.error("Error al verificar notificaciones");
-                }
-              }}
-              disabled={checkNotifications.isPending}
-            >
-              {checkNotifications.isPending ? "Verificando..." : "🔍 Verificar Notificaciones"}
-            </Button>
-          </div>
-          <div className="divide-y">
-            {notifications && notifications.length > 0 ? (
-              notifications.map((notif) => (
-                <div 
-                  key={notif.id} 
-                  className={`p-4 hover:bg-gray-50 cursor-pointer ${
-                    notif.read === 0 ? 'bg-[#fff5f0]' : ''
-                  }`}
-                  onClick={() => {
-                    if (notif.read === 0) {
-                      markAsRead.mutate({ id: notif.id });
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsNotificationPanelOpen(false)}
+          />
+          <div className="fixed top-20 right-4 w-96 bg-white border-2 border-[#1a4d3c] shadow-2xl z-50 max-h-[600px] flex flex-col rounded-sm">
+            {/* Header */}
+            <div className="p-4 border-b-2 border-[#1a4d3c] flex-shrink-0">
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <h3 className="text-display text-xl text-[#1a4d3c]">Notificaciones</h3>
+                  {unreadCount && unreadCount > 0 ? (
+                    <p className="text-sm text-[#ff6b35] font-medium mt-0.5">
+                      Tiene {unreadCount} notificación{unreadCount !== 1 ? 'es' : ''} sin leer
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-400 mt-0.5">Todas leídas</p>
+                  )}
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setIsNotificationPanelOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="flex-1 text-xs"
+                  onClick={async () => {
+                    try {
+                      const result = await checkNotifications.mutateAsync();
+                      utils.notifications.list.invalidate();
+                      utils.notifications.unreadCount.invalidate();
+                      toast.success(
+                        `Verificación completada: ${result.overdueCount} facturas vencidas, ${result.clientsWithoutInvoiceCount} clientes sin factura, ${result.campaignsEndingSoonCount || 0} campañas por vencer. ${result.totalNotifications} notificaciones creadas.`
+                      );
+                    } catch (error) {
+                      toast.error("Error al verificar notificaciones");
                     }
                   }}
+                  disabled={checkNotifications.isPending}
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold text-[#1a4d3c]">{notif.title}</h4>
-                    {notif.read === 0 && (
-                      <span className="w-2 h-2 bg-[#ff6b35] rounded-full"></span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600">{notif.message}</p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    {new Date(notif.createdAt).toLocaleString('es-PR')}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                No hay notificaciones
+                  {checkNotifications.isPending ? "Verificando..." : "🔍 Verificar"}
+                </Button>
+                {unreadCount && unreadCount > 0 ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 text-xs text-[#1a4d3c] border-[#1a4d3c]"
+                    onClick={() => markAllAsRead.mutate()}
+                    disabled={markAllAsRead.isPending}
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    {markAllAsRead.isPending ? "Marcando..." : "Marcar todas"}
+                  </Button>
+                ) : null}
               </div>
-            )}
+            </div>
+            {/* Notification List */}
+            <div className="divide-y overflow-y-auto flex-1">
+              {notifications && notifications.length > 0 ? (
+                notifications.map((notif) => (
+                  <div 
+                    key={notif.id} 
+                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                      notif.read === 0 ? 'bg-[#fff5f0] border-l-4 border-l-[#ff6b35]' : 'border-l-4 border-l-transparent'
+                    }`}
+                    onClick={() => {
+                      if (notif.read === 0) {
+                        markAsRead.mutate({ id: notif.id });
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-semibold text-[#1a4d3c] text-sm leading-tight pr-2">{notif.title}</h4>
+                      {notif.read === 0 && (
+                        <span className="flex-shrink-0 w-2 h-2 bg-[#ff6b35] rounded-full mt-1"></span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 leading-snug">{notif.message}</p>
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      {new Date(notif.createdAt).toLocaleString('es-PR')}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-gray-500">
+                  <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  <p>No hay notificaciones</p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <div className="container py-12">
@@ -1249,12 +1293,12 @@ export default function Admin() {
                             <TableCell className="print:hidden">
                               <button
                                 onClick={() => toggleDestacada.mutate({ paradaId: parada.id })}
-                                title={(parada as any).destacada ? "Quitar destacada" : "Marcar como destacada"}
+                                title={parada.destacada ? "Quitar destacada" : "Marcar como destacada"}
                                 className="p-1 rounded hover:bg-yellow-50 transition-colors"
                               >
                                 <Star
                                   className={`h-4 w-4 transition-colors ${
-                                    (parada as any).destacada
+                                    parada.destacada
                                       ? "fill-yellow-400 text-yellow-400"
                                       : "text-gray-300 hover:text-yellow-300"
                                   }`}

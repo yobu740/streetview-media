@@ -15,8 +15,6 @@ import Mantenimiento from "./pages/Mantenimiento";
 import Facturas from "./pages/Facturas";
 import Facturacion from "./pages/Facturacion";
 import Seguimientos from "./pages/Seguimientos";
-import AnnouncementToast from "./components/AnnouncementToast";
-import AnunciosConfig from "./pages/AnunciosConfig";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -32,7 +30,6 @@ function Router() {
       <Route path={"/facturas"} component={Facturas} />
       <Route path={"/facturacion"} component={Facturacion} />
       <Route path={"/seguimientos"} component={Seguimientos} />
-      <Route path={"/anuncios-config"} component={AnunciosConfig} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
@@ -48,7 +45,6 @@ function App() {
         <ThemeProvider defaultTheme="light">
           <TooltipProvider>
             <Toaster />
-            <AnnouncementToast />
             <Router />
           </TooltipProvider>
         </ThemeProvider>

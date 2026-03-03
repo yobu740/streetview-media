@@ -161,6 +161,25 @@ export async function getUnreadNotificationCount(userId: number): Promise<number
   return result.length;
 }
 
+export async function markAllNotificationsAsRead(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot mark all notifications as read: database not available");
+    return;
+  }
+
+  const { and } = await import("drizzle-orm");
+  try {
+    await db
+      .update(notifications)
+      .set({ read: 1 })
+      .where(and(eq(notifications.userId, userId), eq(notifications.read, 0)));
+  } catch (error) {
+    console.error("[Database] Failed to mark all notifications as read:", error);
+    throw error;
+  }
+}
+
 // Anuncio approval helpers
 export async function updateAnuncioApprovalStatus(
   anuncioId: number,

@@ -94,12 +94,6 @@ export default function AdminSidebar({
       href: "/mis-reservas",
       userOnly: true,
     },
-    {
-      label: "Anuncios Sistema",
-      icon: Bell,
-      href: "/anuncios-config",
-      adminOnly: true,
-    },
   ];
 
   const actionItems = [

@@ -12,6 +12,7 @@ describe('Role-based Access Control', () => {
       cobertizoId: 'TEST-001',
       localizacion: 'Test Location',
       direccion: 'Test Address',
+      orientacion: 'I',
       tipoFormato: 'Fija'
     });
 
@@ -29,12 +30,13 @@ describe('Role-based Access Control', () => {
         cobertizoId: 'TEST-002',
         localizacion: 'Test Location',
         direccion: 'Test Address',
+        orientacion: 'I',
         tipoFormato: 'Fija'
       })
     ).rejects.toThrow();
   });
 
-  it('should allow vendedor to create anuncio', async () => {
+  it('should allow vendedor to create anuncio', async () => {  // Note: this test requires DB access and may be slow
     const caller = appRouter.createCaller({
       user: { id: 2, email: 'vendedor@test.com', role: 'vendedor', name: 'Vendedor', openId: '456' }
     } as Context);
@@ -48,10 +50,11 @@ describe('Role-based Access Control', () => {
 
     const result = await caller.anuncios.create({
       paradaId: paradas[0].id,
+      producto: 'Test Producto',
       cliente: 'Test Client',
       tipo: 'Fijo',
-      fechaInicio: new Date('2026-03-01'),
-      fechaFin: new Date('2026-03-31'),
+      fechaInicio: new Date('2027-08-01'),
+      fechaFin: new Date('2027-08-31'),
       estado: 'Programado'
     });
 
@@ -79,6 +82,7 @@ describe('Role-based Access Control', () => {
       cobertizoId: 'TEST-DELETE',
       localizacion: 'Test Location',
       direccion: 'Test Address',
+      orientacion: 'O',
       tipoFormato: 'Fija'
     });
 

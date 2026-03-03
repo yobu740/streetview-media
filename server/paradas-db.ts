@@ -74,6 +74,7 @@ export async function getAllParadas() {
         displayPublicidad: parada.displayPublicidad,
         enConstruccion: parada.enConstruccion,
         fechaDisponibilidad: parada.fechaDisponibilidad,
+        destacada: parada.destacada,
         createdAt: parada.createdAt,
         updatedAt: parada.updatedAt,
         // Current anuncio fields (null if no anuncio)

@@ -95,12 +95,13 @@ describe("Anuncios Management", () => {
     expect(paradas.length).toBeGreaterThan(0);
     const testParada = paradas[0];
 
-    // Create anuncio
-    const fechaInicio = new Date();
-    const fechaFin = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+    // Create anuncio - use far future dates to avoid conflicts with existing data
+    const fechaInicio = new Date('2027-09-01');
+    const fechaFin = new Date('2027-09-30');
 
     const createResult = await caller.anuncios.create({
       paradaId: testParada.id,
+      producto: "Test Producto",
       cliente: "Test Cliente",
       tipo: "Fijo",
       fechaInicio,

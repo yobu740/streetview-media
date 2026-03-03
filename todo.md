@@ -1110,3 +1110,12 @@
 - [x] Se recuerda en sessionStorage para no repetirse en la misma sesión
 - [x] Página "Anuncios Sistema" para admin (crear, editar, activar/desactivar, eliminar)
 - [x] Enlace "Anuncios Sistema" en el sidebar (solo admin)
+
+## Correcciones y Mejoras - Notificaciones y Estrella
+- [x] Eliminar sistema de toast/anuncios (AnnouncementToast, AnunciosConfig, ruta, sidebar link)
+- [x] Corregir bug: estrella destacada no se marca visualmente al hacer clic
+- [x] Añadir pop-up en campana de notificaciones mostrando "Tiene X notificaciones sin leer"
+- [x] Marcar notificación como leída al tocarla (quitar marca naranja)
+- [x] Añadir botón "Marcar todas como leídas"
+- [x] Añadir procedimiento backend markAllAsRead
+- [x] Backdrop para cerrar panel al hacer clic fuera

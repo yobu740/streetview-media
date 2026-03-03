@@ -9,6 +9,7 @@ describe('Anuncios Availability Validation', () => {
     
     const anuncioId = await createAnuncio({
       paradaId: 1,
+      producto: 'Test Producto',
       cliente: 'Test Cliente',
       tipo: 'Fijo',
       fechaInicio,
@@ -48,6 +49,7 @@ describe('Anuncios Availability Validation', () => {
     // Create a pending reservation
     const anuncioId = await createAnuncio({
       paradaId: 2,
+      producto: 'Pending Producto',
       cliente: 'Pending Test',
       tipo: 'Fijo',
       fechaInicio: new Date('2026-05-01'),
@@ -73,6 +75,7 @@ describe('Anuncios Availability Validation', () => {
     // Create an inactive anuncio
     const anuncioId = await createAnuncio({
       paradaId: 3,
+      producto: 'Cancelled Producto',
       cliente: 'Cancelled Test',
       tipo: 'Fijo',
       fechaInicio: new Date('2026-06-01'),
