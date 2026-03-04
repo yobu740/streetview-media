@@ -1129,3 +1129,11 @@
 - [x] Frontend: deshabilitar botón "+" y mostrar tooltip explicativo
 - [x] Frontend: mostrar badge "Sin Display" en listado de paradas
 - [x] Frontend: tarjeta de filtro "Sin Display" en panel de stats
+
+## Flowcat Filter Feature
+- [x] Poblar campo flow_cat en todas las paradas según mapeo localizacion → número Flowcat (1073 paradas actualizadas)
+- [x] Agregar procedimiento backend getFlowcats para listar Flowcats únicos
+- [x] Agregar filtro por Flowcat en panel Admin con ordenamiento: cobertizo numérico asc, I antes de O antes de P
+- [x] Mostrar nombre de avenida + número Flowcat en el dropdown de filtro
+- [x] Mostrar FC XXX debajo de localizacion en tabla
+- [x] Badge de Flowcat activo en header de tabla con indicador de ordenamiento

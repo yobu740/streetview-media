@@ -571,3 +571,34 @@ export async function checkExpiringAnuncios(daysBeforeExpiration: number = 7) {
     return [];
   }
 }
+
+// ========== FLOWCATS ==========
+
+/**
+ * Returns all distinct Flowcat entries (number + localizacion name), sorted by number.
+ * Used to populate the Flowcat filter dropdown in the Admin panel.
+ */
+export async function getDistinctFlowcats() {
+  const db = await getDb();
+  if (!db) return [];
+
+  const rows = await db
+    .selectDistinct({
+      flowCat: paradas.flowCat,
+      localizacion: paradas.localizacion,
+    })
+    .from(paradas)
+    .where(sql`${paradas.flowCat} IS NOT NULL AND ${paradas.flowCat} != ''`)
+    .orderBy(asc(paradas.flowCat));
+
+  // Deduplicate: one entry per flowCat number (use first localizacion found)
+  const seen = new Set<string>();
+  const result: { flowCat: string; localizacion: string }[] = [];
+  for (const row of rows) {
+    if (row.flowCat && !seen.has(row.flowCat)) {
+      seen.add(row.flowCat);
+      result.push({ flowCat: row.flowCat, localizacion: row.localizacion ?? '' });
+    }
+  }
+  return result;
+}

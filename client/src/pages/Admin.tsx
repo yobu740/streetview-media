@@ -107,6 +107,7 @@ export default function Admin() {
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
+  const [filterFlowcat, setFilterFlowcat] = useState<string | null>(null);
   
   // Print filter state
   const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
@@ -138,6 +139,7 @@ export default function Admin() {
   // Queries
   const { data: paradas, isLoading: paradasLoading, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: anuncios, refetch: refetchAnuncios } = trpc.anuncios.list.useQuery();
+  const { data: flowcats } = trpc.paradas.getFlowcats.useQuery();
   
   // Check availability when dates change
   const { data: checkAvailabilityData } = trpc.anuncios.checkDisponibilidad.useQuery(
@@ -383,12 +385,13 @@ export default function Admin() {
     setFilterApprovalStatus("all");
     setFilterTipo("all");
     setFilterRuta("");
+    setFilterFlowcat(null);
     setCurrentPage(1);
     toast.success("Filtros limpiados");
   };
   
   // Check if any filter is active
-  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta;
+  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta || filterFlowcat;
   
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
@@ -499,14 +502,36 @@ export default function Admin() {
     // Ruta filter
     const matchesRuta = !filterRuta || (p.ruta && p.ruta.toLowerCase().includes(filterRuta.toLowerCase()));
     
+    // Flowcat filter
+    const matchesFlowcat = !filterFlowcat || p.flowCat === filterFlowcat;
+    
     // Approval status filter (check if any anuncio for this parada matches the approval status)
     const matchesApprovalStatus = filterApprovalStatus === "all" || 
       anuncios?.some(a => 
         a.paradaId === p.id && a.approvalStatus === filterApprovalStatus
       );
     
-    return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesApprovalStatus;
+    return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesApprovalStatus;
   }) || [];
+
+  // When Flowcat filter is active, sort by cobertizo number (numeric asc), then I before O before P
+  const ORIENTACION_ORDER: Record<string, number> = { 'I': 0, 'O': 1, 'P': 2 };
+  const sortedFilteredParadas = filterFlowcat
+    ? [...filteredParadas].sort((a, b) => {
+        // Extract numeric part of cobertizoId (e.g. "589A" → 589, "589" → 589)
+        const numA = parseInt(a.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+        const numB = parseInt(b.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+        if (numA !== numB) return numA - numB;
+        // Same numeric part: sort by letter suffix (e.g. 589A < 589B)
+        const letterA = a.cobertizoId.replace(/[0-9]/g, '') || '';
+        const letterB = b.cobertizoId.replace(/[0-9]/g, '') || '';
+        if (letterA !== letterB) return letterA.localeCompare(letterB);
+        // Same cobertizo: I first, then O, then P
+        const ordA = ORIENTACION_ORDER[a.orientacion?.toUpperCase() ?? ''] ?? 9;
+        const ordB = ORIENTACION_ORDER[b.orientacion?.toUpperCase() ?? ''] ?? 9;
+        return ordA - ordB;
+      })
+    : filteredParadas;
   
   // Get paradas for printing with filters
   const getPrintParadas = () => {
@@ -546,11 +571,11 @@ export default function Admin() {
     }) || [];
   };
   
-  // Pagination
-  const totalPages = Math.ceil(filteredParadas.length / itemsPerPage);
+  // Pagination - use sortedFilteredParadas (sorted by cobertizo when Flowcat filter is active)
+  const totalPages = Math.ceil(sortedFilteredParadas.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedParadas = filteredParadas.slice(startIndex, endIndex);
+  const paginatedParadas = sortedFilteredParadas.slice(startIndex, endIndex);
   
   // Reset to page 1 when filters change
   const handleFilterChange = () => {
@@ -600,10 +625,10 @@ export default function Admin() {
 
   const handleExportToExcel = () => {
     import('xlsx').then((XLSX) => {
-      // Determine which paradas to export: selected ones if any, otherwise all filtered
+      // Determine which paradas to export: selected ones if any, otherwise all filtered (sorted)
       const paradasToExport = selectedParadas.length > 0 
-        ? filteredParadas.filter(p => selectedParadas.includes(p.id))
-        : filteredParadas;
+        ? sortedFilteredParadas.filter(p => selectedParadas.includes(p.id))
+        : sortedFilteredParadas;
       
       // Prepare data for export
       const exportData = paradasToExport.map(parada => {
@@ -1150,7 +1175,7 @@ export default function Admin() {
                   </div>
                   {productoSearch && (
                     <div className="text-sm text-gray-600 mt-1 ml-1">
-                      {filteredParadas.length} resultado(s) encontrado(s)
+                      {sortedFilteredParadas.length} resultado(s) encontrado(s)
                     </div>
                   )}
                 </div>
@@ -1203,6 +1228,36 @@ export default function Admin() {
                     </Select>
                   </div>
                 )}
+                <div>
+                  <Label className="flex items-center gap-1">
+                    Flowcat
+                    {filterFlowcat && (
+                      <span className="ml-1 text-xs bg-[#1a4d3c] text-white px-1.5 py-0.5 rounded-full">
+                        {filterFlowcat}
+                      </span>
+                    )}
+                  </Label>
+                  <Select
+                    value={filterFlowcat ?? "all"}
+                    onValueChange={(v) => {
+                      setFilterFlowcat(v === "all" ? null : v);
+                      handleFilterChange();
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas las avenidas" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-64 overflow-y-auto">
+                      <SelectItem value="all">Todas las avenidas</SelectItem>
+                      {flowcats?.map((fc) => (
+                        <SelectItem key={fc.flowCat} value={fc.flowCat}>
+                          <span className="font-mono font-bold text-[#1a4d3c] mr-2">{fc.flowCat}</span>
+                          {fc.localizacion}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -1282,7 +1337,8 @@ export default function Admin() {
           <CardHeader>
             <CardTitle>Listado de Paradas</CardTitle>
             <CardDescription>
-              Mostrando {startIndex + 1}-{Math.min(endIndex, filteredParadas.length)} de {filteredParadas.length} paradas
+              Mostrando {startIndex + 1}-{Math.min(endIndex, sortedFilteredParadas.length)} de {sortedFilteredParadas.length} paradas
+              {filterFlowcat && <span className="ml-2 text-xs bg-[#1a4d3c] text-white px-2 py-0.5 rounded-full">Flowcat {filterFlowcat} — ordenado por cobertizo</span>}
               {searchTerm || filterStatus !== "all" || filterTipo !== "all" || filterRuta ? ` (filtradas de ${paradas?.length})` : ""}
             </CardDescription>
           </CardHeader>
@@ -1373,7 +1429,16 @@ export default function Admin() {
                                 {parada.orientacion || "—"}
                               </Badge>
                             </TableCell>
-                            <TableCell>{parada.localizacion || "—"}</TableCell>
+                            <TableCell>
+                              <div className="flex flex-col gap-0.5">
+                                <span>{parada.localizacion || "—"}</span>
+                                {parada.flowCat && (
+                                  <span className="text-xs font-mono text-[#1a4d3c] font-semibold">
+                                    FC {parada.flowCat}
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
                             <TableCell>{parada.ruta || "—"}</TableCell>
                             <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
                             <TableCell>

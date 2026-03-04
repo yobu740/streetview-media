@@ -26,6 +26,11 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return await paradasDb.getAllParadas();
     }),
+
+    // Returns all distinct flowcat values (number + localizacion name) for filter dropdown
+    getFlowcats: publicProcedure.query(async () => {
+      return await paradasDb.getDistinctFlowcats();
+    }),
     
     search: publicProcedure
       .input(z.object({ searchTerm: z.string() }))

@@ -90,10 +90,10 @@ describe("Anuncios Management", () => {
     const { ctx } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
-    // Get a parada to use
+    // Get a parada to use - pick one that is NOT en construccion and has display enabled
     const paradas = await caller.paradas.list();
     expect(paradas.length).toBeGreaterThan(0);
-    const testParada = paradas[0];
+    const testParada = paradas.find(p => !p.enConstruccion && p.displayPublicidad !== 'No') ?? paradas[0];
 
     // Create anuncio - use far future dates to avoid conflicts with existing data
     const fechaInicio = new Date('2027-09-01');

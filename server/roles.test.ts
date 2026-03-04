@@ -41,15 +41,16 @@ describe('Role-based Access Control', () => {
       user: { id: 2, email: 'vendedor@test.com', role: 'vendedor', name: 'Vendedor', openId: '456' }
     } as Context);
 
-    // First get a parada to use
+    // First get a parada to use - pick one that is NOT en construccion and has display enabled
     const paradas = await caller.paradas.list();
     if (paradas.length === 0) {
       console.log('No paradas available for test');
       return;
     }
+    const testParada = paradas.find(p => !p.enConstruccion && p.displayPublicidad !== 'No') ?? paradas[0];
 
     const result = await caller.anuncios.create({
-      paradaId: paradas[0].id,
+      paradaId: testParada.id,
       producto: 'Test Producto',
       cliente: 'Test Client',
       tipo: 'Fijo',
