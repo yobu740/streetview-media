@@ -1137,3 +1137,7 @@
 - [x] Mostrar nombre de avenida + número Flowcat en el dropdown de filtro
 - [x] Mostrar FC XXX debajo de localizacion en tabla
 - [x] Badge de Flowcat activo en header de tabla con indicador de ordenamiento
+
+## Flowcat en Reportes
+- [x] Agregar columna "Flowcat" en el reporte de Excel exportado
+- [x] Agregar filtro por Flowcat en el modal de impresión de reportes (con ordenamiento secuencial)

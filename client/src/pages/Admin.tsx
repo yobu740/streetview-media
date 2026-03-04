@@ -113,6 +113,7 @@ export default function Admin() {
   const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
   const [printFilterTipo, setPrintFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [printFilterRuta, setPrintFilterRuta] = useState("");
+  const [printFilterFlowcat, setPrintFilterFlowcat] = useState<string | null>(null);
   const [printDateFrom, setPrintDateFrom] = useState("");
   const [printDateTo, setPrintDateTo] = useState("");
   
@@ -548,6 +549,9 @@ export default function Admin() {
       
       const matchesRuta = !printFilterRuta || (p.ruta && p.ruta.toLowerCase().includes(printFilterRuta.toLowerCase()));
       
+      // Flowcat filter for print
+      const matchesFlowcat = !printFilterFlowcat || p.flowCat === printFilterFlowcat;
+      
       // Date range filter - check if parada is available in the date range
       let matchesDateRange = true;
       if (printDateFrom || printDateTo) {
@@ -567,8 +571,26 @@ export default function Admin() {
         }
       }
       
-      return matchesStatus && matchesTipo && matchesRuta && matchesDateRange;
+      return matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesDateRange;
     }) || [];
+  };
+
+  // When print Flowcat filter is active, sort print paradas by cobertizo (same logic as main table)
+  const getSortedPrintParadas = () => {
+    const base = getPrintParadas();
+    if (!printFilterFlowcat) return base;
+    const ORIENTACION_ORDER: Record<string, number> = { 'I': 0, 'O': 1, 'P': 2 };
+    return [...base].sort((a, b) => {
+      const numA = parseInt(a.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+      const numB = parseInt(b.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+      if (numA !== numB) return numA - numB;
+      const letterA = a.cobertizoId.replace(/[0-9]/g, '') || '';
+      const letterB = b.cobertizoId.replace(/[0-9]/g, '') || '';
+      if (letterA !== letterB) return letterA.localeCompare(letterB);
+      const ordA = ORIENTACION_ORDER[a.orientacion?.toUpperCase() ?? ''] ?? 9;
+      const ordB = ORIENTACION_ORDER[b.orientacion?.toUpperCase() ?? ''] ?? 9;
+      return ordA - ordB;
+    });
   };
   
   // Pagination - use sortedFilteredParadas (sorted by cobertizo when Flowcat filter is active)
@@ -635,6 +657,7 @@ export default function Admin() {
         const { status, anuncio } = getParadaStatus(parada);
         return {
           'ID': parada.cobertizoId,
+          'Flowcat': parada.flowCat || '',
           'Localización': parada.localizacion || '',
           'Ruta': parada.ruta || '',
           'Dirección': parada.direccion || '',
@@ -657,6 +680,7 @@ export default function Admin() {
       // Set column widths
       const colWidths = [
         { wch: 10 },  // ID
+        { wch: 8  },  // Flowcat
         { wch: 25 },  // Localización
         { wch: 15 },  // Ruta
         { wch: 40 },  // Dirección
@@ -2098,6 +2122,38 @@ export default function Admin() {
                 onChange={(e) => setPrintFilterRuta(e.target.value)}
               />
             </div>
+            <div>
+              <Label className="flex items-center gap-1">
+                Flowcat (Avenida)
+                {printFilterFlowcat && (
+                  <span className="ml-1 text-xs bg-[#1a4d3c] text-white px-1.5 py-0.5 rounded-full">
+                    {printFilterFlowcat}
+                  </span>
+                )}
+              </Label>
+              <Select
+                value={printFilterFlowcat ?? "all"}
+                onValueChange={(v) => setPrintFilterFlowcat(v === "all" ? null : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas las avenidas" />
+                </SelectTrigger>
+                <SelectContent className="max-h-56 overflow-y-auto">
+                  <SelectItem value="all">Todas las avenidas</SelectItem>
+                  {flowcats?.map((fc) => (
+                    <SelectItem key={fc.flowCat} value={fc.flowCat}>
+                      <span className="font-mono font-bold text-[#1a4d3c] mr-2">{fc.flowCat}</span>
+                      {fc.localizacion}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {printFilterFlowcat && (
+                <p className="text-xs text-[#1a4d3c] mt-1">
+                  Ordenado por cobertizo (I primero)
+                </p>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="printDateFrom">Disponible Desde</Label>
@@ -2122,7 +2178,10 @@ export default function Admin() {
             </div>
             <div className="border-t pt-4">
               <p className="text-sm text-gray-600">
-                El reporte incluirá <strong>{getPrintParadas().length}</strong> paradas según los filtros seleccionados.
+                El reporte incluirá <strong>{getSortedPrintParadas().length}</strong> paradas según los filtros seleccionados.
+                {printFilterFlowcat && (
+                  <span className="ml-1 text-[#1a4d3c] font-medium">(Flowcat {printFilterFlowcat} — ordenado por cobertizo)</span>
+                )}
               </p>
             </div>
           </div>
@@ -2144,19 +2203,20 @@ export default function Admin() {
         <p>Fecha: {new Date().toLocaleDateString()}</p>
         <div className="stats">
           <div className="stat-card">
-            <strong>Total:</strong> {getPrintParadas().length}
+            <strong>Total:</strong> {getSortedPrintParadas().length}
           </div>
           <div className="stat-card">
-            <strong>Disponibles:</strong> {getPrintParadas().filter(p => getParadaStatus(p).status === "Disponible").length}
+            <strong>Disponibles:</strong> {getSortedPrintParadas().filter(p => getParadaStatus(p).status === "Disponible").length}
           </div>
           <div className="stat-card">
-            <strong>Ocupadas:</strong> {getPrintParadas().filter(p => getParadaStatus(p).status === "Ocupada").length}
+            <strong>Ocupadas:</strong> {getSortedPrintParadas().filter(p => getParadaStatus(p).status === "Ocupada").length}
           </div>
         </div>
         <table>
           <thead>
             <tr>
               <th>ID</th>
+              <th>Flowcat</th>
               <th>Localización</th>
               <th>Ruta</th>
               <th>Dirección</th>
@@ -2166,11 +2226,12 @@ export default function Admin() {
             </tr>
           </thead>
           <tbody>
-            {getPrintParadas().map((parada) => {
+            {getSortedPrintParadas().map((parada) => {
               const { status, anuncio } = getParadaStatus(parada);
               return (
                 <tr key={parada.id}>
                   <td>{parada.cobertizoId}</td>
+                  <td>{parada.flowCat || "—"}</td>
                   <td>{parada.localizacion || "—"}</td>
                   <td>{parada.ruta || "—"}</td>
                   <td>{parada.direccion}</td>
