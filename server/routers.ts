@@ -276,6 +276,15 @@ export const appRouter = router({
         
         // CRITICAL: Check if parada is En Construccion BEFORE creating
         const parada = await paradasDb.getParadaById(input.paradaId);
+        
+        // CRITICAL: Check if parada has display disabled
+        if (parada?.displayPublicidad === 'No') {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Esta cara no tiene display habilitado y no está disponible para reservas de anuncios.',
+          });
+        }
+        
         if (parada?.enConstruccion) {
           const fechaDisp = parada.fechaDisponibilidad
             ? new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')

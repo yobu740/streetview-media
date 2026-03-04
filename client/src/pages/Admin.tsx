@@ -75,7 +75,7 @@ export default function Admin() {
   const itemsPerPage = 20;
   
   // Filter state
-  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion" | "destacada">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion" | "destacada" | "sin_display">("all");
   const [filterDestacada, setFilterDestacada] = useState(false);
   const toggleDestacada = trpc.paradas.toggleDestacada.useMutation({
     onMutate: async ({ paradaId }) => {
@@ -395,7 +395,24 @@ export default function Admin() {
   };
 
   const getParadaStatus = (parada: any) => {
-    // En Construccion takes priority — not available regardless of anuncios
+    // Sin Display takes priority — blocked for ad reservations
+    if (parada.displayPublicidad === 'No') {
+      return {
+        status: "Sin Display" as const,
+        anuncio: parada.anuncioId && parada.anuncioCliente &&
+          (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")
+          ? {
+              id: parada.anuncioId,
+              cliente: parada.anuncioCliente,
+              tipo: parada.anuncioTipo,
+              fechaInicio: parada.anuncioFechaInicio,
+              fechaFin: parada.anuncioFechaFin,
+              estado: parada.anuncioEstado,
+            }
+          : null,
+      };
+    }
+    // En Construccion — not available regardless of anuncios
     if (parada.enConstruccion) {
       return {
         status: "En Construcción" as const,
@@ -471,7 +488,8 @@ export default function Admin() {
       (filterStatus === "disponible" && status === "Disponible") ||
       (filterStatus === "ocupada" && status === "Ocupada") ||
       (filterStatus === "construccion" && status === "En Construcción") ||
-      (filterStatus === "destacada" && p.destacada);
+      (filterStatus === "destacada" && p.destacada) ||
+      (filterStatus === "sin_display" && status === "Sin Display");
     
     // Tipo filter
     const matchesTipo = filterTipo === "all" || 
@@ -696,6 +714,7 @@ export default function Admin() {
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
   const construccionCount = filteredParadas.filter(p => getParadaStatus(p).status === "En Construcción").length;
   const destacadasCount = (paradas || []).filter(p => p.destacada).length;
+  const sinDisplayCount = (paradas || []).filter(p => p.displayPublicidad === 'No').length;
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -1190,7 +1209,7 @@ export default function Admin() {
         </Card>
 
         {/* Stats Cards - Now clickable filters */}
-        <div className="grid md:grid-cols-5 gap-6 mb-8">
+        <div className="grid md:grid-cols-6 gap-4 mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-lg ${filterStatus === "all" ? "ring-2 ring-[#1a4d3c]" : ""}`}
             onClick={() => { setFilterStatus("all"); handleFilterChange(); }}
@@ -1243,6 +1262,17 @@ export default function Admin() {
                 {destacadasCount}
               </CardTitle>
               <CardDescription>Caras Destacadas</CardDescription>
+            </CardHeader>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-slate-400 ${filterStatus === "sin_display" ? "ring-2 ring-slate-500" : ""}`}
+            onClick={() => { setFilterStatus(filterStatus === "sin_display" ? "all" : "sin_display"); handleFilterChange(); }}
+          >
+            <CardHeader>
+              <CardTitle className="text-2xl text-slate-600">
+                {sinDisplayCount}
+              </CardTitle>
+              <CardDescription>Sin Display</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -1360,6 +1390,9 @@ export default function Admin() {
                               )}
                               {status === "En Construcción" && (
                                 <Badge className="bg-amber-500 hover:bg-amber-600 text-white">{status}</Badge>
+                              )}
+                              {status === "Sin Display" && (
+                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">Sin Display</Badge>
                               )}
                             </TableCell>
                             <TableCell>
@@ -1572,9 +1605,10 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Estado</Label>
-                                          <Badge variant={status === "Disponible" ? "outline" : "destructive"}>
-                                            {status}
-                                          </Badge>
+                                          {status === "Disponible" && <Badge variant="outline" className="border-green-600 text-green-700">{status}</Badge>}
+                                          {status === "Ocupada" && <Badge variant="destructive">{status}</Badge>}
+                                          {status === "En Construcción" && <Badge className="bg-amber-500 text-white">{status}</Badge>}
+                                          {status === "Sin Display" && <Badge className="bg-slate-500 text-white">Sin Display — Bloqueada</Badge>}
                                         </div>
                                       </div>
                                       
@@ -1650,10 +1684,13 @@ export default function Admin() {
                                 <Button 
                                   size="sm" 
                                   variant="ghost"
+                                  disabled={parada.displayPublicidad === 'No'}
+                                  title={parada.displayPublicidad === 'No' ? 'Sin display — no disponible para anuncios' : 'Agregar anuncio'}
                                   onClick={() => {
                                     setSelectedParada(parada);
                                     setIsAnuncioDialogOpen(true);
                                   }}
+                                  className={parada.displayPublicidad === 'No' ? 'opacity-30 cursor-not-allowed' : ''}
                                 >
                                   <Plus className="h-4 w-4" />
                                 </Button>

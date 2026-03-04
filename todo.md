@@ -1122,3 +1122,10 @@
 
 ## Fix Estrella - Actualización Instantánea
 - [x] Implementar optimistic update en toggleDestacada para respuesta inmediata sin esperar servidor
+
+## Bloqueo de Reservas por Display
+- [x] Backend: bloquear creación de anuncios si parada tiene displayPublicidad = "No"
+- [x] Frontend: mostrar indicador visual "Sin Display" en paradas bloqueadas
+- [x] Frontend: deshabilitar botón "+" y mostrar tooltip explicativo
+- [x] Frontend: mostrar badge "Sin Display" en listado de paradas
+- [x] Frontend: tarjeta de filtro "Sin Display" en panel de stats
