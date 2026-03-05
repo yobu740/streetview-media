@@ -94,6 +94,8 @@ export const notifications = mysqlTable("notifications", {
   message: text("message").notNull(),
   relatedId: int("related_id"), // FK to anuncios or other entities
   read: int("read").default(0).notNull(), // 0 = unread, 1 = read
+  ignorada: int("ignorada").default(0).notNull(), // 0 = active, 1 = ignored/dismissed
+  relatedAnuncioId: int("related_anuncio_id"), // FK to anuncios (for campaign_ending notifications)
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

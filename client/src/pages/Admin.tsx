@@ -44,6 +44,24 @@ export default function Admin() {
   const bulkReject = trpc.approvals.bulkReject.useMutation();
   const logActivity = trpc.activity.log.useMutation();
   const checkNotifications = trpc.invoices.checkAndNotify.useMutation();
+  const ignoreNotification = trpc.notifications.ignore.useMutation({
+    onSuccess: () => {
+      utils.notifications.list.invalidate();
+      utils.notifications.unreadCount.invalidate();
+    },
+  });
+  const createSeguimientoFromNotif = trpc.notifications.createSeguimiento.useMutation({
+    onSuccess: (data) => {
+      utils.notifications.list.invalidate();
+      utils.notifications.unreadCount.invalidate();
+      if (data.alreadyExists) {
+        toast('Ya existe un seguimiento para este anuncio.');
+      } else {
+        toast.success('Seguimiento creado. Puedes verlo en el área de Seguimientos.');
+      }
+    },
+    onError: () => toast.error('Error al crear seguimiento'),
+  });
   const utils = trpc.useUtils();
   const [searchTerm, setSearchTerm] = useState("");
   const [productoSearch, setProductoSearch] = useState("");
@@ -896,30 +914,79 @@ export default function Admin() {
             {/* Notification List */}
             <div className="divide-y overflow-y-auto flex-1">
               {notifications && notifications.length > 0 ? (
-                notifications.map((notif) => (
-                  <div 
-                    key={notif.id} 
-                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                      notif.read === 0 ? 'bg-[#fff5f0] border-l-4 border-l-[#ff6b35]' : 'border-l-4 border-l-transparent'
-                    }`}
-                    onClick={() => {
-                      if (notif.read === 0) {
-                        markAsRead.mutate({ id: notif.id });
-                      }
-                    }}
-                  >
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-semibold text-[#1a4d3c] text-sm leading-tight pr-2">{notif.title}</h4>
-                      {notif.read === 0 && (
-                        <span className="flex-shrink-0 w-2 h-2 bg-[#ff6b35] rounded-full mt-1"></span>
+                notifications.map((notif) => {
+                  const isCampaignEnding = notif.type === 'campaign_ending_21d' || notif.type === 'campaign_ending_14d' || notif.type === 'campaign_ending_7d';
+                  return (
+                    <div 
+                      key={notif.id} 
+                      className={`p-4 transition-colors ${
+                        notif.read === 0 ? 'bg-[#fff5f0] border-l-4 border-l-[#ff6b35]' : 'border-l-4 border-l-transparent'
+                      }`}
+                    >
+                      <div
+                        className="cursor-pointer hover:opacity-80"
+                        onClick={() => {
+                          if (notif.read === 0) {
+                            markAsRead.mutate({ id: notif.id });
+                          }
+                        }}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-semibold text-[#1a4d3c] text-sm leading-tight pr-2">{notif.title}</h4>
+                          {notif.read === 0 && (
+                            <span className="flex-shrink-0 w-2 h-2 bg-[#ff6b35] rounded-full mt-1"></span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 leading-snug">{notif.message}</p>
+                        <p className="text-xs text-gray-400 mt-1.5">
+                          {new Date(notif.createdAt).toLocaleString('es-PR')}
+                        </p>
+                      </div>
+                      {/* Action buttons for campaign_ending notifications */}
+                      {isCampaignEnding && notif.relatedId && (
+                        <div className="flex gap-2 mt-2.5">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs h-7 border-[#1a4d3c] text-[#1a4d3c] hover:bg-[#1a4d3c] hover:text-white"
+                            disabled={createSeguimientoFromNotif.isPending}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Parse cliente and producto from the notification message
+                              // Message format: "La campaña de {cliente} ({producto}) termina en..."
+                              const match = notif.message.match(/La campaña de (.+?) \((.+?)\) termina/);
+                              const cliente = match ? match[1] : 'Cliente';
+                              const producto = match ? match[2] : undefined;
+                              createSeguimientoFromNotif.mutate({
+                                notificationId: notif.id,
+                                anuncioId: notif.relatedId!,
+                                cliente,
+                                producto,
+                                fechaVencimiento: new Date().toISOString(), // will be updated from anuncio
+                              });
+                            }}
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Dar Seguimiento
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs h-7 text-gray-500 hover:bg-gray-100"
+                            disabled={ignoreNotification.isPending}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              ignoreNotification.mutate({ id: notif.id });
+                            }}
+                          >
+                            <X className="h-3 w-3 mr-1" />
+                            Ignorar
+                          </Button>
+                        </div>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 leading-snug">{notif.message}</p>
-                    <p className="text-xs text-gray-400 mt-1.5">
-                      {new Date(notif.createdAt).toLocaleString('es-PR')}
-                    </p>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="p-8 text-center text-gray-500">
                   <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />

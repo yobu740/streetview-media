@@ -1144,3 +1144,11 @@
 
 ## Fix Dashboard En Construcción
 - [x] Corregir conteo y filtro "En Construcción" para usar campo enConstruccion directamente (condicion en Mantenimiento), sin verse afectado por prioridad de Sin Display
+
+## Notificaciones - Botones Ignorar y Dar Seguimiento
+- [x] Agregar campo "ignorada" a la tabla de notificaciones en DB
+- [x] Agregar procedimiento backend ignoreNotification
+- [x] Agregar procedimiento backend createSeguimientoFromNotification (obtiene fechaFin real del anuncio)
+- [x] Mostrar botones "Ignorar" y "Dar Seguimiento" en notificaciones de anuncios por vencer
+- [x] Al dar seguimiento: crear entrada automática en el área de seguimiento con info del cliente/anuncio
+- [x] Ocultar notificaciones ignoradas del panel (campo ignorada=1 excluido de la query)

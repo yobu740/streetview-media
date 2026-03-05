@@ -117,14 +117,33 @@ export async function getNotificationsByUserId(userId: number, limit: number = 5
     return [];
   }
 
+  const { and, ne } = await import("drizzle-orm");
   const result = await db
     .select()
     .from(notifications)
-    .where(eq(notifications.userId, userId))
+    .where(and(eq(notifications.userId, userId), ne(notifications.ignorada, 1)))
     .orderBy(desc(notifications.createdAt))
     .limit(limit);
 
   return result;
+}
+
+export async function ignoreNotification(notificationId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot ignore notification: database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(notifications)
+      .set({ ignorada: 1, read: 1 })
+      .where(eq(notifications.id, notificationId));
+  } catch (error) {
+    console.error("[Database] Failed to ignore notification:", error);
+    throw error;
+  }
 }
 
 export async function markNotificationAsRead(notificationId: number): Promise<void> {

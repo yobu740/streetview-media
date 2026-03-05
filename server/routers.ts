@@ -476,6 +476,66 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    ignore: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const { ignoreNotification } = await import("./db");
+        await ignoreNotification(input.id);
+        return { success: true };
+      }),
+
+    // Create a seguimiento from a campaign_ending notification
+    createSeguimiento: protectedProcedure
+      .input(z.object({
+        notificationId: z.number(),
+        anuncioId: z.number(),
+        cliente: z.string(),
+        producto: z.string().optional(),
+        fechaVencimiento: z.string(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb, markNotificationAsRead } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+        
+        // Check if a seguimiento already exists for this anuncio and vendedor
+        const { eq, and } = await import("drizzle-orm");
+        const existing = await db.select().from(seguimientos)
+          .where(and(
+            eq(seguimientos.anuncioId, input.anuncioId),
+            eq(seguimientos.vendedorId, ctx.user!.id)
+          ))
+          .limit(1);
+        
+        if (existing.length > 0) {
+          // Already exists — just mark notification as read
+          await markNotificationAsRead(input.notificationId);
+          return { success: true, id: existing[0].id, alreadyExists: true };
+        }
+        
+        // Fetch the actual fechaFin from the anuncio for accuracy
+        const { getAnuncioById } = await import("./paradas-db");
+        const anuncio = await getAnuncioById(input.anuncioId);
+        const fechaVencimiento = anuncio?.fechaFin ? new Date(anuncio.fechaFin) : new Date(input.fechaVencimiento);
+        const clienteFromAnuncio = anuncio?.cliente || input.cliente;
+        const productoFromAnuncio = anuncio?.producto || input.producto || null;
+        
+        const [result] = await db.insert(seguimientos).values({
+          anuncioId: input.anuncioId,
+          vendedorId: ctx.user!.id,
+          cliente: clienteFromAnuncio,
+          producto: productoFromAnuncio,
+          fechaVencimiento,
+          estado: "Pendiente",
+        });
+        
+        // Mark the notification as read after creating seguimiento
+        await markNotificationAsRead(input.notificationId);
+        
+        return { success: true, id: result.insertId, alreadyExists: false };
+      }),
+
     expiringAnuncios: adminProcedure.query(async () => {
       return await paradasDb.checkExpiringAnuncios(7);
     }),
