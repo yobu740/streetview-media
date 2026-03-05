@@ -1152,3 +1152,11 @@
 - [x] Mostrar botones "Ignorar" y "Dar Seguimiento" en notificaciones de anuncios por vencer
 - [x] Al dar seguimiento: crear entrada automática en el área de seguimiento con info del cliente/anuncio
 - [x] Ocultar notificaciones ignoradas del panel (campo ignorada=1 excluido de la query)
+
+## Fix - Botones en Sección "Anuncios Próximos a Vencer"
+- [x] Agregar botones "Dar Seguimiento" e "Ignorar" en la sección de anuncios por vencer del dashboard
+
+## Sección Anuncios Por Vencer - Acordeón + Botones
+- [x] Convertir sección "Anuncios Próximos a Vencer" en acordeón colapsable (cerrado por defecto)
+- [x] Agregar botones "Dar Seguimiento" e "Ignorar" en cada fila del listado
+- [x] Ocultar filas ignoradas del listado (estado local con dismissedExpiringIds)

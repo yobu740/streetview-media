@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Star } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -50,6 +50,13 @@ export default function Admin() {
       utils.notifications.unreadCount.invalidate();
     },
   });
+  const createSeguimientoFromExpiring = trpc.seguimientos.create.useMutation({
+    onSuccess: (_, vars) => {
+      setSeguimientoCreatedIds(prev => new Set(prev).add(vars.anuncioId));
+      toast.success('Seguimiento creado. Puedes verlo en el área de Seguimientos.');
+    },
+    onError: () => toast.error('Error al crear seguimiento'),
+  });
   const createSeguimientoFromNotif = trpc.notifications.createSeguimiento.useMutation({
     onSuccess: (data) => {
       utils.notifications.list.invalidate();
@@ -75,6 +82,9 @@ export default function Admin() {
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] = useState<any>(null);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  const [isExpiringOpen, setIsExpiringOpen] = useState(false); // accordion collapsed by default
+  const [dismissedExpiringIds, setDismissedExpiringIds] = useState<Set<number>>(new Set()); // locally dismissed
+  const [seguimientoCreatedIds, setSeguimientoCreatedIds] = useState<Set<number>>(new Set()); // locally tracked
   
   // Bulk edit state
   const [bulkEditForm, setBulkEditForm] = useState({
@@ -1198,49 +1208,108 @@ export default function Admin() {
           </Card>
         )}
         
-        {/* Expiring Anuncios Alert */}
-        {user?.role === 'admin' && expiringAnuncios && expiringAnuncios.length > 0 && (
-          <Card className="mb-8 border-yellow-500 bg-yellow-50 print:hidden">
-            <CardHeader>
-              <CardTitle className="text-yellow-700 flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Anuncios Próximos a Vencer ({expiringAnuncios.length})
-              </CardTitle>
-              <CardDescription className="text-yellow-600">
-                Estos anuncios vencerán en los próximos 7 días
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {expiringAnuncios.map((anuncio: any) => {
-                  const daysUntilExpiration = Math.ceil(
-                    (new Date(anuncio.fechaFin).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-                  );
-                  return (
-                    <div key={anuncio.id} className="bg-white border border-yellow-300 rounded-lg p-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-gray-900">{anuncio.cliente}</span>
-                            <Badge variant="outline" className="text-yellow-700 border-yellow-500">
-                              Vence en {daysUntilExpiration} día{daysUntilExpiration !== 1 ? 's' : ''}
-                            </Badge>
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Parada: {anuncio.parada?.cobertizoId} - {anuncio.parada?.localizacion}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            Fecha fin: {formatDateDisplay(anuncio.fechaFin)}
+        {/* Expiring Anuncios Alert - Collapsible Accordion */}
+        {user?.role === 'admin' && expiringAnuncios && expiringAnuncios.length > 0 && (() => {
+          const visibleAnuncios = expiringAnuncios.filter((a: any) => !dismissedExpiringIds.has(a.id));
+          if (visibleAnuncios.length === 0) return null;
+          return (
+            <Card className="mb-8 border-yellow-500 bg-yellow-50 print:hidden">
+              {/* Accordion Header - always visible */}
+              <button
+                className="w-full text-left"
+                onClick={() => setIsExpiringOpen(prev => !prev)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-yellow-700 flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5" />
+                      Anuncios Próximos a Vencer
+                      <Badge className="bg-yellow-500 text-white ml-1">{visibleAnuncios.length}</Badge>
+                    </CardTitle>
+                    <ChevronDown
+                      className={`h-5 w-5 text-yellow-600 transition-transform duration-200 ${
+                        isExpiringOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </div>
+                  <CardDescription className="text-yellow-600">
+                    {isExpiringOpen
+                      ? `Mostrando ${visibleAnuncios.length} anuncio${visibleAnuncios.length !== 1 ? 's' : ''} que vencerán en los próximos 7 días`
+                      : `Haz clic para ver los ${visibleAnuncios.length} anuncio${visibleAnuncios.length !== 1 ? 's' : ''} que vencerán en los próximos 7 días`
+                    }
+                  </CardDescription>
+                </CardHeader>
+              </button>
+
+              {/* Accordion Body - only visible when open */}
+              {isExpiringOpen && (
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    {visibleAnuncios.map((anuncio: any) => {
+                      const daysUntilExpiration = Math.ceil(
+                        (new Date(anuncio.fechaFin).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+                      );
+                      const alreadyHasSeguimiento = seguimientoCreatedIds.has(anuncio.id);
+                      return (
+                        <div key={anuncio.id} className="bg-white border border-yellow-300 rounded-lg p-4">
+                          <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold text-gray-900">{anuncio.cliente}</span>
+                                {anuncio.producto && (
+                                  <span className="text-sm text-gray-500">({anuncio.producto})</span>
+                                )}
+                                <Badge variant="outline" className="text-yellow-700 border-yellow-500">
+                                  Vence en {daysUntilExpiration} día{daysUntilExpiration !== 1 ? 's' : ''}
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                Parada: {anuncio.parada?.cobertizoId} — {anuncio.parada?.localizacion}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                Fecha fin: {formatDateDisplay(anuncio.fechaFin)}
+                              </div>
+                            </div>
+                            {/* Action buttons */}
+                            <div className="flex gap-2 md:flex-col md:items-end shrink-0">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs h-7 border-[#1a4d3c] text-[#1a4d3c] hover:bg-[#1a4d3c] hover:text-white"
+                                disabled={createSeguimientoFromExpiring.isPending || alreadyHasSeguimiento}
+                                onClick={() => {
+                                  if (alreadyHasSeguimiento) return;
+                                  createSeguimientoFromExpiring.mutate({
+                                    anuncioId: anuncio.id,
+                                    cliente: anuncio.cliente,
+                                    producto: anuncio.producto,
+                                    fechaVencimiento: new Date(anuncio.fechaFin).toISOString(),
+                                  });
+                                }}
+                              >
+                                <Check className="h-3 w-3 mr-1" />
+                                {alreadyHasSeguimiento ? 'Seguimiento creado' : 'Dar Seguimiento'}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-xs h-7 text-gray-500 hover:bg-gray-100"
+                                onClick={() => setDismissedExpiringIds(prev => new Set(prev).add(anuncio.id))}
+                              >
+                                <X className="h-3 w-3 mr-1" />
+                                Ignorar
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          );
+        })()}
 
         {/* Search and Filters */}
         <Card className="mb-8 print:hidden">
