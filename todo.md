@@ -1160,3 +1160,18 @@
 - [x] Convertir sección "Anuncios Próximos a Vencer" en acordeón colapsable (cerrado por defecto)
 - [x] Agregar botones "Dar Seguimiento" e "Ignorar" en cada fila del listado
 - [x] Ocultar filas ignoradas del listado (estado local con dismissedExpiringIds)
+
+## Seguimientos - Mejoras Completas
+- [x] DB: agregar campos telefono, email, archivedAt a tabla seguimientos
+- [x] DB: agregar campo anuncioId opcional (para seguimientos manuales sin anuncio)
+- [x] Backend: procedimiento createManual (nombre, producto, telefono, email, vendedor opcional)
+- [x] Backend: procedimiento updateContact (telefono, email)
+- [x] Backend: procedimiento assignVendor
+- [x] Backend: procedimiento deleteSeguimiento
+- [x] Backend: procedimiento archiveSeguimiento
+- [x] Backend: procedimiento listVendors (para el dropdown de asignación)
+- [x] UI: botón "Añadir Cliente" con modal (nombre, producto, teléfono, email, vendedor opcional, fecha límite)
+- [x] UI: campos teléfono y email editables en cada seguimiento (botón lápiz)
+- [x] UI: botón "Asignar a Vendedor" con dropdown de vendedores
+- [x] UI: botón "Borrar" con confirmación
+- [x] UI: botón "Archivar" y vista de archivados con toggle

@@ -1518,6 +1518,162 @@ export const appRouter = router({
         
         return { success: true, id: result.insertId };
       }),
+
+    // Create a seguimiento manually (without an anuncio)
+    createManual: protectedProcedure
+      .input(z.object({
+        cliente: z.string().min(1),
+        producto: z.string().optional(),
+        telefono: z.string().optional(),
+        email: z.string().email().optional().or(z.literal("")),
+        vendedorId: z.number().optional(), // if admin assigns to a specific vendedor
+        fechaVencimiento: z.string().optional(), // defaults to 30 days from now
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        const assignedVendedorId = input.vendedorId ?? ctx.user!.id;
+        const fechaVenc = input.fechaVencimiento
+          ? new Date(input.fechaVencimiento)
+          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+        const [result] = await db.insert(seguimientos).values({
+          anuncioId: null,
+          vendedorId: assignedVendedorId,
+          cliente: input.cliente,
+          producto: input.producto || null,
+          telefono: input.telefono || null,
+          email: input.email || null,
+          fechaVencimiento: fechaVenc,
+          estado: "Pendiente",
+        });
+
+        return { success: true, id: result.insertId };
+      }),
+
+    // Update contact info (phone and email) on a seguimiento
+    updateContact: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        telefono: z.string().optional(),
+        email: z.string().email().optional().or(z.literal("")),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.update(seguimientos)
+          .set({
+            telefono: input.telefono ?? null,
+            email: input.email ?? null,
+          })
+          .where(eq(seguimientos.id, input.id));
+
+        return { success: true };
+      }),
+
+    // Assign a seguimiento to a different vendedor
+    assignVendor: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        vendedorId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.update(seguimientos)
+          .set({ vendedorId: input.vendedorId })
+          .where(eq(seguimientos.id, input.id));
+
+        return { success: true };
+      }),
+
+    // Delete a seguimiento permanently
+    deleteSeguimiento: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos, notasCliente } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        // Delete notes first (FK constraint)
+        await db.delete(notasCliente).where(eq(notasCliente.seguimientoId, input.id));
+        await db.delete(seguimientos).where(eq(seguimientos.id, input.id));
+
+        return { success: true };
+      }),
+
+    // Archive a seguimiento (soft delete)
+    archiveSeguimiento: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { seguimientos } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db.update(seguimientos)
+          .set({ archivedAt: new Date() })
+          .where(eq(seguimientos.id, input.id));
+
+        return { success: true };
+      }),
+
+    // Get archived seguimientos
+    archived: protectedProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { seguimientos } = await import("../drizzle/schema");
+      const { isNotNull, eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+
+      return await db.select().from(seguimientos)
+        .where(isNotNull(seguimientos.archivedAt))
+        .orderBy(seguimientos.archivedAt);
+    }),
+
+    // List all vendors (users with role vendedor or admin) for assignment dropdown
+    listVendors: protectedProcedure.query(async () => {
+      const { getDb } = await import("./db");
+      const { users } = await import("../drizzle/schema");
+      const { or, eq } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+
+      return await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+      }).from(users)
+        .where(or(eq(users.role, "admin"), eq(users.role, "vendedor")));
+    }),
+
+    // Get all active seguimientos (for admin view)
+    listAll: protectedProcedure.query(async () => {
+      const { getDb } = await import("./db");
+      const { seguimientos } = await import("../drizzle/schema");
+      const { isNull, desc } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return [];
+
+      return await db.select().from(seguimientos)
+        .where(isNull(seguimientos.archivedAt))
+        .orderBy(desc(seguimientos.createdAt));
+    }),
   }),
 
   // Announcements (toast notifications) router

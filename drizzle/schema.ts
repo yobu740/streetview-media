@@ -187,15 +187,18 @@ export type InsertAnuncioHistorial = typeof anuncioHistorial.$inferInsert;
  */
 export const seguimientos = mysqlTable("seguimientos", {
   id: int("id").autoincrement().primaryKey(),
-  anuncioId: int("anuncio_id").notNull(), // FK to anuncios - campaign being followed up
+  anuncioId: int("anuncio_id"), // FK to anuncios - optional (null for manually created seguimientos)
   vendedorId: int("vendedor_id").notNull(), // FK to users - assigned salesperson
   cliente: varchar("cliente", { length: 255 }).notNull(), // Client name
   producto: varchar("producto", { length: 255 }), // Product/campaign name
+  telefono: varchar("telefono", { length: 30 }), // Client phone number
+  email: varchar("email", { length: 255 }), // Client email
   fechaVencimiento: timestamp("fecha_vencimiento").notNull(), // Campaign end date
   estado: mysqlEnum("estado", ["Pendiente", "Contactado", "Interesado", "Renovado", "No Renovará"]).default("Pendiente").notNull(),
   fechaContacto: timestamp("fecha_contacto"), // When client was contacted
   proximoSeguimiento: timestamp("proximo_seguimiento"), // Next scheduled follow-up
   resultado: text("resultado"), // Result of last contact
+  archivedAt: timestamp("archived_at"), // When it was archived (null = active)
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
