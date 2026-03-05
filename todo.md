@@ -1141,3 +1141,6 @@
 ## Flowcat en Reportes
 - [x] Agregar columna "Flowcat" en el reporte de Excel exportado
 - [x] Agregar filtro por Flowcat en el modal de impresión de reportes (con ordenamiento secuencial)
+
+## Fix Dashboard En Construcción
+- [x] Corregir conteo y filtro "En Construcción" para usar campo enConstruccion directamente (condicion en Mantenimiento), sin verse afectado por prioridad de Sin Display

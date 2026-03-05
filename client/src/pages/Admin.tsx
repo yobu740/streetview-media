@@ -491,7 +491,7 @@ export default function Admin() {
     const matchesStatus = filterStatus === "all" || 
       (filterStatus === "disponible" && status === "Disponible") ||
       (filterStatus === "ocupada" && status === "Ocupada") ||
-      (filterStatus === "construccion" && status === "En Construcción") ||
+      (filterStatus === "construccion" && !!p.enConstruccion) ||
       (filterStatus === "destacada" && p.destacada) ||
       (filterStatus === "sin_display" && status === "Sin Display");
     
@@ -541,7 +541,7 @@ export default function Admin() {
       const matchesStatus = printFilterStatus === "all" || 
         (printFilterStatus === "disponible" && status === "Disponible") ||
         (printFilterStatus === "ocupada" && status === "Ocupada") ||
-        (printFilterStatus === "construccion" && status === "En Construcción");
+        (printFilterStatus === "construccion" && !!p.enConstruccion);
       
       const matchesTipo = printFilterTipo === "all" || 
         (printFilterTipo === "Fija" && p.tipoFormato === "Fija") ||
@@ -761,7 +761,9 @@ export default function Admin() {
   
   const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
-  const construccionCount = filteredParadas.filter(p => getParadaStatus(p).status === "En Construcción").length;
+  // construccionCount uses enConstruccion field directly (from condicion in Mantenimiento)
+  // so it is not affected by displayPublicidad priority in getParadaStatus
+  const construccionCount = (paradas || []).filter(p => !!p.enConstruccion).length;
   const destacadasCount = (paradas || []).filter(p => p.destacada).length;
   const sinDisplayCount = (paradas || []).filter(p => p.displayPublicidad === 'No').length;
 
