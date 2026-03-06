@@ -1187,3 +1187,10 @@
 - [x] Agregar campo Flowcat al modal de añadir parada
 - [x] Agregar dropdown de Flowcat al modal de editar parada (para corregir rutas mal escritas)
 - [x] Actualizar paradas 128 I y 128 O con Flowcat 041
+
+## Bug Fixes y Mejoras UI - Marzo 2026
+- [x] Investigar y eliminar generación automática de reservas/anuncios de test
+- [x] Eliminar "(Ruta)" del label Flowcat en detalle de parada
+- [x] Agregar campo editable para columna Ruta en detalle de parada
+- [x] Corregir parada 510 ruta de "1B" a "01B"
+- [x] Arreglar overflow de texto en dropdown Flowcat del modal de detalle

@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, orientacion, ruta, flow_cat FROM paradas WHERE cobertizo_id = '510' ORDER BY orientacion;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, orientacion, ruta, flow_cat FROM paradas WHERE cobertizo_id = '510' ORDER BY orientacion;",
+  "rows": [
+    {
+      "id": "330001",
+      "cobertizo_id": "510",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "orientacion": "I",
+      "ruta": "1B",
+      "flow_cat": "NULL"
+    },
+    {
+      "id": "330002",
+      "cobertizo_id": "510",
+      "localizacion": "AVE. PIÑERO / CENTRAL",
+      "orientacion": "O",
+      "ruta": "1B",
+      "flow_cat": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\torientacion\truta\tflow_cat\n330001\t510\tAVE. PIÑERO / CENTRAL\tI\t1B\tNULL\n330002\t510\tAVE. PIÑERO / CENTRAL\tO\t1B\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 370
+}

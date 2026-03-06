@@ -1795,7 +1795,36 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Ruta</Label>
-                                          <p className="font-medium">{parada.ruta || "—"}</p>
+                                          {user?.role === 'admin' ? (
+                                            <Input
+                                              value={selectedParada?.ruta || ""}
+                                              onChange={(e) => {
+                                                const newValue = e.target.value;
+                                                setSelectedParada({ ...selectedParada, ruta: newValue });
+                                              }}
+                                              onBlur={(e) => {
+                                                const newValue = e.target.value;
+                                                if (newValue !== parada.ruta) {
+                                                  updateParadaLocation.mutate(
+                                                    { paradaId: parada.id, ruta: newValue || undefined },
+                                                    {
+                                                      onSuccess: () => {
+                                                        toast.success('Ruta actualizada');
+                                                        utils.paradas.list.invalidate();
+                                                      },
+                                                      onError: () => {
+                                                        toast.error('Error al actualizar ruta');
+                                                      },
+                                                    }
+                                                  );
+                                                }
+                                              }}
+                                              className="mt-1"
+                                              placeholder="Ej: 01A, 01B"
+                                            />
+                                          ) : (
+                                            <p className="font-medium">{parada.ruta || "—"}</p>
+                                          )}
                                         </div>
                                         <div className="col-span-2">
                                           <Label className="text-gray-500">Dirección</Label>
@@ -1834,7 +1863,7 @@ export default function Admin() {
                                           <p className="font-medium">{parada.orientacion || "—"}</p>
                                         </div>
                                         <div>
-                                          <Label className="text-gray-500">Flowcat (Ruta)</Label>
+                                          <Label className="text-gray-500">Flowcat</Label>
                                           {user?.role === 'admin' ? (
                                             <Select
                                               value={selectedParada?.flowCat || "none"}
@@ -1862,8 +1891,8 @@ export default function Admin() {
                                                 <SelectItem value="none">— Sin Flowcat —</SelectItem>
                                                 {flowcats?.map((fc) => (
                                                   <SelectItem key={fc.flowCat} value={fc.flowCat}>
-                                                    <span className="font-mono font-bold text-[#1a4d3c] mr-2">{fc.flowCat}</span>
-                                                    {fc.localizacion}
+                                                    <span className="font-mono font-bold text-[#1a4d3c] mr-1 shrink-0">{fc.flowCat}</span>
+                                                    <span className="truncate">{fc.localizacion}</span>
                                                   </SelectItem>
                                                 ))}
                                               </SelectContent>

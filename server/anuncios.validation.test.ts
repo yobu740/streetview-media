@@ -1,5 +1,19 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import { checkParadaDisponibilidad, createAnuncio } from './paradas-db';
+import { getDb } from './db';
+
+// Track created anuncio IDs so we can clean them up after tests
+const createdAnuncioIds: number[] = [];
+
+afterAll(async () => {
+  // Clean up all test anuncios created during these tests
+  if (createdAnuncioIds.length === 0) return;
+  const db = await getDb();
+  if (!db) return;
+  const { anuncios } = await import('../drizzle/schema');
+  const { inArray } = await import('drizzle-orm');
+  await db.delete(anuncios).where(inArray(anuncios.id, createdAnuncioIds));
+});
 
 describe('Anuncios Availability Validation', () => {
   it('should detect overlapping approved anuncios', async () => {
@@ -21,6 +35,7 @@ describe('Anuncios Availability Validation', () => {
       approvedAt: new Date(),
     });
     
+    createdAnuncioIds.push(anuncioId);
     expect(anuncioId).toBeGreaterThan(0);
     
     // Check availability for overlapping dates
@@ -59,6 +74,7 @@ describe('Anuncios Availability Validation', () => {
       createdBy: 2,
     });
     
+    createdAnuncioIds.push(anuncioId);
     expect(anuncioId).toBeGreaterThan(0);
     
     // Check availability - should be available since reservation is pending
@@ -87,6 +103,7 @@ describe('Anuncios Availability Validation', () => {
       approvedAt: new Date(),
     });
     
+    createdAnuncioIds.push(anuncioId);
     expect(anuncioId).toBeGreaterThan(0);
     
     // Check availability - should be available since anuncio is inactive

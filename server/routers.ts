@@ -108,6 +108,7 @@ export const appRouter = router({
         localizacion: z.string().optional(),
         direccion: z.string().optional(),
         flowCat: z.string().optional(),
+        ruta: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { paradaId, ...updates } = input;
