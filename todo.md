@@ -1175,3 +1175,7 @@
 - [x] UI: botón "Asignar a Vendedor" con dropdown de vendedores
 - [x] UI: botón "Borrar" con confirmación
 - [x] UI: botón "Archivar" y vista de archivados con toggle
+
+## Fix Reporte Gestor de Anuncios - Columnas Parada y Dirección
+- [x] En el reporte del gestor de anuncios, mostrar solo el ID del cobertizo (ej. 417A) en columna "Parada"
+- [x] Agregar columna "Dirección" con el nombre de la avenida (ej. AVE. CHARDON) en el reporte (tanto CSV como impresión)

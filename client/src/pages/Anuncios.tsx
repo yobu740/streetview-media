@@ -353,12 +353,13 @@ export default function Anuncios() {
       return;
     }
 
-    const headers = ["ID", "Parada", "Orientación", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
+    const headers = ["ID", "Parada", "Dirección", "Orientación", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
     const rows = filteredAnuncios.map((a) => {
       const parada = paradas?.find(p => p.id === a.paradaId);
       return [
         a.id,
-        getParadaInfo(a.paradaId),
+        parada?.cobertizoId || `#${a.paradaId}`,
+        parada?.localizacion || "",
         parada?.orientacion || "N/A",
         a.cliente,
         a.producto,
@@ -418,6 +419,7 @@ export default function Anuncios() {
               <tr>
                 <th>ID</th>
                 <th>Parada</th>
+                <th>Dirección</th>
                 <th>Orientación</th>
                 <th>Cliente</th>
                 <th>Producto</th>
@@ -437,7 +439,8 @@ export default function Anuncios() {
                     return `
                 <tr>
                   <td>${a.id}</td>
-                  <td>${getParadaInfo(a.paradaId)}</td>
+                  <td>${parada?.cobertizoId || `#${a.paradaId}`}</td>
+                  <td>${parada?.localizacion || ""}</td>
                   <td>${parada?.orientacion || "N/A"}</td>
                   <td>${a.cliente}</td>
                   <td>${a.producto}</td>
