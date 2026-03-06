@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE paradas SET flow_cat = '041' WHERE cobertizo_id = '128' AND orientacion IN ('I', 'O');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE paradas SET flow_cat = '041' WHERE cobertizo_id = '128' AND orientacion IN ('I', 'O');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 379
+}

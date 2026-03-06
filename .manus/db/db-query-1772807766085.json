@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, orientacion, flow_cat FROM paradas WHERE cobertizo_id = '128' ORDER BY orientacion;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, orientacion, flow_cat FROM paradas WHERE cobertizo_id = '128' ORDER BY orientacion;",
+  "rows": [
+    {
+      "id": "330028",
+      "cobertizo_id": "128",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "orientacion": "I",
+      "flow_cat": "NULL"
+    },
+    {
+      "id": "330029",
+      "cobertizo_id": "128",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "orientacion": "O",
+      "flow_cat": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\torientacion\tflow_cat\n330028\t128\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tI\tNULL\n330029\t128\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tO\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 393
+}

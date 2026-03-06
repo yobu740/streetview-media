@@ -1182,3 +1182,8 @@
 
 ## Fix Columna Dirección en Reporte de Anuncios
 - [x] Usar campo direccion completa (ej. "Ave. Roosevelt Fte al Cuartel General") en columna Dirección del reporte (CSV e impresión)
+
+## Mejoras Flowcat en Modales de Paradas
+- [x] Agregar campo Flowcat al modal de añadir parada
+- [x] Agregar dropdown de Flowcat al modal de editar parada (para corregir rutas mal escritas)
+- [x] Actualizar paradas 128 I y 128 O con Flowcat 041
