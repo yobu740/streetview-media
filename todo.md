@@ -1179,3 +1179,6 @@
 ## Fix Reporte Gestor de Anuncios - Columnas Parada y Dirección
 - [x] En el reporte del gestor de anuncios, mostrar solo el ID del cobertizo (ej. 417A) en columna "Parada"
 - [x] Agregar columna "Dirección" con el nombre de la avenida (ej. AVE. CHARDON) en el reporte (tanto CSV como impresión)
+
+## Fix Columna Dirección en Reporte de Anuncios
+- [x] Usar campo direccion completa (ej. "Ave. Roosevelt Fte al Cuartel General") en columna Dirección del reporte (CSV e impresión)

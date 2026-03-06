@@ -359,7 +359,7 @@ export default function Anuncios() {
       return [
         a.id,
         parada?.cobertizoId || `#${a.paradaId}`,
-        parada?.localizacion || "",
+        parada?.direccion || parada?.localizacion || "",
         parada?.orientacion || "N/A",
         a.cliente,
         a.producto,
@@ -440,7 +440,7 @@ export default function Anuncios() {
                 <tr>
                   <td>${a.id}</td>
                   <td>${parada?.cobertizoId || `#${a.paradaId}`}</td>
-                  <td>${parada?.localizacion || ""}</td>
+                  <td>${parada?.direccion || parada?.localizacion || ""}</td>
                   <td>${parada?.orientacion || "N/A"}</td>
                   <td>${a.cliente}</td>
                   <td>${a.producto}</td>
