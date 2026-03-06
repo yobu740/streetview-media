@@ -65,6 +65,8 @@ export default function Anuncios() {
   const [selectedAnuncio, setSelectedAnuncio] = useState<any>(null);
   const [selectedAnuncios, setSelectedAnuncios] = useState<number[]>([]);
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
+  const [isBulkDeleteConfirmOpen, setIsBulkDeleteConfirmOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [editForm, setEditForm] = useState({
     paradaId: 0,
     producto: "",
@@ -568,13 +570,22 @@ export default function Anuncios() {
             {user?.role === 'admin' && (
               <>
                 {selectedAnuncios.length > 0 && (
-                  <Button
-                    onClick={() => setIsBulkEditDialogOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Edit size={16} className="mr-2" />
-                    Editar Seleccionados ({selectedAnuncios.length})
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() => setIsBulkEditDialogOpen(true)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Edit size={16} className="mr-2" />
+                      Editar Seleccionados ({selectedAnuncios.length})
+                    </Button>
+                    <Button
+                      onClick={() => setIsBulkDeleteConfirmOpen(true)}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      <Trash2 size={16} className="mr-2" />
+                      Eliminar Seleccionados ({selectedAnuncios.length})
+                    </Button>
+                  </>
                 )}
                 <Button
                   onClick={handleExportExcel}
@@ -1195,6 +1206,57 @@ export default function Anuncios() {
               setSelectedAnuncios([]);
             }}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog open={isBulkDeleteConfirmOpen} onOpenChange={setIsBulkDeleteConfirmOpen}>
+        <DialogContent className="sm:max-w-[440px]">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <Trash2 size={20} />
+              Eliminar Anuncios Seleccionados
+            </DialogTitle>
+            <DialogDescription>
+              Estás a punto de eliminar <strong>{selectedAnuncios.length} anuncio(s)</strong> permanentemente. Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">¿Estás seguro de que deseas eliminar estos {selectedAnuncios.length} anuncio(s)?</p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsBulkDeleteConfirmOpen(false)}
+              disabled={isBulkDeleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isBulkDeleting}
+              onClick={async () => {
+                setIsBulkDeleting(true);
+                try {
+                  await Promise.all(
+                    selectedAnuncios.map((id) =>
+                      deleteAnuncio.mutateAsync({ id })
+                    )
+                  );
+                  toast.success(`${selectedAnuncios.length} anuncio(s) eliminado(s)`);
+                  utils.anuncios.list.invalidate();
+                  setSelectedAnuncios([]);
+                  setIsBulkDeleteConfirmOpen(false);
+                } catch {
+                  toast.error('Error al eliminar algunos anuncios');
+                } finally {
+                  setIsBulkDeleting(false);
+                }
+              }}
+            >
+              {isBulkDeleting ? 'Eliminando...' : `Eliminar ${selectedAnuncios.length} anuncio(s)`}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

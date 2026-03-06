@@ -1194,3 +1194,7 @@
 - [x] Agregar campo editable para columna Ruta en detalle de parada
 - [x] Corregir parada 510 ruta de "1B" a "01B"
 - [x] Arreglar overflow de texto en dropdown Flowcat del modal de detalle
+
+## Gestor de Anuncios - Eliminar Seleccionadas
+- [x] Agregar botón "Eliminar seleccionadas" junto al botón azul de editar en Gestor de Anuncios
+- [x] Confirmar antes de eliminar con diálogo de confirmación
