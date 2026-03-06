@@ -1198,3 +1198,7 @@
 ## Gestor de Anuncios - Eliminar Seleccionadas
 - [x] Agregar botón "Eliminar seleccionadas" junto al botón azul de editar en Gestor de Anuncios
 - [x] Confirmar antes de eliminar con diálogo de confirmación
+
+## Gestor de Anuncios - Mejoras de Filtros
+- [x] Convertir filtro de Estado a multi-selección (botones de resumen como toggles)
+- [x] Búsqueda de múltiples clientes separados por coma
