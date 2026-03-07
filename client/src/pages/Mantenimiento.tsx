@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink, Trash2 } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -632,7 +632,7 @@ export default function Mantenimiento() {
                               ) : parada.removida ? (
                                 <>
                                   <Badge className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-1 w-fit">
-                                    <Trash2 className="h-3 w-3" />
+                                    <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/iconremovida_79700c43.svg" alt="Removida" className="h-3 w-3 brightness-0 invert" />
                                     Removida
                                   </Badge>
                                   {parada.fechaRetorno && (
@@ -669,7 +669,7 @@ export default function Mantenimiento() {
                                         title="Marcar como Removida"
                                         className="text-red-500 hover:text-red-700 transition-colors"
                                       >
-                                        <Trash2 className="h-4 w-4" />
+                                        <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/iconremovida_79700c43.svg" alt="Removida" className="h-4 w-4" />
                                       </button>
                                     </>
                                   )}
@@ -876,7 +876,7 @@ export default function Mantenimiento() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Trash2 className="h-5 w-5 text-red-600" />
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/iconremovida_79700c43.svg" alt="Removida" className="h-5 w-5" />
               {removidaParada?.removida
                 ? "Quitar Estado Removida"
                 : "Marcar como Removida"}
