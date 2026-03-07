@@ -1176,29 +1176,7 @@
 - [x] UI: botón "Borrar" con confirmación
 - [x] UI: botón "Archivar" y vista de archivados con toggle
 
-## Fix Reporte Gestor de Anuncios - Columnas Parada y Dirección
-- [x] En el reporte del gestor de anuncios, mostrar solo el ID del cobertizo (ej. 417A) en columna "Parada"
-- [x] Agregar columna "Dirección" con el nombre de la avenida (ej. AVE. CHARDON) en el reporte (tanto CSV como impresión)
-
-## Fix Columna Dirección en Reporte de Anuncios
-- [x] Usar campo direccion completa (ej. "Ave. Roosevelt Fte al Cuartel General") en columna Dirección del reporte (CSV e impresión)
-
-## Mejoras Flowcat en Modales de Paradas
-- [x] Agregar campo Flowcat al modal de añadir parada
-- [x] Agregar dropdown de Flowcat al modal de editar parada (para corregir rutas mal escritas)
-- [x] Actualizar paradas 128 I y 128 O con Flowcat 041
-
-## Bug Fixes y Mejoras UI - Marzo 2026
-- [x] Investigar y eliminar generación automática de reservas/anuncios de test
-- [x] Eliminar "(Ruta)" del label Flowcat en detalle de parada
-- [x] Agregar campo editable para columna Ruta en detalle de parada
-- [x] Corregir parada 510 ruta de "1B" a "01B"
-- [x] Arreglar overflow de texto en dropdown Flowcat del modal de detalle
-
-## Gestor de Anuncios - Eliminar Seleccionadas
-- [x] Agregar botón "Eliminar seleccionadas" junto al botón azul de editar en Gestor de Anuncios
-- [x] Confirmar antes de eliminar con diálogo de confirmación
-
-## Gestor de Anuncios - Mejoras de Filtros
-- [x] Convertir filtro de Estado a multi-selección (botones de resumen como toggles)
-- [x] Búsqueda de múltiples clientes separados por coma
+## Nuevas Funcionalidades - Mantenimiento y Reportes
+- [ ] Añadir condición "Removida" en Mantenimiento (bloquea reservas, tiene fecha estimada de retorno)
+- [ ] Añadir columna de coordenadas en reporte Excel de anuncios
+- [ ] Añadir columna de coordenadas en reporte PDF de anuncios

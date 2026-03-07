@@ -1,9 +1,0 @@
-{
-  "query": "UPDATE paradas SET ruta = '01B' WHERE cobertizo_id = '510' AND ruta = '1B';",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE paradas SET ruta = '01B' WHERE cobertizo_id = '510' AND ruta = '1B';",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 361
-}

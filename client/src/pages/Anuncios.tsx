@@ -57,7 +57,7 @@ export default function Anuncios() {
   const utils = trpc.useUtils();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterEstados, setFilterEstados] = useState<string[]>([]); // empty = all
+  const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterTipo, setFilterTipo] = useState<string>("all");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
@@ -65,8 +65,6 @@ export default function Anuncios() {
   const [selectedAnuncio, setSelectedAnuncio] = useState<any>(null);
   const [selectedAnuncios, setSelectedAnuncios] = useState<number[]>([]);
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
-  const [isBulkDeleteConfirmOpen, setIsBulkDeleteConfirmOpen] = useState(false);
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [editForm, setEditForm] = useState({
     paradaId: 0,
     producto: "",
@@ -137,21 +135,14 @@ export default function Anuncios() {
   );
 
   const filteredAnuncios = anuncios?.filter((a) => {
-    // Support comma-separated search terms
-    const searchTerms = searchTerm
-      ? searchTerm.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean)
-      : [];
     const matchesSearch =
-      searchTerms.length === 0 ||
-      searchTerms.some(
-        (term) =>
-          a.producto?.toLowerCase().includes(term) ||
-          a.cliente?.toLowerCase().includes(term) ||
-          a.paradaId.toString().includes(term) ||
-          paradas?.find(p => p.id === a.paradaId)?.cobertizoId?.toString().includes(term)
-      );
+      !searchTerm ||
+      a.producto?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.cliente?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.paradaId.toString().includes(searchTerm) ||
+      paradas?.find(p => p.id === a.paradaId)?.cobertizoId?.toString().includes(searchTerm);
 
-    const matchesEstado = filterEstados.length === 0 || filterEstados.includes(a.estado);
+    const matchesEstado = filterEstado === "all" || a.estado === filterEstado;
     const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
     
     // Check if anuncio overlaps with date range
@@ -346,21 +337,15 @@ export default function Anuncios() {
     }
   };
 
-  const toggleFilterEstado = (estado: string) => {
-    setFilterEstados((prev) =>
-      prev.includes(estado) ? prev.filter((e) => e !== estado) : [...prev, estado]
-    );
-  };
-
   const clearFilters = () => {
     setSearchTerm("");
-    setFilterEstados([]);
+    setFilterEstado("all");
     setFilterTipo("all");
     setDateRangeStart("");
     setDateRangeEnd("");
   };
 
-  const hasActiveFilters = searchTerm || filterEstados.length > 0 || filterTipo !== "all" || dateRangeStart || dateRangeEnd;
+  const hasActiveFilters = searchTerm || filterEstado !== "all" || filterTipo !== "all" || dateRangeStart || dateRangeEnd;
 
   const handleExportExcel = () => {
     if (!filteredAnuncios || filteredAnuncios.length === 0) {
@@ -368,14 +353,15 @@ export default function Anuncios() {
       return;
     }
 
-    const headers = ["ID", "Parada", "Dirección", "Orientación", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
+    const headers = ["ID", "Parada", "Orientación", "Latitud", "Longitud", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
     const rows = filteredAnuncios.map((a) => {
       const parada = paradas?.find(p => p.id === a.paradaId);
       return [
         a.id,
-        parada?.cobertizoId || `#${a.paradaId}`,
-        parada?.direccion || parada?.localizacion || "",
+        getParadaInfo(a.paradaId),
         parada?.orientacion || "N/A",
+        parada?.coordenadasLat || "",
+        parada?.coordenadasLng || "",
         a.cliente,
         a.producto,
         a.tipo,
@@ -434,8 +420,9 @@ export default function Anuncios() {
               <tr>
                 <th>ID</th>
                 <th>Parada</th>
-                <th>Dirección</th>
                 <th>Orientación</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
                 <th>Cliente</th>
                 <th>Producto</th>
                 <th>Tipo</th>
@@ -454,9 +441,10 @@ export default function Anuncios() {
                     return `
                 <tr>
                   <td>${a.id}</td>
-                  <td>${parada?.cobertizoId || `#${a.paradaId}`}</td>
-                  <td>${parada?.direccion || parada?.localizacion || ""}</td>
+                  <td>${getParadaInfo(a.paradaId)}</td>
                   <td>${parada?.orientacion || "N/A"}</td>
+                  <td>${parada?.coordenadasLat || ""}</td>
+                  <td>${parada?.coordenadasLng || ""}</td>
                   <td>${a.cliente}</td>
                   <td>${a.producto}</td>
                   <td>${a.tipo}</td>
@@ -518,7 +506,7 @@ export default function Anuncios() {
                   size={20}
                 />
                 <Input
-                  placeholder="Cliente, producto o parada... (separa con comas)"
+                  placeholder="Cliente, producto o parada..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -527,28 +515,18 @@ export default function Anuncios() {
             </div>
             <div>
               <Label>Estado</Label>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {["Activo", "Programado", "Finalizado", "Inactivo"].map((estado) => (
-                  <button
-                    key={estado}
-                    type="button"
-                    onClick={() => toggleFilterEstado(estado)}
-                    className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
-                      filterEstados.includes(estado)
-                        ? estado === "Activo"
-                          ? "bg-green-600 text-white border-green-600"
-                          : estado === "Programado"
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : estado === "Finalizado"
-                          ? "bg-gray-600 text-white border-gray-600"
-                          : "bg-orange-500 text-white border-orange-500"
-                        : "bg-white text-gray-600 border-gray-300 hover:border-gray-400"
-                    }`}
-                  >
-                    {estado}
-                  </button>
-                ))}
-              </div>
+              <Select value={filterEstado} onValueChange={setFilterEstado}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="Activo">Activo</SelectItem>
+                  <SelectItem value="Programado">Programado</SelectItem>
+                  <SelectItem value="Finalizado">Finalizado</SelectItem>
+                  <SelectItem value="Inactivo">Inactivo</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Tipo</Label>
@@ -593,22 +571,13 @@ export default function Anuncios() {
             {user?.role === 'admin' && (
               <>
                 {selectedAnuncios.length > 0 && (
-                  <>
-                    <Button
-                      onClick={() => setIsBulkEditDialogOpen(true)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      <Edit size={16} className="mr-2" />
-                      Editar Seleccionados ({selectedAnuncios.length})
-                    </Button>
-                    <Button
-                      onClick={() => setIsBulkDeleteConfirmOpen(true)}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      <Trash2 size={16} className="mr-2" />
-                      Eliminar Seleccionados ({selectedAnuncios.length})
-                    </Button>
-                  </>
+                  <Button
+                    onClick={() => setIsBulkEditDialogOpen(true)}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Edit size={16} className="mr-2" />
+                    Editar Seleccionados ({selectedAnuncios.length})
+                  </Button>
                 )}
                 <Button
                   onClick={handleExportExcel}
@@ -640,9 +609,9 @@ export default function Anuncios() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div 
             className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstados.length === 0 ? "ring-2 ring-[#1a4d3c]" : ""
+              filterEstado === "all" ? "ring-2 ring-[#1a4d3c]" : ""
             }`}
-            onClick={() => setFilterEstados([])}
+            onClick={() => setFilterEstado("all")}
           >
             <p className="text-sm text-gray-600 mb-1">Total Anuncios</p>
             <p className="text-3xl font-bold text-[#1a4d3c]">
@@ -651,35 +620,35 @@ export default function Anuncios() {
           </div>
           <div 
             className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstados.includes("Activo") ? "ring-2 ring-green-600" : ""
+              filterEstado === "Activo" ? "ring-2 ring-green-600" : ""
             }`}
-            onClick={() => toggleFilterEstado("Activo")}
+            onClick={() => setFilterEstado("Activo")}
           >
             <p className="text-sm text-gray-600 mb-1">Activos</p>
             <p className="text-3xl font-bold text-green-600">
-              {anuncios?.filter((a) => a.estado === "Activo").length || 0}
+              {filteredAnuncios?.filter((a) => a.estado === "Activo").length || 0}
             </p>
           </div>
           <div 
             className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstados.includes("Programado") ? "ring-2 ring-blue-600" : ""
+              filterEstado === "Programado" ? "ring-2 ring-blue-600" : ""
             }`}
-            onClick={() => toggleFilterEstado("Programado")}
+            onClick={() => setFilterEstado("Programado")}
           >
             <p className="text-sm text-gray-600 mb-1">Programados</p>
             <p className="text-3xl font-bold text-blue-600">
-              {anuncios?.filter((a) => a.estado === "Programado").length || 0}
+              {filteredAnuncios?.filter((a) => a.estado === "Programado").length || 0}
             </p>
           </div>
           <div 
             className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstados.includes("Finalizado") ? "ring-2 ring-gray-600" : ""
+              filterEstado === "Finalizado" ? "ring-2 ring-gray-600" : ""
             }`}
-            onClick={() => toggleFilterEstado("Finalizado")}
+            onClick={() => setFilterEstado("Finalizado")}
           >
             <p className="text-sm text-gray-600 mb-1">Finalizados</p>
             <p className="text-3xl font-bold text-gray-600">
-              {anuncios?.filter((a) => a.estado === "Finalizado").length || 0}
+              {filteredAnuncios?.filter((a) => a.estado === "Finalizado").length || 0}
             </p>
           </div>
         </div>
@@ -1229,57 +1198,6 @@ export default function Anuncios() {
               setSelectedAnuncios([]);
             }}
           />
-        </DialogContent>
-      </Dialog>
-
-      {/* Bulk Delete Confirmation Dialog */}
-      <Dialog open={isBulkDeleteConfirmOpen} onOpenChange={setIsBulkDeleteConfirmOpen}>
-        <DialogContent className="sm:max-w-[440px]">
-          <DialogHeader>
-            <DialogTitle className="text-red-600 flex items-center gap-2">
-              <Trash2 size={20} />
-              Eliminar Anuncios Seleccionados
-            </DialogTitle>
-            <DialogDescription>
-              Estás a punto de eliminar <strong>{selectedAnuncios.length} anuncio(s)</strong> permanentemente. Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-gray-600">¿Estás seguro de que deseas eliminar estos {selectedAnuncios.length} anuncio(s)?</p>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsBulkDeleteConfirmOpen(false)}
-              disabled={isBulkDeleting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              className="bg-red-600 hover:bg-red-700"
-              disabled={isBulkDeleting}
-              onClick={async () => {
-                setIsBulkDeleting(true);
-                try {
-                  await Promise.all(
-                    selectedAnuncios.map((id) =>
-                      deleteAnuncio.mutateAsync({ id })
-                    )
-                  );
-                  toast.success(`${selectedAnuncios.length} anuncio(s) eliminado(s)`);
-                  utils.anuncios.list.invalidate();
-                  setSelectedAnuncios([]);
-                  setIsBulkDeleteConfirmOpen(false);
-                } catch {
-                  toast.error('Error al eliminar algunos anuncios');
-                } finally {
-                  setIsBulkDeleting(false);
-                }
-              }}
-            >
-              {isBulkDeleting ? 'Eliminando...' : `Eliminar ${selectedAnuncios.length} anuncio(s)`}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 

@@ -107,8 +107,6 @@ export const appRouter = router({
         paradaId: z.number(),
         localizacion: z.string().optional(),
         direccion: z.string().optional(),
-        flowCat: z.string().optional(),
-        ruta: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { paradaId, ...updates } = input;
@@ -125,6 +123,8 @@ export const appRouter = router({
         displayPublicidad: z.enum(["Si", "No", "N/A"]).optional(),
         enConstruccion: z.number().optional(),
         fechaDisponibilidad: z.date().nullable().optional(),
+        removida: z.number().optional(),
+        fechaRetorno: z.date().nullable().optional(),
       }))
       .mutation(async ({ input, ctx }) => {
         const { paradaId, ...updates } = input;
@@ -205,6 +205,20 @@ export const appRouter = router({
             valorNuevo: updates.enConstruccion ? "Sí" : "No",
             notas: updates.fechaDisponibilidad
               ? `Fecha estimada: ${new Date(updates.fechaDisponibilidad).toLocaleDateString('es-PR')}`
+              : null,
+          });
+        }
+        
+        if (updates.removida !== undefined && updates.removida !== currentParada.removida) {
+          historyEntries.push({
+            paradaId,
+            userId: ctx.user?.id || null,
+            userName: ctx.user?.name || "Sistema",
+            campoModificado: "Removida",
+            valorAnterior: currentParada.removida ? "Sí" : "No",
+            valorNuevo: updates.removida ? "Sí" : "No",
+            notas: updates.fechaRetorno
+              ? `Fecha estimada de retorno: ${new Date(updates.fechaRetorno).toLocaleDateString('es-PR')}`
               : null,
           });
         }
@@ -299,6 +313,16 @@ export const appRouter = router({
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: `Esta cara está En Construcción y no está disponible para reservas. Fecha estimada de disponibilidad: ${fechaDisp}.`,
+          });
+        }
+        
+        if (parada?.removida) {
+          const fechaRet = parada.fechaRetorno
+            ? new Date(parada.fechaRetorno).toLocaleDateString('es-PR')
+            : 'fecha no especificada';
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Esta cara ha sido Removida y no está disponible para reservas. Fecha estimada de retorno: ${fechaRet}.`,
           });
         }
         
@@ -562,6 +586,15 @@ export const appRouter = router({
             throw new TRPCError({
               code: 'BAD_REQUEST',
               message: `No se puede aprobar: la cara está En Construcción. Fecha estimada de disponibilidad: ${fechaDisp}.`,
+            });
+          }
+          if (paradaCheck?.removida) {
+            const fechaRet = paradaCheck.fechaRetorno
+              ? new Date(paradaCheck.fechaRetorno).toLocaleDateString('es-PR')
+              : 'fecha no especificada';
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `No se puede aprobar: la cara ha sido Removida. Fecha estimada de retorno: ${fechaRet}.`,
             });
           }
         }

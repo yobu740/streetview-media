@@ -162,7 +162,6 @@ export default function Admin() {
     ruta: "",
     tipoFormato: "Fija" as "Fija" | "Digital",
     orientacion: "",
-    flowCat: "",
     fotoBase64: "",
   });
 
@@ -236,7 +235,6 @@ export default function Admin() {
         ruta: "",
         tipoFormato: "Fija",
         orientacion: "",
-        flowCat: "",
         fotoBase64: "",
       });
       refetchParadas();
@@ -658,7 +656,6 @@ export default function Admin() {
       ruta: paradaForm.ruta || undefined,
       tipoFormato: paradaForm.tipoFormato,
       orientacion: paradaForm.orientacion || 'O', // Default to Outbound if not specified
-      flowCat: paradaForm.flowCat || undefined,
     });
     
     // Si hay foto, subirla
@@ -1795,36 +1792,7 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Ruta</Label>
-                                          {user?.role === 'admin' ? (
-                                            <Input
-                                              value={selectedParada?.ruta || ""}
-                                              onChange={(e) => {
-                                                const newValue = e.target.value;
-                                                setSelectedParada({ ...selectedParada, ruta: newValue });
-                                              }}
-                                              onBlur={(e) => {
-                                                const newValue = e.target.value;
-                                                if (newValue !== parada.ruta) {
-                                                  updateParadaLocation.mutate(
-                                                    { paradaId: parada.id, ruta: newValue || undefined },
-                                                    {
-                                                      onSuccess: () => {
-                                                        toast.success('Ruta actualizada');
-                                                        utils.paradas.list.invalidate();
-                                                      },
-                                                      onError: () => {
-                                                        toast.error('Error al actualizar ruta');
-                                                      },
-                                                    }
-                                                  );
-                                                }
-                                              }}
-                                              className="mt-1"
-                                              placeholder="Ej: 01A, 01B"
-                                            />
-                                          ) : (
-                                            <p className="font-medium">{parada.ruta || "—"}</p>
-                                          )}
+                                          <p className="font-medium">{parada.ruta || "—"}</p>
                                         </div>
                                         <div className="col-span-2">
                                           <Label className="text-gray-500">Dirección</Label>
@@ -1861,45 +1829,6 @@ export default function Admin() {
                                         <div>
                                           <Label className="text-gray-500">Orientación</Label>
                                           <p className="font-medium">{parada.orientacion || "—"}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-gray-500">Flowcat</Label>
-                                          {user?.role === 'admin' ? (
-                                            <Select
-                                              value={selectedParada?.flowCat || "none"}
-                                              onValueChange={(v) => {
-                                                const newFlowCat = v === "none" ? "" : v;
-                                                setSelectedParada({ ...selectedParada, flowCat: newFlowCat });
-                                                updateParadaLocation.mutate(
-                                                  { paradaId: parada.id, flowCat: newFlowCat || undefined },
-                                                  {
-                                                    onSuccess: () => {
-                                                      toast.success('Flowcat actualizado');
-                                                      utils.paradas.list.invalidate();
-                                                    },
-                                                    onError: () => {
-                                                      toast.error('Error al actualizar Flowcat');
-                                                    },
-                                                  }
-                                                );
-                                              }}
-                                            >
-                                              <SelectTrigger className="mt-1">
-                                                <SelectValue placeholder="Sin Flowcat" />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                <SelectItem value="none">— Sin Flowcat —</SelectItem>
-                                                {flowcats?.map((fc) => (
-                                                  <SelectItem key={fc.flowCat} value={fc.flowCat}>
-                                                    <span className="font-mono font-bold text-[#1a4d3c] mr-1 shrink-0">{fc.flowCat}</span>
-                                                    <span className="truncate">{fc.localizacion}</span>
-                                                  </SelectItem>
-                                                ))}
-                                              </SelectContent>
-                                            </Select>
-                                          ) : (
-                                            <p className="font-medium font-mono">{parada.flowCat || "—"}</p>
-                                          )}
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Estado</Label>
@@ -2219,39 +2148,11 @@ export default function Admin() {
             </div>
             <div>
               <Label>Orientación</Label>
-              <Select
-                value={paradaForm.orientacion || "O"}
-                onValueChange={(v) => setParadaForm({ ...paradaForm, orientacion: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona orientación" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="I">I — Inbound (hacia el centro)</SelectItem>
-                  <SelectItem value="O">O — Outbound (hacia afuera)</SelectItem>
-                  <SelectItem value="P">P — Peatonal (acera)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Flowcat (Avenida / Ruta)</Label>
-              <Select
-                value={paradaForm.flowCat || "none"}
-                onValueChange={(v) => setParadaForm({ ...paradaForm, flowCat: v === "none" ? "" : v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona avenida..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">— Sin Flowcat —</SelectItem>
-                  {flowcats?.map((fc) => (
-                    <SelectItem key={fc.flowCat} value={fc.flowCat}>
-                      <span className="font-mono font-bold text-[#1a4d3c] mr-2">{fc.flowCat}</span>
-                      {fc.localizacion}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                value={paradaForm.orientacion}
+                onChange={(e) => setParadaForm({ ...paradaForm, orientacion: e.target.value })}
+                placeholder="Ej: I (Inbound), O (Outbound), P (Peatonal)"
+              />
             </div>
             <div>
               <Label>Foto de la Parada</Label>

@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -48,10 +48,20 @@ export default function Mantenimiento() {
   const [activeAnunciosForParada, setActiveAnunciosForParada] = useState<any[]>([]);
   const [loadingAnunciosCheck, setLoadingAnunciosCheck] = useState(false);
 
+  // Removida dialog state
+  const [isRemovidaDialogOpen, setIsRemovidaDialogOpen] = useState(false);
+  const [removidaParada, setRemovidaParada] = useState<any>(null);
+  const [fechaRetorno, setFechaRetorno] = useState<string>("");
+  const [activeAnunciosForRemovida, setActiveAnunciosForRemovida] = useState<any[]>([]);
+
   const { data: paradas, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: anunciosByParada } = trpc.anuncios.getByParadaId.useQuery(
     { paradaId: construccionParada?.id || 0 },
     { enabled: !!construccionParada && !construccionParada.enConstruccion && isConstruccionDialogOpen }
+  );
+  const { data: anunciosByRemovidaParada } = trpc.anuncios.getByParadaId.useQuery(
+    { paradaId: removidaParada?.id || 0 },
+    { enabled: !!removidaParada && !removidaParada.removida && isRemovidaDialogOpen }
   );
   const { data: history } = trpc.mantenimiento.getHistory.useQuery(
     { paradaId: selectedParada?.id || 0 },
@@ -101,8 +111,9 @@ export default function Mantenimiento() {
     const matchesCondicion =
       filterCondicion === "all" ||
       (filterCondicion === "renovada" && isRenovada) ||
-      (filterCondicion === "pendiente" && !isRenovada && !p.enConstruccion) ||
+      (filterCondicion === "pendiente" && !isRenovada && !p.enConstruccion && !p.removida) ||
       (filterCondicion === "construccion" && p.enConstruccion) ||
+      (filterCondicion === "removida" && p.removida) ||
       (filterCondicion === "pintada" && p.condicionPintada) ||
       (filterCondicion === "arreglada" && p.condicionArreglada) ||
       (filterCondicion === "limpia" && p.condicionLimpia);
@@ -149,6 +160,56 @@ export default function Mantenimiento() {
     );
     setActiveAnunciosForParada(active);
   }, [anunciosByParada, construccionParada]);
+
+  useEffect(() => {
+    if (!anunciosByRemovidaParada || removidaParada?.removida) return;
+    const now = new Date();
+    const active = anunciosByRemovidaParada.filter(
+      (a: any) =>
+        (a.estado === "Activo" || a.estado === "Programado") &&
+        a.approvalStatus === "approved" &&
+        new Date(a.fechaFin) >= now
+    );
+    setActiveAnunciosForRemovida(active);
+  }, [anunciosByRemovidaParada, removidaParada]);
+
+  const openRemovidaDialog = (parada: any) => {
+    setRemovidaParada(parada);
+    setActiveAnunciosForRemovida([]);
+    if (parada.fechaRetorno) {
+      const d = new Date(parada.fechaRetorno);
+      setFechaRetorno(d.toISOString().split("T")[0]);
+    } else {
+      setFechaRetorno("");
+    }
+    setIsRemovidaDialogOpen(true);
+  };
+
+  const handleSetRemovida = () => {
+    if (!removidaParada) return;
+    if (!removidaParada.removida && !fechaRetorno) {
+      toast.error("Por favor ingresa la fecha estimada de retorno");
+      return;
+    }
+    const isActivating = !removidaParada.removida;
+    updateCondicion.mutate(
+      {
+        paradaId: removidaParada.id,
+        removida: isActivating ? 1 : 0,
+        fechaRetorno: isActivating && fechaRetorno
+          ? new Date(fechaRetorno + "T00:00:00")
+          : null,
+      },
+      {
+        onSuccess: () => {
+          toast.success(isActivating ? "Cara marcada como Removida" : "Estado Removida quitado");
+          setIsRemovidaDialogOpen(false);
+          setRemovidaParada(null);
+          setFechaRetorno("");
+        },
+      }
+    );
+  };
 
   const handleSetConstruccion = () => {
     if (!construccionParada) return;
@@ -327,13 +388,14 @@ export default function Mantenimiento() {
     total: filteredParadas?.length || 0,
     renovadas:
       filteredParadas?.filter(
-        (p) => !p.enConstruccion && p.condicionPintada && p.condicionArreglada && p.condicionLimpia
+        (p) => !p.enConstruccion && !p.removida && p.condicionPintada && p.condicionArreglada && p.condicionLimpia
       ).length || 0,
     pendientes:
       filteredParadas?.filter(
-        (p) => !p.enConstruccion && !(p.condicionPintada && p.condicionArreglada && p.condicionLimpia)
+        (p) => !p.enConstruccion && !p.removida && !(p.condicionPintada && p.condicionArreglada && p.condicionLimpia)
       ).length || 0,
     enConstruccion: filteredParadas?.filter((p) => p.enConstruccion).length || 0,
+    removidas: filteredParadas?.filter((p) => p.removida).length || 0,
     displayFuncional: filteredParadas?.filter((p) => p.displayPublicidad === "Si").length || 0,
   };
 
@@ -351,7 +413,7 @@ export default function Mantenimiento() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow-md p-6">
               <p className="text-sm text-gray-600 mb-1">Total Paradas</p>
               <p className="text-3xl font-bold text-[#1a4d3c]">{stats.total}</p>
@@ -367,6 +429,10 @@ export default function Mantenimiento() {
             <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500">
               <p className="text-sm text-gray-600 mb-1">En Construcción</p>
               <p className="text-3xl font-bold text-amber-600">{stats.enConstruccion}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+              <p className="text-sm text-gray-600 mb-1">Removidas</p>
+              <p className="text-3xl font-bold text-red-600">{stats.removidas}</p>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
               <p className="text-sm text-gray-600 mb-1">Display Funcional</p>
@@ -403,6 +469,7 @@ export default function Mantenimiento() {
                     <SelectItem value="renovada">Renovadas</SelectItem>
                     <SelectItem value="pendiente">Pendientes de renovación</SelectItem>
                     <SelectItem value="construccion">En Construcción</SelectItem>
+                    <SelectItem value="removida">Removidas</SelectItem>
                     <SelectItem value="pintada">Pintadas</SelectItem>
                     <SelectItem value="arreglada">Arregladas</SelectItem>
                     <SelectItem value="limpia">Limpias</SelectItem>
@@ -550,14 +617,33 @@ export default function Mantenimiento() {
                                   {parada.fechaDisponibilidad && (
                                     <span className="text-xs text-amber-700">
                                       Disp.:{" "}
-                                      {new Date(parada.fechaDisponibilidad).toLocaleDateString(
-                                        "es-PR"
-                                      )}
+                                      {new Date(parada.fechaDisponibilidad).toLocaleDateString("es-PR")}
                                     </span>
                                   )}
                                   {user?.role === "admin" && (
                                     <button
                                       onClick={() => openConstruccionDialog(parada)}
+                                      className="text-xs text-gray-500 underline hover:text-gray-700 text-left"
+                                    >
+                                      Quitar estado
+                                    </button>
+                                  )}
+                                </>
+                              ) : parada.removida ? (
+                                <>
+                                  <Badge className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-1 w-fit">
+                                    <Trash2 className="h-3 w-3" />
+                                    Removida
+                                  </Badge>
+                                  {parada.fechaRetorno && (
+                                    <span className="text-xs text-red-700">
+                                      Retorno:{" "}
+                                      {new Date(parada.fechaRetorno).toLocaleDateString("es-PR")}
+                                    </span>
+                                  )}
+                                  {user?.role === "admin" && (
+                                    <button
+                                      onClick={() => openRemovidaDialog(parada)}
                                       className="text-xs text-gray-500 underline hover:text-gray-700 text-left"
                                     >
                                       Quitar estado
@@ -570,13 +656,22 @@ export default function Mantenimiento() {
                                     {isRenovada ? "Renovada" : "Pendiente"}
                                   </Badge>
                                   {user?.role === "admin" && (
-                                    <button
-                                      onClick={() => openConstruccionDialog(parada)}
-                                      title="Marcar como En Construcción"
-                                      className="text-amber-600 hover:text-amber-800 transition-colors"
-                                    >
-                                      <HardHat className="h-4 w-4" />
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() => openConstruccionDialog(parada)}
+                                        title="Marcar como En Construcción"
+                                        className="text-amber-600 hover:text-amber-800 transition-colors"
+                                      >
+                                        <HardHat className="h-4 w-4" />
+                                      </button>
+                                      <button
+                                        onClick={() => openRemovidaDialog(parada)}
+                                        title="Marcar como Removida"
+                                        className="text-red-500 hover:text-red-700 transition-colors"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
+                                    </>
                                   )}
                                 </div>
                               )}
@@ -773,6 +868,122 @@ export default function Mantenimiento() {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Removida Dialog */}
+      <Dialog open={isRemovidaDialogOpen} onOpenChange={setIsRemovidaDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-red-600" />
+              {removidaParada?.removida
+                ? "Quitar Estado Removida"
+                : "Marcar como Removida"}
+            </DialogTitle>
+            <DialogDescription>
+              Cara: {removidaParada?.cobertizoId} — {removidaParada?.localizacion}
+            </DialogDescription>
+          </DialogHeader>
+
+          {!removidaParada?.removida ? (
+            <div className="py-2">
+              {activeAnunciosForRemovida.length > 0 && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg">
+                  <p className="text-sm font-semibold text-red-700 mb-2">
+                    ⚠️ Esta cara tiene {activeAnunciosForRemovida.length} anuncio{activeAnunciosForRemovida.length > 1 ? "s" : ""} activo{activeAnunciosForRemovida.length > 1 ? "s" : ""}:
+                  </p>
+                  <ul className="space-y-1">
+                    {activeAnunciosForRemovida.map((a: any) => (
+                      <li key={a.id} className="text-xs text-red-700 flex items-center justify-between gap-2">
+                        <span>
+                          <strong>{a.cliente}</strong> — {a.producto || a.tipo}
+                          {a.fechaFin && (
+                            <span className="text-red-500">
+                              {" "}(hasta {new Date(a.fechaFin).toLocaleDateString("es-PR")})
+                            </span>
+                          )}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setIsRemovidaDialogOpen(false);
+                            navigate(`/anuncios?anuncioId=${a.id}`);
+                          }}
+                          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 underline whitespace-nowrap"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Relocalizar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-red-600 mt-2 font-medium">
+                    Debes relocalizar o cancelar {activeAnunciosForRemovida.length > 1 ? "estos anuncios" : "este anuncio"} antes de marcar la cara como Removida.
+                  </p>
+                </div>
+              )}
+              <p className="text-sm text-gray-600 mb-4">
+                Esta cara quedará marcada como <strong>Removida</strong> y no estará
+                disponible para asignación de anuncios hasta que se remueva el estado.
+              </p>
+              <div>
+                <Label htmlFor="fecha-retorno" className="text-sm font-medium">
+                  Fecha estimada de retorno <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fecha-retorno"
+                  type="date"
+                  value={fechaRetorno}
+                  onChange={(e) => setFechaRetorno(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="mt-1"
+                  disabled={activeAnunciosForRemovida.length > 0}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Fecha en que se espera que la cara esté disponible nuevamente.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="py-2">
+              <p className="text-sm text-gray-600">
+                ¿Confirmas que deseas remover el estado <strong>Removida</strong> de esta
+                cara? Volverá a estar disponible para asignación de anuncios.
+              </p>
+              {removidaParada?.fechaRetorno && (
+                <p className="text-sm text-red-700 mt-2">
+                  Fecha estimada de retorno registrada:{" "}
+                  <strong>
+                    {new Date(removidaParada.fechaRetorno).toLocaleDateString("es-PR")}
+                  </strong>
+                </p>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsRemovidaDialogOpen(false);
+                setRemovidaParada(null);
+                setFechaRetorno("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSetRemovida}
+              className={
+                removidaParada?.removida
+                  ? "bg-gray-600 hover:bg-gray-700"
+                  : "bg-red-600 hover:bg-red-700"
+              }
+              disabled={updateCondicion.isPending || (!removidaParada?.removida && activeAnunciosForRemovida.length > 0)}
+            >
+              {removidaParada?.removida ? "Quitar Estado" : "Confirmar"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

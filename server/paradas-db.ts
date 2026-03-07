@@ -74,6 +74,8 @@ export async function getAllParadas() {
         displayPublicidad: parada.displayPublicidad,
         enConstruccion: parada.enConstruccion,
         fechaDisponibilidad: parada.fechaDisponibilidad,
+        removida: parada.removida,
+        fechaRetorno: parada.fechaRetorno,
         destacada: parada.destacada,
         createdAt: parada.createdAt,
         updatedAt: parada.updatedAt,

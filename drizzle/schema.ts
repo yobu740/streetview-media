@@ -50,6 +50,8 @@ export const paradas = mysqlTable("paradas", {
   displayPublicidad: mysqlEnum("display_publicidad", ["Si", "No", "N/A"]).default("N/A").notNull(), // Display status
   enConstruccion: int("en_construccion").default(0).notNull(), // 1 = en construccion, 0 = normal
   fechaDisponibilidad: timestamp("fecha_disponibilidad"), // Estimated availability date when en construccion
+  removida: int("removida").default(0).notNull(), // 1 = removida (physically removed), 0 = normal
+  fechaRetorno: timestamp("fecha_retorno"), // Estimated return date when removida
   destacada: int("destacada").default(0).notNull(), // 1 = destacada (profitable/featured), 0 = normal
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
