@@ -1,4 +1,4 @@
-import { eq, and, or, desc, asc, like, sql, lte, gte } from "drizzle-orm";
+import { eq, and, or, desc, asc, like, sql, lte, gte, inArray } from "drizzle-orm";
 import { paradas, anuncios, type Parada, type Anuncio, type InsertParada, type InsertAnuncio } from "../drizzle/schema";
 import { getDb } from "./db";;
 
@@ -564,9 +564,23 @@ export async function checkExpiringAnuncios(daysBeforeExpiration: number = 7) {
       )
       .orderBy(asc(anuncios.fechaFin));
 
+    // Get all seguimiento anuncioIds to mark which ones already have seguimiento
+    const { seguimientos } = await import('../drizzle/schema');
+    const existingSeguimientos = await db
+      .selectDistinct({ anuncioId: seguimientos.anuncioId })
+      .from(seguimientos)
+      .where(
+        inArray(
+          seguimientos.anuncioId,
+          expiringAnuncios.map(r => r.anuncios.id)
+        )
+      );
+    const seguimientoAnuncioIds = new Set(existingSeguimientos.map(s => s.anuncioId));
+
     return expiringAnuncios.map((row) => ({
       ...row.anuncios,
       parada: row.paradas,
+      hasSeguimiento: seguimientoAnuncioIds.has(row.anuncios.id),
     }));
   } catch (error) {
     console.error("[Database] Failed to check expiring anuncios:", error);
