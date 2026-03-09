@@ -15,7 +15,7 @@ import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLef
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Admin() {
@@ -1053,7 +1053,7 @@ export default function Admin() {
                   </CardDescription>
                 </div>
                 <Button
-                  onClick={() => setLocation('/notificaciones')}
+                  onClick={() => window.location.href = '/notificaciones'}
                   className="bg-[#ff6b35] hover:bg-[#e65a25] text-white shrink-0"
                 >
                   Ir a Notificaciones
