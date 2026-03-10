@@ -1180,3 +1180,10 @@
 - [ ] Añadir condición "Removida" en Mantenimiento (bloquea reservas, tiene fecha estimada de retorno)
 - [ ] Añadir columna de coordenadas en reporte Excel de anuncios
 - [ ] Añadir columna de coordenadas en reporte PDF de anuncios
+
+## Página de Notificaciones
+- [ ] Crear página /notificaciones con secciones: Reservas Pendientes, Anuncios por Vencer, Notificaciones del Sistema
+- [ ] Registrar ruta /notificaciones en App.tsx
+- [ ] Agregar enlace en sidebar/nav hacia /notificaciones
+- [ ] Corregir botón "Ir a Notificaciones" en Admin para navegar a /notificaciones
+- [ ] Eliminar secciones duplicadas del panel Admin (reservas pendientes y anuncios por vencer)
