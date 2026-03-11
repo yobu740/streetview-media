@@ -478,7 +478,7 @@ export default function Mantenimiento() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <p className="text-sm text-gray-600 mb-1">Total Paradas</p>
+              <p className="text-sm text-gray-600 mb-1">Total Caras</p>
               <p className="text-3xl font-bold text-[#1a4d3c]">{stats.total}</p>
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
