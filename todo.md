@@ -1225,3 +1225,8 @@
 - [x] Después de crear una parada Outbound, preguntar si desea crear la Inbound con los mismos datos
 - [x] Mostrar diálogo de confirmación con preview de los datos que se crearán
 - [x] Al confirmar, crear la parada complementaria automáticamente
+
+## Detección de Duplicados - Parada Complementaria
+- [x] Antes de crear la parada complementaria, verificar si ya existe una con el mismo cobertizoId y la orientación opuesta
+- [x] Si existe duplicado, mostrar advertencia con los datos de la parada existente en lugar de crear otra
+- [x] Permitir al usuario cancelar o forzar la creación si lo desea

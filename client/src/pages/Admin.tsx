@@ -79,6 +79,7 @@ export default function Admin() {
   const [isCompanionDialogOpen, setIsCompanionDialogOpen] = useState(false);
   const [companionOrientation, setCompanionOrientation] = useState<"I" | "O" | null>(null);
   const [pendingCompanionForm, setPendingCompanionForm] = useState<typeof paradaForm | null>(null);
+  const [duplicateCompanion, setDuplicateCompanion] = useState<any | null>(null); // existing parada that would be duplicated
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [paradaToDelete, setParadaToDelete] = useState<any>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
@@ -643,8 +644,16 @@ export default function Admin() {
     // Si la orientación es I u O, preguntar si desea crear la complementaria
     if (orientacion === 'I' || orientacion === 'O') {
       const opposite = orientacion === 'I' ? 'O' : 'I';
-      setPendingCompanionForm({ ...paradaForm, orientacion: opposite });
+      const companionForm = { ...paradaForm, orientacion: opposite };
+      // Detectar si ya existe una parada con el mismo cobertizoId y la orientación opuesta
+      const existing = paradas?.find(
+        (p: any) =>
+          p.cobertizoId?.toString().trim().toLowerCase() === paradaForm.cobertizoId.trim().toLowerCase() &&
+          p.orientacion?.toUpperCase() === opposite
+      ) ?? null;
+      setPendingCompanionForm(companionForm);
       setCompanionOrientation(opposite as 'I' | 'O');
+      setDuplicateCompanion(existing);
       setIsAddParadaDialogOpen(false);
       setIsCompanionDialogOpen(true);
     }
@@ -2113,31 +2122,53 @@ export default function Admin() {
           setIsCompanionDialogOpen(false);
           setPendingCompanionForm(null);
           setCompanionOrientation(null);
+          setDuplicateCompanion(null);
         }
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <span className="text-2xl">{companionOrientation === 'I' ? '⬅️' : '➡️'}</span>
-              ¿Crear parada {companionOrientation === 'I' ? 'Inbound' : 'Outbound'}?
+              {duplicateCompanion ? (
+                <><AlertTriangle className="h-5 w-5 text-amber-500" /> Parada {companionOrientation === 'I' ? 'Inbound' : 'Outbound'} ya existe</>
+              ) : (
+                <><span className="text-2xl">{companionOrientation === 'I' ? '⬅️' : '➡️'}</span> ¿Crear parada {companionOrientation === 'I' ? 'Inbound' : 'Outbound'}?</>
+              )}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
-                <p>
-                  La parada fue creada. ¿Deseas crear también la versión{' '}
-                  <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong>{' '}
-                  con los mismos datos?
-                </p>
-                {pendingCompanionForm && (
-                  <div className="bg-gray-50 rounded-lg p-3 text-sm text-left space-y-1 border">
-                    <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {pendingCompanionForm.cobertizoId}</div>
-                    <div><span className="font-medium text-gray-600">Localización:</span> {pendingCompanionForm.localizacion}</div>
-                    <div><span className="font-medium text-gray-600">Dirección:</span> {pendingCompanionForm.direccion}</div>
-                    {pendingCompanionForm.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {pendingCompanionForm.ruta}</div>}
-                    {pendingCompanionForm.flowCat && <div><span className="font-medium text-gray-600">Flowcat:</span> {pendingCompanionForm.flowCat}</div>}
-                    <div><span className="font-medium text-gray-600">Tipo:</span> {pendingCompanionForm.tipoFormato}</div>
-                    <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
-                  </div>
+                {duplicateCompanion ? (
+                  <>
+                    <p className="text-amber-700 font-medium">
+                      Ya existe una parada <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong> con el mismo ID de cobertizo:
+                    </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-left space-y-1">
+                      <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {duplicateCompanion.cobertizoId}</div>
+                      <div><span className="font-medium text-gray-600">Localización:</span> {duplicateCompanion.localizacion}</div>
+                      <div><span className="font-medium text-gray-600">Dirección:</span> {duplicateCompanion.direccion}</div>
+                      {duplicateCompanion.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {duplicateCompanion.ruta}</div>}
+                      <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
+                    </div>
+                    <p className="text-sm text-gray-500">No se creará un duplicado. Puedes cerrar este diálogo.</p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      La parada fue creada. ¿Deseas crear también la versión{' '}
+                      <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong>{' '}
+                      con los mismos datos?
+                    </p>
+                    {pendingCompanionForm && (
+                      <div className="bg-gray-50 rounded-lg p-3 text-sm text-left space-y-1 border">
+                        <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {pendingCompanionForm.cobertizoId}</div>
+                        <div><span className="font-medium text-gray-600">Localización:</span> {pendingCompanionForm.localizacion}</div>
+                        <div><span className="font-medium text-gray-600">Dirección:</span> {pendingCompanionForm.direccion}</div>
+                        {pendingCompanionForm.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {pendingCompanionForm.ruta}</div>}
+                        {pendingCompanionForm.flowCat && <div><span className="font-medium text-gray-600">Flowcat:</span> {pendingCompanionForm.flowCat}</div>}
+                        <div><span className="font-medium text-gray-600">Tipo:</span> {pendingCompanionForm.tipoFormato}</div>
+                        <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </AlertDialogDescription>
@@ -2147,20 +2178,23 @@ export default function Admin() {
               setIsCompanionDialogOpen(false);
               setPendingCompanionForm(null);
               setCompanionOrientation(null);
+              setDuplicateCompanion(null);
             }}>
-              No, solo esta
+              {duplicateCompanion ? 'Cerrar' : 'No, solo esta'}
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleCreateCompanionParada}
-              disabled={createParada.isPending}
-              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
-            >
-              {createParada.isPending ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creando...</>
-              ) : (
-                `Sí, crear ${companionOrientation === 'I' ? 'Inbound' : 'Outbound'}`
-              )}
-            </AlertDialogAction>
+            {!duplicateCompanion && (
+              <AlertDialogAction
+                onClick={handleCreateCompanionParada}
+                disabled={createParada.isPending}
+                className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+              >
+                {createParada.isPending ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creando...</>
+                ) : (
+                  `Sí, crear ${companionOrientation === 'I' ? 'Inbound' : 'Outbound'}`
+                )}
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
