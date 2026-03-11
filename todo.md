@@ -1219,3 +1219,9 @@
 - [x] Add job automático to reactivate Removidas when fechaRetorno arrives (daily notification)
 - [x] Add Flowcat/Ruta filter dropdown to Gestor de Anuncios
 - [x] Fix dashboard stat cards grid: changed from md:grid-cols-6 (leaving 2 empty columns) to grid-cols-2 md:grid-cols-4 so all 4 cards fill the full row
+
+## Companion Parada al Crear
+- [x] Después de crear una parada Inbound, preguntar si desea crear la Outbound con los mismos datos
+- [x] Después de crear una parada Outbound, preguntar si desea crear la Inbound con los mismos datos
+- [x] Mostrar diálogo de confirmación con preview de los datos que se crearán
+- [x] Al confirmar, crear la parada complementaria automáticamente

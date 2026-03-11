@@ -76,6 +76,9 @@ export default function Admin() {
   const [isAnuncioDialogOpen, setIsAnuncioDialogOpen] = useState(false);
   const [isDetalleDialogOpen, setIsDetalleDialogOpen] = useState(false);
   const [isAddParadaDialogOpen, setIsAddParadaDialogOpen] = useState(false);
+  const [isCompanionDialogOpen, setIsCompanionDialogOpen] = useState(false);
+  const [companionOrientation, setCompanionOrientation] = useState<"I" | "O" | null>(null);
+  const [pendingCompanionForm, setPendingCompanionForm] = useState<typeof paradaForm | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [paradaToDelete, setParadaToDelete] = useState<any>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
@@ -214,7 +217,6 @@ export default function Admin() {
   const createParada = trpc.paradas.create.useMutation({
     onSuccess: () => {
       toast.success("Parada creada exitosamente");
-      setIsAddParadaDialogOpen(false);
       setParadaForm({
         cobertizoId: "",
         localizacion: "",
@@ -222,6 +224,7 @@ export default function Admin() {
         ruta: "",
         tipoFormato: "Fija",
         orientacion: "",
+        flowCat: "",
         fotoBase64: "",
       });
       refetchParadas();
@@ -616,14 +619,15 @@ export default function Admin() {
   };
   
   const handleCreateParada = async () => {
-    // Primero crear la parada
+    const orientacion = paradaForm.orientacion || 'O';
+    // Crear la parada principal
     const result = await createParada.mutateAsync({
       cobertizoId: paradaForm.cobertizoId,
       localizacion: paradaForm.localizacion,
       direccion: paradaForm.direccion,
       ruta: paradaForm.ruta || undefined,
       tipoFormato: paradaForm.tipoFormato,
-      orientacion: paradaForm.orientacion || 'O', // Default to Outbound if not specified
+      orientacion,
       flowCat: paradaForm.flowCat || undefined,
     });
     
@@ -635,6 +639,40 @@ export default function Admin() {
         fotoBase64: paradaForm.fotoBase64,
       });
     }
+
+    // Si la orientación es I u O, preguntar si desea crear la complementaria
+    if (orientacion === 'I' || orientacion === 'O') {
+      const opposite = orientacion === 'I' ? 'O' : 'I';
+      setPendingCompanionForm({ ...paradaForm, orientacion: opposite });
+      setCompanionOrientation(opposite as 'I' | 'O');
+      setIsAddParadaDialogOpen(false);
+      setIsCompanionDialogOpen(true);
+    }
+  };
+
+  const handleCreateCompanionParada = async () => {
+    if (!pendingCompanionForm) return;
+    const result = await createParada.mutateAsync({
+      cobertizoId: pendingCompanionForm.cobertizoId,
+      localizacion: pendingCompanionForm.localizacion,
+      direccion: pendingCompanionForm.direccion,
+      ruta: pendingCompanionForm.ruta || undefined,
+      tipoFormato: pendingCompanionForm.tipoFormato,
+      orientacion: pendingCompanionForm.orientacion || 'O',
+      flowCat: pendingCompanionForm.flowCat || undefined,
+    });
+    if (pendingCompanionForm.fotoBase64 && result.id) {
+      await uploadFoto.mutateAsync({
+        paradaId: result.id,
+        cobertizoId: pendingCompanionForm.cobertizoId,
+        fotoBase64: pendingCompanionForm.fotoBase64,
+      });
+    }
+    setIsCompanionDialogOpen(false);
+    setPendingCompanionForm(null);
+    setCompanionOrientation(null);
+    toast.success(`Parada ${pendingCompanionForm.orientacion === 'I' ? 'Inbound' : 'Outbound'} creada exitosamente`);
+    refetchParadas();
   };
   
   const handleDeleteParada = () => {
@@ -2069,6 +2107,62 @@ export default function Admin() {
         </DialogContent>
       </Dialog>
       
+      {/* Companion Parada Dialog */}
+      <AlertDialog open={isCompanionDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setIsCompanionDialogOpen(false);
+          setPendingCompanionForm(null);
+          setCompanionOrientation(null);
+        }
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <span className="text-2xl">{companionOrientation === 'I' ? '⬅️' : '➡️'}</span>
+              ¿Crear parada {companionOrientation === 'I' ? 'Inbound' : 'Outbound'}?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                La parada fue creada. ¿Deseas crear también la versión{' '}
+                <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong>{' '}
+                con los mismos datos?
+              </p>
+              {pendingCompanionForm && (
+                <div className="bg-gray-50 rounded-lg p-3 text-sm text-left space-y-1 border">
+                  <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {pendingCompanionForm.cobertizoId}</div>
+                  <div><span className="font-medium text-gray-600">Localización:</span> {pendingCompanionForm.localizacion}</div>
+                  <div><span className="font-medium text-gray-600">Dirección:</span> {pendingCompanionForm.direccion}</div>
+                  {pendingCompanionForm.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {pendingCompanionForm.ruta}</div>}
+                  {pendingCompanionForm.flowCat && <div><span className="font-medium text-gray-600">Flowcat:</span> {pendingCompanionForm.flowCat}</div>}
+                  <div><span className="font-medium text-gray-600">Tipo:</span> {pendingCompanionForm.tipoFormato}</div>
+                  <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setIsCompanionDialogOpen(false);
+              setPendingCompanionForm(null);
+              setCompanionOrientation(null);
+            }}>
+              No, solo esta
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCreateCompanionParada}
+              disabled={createParada.isPending}
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a]"
+            >
+              {createParada.isPending ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creando...</>
+              ) : (
+                `Sí, crear ${companionOrientation === 'I' ? 'Inbound' : 'Outbound'}`
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Delete Parada Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
