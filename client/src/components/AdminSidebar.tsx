@@ -94,6 +94,12 @@ export default function AdminSidebar({
       href: "/mis-reservas",
       userOnly: true,
     },
+    {
+      label: "Notificaciones",
+      icon: Bell,
+      href: "/notificaciones",
+      badge: (pendingReservationsCount > 0 ? pendingReservationsCount : undefined),
+    },
   ];
 
   const actionItems = [

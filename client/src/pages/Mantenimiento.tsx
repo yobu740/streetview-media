@@ -27,7 +27,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink, ChevronDown } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import IconRemovida from "@/components/IconRemovida";
 import { toast } from "sonner";
 import AdminSidebar from "@/components/AdminSidebar";
@@ -54,6 +55,67 @@ export default function Mantenimiento() {
   const [removidaParada, setRemovidaParada] = useState<any>(null);
   const [fechaRetorno, setFechaRetorno] = useState<string>("");
   const [activeAnunciosForRemovida, setActiveAnunciosForRemovida] = useState<any[]>([]);
+
+  // Multi-select state
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<"construccion" | "removida" | "sinDisplay" | "limpiar" | null>(null);
+  const [bulkFecha, setBulkFecha] = useState<string>("");
+  const [isBulkPending, setIsBulkPending] = useState(false);
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (!filteredParadas) return;
+    if (selectedIds.size === filteredParadas.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredParadas.map(p => p.id)));
+    }
+  };
+
+  const openBulkAction = (action: "construccion" | "removida" | "sinDisplay" | "limpiar") => {
+    setBulkAction(action);
+    setBulkFecha("");
+    setIsBulkDialogOpen(true);
+  };
+
+  const handleBulkConfirm = async () => {
+    if (!bulkAction || selectedIds.size === 0) return;
+    if ((bulkAction === "construccion" || bulkAction === "removida") && !bulkFecha) {
+      toast.error("Por favor ingresa la fecha estimada");
+      return;
+    }
+    setIsBulkPending(true);
+    const ids = Array.from(selectedIds);
+    try {
+      await Promise.all(ids.map(paradaId => {
+        if (bulkAction === "construccion") {
+          return updateCondicion.mutateAsync({ paradaId, enConstruccion: 1, removida: 0, fechaDisponibilidad: new Date(bulkFecha + "T00:00:00") });
+        } else if (bulkAction === "removida") {
+          return updateCondicion.mutateAsync({ paradaId, removida: 1, enConstruccion: 0, fechaRetorno: new Date(bulkFecha + "T00:00:00") });
+        } else if (bulkAction === "sinDisplay") {
+          return updateCondicion.mutateAsync({ paradaId, displayPublicidad: "No" });
+        } else {
+          return updateCondicion.mutateAsync({ paradaId, enConstruccion: 0, removida: 0 });
+        }
+      }));
+      toast.success(`${ids.length} cara${ids.length > 1 ? "s" : ""} actualizadas`);
+      setSelectedIds(new Set());
+      setIsBulkDialogOpen(false);
+      setBulkAction(null);
+    } catch {
+      toast.error("Error al actualizar algunas caras");
+    } finally {
+      setIsBulkPending(false);
+    }
+  };
 
   const { data: paradas, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: anunciosByParada } = trpc.anuncios.getByParadaId.useQuery(
@@ -490,12 +552,45 @@ export default function Mantenimiento() {
             </div>
           </div>
 
+          {/* Bulk Action Toolbar */}
+          {selectedIds.size > 0 && user?.role === "admin" && (
+            <div className="bg-[#1a4d3c] text-white rounded-lg shadow-md p-4 mb-4 flex flex-wrap items-center gap-3">
+              <span className="font-semibold text-sm">{selectedIds.size} cara{selectedIds.size > 1 ? "s" : ""} seleccionada{selectedIds.size > 1 ? "s" : ""}</span>
+              <div className="flex flex-wrap gap-2 ml-auto">
+                <Button size="sm" onClick={() => openBulkAction("construccion")} className="bg-amber-500 hover:bg-amber-600 text-white">
+                  <HardHat className="h-4 w-4 mr-1" />
+                  En Construcción
+                </Button>
+                <Button size="sm" onClick={() => openBulkAction("removida")} className="bg-red-600 hover:bg-red-700 text-white">
+                  <IconRemovida className="h-4 w-4 mr-1" color="white" />
+                  Removida
+                </Button>
+                <Button size="sm" onClick={() => openBulkAction("sinDisplay")} className="bg-gray-600 hover:bg-gray-700 text-white">
+                  Sin Display
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => openBulkAction("limpiar")} className="bg-white text-gray-800 hover:bg-gray-100">
+                  Limpiar Condición
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} className="text-white hover:bg-white/20">
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Table */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <Checkbox
+                        checked={filteredParadas ? selectedIds.size === filteredParadas.length && filteredParadas.length > 0 : false}
+                        onCheckedChange={toggleSelectAll}
+                        aria-label="Seleccionar todas"
+                      />
+                    </TableHead>
                     <TableHead>ID Cobertizo</TableHead>
                     <TableHead>Localización</TableHead>
                     <TableHead>Dirección</TableHead>
@@ -519,8 +614,15 @@ export default function Mantenimiento() {
                       return (
                         <TableRow
                           key={parada.id}
-                          className={isConstruccion ? "bg-amber-50" : ""}
+                          className={`${isConstruccion ? "bg-amber-50" : ""} ${selectedIds.has(parada.id) ? "ring-2 ring-inset ring-[#1a4d3c]/30 bg-green-50" : ""}`}
                         >
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedIds.has(parada.id)}
+                              onCheckedChange={() => toggleSelect(parada.id)}
+                              aria-label={`Seleccionar parada ${parada.cobertizoId}`}
+                            />
+                          </TableCell>
                           <TableCell className="font-medium">{parada.cobertizoId}</TableCell>
                           <TableCell>{parada.localizacion}</TableCell>
                           <TableCell className="max-w-xs truncate">{parada.direccion}</TableCell>
@@ -695,7 +797,7 @@ export default function Mantenimiento() {
                     })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={10} className="text-center text-gray-500 py-8">
+                      <TableCell colSpan={11} className="text-center text-gray-500 py-8">
                         No se encontraron paradas
                       </TableCell>
                     </TableRow>
@@ -869,6 +971,55 @@ export default function Mantenimiento() {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Action Dialog */}
+      <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {bulkAction === "construccion" && <><HardHat className="h-5 w-5 text-amber-600" /> Marcar como En Construcción</>}
+              {bulkAction === "removida" && <><IconRemovida className="h-5 w-5" /> Marcar como Removida</>}
+              {bulkAction === "sinDisplay" && <>Sin Display</>}
+              {bulkAction === "limpiar" && <>Limpiar Condición</>}
+            </DialogTitle>
+            <DialogDescription>
+              Se aplicará el cambio a <strong>{selectedIds.size} cara{selectedIds.size > 1 ? "s" : ""}</strong> seleccionada{selectedIds.size > 1 ? "s" : ""}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            {(bulkAction === "construccion" || bulkAction === "removida") && (
+              <div>
+                <Label className="text-sm font-medium">
+                  {bulkAction === "construccion" ? "Fecha estimada de disponibilidad" : "Fecha estimada de retorno"} <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  value={bulkFecha}
+                  onChange={(e) => setBulkFecha(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="mt-1"
+                />
+              </div>
+            )}
+            {bulkAction === "sinDisplay" && (
+              <p className="text-sm text-gray-600">Las caras seleccionadas quedarán marcadas como <strong>Sin Display</strong>.</p>
+            )}
+            {bulkAction === "limpiar" && (
+              <p className="text-sm text-gray-600">Se removerán los estados <strong>En Construcción</strong> y <strong>Removida</strong> de las caras seleccionadas.</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)} disabled={isBulkPending}>Cancelar</Button>
+            <Button
+              onClick={handleBulkConfirm}
+              disabled={isBulkPending}
+              className={bulkAction === "removida" ? "bg-red-600 hover:bg-red-700" : bulkAction === "construccion" ? "bg-amber-500 hover:bg-amber-600" : "bg-[#1a4d3c] hover:bg-[#0f3a2a]"}
+            >
+              {isBulkPending ? "Procesando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

@@ -51,6 +51,7 @@ export default function Anuncios() {
   const { user } = useAuth();
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
   const { data: paradas } = trpc.paradas.list.useQuery();
+  const { data: flowcats } = trpc.paradas.getFlowcats.useQuery();
   const updateAnuncio = trpc.anuncios.update.useMutation();
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const generateInvoice = trpc.invoices.generate.useMutation();
@@ -64,6 +65,7 @@ export default function Anuncios() {
     );
   };
   const [filterTipo, setFilterTipo] = useState<string>("all");
+  const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -153,13 +155,15 @@ export default function Anuncios() {
 
     const matchesEstado = filterEstado.length === 0 || filterEstado.includes(a.estado);
     const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
+    const paradaForFlowcat = paradas?.find(p => p.id === a.paradaId);
+    const matchesFlowcat = filterFlowcat === "all" || paradaForFlowcat?.flowCat === filterFlowcat;
     
     // Check if anuncio overlaps with date range
     const matchesDateRange = 
       (!dateRangeStart || new Date(a.fechaFin) >= new Date(dateRangeStart)) &&
       (!dateRangeEnd || new Date(a.fechaInicio) <= new Date(dateRangeEnd));
 
-    return matchesSearch && matchesEstado && matchesTipo && matchesDateRange;
+    return matchesSearch && matchesEstado && matchesTipo && matchesDateRange && matchesFlowcat;
   });
 
   const getParadaInfo = (paradaId: number) => {
@@ -350,11 +354,12 @@ export default function Anuncios() {
     setSearchTerm("");
     setFilterEstado([]);
     setFilterTipo("all");
+    setFilterFlowcat("all");
     setDateRangeStart("");
     setDateRangeEnd("");
   };
 
-  const hasActiveFilters = searchTerm || filterEstado.length > 0 || filterTipo !== "all" || dateRangeStart || dateRangeEnd;
+  const hasActiveFilters = searchTerm || filterEstado.length > 0 || filterTipo !== "all" || filterFlowcat !== "all" || dateRangeStart || dateRangeEnd;
 
   const handleBulkDelete = () => {
     Promise.all(
@@ -526,7 +531,7 @@ export default function Anuncios() {
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-4">
             <div>
               <Label>Buscar</Label>
               <div className="relative">
@@ -574,6 +579,23 @@ export default function Anuncios() {
                   <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="Fijo">Fijo</SelectItem>
                   <SelectItem value="Bonificación">Bonificación</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Flowcat / Ruta</Label>
+              <Select value={filterFlowcat} onValueChange={setFilterFlowcat}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Todas las rutas" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas las rutas</SelectItem>
+                  {flowcats?.map((fc) => (
+                    <SelectItem key={fc.flowCat} value={fc.flowCat}>
+                      <span className="font-mono font-bold text-[#1a4d3c] mr-2">{fc.flowCat}</span>
+                      <span className="text-gray-600 truncate">{fc.localizacion}</span>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

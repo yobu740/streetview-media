@@ -1200,3 +1200,21 @@
 - [x] Agregar columna Orientación en Gestor de Anuncios (tabla y exportes)
 - [x] Restaurar campo Flowcat en modal de Añadir Parada
 - [x] Restaurar campo Flowcat editable en detalle de parada
+- [ ] Add multi-select checkboxes to Mantenimiento table
+- [ ] Add select-all checkbox in Mantenimiento table header
+- [ ] Add bulk action toolbar in Mantenimiento (En Construcción, Removida, Sin Display, Limpiar condición)
+- [ ] Add bulk condition change confirmation dialog in Mantenimiento
+- [ ] Add bulkUpdateCondicion backend procedure for batch updates
+- [ ] Create Notificaciones page with reservas pendientes, anuncios por vencer, and approvals
+- [ ] Add job automático to reactivate Removidas when fechaRetorno arrives
+- [ ] Add Flowcat/Ruta filter dropdown to Gestor de Anuncios
+
+## Completado - Sesión Actual
+- [x] Add multi-select checkboxes to Mantenimiento table
+- [x] Add select-all checkbox in Mantenimiento table header
+- [x] Add bulk action toolbar in Mantenimiento (En Construcción, Removida, Sin Display, Limpiar condición)
+- [x] Add bulk condition change confirmation dialog in Mantenimiento
+- [x] Add bulkUpdateCondicion backend procedure for batch updates
+- [x] Create Notificaciones page with reservas pendientes, anuncios por vencer, and approvals
+- [x] Add job automático to reactivate Removidas when fechaRetorno arrives (daily notification)
+- [x] Add Flowcat/Ruta filter dropdown to Gestor de Anuncios
