@@ -1233,3 +1233,7 @@
 
 ## Condición detallada en Panel Principal
 - [x] Cuando la parada es "No Disponible", mostrar el estado específico de Mantenimiento (Removida, En Construcción, Sin Display) en la columna Condición del panel principal
+
+## Métrica de Paradas Físicas
+- [x] Calcular paradas físicas únicas consolidando IDs con sufijos A-H como una sola parada
+- [x] Mostrar tarjeta "Paradas Físicas" en el área de métricas del panel principal

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Link, useLocation } from "wouter";
@@ -807,6 +807,20 @@ export default function Admin() {
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupado").length;
   const noDisponiblesCount = (paradas || []).filter(p => getParadaStatus(p).status === "No Disponible").length;
 
+  // Paradas físicas: consolidate IDs by stripping trailing A-H suffixes (e.g. AMA02A-AMA02H = 1 physical stop)
+  // Also groups double-display pairs (341A+341B = 1 physical stop)
+  const paradasFisicasCount = useMemo(() => {
+    if (!paradas || paradas.length === 0) return 0;
+    const physicalIds = new Set<string>();
+    for (const p of paradas) {
+      const id = (p.cobertizoId || p.id?.toString() || "").trim().toUpperCase();
+      // Strip trailing single letter A-H if it follows a digit (e.g. AMA02A → AMA02, 341A → 341)
+      const base = id.replace(/([0-9])[A-H]$/, "$1");
+      physicalIds.add(base);
+    }
+    return physicalIds.size;
+  }, [paradas]);
+
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
       {/* Sidebar */}
@@ -1280,7 +1294,7 @@ export default function Admin() {
         </Card>
 
         {/* Stats Cards - Now clickable filters */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-lg ${filterStatus === "all" ? "ring-2 ring-[#1a4d3c]" : ""}`}
             onClick={() => { setFilterStatus("all"); handleFilterChange(); }}
@@ -1321,6 +1335,14 @@ export default function Admin() {
                 {noDisponiblesCount}
               </CardTitle>
               <CardDescription>No Disponibles</CardDescription>
+            </CardHeader>
+          </Card>
+          <Card className="border-l-4 border-[#1a4d3c]">
+            <CardHeader>
+              <CardTitle className="text-2xl text-[#1a4d3c]">
+                {paradasFisicasCount}
+              </CardTitle>
+              <CardDescription className="text-xs">Paradas Físicas</CardDescription>
             </CardHeader>
           </Card>
         </div>
