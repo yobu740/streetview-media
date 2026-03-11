@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, numero_factura, cliente, titulo, descripcion, vendedor, created_at FROM facturas WHERE numero_factura IN ('INV-1011', 'INV-1012') ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, numero_factura, cliente, titulo, descripcion, vendedor, created_at FROM facturas WHERE numero_factura IN ('INV-1011', 'INV-1012') ORDER BY id;",
+  "rows": [
+    {
+      "id": "690001",
+      "numero_factura": "INV-1011",
+      "cliente": "OMD",
+      "titulo": "Febrero 2026",
+      "descripcion": "Servicios de Publicidad exterior",
+      "vendedor": "Ilia Rivera",
+      "created_at": "2026-03-11 22:57:22"
+    },
+    {
+      "id": "690002",
+      "numero_factura": "INV-1012",
+      "cliente": "OMD",
+      "titulo": "Marzo 2026",
+      "descripcion": "Servicios de publicidad exterior",
+      "vendedor": "Ilia Rivera",
+      "created_at": "2026-03-11 22:58:07"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumero_factura\tcliente\ttitulo\tdescripcion\tvendedor\tcreated_at\n690001\tINV-1011\tOMD\tFebrero 2026\tServicios de Publicidad exterior\tIlia Rivera\t2026-03-11 22:57:22\n690002\tINV-1012\tOMD\tMarzo 2026\tServicios de publicidad exterior\tIlia Rivera\t2026-03-11 22:58:07\n",
+  "stderr": "",
+  "execution_time_ms": 347
+}

@@ -113,7 +113,10 @@ export async function generateInvoiceFromAnuncios(
     invoiceNumber
   );
   
-  const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}.pdf`;
+  // Add timestamp suffix to ensure unique S3 key even if invoice number is reused after deletion
+  // This prevents CloudFront from serving a stale cached version of a previously deleted invoice
+  const timestamp = Date.now();
+  const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}-${timestamp}.pdf`;
   const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
 
   // Save invoice record to database

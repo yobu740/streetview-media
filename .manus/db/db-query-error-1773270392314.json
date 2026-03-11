@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, numeroFactura, cliente, titulo, descripcion, vendedor, createdAt FROM facturas WHERE numeroFactura IN ('INV-1011', 'INV-1012') ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, numeroFactura, cliente, titulo, descripcion, vendedor, createdAt FROM facturas WHERE numeroFactura IN ('INV-1011', 'INV-1012') ORDER BY id;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'numerofactura' in 'where clause'"
+  ]
+}
