@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Star } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -116,42 +116,15 @@ export default function Admin() {
   const itemsPerPage = 20;
   
   // Filter state
-  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion" | "destacada" | "sin_display">("all");
-  const [filterDestacada, setFilterDestacada] = useState(false);
-  const toggleDestacada = trpc.paradas.toggleDestacada.useMutation({
-    onMutate: async ({ paradaId }) => {
-      // Cancel any outgoing refetches so they don't overwrite our optimistic update
-      await utils.paradas.list.cancel();
-      // Snapshot the previous value
-      const previousParadas = utils.paradas.list.getData();
-      // Optimistically update the cache immediately
-      // destacada is stored as 0/1 (int) in DB
-      utils.paradas.list.setData(undefined, (old) =>
-        old?.map((p) =>
-          p.id === paradaId ? { ...p, destacada: p.destacada ? 0 : 1 } : p
-        )
-      );
-      return { previousParadas };
-    },
-    onError: (err, _vars, context) => {
-      // Rollback on error
-      if (context?.previousParadas) {
-        utils.paradas.list.setData(undefined, context.previousParadas);
-      }
-      toast.error(err.message);
-    },
-    onSettled: () => {
-      // Sync with server after mutation
-      utils.paradas.list.invalidate();
-    },
-  });
+  const [filterStatus, setFilterStatus] = useState<"all" | "disponible" | "ocupada" | "no_disponible">("all");
+
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
   const [filterFlowcat, setFilterFlowcat] = useState<string | null>(null);
   
   // Print filter state
-  const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "construccion">("all");
+  const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "no_disponible">("all");
   const [printFilterTipo, setPrintFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [printFilterRuta, setPrintFilterRuta] = useState("");
   const [printFilterFlowcat, setPrintFilterFlowcat] = useState<string | null>(null);
@@ -175,6 +148,7 @@ export default function Admin() {
     ruta: "",
     tipoFormato: "Fija" as "Fija" | "Digital",
     orientacion: "",
+    flowCat: "",
     fotoBase64: "",
   });
 
@@ -440,10 +414,11 @@ export default function Admin() {
   };
 
   const getParadaStatus = (parada: any) => {
-    // Sin Display takes priority — blocked for ad reservations
-    if (parada.displayPublicidad === 'No') {
+    // No Disponible: Sin Display, En Construcción, o Removida — bloquea reservas
+    const isNoDisponible = parada.displayPublicidad === 'No' || parada.enConstruccion || parada.removida;
+    if (isNoDisponible) {
       return {
-        status: "Sin Display" as const,
+        status: "No Disponible" as const,
         anuncio: parada.anuncioId && parada.anuncioCliente &&
           (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")
           ? {
@@ -457,29 +432,11 @@ export default function Admin() {
           : null,
       };
     }
-    // En Construccion — not available regardless of anuncios
-    if (parada.enConstruccion) {
-      return {
-        status: "En Construcción" as const,
-        anuncio: parada.anuncioId && parada.anuncioCliente &&
-          (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")
-          ? {
-              id: parada.anuncioId,
-              cliente: parada.anuncioCliente,
-              tipo: parada.anuncioTipo,
-              fechaInicio: parada.anuncioFechaInicio,
-              fechaFin: parada.anuncioFechaFin,
-              estado: parada.anuncioEstado,
-            }
-          : null,
-      };
-    }
-    // Check if parada has an active anuncio from the joined data
-    // Only show as Ocupada if the anuncio estado is Activo or Programado
+    // Ocupado: tiene anuncio activo o programado
     if (parada.anuncioId && parada.anuncioCliente && 
         (parada.anuncioEstado === "Activo" || parada.anuncioEstado === "Programado")) {
       return { 
-        status: "Ocupada" as const, 
+        status: "Ocupado" as const, 
         anuncio: {
           id: parada.anuncioId,
           cliente: parada.anuncioCliente,
@@ -490,7 +447,7 @@ export default function Admin() {
         }
       };
     }
-    
+    // Disponible: condición Lista o Pendiente, sin bloqueos
     return { status: "Disponible" as const, anuncio: null };
   };
 
@@ -531,10 +488,8 @@ export default function Admin() {
     const { status } = getParadaStatus(p);
     const matchesStatus = filterStatus === "all" || 
       (filterStatus === "disponible" && status === "Disponible") ||
-      (filterStatus === "ocupada" && status === "Ocupada") ||
-      (filterStatus === "construccion" && !!p.enConstruccion) ||
-      (filterStatus === "destacada" && p.destacada) ||
-      (filterStatus === "sin_display" && status === "Sin Display");
+      (filterStatus === "ocupada" && status === "Ocupado") ||
+      (filterStatus === "no_disponible" && status === "No Disponible");
     
     // Tipo filter
     const matchesTipo = filterTipo === "all" || 
@@ -581,8 +536,8 @@ export default function Admin() {
       const { status } = getParadaStatus(p);
       const matchesStatus = printFilterStatus === "all" || 
         (printFilterStatus === "disponible" && status === "Disponible") ||
-        (printFilterStatus === "ocupada" && status === "Ocupada") ||
-        (printFilterStatus === "construccion" && !!p.enConstruccion);
+        (printFilterStatus === "ocupada" && status === "Ocupado") ||
+        (printFilterStatus === "no_disponible" && status === "No Disponible");
       
       const matchesTipo = printFilterTipo === "all" || 
         (printFilterTipo === "Fija" && p.tipoFormato === "Fija") ||
@@ -669,6 +624,7 @@ export default function Admin() {
       ruta: paradaForm.ruta || undefined,
       tipoFormato: paradaForm.tipoFormato,
       orientacion: paradaForm.orientacion || 'O', // Default to Outbound if not specified
+      flowCat: paradaForm.flowCat || undefined,
     });
     
     // Si hay foto, subirla
@@ -801,12 +757,8 @@ export default function Admin() {
   };
   
   const disponiblesCount = filteredParadas.filter(p => getParadaStatus(p).status === "Disponible").length;
-  const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupada").length;
-  // construccionCount uses enConstruccion field directly (from condicion in Mantenimiento)
-  // so it is not affected by displayPublicidad priority in getParadaStatus
-  const construccionCount = (paradas || []).filter(p => !!p.enConstruccion).length;
-  const destacadasCount = (paradas || []).filter(p => p.destacada).length;
-  const sinDisplayCount = (paradas || []).filter(p => p.displayPublicidad === 'No').length;
+  const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupado").length;
+  const noDisponiblesCount = (paradas || []).filter(p => getParadaStatus(p).status === "No Disponible").length;
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -1314,37 +1266,14 @@ export default function Admin() {
             </CardHeader>
           </Card>
           <Card 
-            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-amber-500 ${filterStatus === "construccion" ? "ring-2 ring-amber-500" : ""}`}
-            onClick={() => { setFilterStatus("construccion"); handleFilterChange(); }}
+            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-red-500 ${filterStatus === "no_disponible" ? "ring-2 ring-red-500" : ""}`}
+            onClick={() => { setFilterStatus(filterStatus === "no_disponible" ? "all" : "no_disponible"); handleFilterChange(); }}
           >
             <CardHeader>
-              <CardTitle className="text-2xl text-amber-600">
-                {construccionCount}
+              <CardTitle className="text-2xl text-red-600">
+                {noDisponiblesCount}
               </CardTitle>
-              <CardDescription>En Construcción</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card 
-            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-yellow-400 ${filterStatus === "destacada" ? "ring-2 ring-yellow-400" : ""}`}
-            onClick={() => { setFilterStatus(filterStatus === "destacada" ? "all" : "destacada"); handleFilterChange(); }}
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl text-yellow-500 flex items-center gap-2">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                {destacadasCount}
-              </CardTitle>
-              <CardDescription>Caras Destacadas</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card 
-            className={`cursor-pointer transition-all hover:shadow-lg border-l-4 border-slate-400 ${filterStatus === "sin_display" ? "ring-2 ring-slate-500" : ""}`}
-            onClick={() => { setFilterStatus(filterStatus === "sin_display" ? "all" : "sin_display"); handleFilterChange(); }}
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl text-slate-600">
-                {sinDisplayCount}
-              </CardTitle>
-              <CardDescription>Sin Display</CardDescription>
+              <CardDescription>No Disponibles</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -1384,7 +1313,7 @@ export default function Admin() {
                             className="cursor-pointer"
                           />
                         </TableHead>
-                        <TableHead className="w-10 print:hidden"><Star className="h-4 w-4 text-yellow-400" /></TableHead>
+
                         <TableHead>ID Cobertizo</TableHead>
                         <TableHead>Orient.</TableHead>
                         <TableHead>Localización</TableHead>
@@ -1416,21 +1345,7 @@ export default function Admin() {
                                 className="cursor-pointer"
                               />
                             </TableCell>
-                            <TableCell className="print:hidden">
-                              <button
-                                onClick={() => toggleDestacada.mutate({ paradaId: parada.id })}
-                                title={parada.destacada ? "Quitar destacada" : "Marcar como destacada"}
-                                className="p-1 rounded hover:bg-yellow-50 transition-colors"
-                              >
-                                <Star
-                                  className={`h-4 w-4 transition-colors ${
-                                    parada.destacada
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-300 hover:text-yellow-300"
-                                  }`}
-                                />
-                              </button>
-                            </TableCell>
+
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-2">
                                 <span>{parada.cobertizoId}</span>
@@ -1465,16 +1380,13 @@ export default function Admin() {
                             </TableCell>
                             <TableCell>
                               {status === "Disponible" && (
-                                <Badge variant="outline" className="border-green-600 text-green-700">{status}</Badge>
+                                <Badge variant="outline" className="border-green-600 text-green-700">Disponible</Badge>
                               )}
-                              {status === "Ocupada" && (
-                                <Badge variant="destructive">{status}</Badge>
+                              {status === "Ocupado" && (
+                                <Badge variant="destructive">Ocupado</Badge>
                               )}
-                              {status === "En Construcción" && (
-                                <Badge className="bg-amber-500 hover:bg-amber-600 text-white">{status}</Badge>
-                              )}
-                              {status === "Sin Display" && (
-                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">Sin Display</Badge>
+                              {status === "No Disponible" && (
+                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">No Disponible</Badge>
                               )}
                             </TableCell>
                             <TableCell>
@@ -1647,7 +1559,33 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Ruta</Label>
-                                          <p className="font-medium">{parada.ruta || "—"}</p>
+                                          {user?.role === 'admin' ? (
+                                            <Input
+                                              value={selectedParada?.ruta || ""}
+                                              onChange={(e) => {
+                                                setSelectedParada({ ...selectedParada, ruta: e.target.value });
+                                              }}
+                                              onBlur={(e) => {
+                                                const newValue = e.target.value;
+                                                if (newValue !== parada.ruta) {
+                                                  updateParadaLocation.mutate(
+                                                    { paradaId: parada.id, ruta: newValue },
+                                                    {
+                                                      onSuccess: () => {
+                                                        toast.success('Ruta actualizada');
+                                                        utils.paradas.list.invalidate();
+                                                      },
+                                                      onError: () => toast.error('Error al actualizar ruta'),
+                                                    }
+                                                  );
+                                                }
+                                              }}
+                                              className="mt-1"
+                                              placeholder="Ej: 01A"
+                                            />
+                                          ) : (
+                                            <p className="font-medium">{parada.ruta || "—"}</p>
+                                          )}
                                         </div>
                                         <div className="col-span-2">
                                           <Label className="text-gray-500">Dirección</Label>
@@ -1683,14 +1621,78 @@ export default function Admin() {
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Orientación</Label>
-                                          <p className="font-medium">{parada.orientacion || "—"}</p>
+                                          {user?.role === 'admin' ? (
+                                            <Select
+                                              value={selectedParada?.orientacion || ""}
+                                              onValueChange={(v) => {
+                                                setSelectedParada({ ...selectedParada, orientacion: v });
+                                                updateParadaLocation.mutate(
+                                                  { paradaId: parada.id, orientacion: v },
+                                                  {
+                                                    onSuccess: () => {
+                                                      toast.success('Orientación actualizada');
+                                                      utils.paradas.list.invalidate();
+                                                    },
+                                                    onError: () => toast.error('Error al actualizar orientación'),
+                                                  }
+                                                );
+                                              }}
+                                            >
+                                              <SelectTrigger className="mt-1">
+                                                <SelectValue placeholder="Seleccionar" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="I">I — Inbound</SelectItem>
+                                                <SelectItem value="O">O — Outbound</SelectItem>
+                                                <SelectItem value="P">P — Peatonal</SelectItem>
+                                              </SelectContent>
+                                            </Select>
+                                          ) : (
+                                            <p className="font-medium">{parada.orientacion || "—"}</p>
+                                          )}
+                                        </div>
+                                        <div>
+                                          <Label className="text-gray-500">Flowcat</Label>
+                                          {user?.role === 'admin' ? (
+                                            <Select
+                                              value={selectedParada?.flowCat || ""}
+                                              onValueChange={(v) => {
+                                                const newVal = v === "none" ? "" : v;
+                                                setSelectedParada({ ...selectedParada, flowCat: newVal });
+                                                updateParadaLocation.mutate(
+                                                  { paradaId: parada.id, flowCat: newVal || undefined },
+                                                  {
+                                                    onSuccess: () => {
+                                                      toast.success('Flowcat actualizado');
+                                                      utils.paradas.list.invalidate();
+                                                    },
+                                                    onError: () => toast.error('Error al actualizar Flowcat'),
+                                                  }
+                                                );
+                                              }}
+                                            >
+                                              <SelectTrigger className="mt-1">
+                                                <SelectValue placeholder="Seleccionar avenida" />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="none">— Sin asignar —</SelectItem>
+                                                {flowcats?.map((fc) => (
+                                                  <SelectItem key={fc.flowCat} value={fc.flowCat}>
+                                                    <span className="font-mono font-bold mr-2">{fc.flowCat}</span>
+                                                    <span className="text-sm truncate max-w-[200px] block">{fc.localizacion}</span>
+                                                  </SelectItem>
+                                                ))}
+                                              </SelectContent>
+                                            </Select>
+                                          ) : (
+                                            <p className="font-medium">{parada.flowCat || "—"}</p>
+                                          )}
                                         </div>
                                         <div>
                                           <Label className="text-gray-500">Estado</Label>
-                                          {status === "Disponible" && <Badge variant="outline" className="border-green-600 text-green-700">{status}</Badge>}
-                                          {status === "Ocupada" && <Badge variant="destructive">{status}</Badge>}
-                                          {status === "En Construcción" && <Badge className="bg-amber-500 text-white">{status}</Badge>}
-                                          {status === "Sin Display" && <Badge className="bg-slate-500 text-white">Sin Display — Bloqueada</Badge>}
+                                          {status === "Disponible" && <Badge variant="outline" className="border-green-600 text-green-700">Disponible</Badge>}
+                                          {status === "Ocupado" && <Badge variant="destructive">Ocupado</Badge>}
+                                          {status === "No Disponible" && <Badge className="bg-slate-500 text-white">No Disponible — Bloqueada</Badge>}
                                         </div>
                                       </div>
                                       
@@ -2003,11 +2005,33 @@ export default function Admin() {
             </div>
             <div>
               <Label>Orientación</Label>
-              <Input
-                value={paradaForm.orientacion}
-                onChange={(e) => setParadaForm({ ...paradaForm, orientacion: e.target.value })}
-                placeholder="Ej: I (Inbound), O (Outbound), P (Peatonal)"
-              />
+              <Select value={paradaForm.orientacion || ""} onValueChange={(v) => setParadaForm({ ...paradaForm, orientacion: v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar orientación" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="I">I — Inbound</SelectItem>
+                  <SelectItem value="O">O — Outbound</SelectItem>
+                  <SelectItem value="P">P — Peatonal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Flowcat (Avenida)</Label>
+              <Select value={paradaForm.flowCat || ""} onValueChange={(v) => setParadaForm({ ...paradaForm, flowCat: v === "none" ? "" : v })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar avenida" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— Sin asignar —</SelectItem>
+                  {flowcats?.map((fc) => (
+                    <SelectItem key={fc.flowCat} value={fc.flowCat}>
+                      <span className="font-mono font-bold mr-2">{fc.flowCat}</span>
+                      <span className="text-sm truncate">{fc.localizacion}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Foto de la Parada</Label>
@@ -2090,7 +2114,7 @@ export default function Admin() {
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="disponible">Solo Disponibles</SelectItem>
                   <SelectItem value="ocupada">Solo Ocupadas</SelectItem>
-                  <SelectItem value="construccion">En Construcción</SelectItem>
+                  <SelectItem value="no_disponible">No Disponibles</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -2202,7 +2226,7 @@ export default function Admin() {
             <strong>Disponibles:</strong> {getSortedPrintParadas().filter(p => getParadaStatus(p).status === "Disponible").length}
           </div>
           <div className="stat-card">
-            <strong>Ocupadas:</strong> {getSortedPrintParadas().filter(p => getParadaStatus(p).status === "Ocupada").length}
+            <strong>Ocupadas:</strong> {getSortedPrintParadas().filter(p => getParadaStatus(p).status === "Ocupado").length}
           </div>
         </div>
         <table>

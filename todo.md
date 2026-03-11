@@ -1187,3 +1187,16 @@
 - [ ] Agregar enlace en sidebar/nav hacia /notificaciones
 - [ ] Corregir botón "Ir a Notificaciones" en Admin para navegar a /notificaciones
 - [ ] Eliminar secciones duplicadas del panel Admin (reservas pendientes y anuncios por vencer)
+
+## Simplificación de Estados en Panel Principal
+- [ ] Reemplazar estados de parada por 3: Ocupado, Disponible, No Disponible
+- [ ] "Sin Display" → "No Disponible" en toda la app
+- [ ] No Disponible = Construcción + Sin Display + Removida (bloquea reservas)
+- [ ] Disponible = condición Lista o Pendiente
+- [ ] Eliminar estrellas y categoría Destacado
+- [ ] Actualizar contadores: Total Caras, Caras Disponibles, Caras Ocupadas, No Disponibles
+- [ ] Eliminar contadores: En Construcción, Caras Destacadas, Sin Display
+- [ ] Arreglar logo de Streetview desaparecido en factura PDF
+- [x] Agregar columna Orientación en Gestor de Anuncios (tabla y exportes)
+- [x] Restaurar campo Flowcat en modal de Añadir Parada
+- [x] Restaurar campo Flowcat editable en detalle de parada

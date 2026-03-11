@@ -716,6 +716,7 @@ export default function Anuncios() {
                     />
                   </TableHead>
                   <TableHead>Cobertizo</TableHead>
+                  <TableHead>Orient.</TableHead>
                   <TableHead>Dirección</TableHead>
                   <TableHead>Producto</TableHead>
                   <TableHead>Cliente</TableHead>
@@ -746,6 +747,11 @@ export default function Anuncios() {
                       </TableCell>
                       <TableCell className="font-medium">
                         {paradas?.find(p => p.id === anuncio.paradaId)?.cobertizoId || anuncio.paradaId}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="font-mono text-xs font-semibold">
+                          {paradas?.find(p => p.id === anuncio.paradaId)?.orientacion || "—"}
+                        </span>
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate">
                         {paradas?.find(p => p.id === anuncio.paradaId)?.direccion || paradas?.find(p => p.id === anuncio.paradaId)?.localizacion || "—"}

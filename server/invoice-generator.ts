@@ -157,6 +157,12 @@ async function createPDFBuffer(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
+    // Draw green header bar background
+    const pageWidth = doc.page.width;
+    doc
+      .rect(0, 0, pageWidth, 110)
+      .fill("#1a4d3c");
+
     // Header with logo from CDN (white version for dark header backgrounds)
     const logoUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
     try {
@@ -165,67 +171,71 @@ async function createPDFBuffer(
       if (!response.ok) throw new Error(`Failed to fetch logo: ${response.statusText}`);
       const arrayBuffer = await response.arrayBuffer();
       const logoBuffer = Buffer.from(arrayBuffer);
-      doc.image(logoBuffer, 50, 45, { width: 120 });
+      // Logo is 900x231 px; scale to fit height ~48px inside the green bar
+      const logoH = 48;
+      const logoW = Math.round(logoH * (900 / 231));
+      doc.image(logoBuffer, 50, 31, { width: logoW, height: logoH });
     } catch (e) {
       console.error('[Invoice] Failed to load logo:', e);
       // Fallback to text if logo fails to load
       doc
         .fontSize(24)
-        .fillColor("#1a4d3c")
-        .text("STREETVIEW MEDIA", 50, 50);
+        .fillColor("#ffffff")
+        .text("STREETVIEW MEDIA", 50, 40);
     }
 
+    // Address below the green header bar
     doc
-      .fontSize(10)
+      .fontSize(9)
       .fillColor("#666666")
-      .text("130 Ave. Winston Churchill", 50, 95)
-      .text("PMB 167", 50, 108)
-      .text("San Juan, PR 00926", 50, 121);
+      .text("130 Ave. Winston Churchill", 50, 120)
+      .text("PMB 167", 50, 131)
+      .text("San Juan, PR 00926", 50, 142);
 
-    // Invoice info
+    // Invoice info - inside the green bar (white text on right side)
     const displayInvoiceNumber = invoiceNumber || `INV-${Date.now()}`;
 
     doc
-      .fontSize(12)
-      .fillColor("#1a4d3c")
-      .text("FACTURA", 400, 50, { align: "right" });
+      .fontSize(14)
+      .fillColor("#ffffff")
+      .text("FACTURA", 0, 20, { align: "right", width: pageWidth - 50 });
 
-    let headerY = 70;
+    let headerY = 42;
     doc
-      .fontSize(10)
-      .fillColor("#666666")
-      .text(`No. ${displayInvoiceNumber}`, 400, headerY, { align: "right" });
-    headerY += 15;
-    doc.text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 400, headerY, { align: "right" });
-    headerY += 15;
-    doc.text(invoiceTitle, 400, headerY, { align: "right" });
-    headerY += 15;
+      .fontSize(9)
+      .fillColor("#ffffff")
+      .text(`No. ${displayInvoiceNumber}`, 0, headerY, { align: "right", width: pageWidth - 50 });
+    headerY += 13;
+    doc.text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 0, headerY, { align: "right", width: pageWidth - 50 });
+    headerY += 13;
+    doc.text(invoiceTitle, 0, headerY, { align: "right", width: pageWidth - 50 });
+    headerY += 13;
     
     // Salesperson name in header if provided
     if (salespersonName) {
-      doc.text(`Vendedor: ${salespersonName}`, 400, headerY, { align: "right" });
-      headerY += 15;
+      doc.text(`Vendedor: ${salespersonName}`, 0, headerY, { align: "right", width: pageWidth - 50 });
+      headerY += 13;
     }
 
     // Description if provided
     if (description) {
       doc
-        .fontSize(10)
-        .fillColor("#666666")
-        .text(description, 400, headerY, { align: "right" });
-      headerY += 15;
+        .fontSize(9)
+        .fillColor("#ffffff")
+        .text(description, 0, headerY, { align: "right", width: pageWidth - 50 });
+      headerY += 13;
     }
 
     // Client info
     doc
       .fontSize(12)
       .fillColor("#1a4d3c")
-      .text("FACTURADO A:", 50, 140);
+      .text("FACTURADO A:", 50, 165);
 
     doc
       .fontSize(10)
       .fillColor("#666666")
-      .text(cliente, 50, 160);
+      .text(cliente, 50, 182);
 
     // Table header
     const tableTop = 220;
