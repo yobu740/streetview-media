@@ -376,12 +376,13 @@ export default function Anuncios() {
       return;
     }
 
-    const headers = ["ID", "Parada", "Orientación", "Dirección", "Latitud", "Longitud", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
+    const headers = ["ID", "Cobertizo", "Localización", "Orientación", "Dirección", "Latitud", "Longitud", "Cliente", "Producto", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Costo", "Notas"];
     const rows = filteredAnuncios.map((a) => {
       const parada = paradas?.find(p => p.id === a.paradaId);
       return [
         a.id,
-        getParadaInfo(a.paradaId),
+        parada?.cobertizoId || a.paradaId,
+        parada?.localizacion || "",
         parada?.orientacion || "N/A",
         parada?.direccion || parada?.localizacion || "",
         parada?.coordenadasLat || "",
@@ -443,7 +444,8 @@ export default function Anuncios() {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Parada</th>
+                <th>Cobertizo</th>
+                <th>Localización</th>
                 <th>Orientación</th>
                 <th>Dirección</th>
                 <th>Latitud</th>
@@ -466,7 +468,8 @@ export default function Anuncios() {
                     return `
                 <tr>
                   <td>${a.id}</td>
-                  <td>${getParadaInfo(a.paradaId)}</td>
+                  <td>${parada?.cobertizoId || a.paradaId}</td>
+                  <td>${parada?.localizacion || ""}</td>
                   <td>${parada?.orientacion || "N/A"}</td>
                   <td>${parada?.direccion || parada?.localizacion || ""}</td>
                   <td>${parada?.coordenadasLat || ""}</td>
