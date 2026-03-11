@@ -1233,7 +1233,7 @@ export default function Admin() {
         </Card>
 
         {/* Stats Cards - Now clickable filters */}
-        <div className="grid md:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card 
             className={`cursor-pointer transition-all hover:shadow-lg ${filterStatus === "all" ? "ring-2 ring-[#1a4d3c]" : ""}`}
             onClick={() => { setFilterStatus("all"); handleFilterChange(); }}

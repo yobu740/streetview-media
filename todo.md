@@ -1218,3 +1218,4 @@
 - [x] Create Notificaciones page with reservas pendientes, anuncios por vencer, and approvals
 - [x] Add job automático to reactivate Removidas when fechaRetorno arrives (daily notification)
 - [x] Add Flowcat/Ruta filter dropdown to Gestor de Anuncios
+- [x] Fix dashboard stat cards grid: changed from md:grid-cols-6 (leaving 2 empty columns) to grid-cols-2 md:grid-cols-4 so all 4 cards fill the full row
