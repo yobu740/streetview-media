@@ -1432,9 +1432,12 @@ export default function Admin() {
                               {status === "Ocupado" && (
                                 <Badge variant="destructive">Ocupado</Badge>
                               )}
-                              {status === "No Disponible" && (
-                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">No Disponible</Badge>
-                              )}
+                              {status === "No Disponible" && (() => {
+                                if (parada.removida) return <Badge className="bg-red-700 hover:bg-red-800 text-white">Removida</Badge>;
+                                if (parada.enConstruccion) return <Badge className="bg-amber-600 hover:bg-amber-700 text-white">En Construcción</Badge>;
+                                if (parada.displayPublicidad === 'No') return <Badge className="bg-slate-500 hover:bg-slate-600 text-white">Sin Display</Badge>;
+                                return <Badge className="bg-slate-500 hover:bg-slate-600 text-white">No Disponible</Badge>;
+                              })()}
                             </TableCell>
                             <TableCell>
                               {(() => {
@@ -1739,7 +1742,12 @@ export default function Admin() {
                                           <Label className="text-gray-500">Estado</Label>
                                           {status === "Disponible" && <Badge variant="outline" className="border-green-600 text-green-700">Disponible</Badge>}
                                           {status === "Ocupado" && <Badge variant="destructive">Ocupado</Badge>}
-                                          {status === "No Disponible" && <Badge className="bg-slate-500 text-white">No Disponible — Bloqueada</Badge>}
+                                          {status === "No Disponible" && (() => {
+                                            if (selectedParada?.removida) return <Badge className="bg-red-700 text-white">Removida — Bloqueada</Badge>;
+                                            if (selectedParada?.enConstruccion) return <Badge className="bg-amber-600 text-white">En Construcción — Bloqueada</Badge>;
+                                            if (selectedParada?.displayPublicidad === 'No') return <Badge className="bg-slate-500 text-white">Sin Display — Bloqueada</Badge>;
+                                            return <Badge className="bg-slate-500 text-white">No Disponible — Bloqueada</Badge>;
+                                          })()}
                                         </div>
                                       </div>
                                       

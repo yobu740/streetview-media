@@ -1230,3 +1230,6 @@
 - [x] Antes de crear la parada complementaria, verificar si ya existe una con el mismo cobertizoId y la orientación opuesta
 - [x] Si existe duplicado, mostrar advertencia con los datos de la parada existente en lugar de crear otra
 - [x] Permitir al usuario cancelar o forzar la creación si lo desea
+
+## Condición detallada en Panel Principal
+- [x] Cuando la parada es "No Disponible", mostrar el estado específico de Mantenimiento (Removida, En Construcción, Sin Display) en la columna Condición del panel principal
