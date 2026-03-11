@@ -211,6 +211,13 @@
       "when": 1772831632311,
       "tag": "0029_melted_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1773272000316,
+      "tag": "0030_pink_freak",
+      "breakpoints": true
     }
   ]
 }

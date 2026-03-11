@@ -259,3 +259,23 @@ export const announcements = mysqlTable("announcements", {
 
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = typeof announcements.$inferInsert;
+
+/**
+ * Instalaciones table - tracks ads pending installation in the field
+ * Created when: admin creates anuncio with estado=Programado, or when anuncio is relocated
+ */
+export const instalaciones = mysqlTable("instalaciones", {
+  id: int("id").autoincrement().primaryKey(),
+  anuncioId: int("anuncio_id").notNull(), // FK to anuncios
+  paradaId: int("parada_id").notNull(), // FK to paradas (destination parada)
+  estado: mysqlEnum("estado", ["Programado", "Relocalizacion", "Instalado"]).default("Programado").notNull(),
+  fotoInstalacion: text("foto_instalacion"), // S3 URL of the installed photo (uploaded after installation)
+  instaladoAt: timestamp("instalado_at"), // When it was marked as Instalado
+  instaladoPor: varchar("instalado_por", { length: 255 }), // User name who marked as installed
+  notas: text("notas"), // Optional installation notes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Instalacion = typeof instalaciones.$inferSelect;
+export type InsertInstalacion = typeof instalaciones.$inferInsert;

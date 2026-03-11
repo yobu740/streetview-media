@@ -1237,3 +1237,21 @@
 ## Métrica de Paradas Físicas
 - [x] Calcular paradas físicas únicas consolidando IDs con sufijos A-H como una sola parada
 - [x] Mostrar tarjeta "Paradas Físicas" en el área de métricas del panel principal
+
+## Área de Instalación (Completado)
+- [x] Tabla `instalaciones` en schema con campos: anuncioId, paradaId, estado (Programado/Relocalizacion/Instalado), fotoInstalacion, instaladoAt, instaladoPor, notas
+- [x] DB helpers: createInstalacion, getInstalacionesPendientes, markInstalacionInstalada, updateInstalacionFoto
+- [x] tRPC procedures: instalaciones.list, instalaciones.markInstalado, instalaciones.uploadFoto
+- [x] Auto-crear registro Instalación cuando admin crea anuncio con estado Programado
+- [x] Auto-crear registro Instalación con estado Relocalizacion cuando se cambia paradaId de un anuncio
+- [x] Página Instalacion.tsx con tabla ordenada por flowcat
+- [x] Filtros: estado, flowcat, búsqueda libre
+- [x] Icono GPS que abre Google Maps con coordenadas o dirección
+- [x] Ojo para ver arte del anuncio
+- [x] Cámara para subir foto de instalación
+- [x] Botón marcar Instalado con confirmación y foto opcional
+- [x] Al marcar Instalado → anuncio cambia a Activo automáticamente
+- [x] Selección múltiple y generación de Orden de Instalación (imprimible)
+- [x] Tarjetas de estadísticas: Programados, Relocalizaciones, Total
+- [x] Enlace en sidebar (solo admin)
+- [x] 13 tests unitarios pasando (43 total)

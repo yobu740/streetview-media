@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, ne, asc, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -93,7 +93,6 @@ export async function getUserByOpenId(openId: string) {
 
 // Notification helpers
 import { notifications, InsertNotification, anuncios } from "../drizzle/schema";
-import { desc } from "drizzle-orm";
 
 export async function createNotification(notification: InsertNotification): Promise<void> {
   const db = await getDb();
@@ -292,4 +291,122 @@ export async function getAnuncioHistory(anuncioId: number) {
     .orderBy(desc(anuncioHistorial.createdAt));
 
   return result;
+}
+
+// ─── Instalaciones helpers ───────────────────────────────────────────────────
+
+export async function createInstalacion(entry: {
+  anuncioId: number;
+  paradaId: number;
+  estado: "Programado" | "Relocalizacion";
+  notas?: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create instalacion: database not available");
+    return;
+  }
+  try {
+    const { instalaciones } = await import("../drizzle/schema");
+    await db.insert(instalaciones).values({
+      anuncioId: entry.anuncioId,
+      paradaId: entry.paradaId,
+      estado: entry.estado,
+      notas: entry.notas ?? null,
+    });
+  } catch (error) {
+    console.error("[Database] Failed to create instalacion:", error);
+    throw error;
+  }
+}
+
+export async function getInstalaciones() {
+  const db = await getDb();
+  if (!db) return [];
+  const { instalaciones, anuncios, paradas } = await import("../drizzle/schema");
+  const result = await db
+    .select({
+      id: instalaciones.id,
+      anuncioId: instalaciones.anuncioId,
+      paradaId: instalaciones.paradaId,
+      estado: instalaciones.estado,
+      fotoInstalacion: instalaciones.fotoInstalacion,
+      instaladoAt: instalaciones.instaladoAt,
+      instaladoPor: instalaciones.instaladoPor,
+      notas: instalaciones.notas,
+      createdAt: instalaciones.createdAt,
+      updatedAt: instalaciones.updatedAt,
+      // Anuncio fields
+      producto: anuncios.producto,
+      cliente: anuncios.cliente,
+      tipo: anuncios.tipo,
+      fechaInicio: anuncios.fechaInicio,
+      fechaFin: anuncios.fechaFin,
+      estadoAnuncio: anuncios.estado,
+      arteUrl: anuncios.notas, // re-use notas field for arteUrl lookup — actual arte stored separately
+      // Parada fields
+      cobertizoId: paradas.cobertizoId,
+      orientacion: paradas.orientacion,
+      direccion: paradas.direccion,
+      localizacion: paradas.localizacion,
+      flowCat: paradas.flowCat,
+      coordenadasLat: paradas.coordenadasLat,
+      coordenadasLng: paradas.coordenadasLng,
+    })
+    .from(instalaciones)
+    .innerJoin(anuncios, eq(instalaciones.anuncioId, anuncios.id))
+    .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
+    .where(ne(instalaciones.estado, "Instalado" as const))
+    .orderBy(asc(paradas.flowCat), asc(paradas.cobertizoId));
+  return result;
+}
+
+export async function markInstalacionInstalada(
+  instalacionId: number,
+  instaladoPor: string,
+  fotoInstalacion?: string
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const { instalaciones, anuncios } = await import("../drizzle/schema");
+  const { eq } = await import("drizzle-orm");
+
+  // Get the instalacion to find the anuncioId
+  const [inst] = await db
+    .select()
+    .from(instalaciones)
+    .where(eq(instalaciones.id, instalacionId))
+    .limit(1);
+
+  if (!inst) throw new Error("Instalacion not found");
+
+  // Mark instalacion as Instalado
+  await db
+    .update(instalaciones)
+    .set({
+      estado: "Instalado",
+      instaladoAt: new Date(),
+      instaladoPor,
+      fotoInstalacion: fotoInstalacion ?? null,
+    })
+    .where(eq(instalaciones.id, instalacionId));
+
+  // Automatically set the anuncio estado to Activo
+  await db
+    .update(anuncios)
+    .set({ estado: "Activo" })
+    .where(eq(anuncios.id, inst.anuncioId));
+
+  return inst.anuncioId;
+}
+
+export async function updateInstalacionFoto(instalacionId: number, fotoUrl: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const { instalaciones } = await import("../drizzle/schema");
+  const { eq } = await import("drizzle-orm");
+  await db
+    .update(instalaciones)
+    .set({ fotoInstalacion: fotoUrl })
+    .where(eq(instalaciones.id, instalacionId));
 }

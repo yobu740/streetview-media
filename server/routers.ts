@@ -356,6 +356,21 @@ export const appRouter = router({
         if (!isAdmin) {
           await paradasDb.notifyAdminsOfNewReservation(id, ctx.user.name || 'Usuario', input.cliente);
         }
+
+        // Auto-create instalacion record when admin creates a Programado anuncio
+        if (isAdmin && input.estado === 'Programado') {
+          try {
+            const { createInstalacion } = await import('./db');
+            await createInstalacion({
+              anuncioId: id,
+              paradaId: input.paradaId,
+              estado: 'Programado',
+            });
+          } catch (e) {
+            console.error('[Instalaciones] Failed to create instalacion record:', e);
+            // Non-fatal: anuncio was created successfully
+          }
+        }
         
         return { id };
       }),
@@ -379,6 +394,31 @@ export const appRouter = router({
           ...data,
           ...(costoPorUnidad !== undefined && { costoPorUnidad: costoPorUnidad.toString() }),
         };
+
+        // If paradaId is changing, auto-create a Relocalizacion instalacion record
+        if (input.paradaId !== undefined) {
+          try {
+            const { getDb } = await import('./db');
+            const { anuncios } = await import('../drizzle/schema');
+            const { eq } = await import('drizzle-orm');
+            const db = await getDb();
+            if (db) {
+              const [current] = await db.select({ paradaId: anuncios.paradaId }).from(anuncios).where(eq(anuncios.id, id)).limit(1);
+              if (current && current.paradaId !== input.paradaId) {
+                const { createInstalacion } = await import('./db');
+                await createInstalacion({
+                  anuncioId: id,
+                  paradaId: input.paradaId,
+                  estado: 'Relocalizacion',
+                  notas: `Relocalizado desde parada #${current.paradaId}`,
+                });
+              }
+            }
+          } catch (e) {
+            console.error('[Instalaciones] Failed to create relocalizacion record:', e);
+          }
+        }
+
         await paradasDb.updateAnuncio(id, updateData, ctx.user.id, ctx.user.name || ctx.user.openId);
         return { success: true };
       }),
@@ -1815,7 +1855,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Admin: toggle active status
+     // Admin: toggle active status
     toggleActive: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input, ctx }) => {
@@ -1831,6 +1871,107 @@ export const appRouter = router({
         return { success: true, activo: current.activo ? 0 : 1 };
       }),
   }),
-});
 
+  // ─── Instalaciones ────────────────────────────────────────────────────────
+  instalaciones: router({
+    // List all pending/relocalizacion instalaciones (ordered by flowcat)
+    list: protectedProcedure.query(async () => {
+      const { getInstalaciones } = await import('./db');
+      return await getInstalaciones();
+    }),
+
+    // Mark an instalacion as Instalado (also sets anuncio → Activo)
+    markInstalado: protectedProcedure
+      .input(z.object({
+        instalacionId: z.number(),
+        fotoInstalacion: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { markInstalacionInstalada } = await import('./db');
+        let fotoUrl: string | undefined = undefined;
+
+        // If a data URL is provided, upload it to S3
+        if (input.fotoInstalacion && input.fotoInstalacion.startsWith('data:')) {
+          try {
+            const { storagePut } = await import('./storage');
+            const match = input.fotoInstalacion.match(/^data:([^;]+);base64,(.+)$/);
+            if (match) {
+              const mimeType = match[1];
+              const base64Data = match[2];
+              const buffer = Buffer.from(base64Data, 'base64');
+              const ext = mimeType === 'image/png' ? 'png' : 'jpg';
+              const key = `instalaciones/foto-${input.instalacionId}-${Date.now()}.${ext}`;
+              const { url } = await storagePut(key, buffer, mimeType);
+              fotoUrl = url;
+            }
+          } catch (e) {
+            console.error('[Instalaciones] Failed to upload foto:', e);
+          }
+        }
+
+        const anuncioId = await markInstalacionInstalada(
+          input.instalacionId,
+          ctx.user.name ?? ctx.user.email ?? 'Unknown',
+          fotoUrl
+        );
+        return { success: true, anuncioId };
+      }),
+
+    // Upload installation photo
+    uploadFoto: protectedProcedure
+      .input(z.object({
+        instalacionId: z.number(),
+        fileBase64: z.string(),
+        mimeType: z.string().default('image/jpeg'),
+      }))
+      .mutation(async ({ input }) => {
+        const { storagePut } = await import('./storage');
+        const { updateInstalacionFoto } = await import('./db');
+        const buffer = Buffer.from(input.fileBase64, 'base64');
+        const ext = input.mimeType === 'image/png' ? 'png' : 'jpg';
+        const key = `instalaciones/foto-${input.instalacionId}-${Date.now()}.${ext}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        await updateInstalacionFoto(input.instalacionId, url);
+        return { url };
+      }),
+
+    // Get all instalaciones including Instalado (for history / order generation)
+    listAll: protectedProcedure.query(async () => {
+      const { getDb } = await import('./db');
+      const { instalaciones, anuncios, paradas } = await import('../drizzle/schema');
+      const { eq, asc } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) return [];
+      return await db
+        .select({
+          id: instalaciones.id,
+          anuncioId: instalaciones.anuncioId,
+          paradaId: instalaciones.paradaId,
+          estado: instalaciones.estado,
+          fotoInstalacion: instalaciones.fotoInstalacion,
+          instaladoAt: instalaciones.instaladoAt,
+          instaladoPor: instalaciones.instaladoPor,
+          notas: instalaciones.notas,
+          createdAt: instalaciones.createdAt,
+          producto: anuncios.producto,
+          cliente: anuncios.cliente,
+          tipo: anuncios.tipo,
+          fechaInicio: anuncios.fechaInicio,
+          fechaFin: anuncios.fechaFin,
+          estadoAnuncio: anuncios.estado,
+          cobertizoId: paradas.cobertizoId,
+          orientacion: paradas.orientacion,
+          direccion: paradas.direccion,
+          localizacion: paradas.localizacion,
+          flowCat: paradas.flowCat,
+          coordenadasLat: paradas.coordenadasLat,
+          coordenadasLng: paradas.coordenadasLng,
+        })
+        .from(instalaciones)
+        .innerJoin(anuncios, eq(instalaciones.anuncioId, anuncios.id))
+        .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
+        .orderBy(asc(paradas.flowCat), asc(paradas.cobertizoId));
+    }),
+  }),
+});
 export type AppRouter = typeof appRouter;

@@ -19,6 +19,7 @@ import {
   Wrench,
   UserCheck,
   Bell,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -76,6 +77,12 @@ export default function AdminSidebar({
       label: "Mantenimiento",
       icon: Wrench,
       href: "/mantenimiento",
+    },
+    {
+      label: "Instalación",
+      icon: Package,
+      href: "/instalacion",
+      adminOnly: true,
     },
     {
       label: "Facturación",
