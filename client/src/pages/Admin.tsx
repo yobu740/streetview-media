@@ -2121,23 +2121,25 @@ export default function Admin() {
               <span className="text-2xl">{companionOrientation === 'I' ? '⬅️' : '➡️'}</span>
               ¿Crear parada {companionOrientation === 'I' ? 'Inbound' : 'Outbound'}?
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-3">
-              <p>
-                La parada fue creada. ¿Deseas crear también la versión{' '}
-                <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong>{' '}
-                con los mismos datos?
-              </p>
-              {pendingCompanionForm && (
-                <div className="bg-gray-50 rounded-lg p-3 text-sm text-left space-y-1 border">
-                  <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {pendingCompanionForm.cobertizoId}</div>
-                  <div><span className="font-medium text-gray-600">Localización:</span> {pendingCompanionForm.localizacion}</div>
-                  <div><span className="font-medium text-gray-600">Dirección:</span> {pendingCompanionForm.direccion}</div>
-                  {pendingCompanionForm.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {pendingCompanionForm.ruta}</div>}
-                  {pendingCompanionForm.flowCat && <div><span className="font-medium text-gray-600">Flowcat:</span> {pendingCompanionForm.flowCat}</div>}
-                  <div><span className="font-medium text-gray-600">Tipo:</span> {pendingCompanionForm.tipoFormato}</div>
-                  <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
-                </div>
-              )}
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>
+                  La parada fue creada. ¿Deseas crear también la versión{' '}
+                  <strong>{companionOrientation === 'I' ? 'Inbound (I)' : 'Outbound (O)'}</strong>{' '}
+                  con los mismos datos?
+                </p>
+                {pendingCompanionForm && (
+                  <div className="bg-gray-50 rounded-lg p-3 text-sm text-left space-y-1 border">
+                    <div><span className="font-medium text-gray-600">ID Cobertizo:</span> {pendingCompanionForm.cobertizoId}</div>
+                    <div><span className="font-medium text-gray-600">Localización:</span> {pendingCompanionForm.localizacion}</div>
+                    <div><span className="font-medium text-gray-600">Dirección:</span> {pendingCompanionForm.direccion}</div>
+                    {pendingCompanionForm.ruta && <div><span className="font-medium text-gray-600">Ruta:</span> {pendingCompanionForm.ruta}</div>}
+                    {pendingCompanionForm.flowCat && <div><span className="font-medium text-gray-600">Flowcat:</span> {pendingCompanionForm.flowCat}</div>}
+                    <div><span className="font-medium text-gray-600">Tipo:</span> {pendingCompanionForm.tipoFormato}</div>
+                    <div><span className="font-medium text-gray-600">Orientación:</span> <strong>{companionOrientation === 'I' ? 'I — Inbound' : 'O — Outbound'}</strong></div>
+                  </div>
+                )}
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
