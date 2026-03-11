@@ -160,6 +160,20 @@ export default function Admin() {
   const { data: paradas, isLoading: paradasLoading, refetch: refetchParadas } = trpc.paradas.list.useQuery();
   const { data: anuncios, refetch: refetchAnuncios } = trpc.anuncios.list.useQuery();
   const { data: flowcats } = trpc.paradas.getFlowcats.useQuery();
+
+  // Paradas físicas: consolidate IDs by stripping trailing A-H suffixes (e.g. AMA02A-AMA02H = 1 physical stop)
+  // MUST be here (before any early returns) to comply with Rules of Hooks
+  const paradasFisicasCount = useMemo(() => {
+    if (!paradas || paradas.length === 0) return 0;
+    const physicalIds = new Set<string>();
+    for (const p of paradas) {
+      const id = (p.cobertizoId || p.id?.toString() || "").trim().toUpperCase();
+      // Strip trailing single letter A-H if it follows a digit (e.g. AMA02A → AMA02, 341A → 341)
+      const base = id.replace(/([0-9])[A-H]$/, "$1");
+      physicalIds.add(base);
+    }
+    return physicalIds.size;
+  }, [paradas]);
   
   // Check availability when dates change
   const { data: checkAvailabilityData } = trpc.anuncios.checkDisponibilidad.useQuery(
@@ -807,19 +821,6 @@ export default function Admin() {
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupado").length;
   const noDisponiblesCount = (paradas || []).filter(p => getParadaStatus(p).status === "No Disponible").length;
 
-  // Paradas físicas: consolidate IDs by stripping trailing A-H suffixes (e.g. AMA02A-AMA02H = 1 physical stop)
-  // Also groups double-display pairs (341A+341B = 1 physical stop)
-  const paradasFisicasCount = useMemo(() => {
-    if (!paradas || paradas.length === 0) return 0;
-    const physicalIds = new Set<string>();
-    for (const p of paradas) {
-      const id = (p.cobertizoId || p.id?.toString() || "").trim().toUpperCase();
-      // Strip trailing single letter A-H if it follows a digit (e.g. AMA02A → AMA02, 341A → 341)
-      const base = id.replace(/([0-9])[A-H]$/, "$1");
-      physicalIds.add(base);
-    }
-    return physicalIds.size;
-  }, [paradas]);
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
