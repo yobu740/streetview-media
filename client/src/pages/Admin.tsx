@@ -1335,7 +1335,7 @@ export default function Admin() {
               <CardTitle className="text-2xl text-red-600">
                 {noDisponiblesCount}
               </CardTitle>
-              <CardDescription>No Disponibles</CardDescription>
+              <CardDescription>No Operativas</CardDescription>
             </CardHeader>
           </Card>
           <Card className="border-l-4 border-[#1a4d3c]">
@@ -1456,7 +1456,7 @@ export default function Admin() {
                                 <Badge variant="destructive">Ocupado</Badge>
                               )}
                               {status === "No Disponible" && (
-                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">No Disponible</Badge>
+                                <Badge className="bg-slate-500 hover:bg-slate-600 text-white">No Operativa</Badge>
                               )}
                             </TableCell>
                             <TableCell>
@@ -1770,7 +1770,7 @@ export default function Admin() {
                                           <Label className="text-gray-500">Estado</Label>
                                           {status === "Disponible" && <Badge variant="outline" className="border-green-600 text-green-700">Disponible</Badge>}
                                           {status === "Ocupado" && <Badge variant="destructive">Ocupado</Badge>}
-                                          {status === "No Disponible" && <Badge className="bg-slate-500 text-white">No Disponible — Bloqueada</Badge>}
+                                          {status === "No Disponible" && <Badge className="bg-slate-500 text-white">No Operativa</Badge>}
                                         </div>
                                       </div>
                                       
@@ -2275,7 +2275,7 @@ export default function Admin() {
                   <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="disponible">Solo Disponibles</SelectItem>
                   <SelectItem value="ocupada">Solo Ocupadas</SelectItem>
-                  <SelectItem value="no_disponible">No Disponibles</SelectItem>
+                  <SelectItem value="no_disponible">No Operativas</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -2414,7 +2414,7 @@ export default function Admin() {
                   <td>{parada.ruta || "—"}</td>
                   <td>{parada.direccion}</td>
                   <td>{parada.tipoFormato === "Digital" ? "B" : "F"}</td>
-                  <td>{status}</td>
+                  <td>{status === "No Disponible" ? "No Operativa" : status}</td>
                   <td>{anuncio?.cliente || "—"}</td>
                 </tr>
               );
