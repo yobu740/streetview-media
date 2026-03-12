@@ -1,0 +1,87 @@
+{
+  "query": "\nSELECT id, cobertizo_id, flow_cat, localizacion, direccion FROM paradas WHERE flow_cat = '041' ORDER BY cobertizo_id;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT id, cobertizo_id, flow_cat, localizacion, direccion FROM paradas WHERE flow_cat = '041' ORDER BY cobertizo_id;\n",
+  "rows": [
+    {
+      "id": "330028",
+      "cobertizo_id": "128",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Opuesto Castillo San Cristobal, fte plaza Colón"
+    },
+    {
+      "id": "330029",
+      "cobertizo_id": "128",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Opuesto Castillo San Cristobal, fte plaza Colón"
+    },
+    {
+      "id": "480001",
+      "cobertizo_id": "131A",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC"
+    },
+    {
+      "id": "480002",
+      "cobertizo_id": "131A",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC"
+    },
+    {
+      "id": "480003",
+      "cobertizo_id": "131B",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC"
+    },
+    {
+      "id": "480004",
+      "cobertizo_id": "131B",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC"
+    },
+    {
+      "id": "480012",
+      "cobertizo_id": "156",
+      "flow_cat": "041",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte col San Agustin"
+    },
+    {
+      "id": "480005",
+      "cobertizo_id": "303A",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis"
+    },
+    {
+      "id": "480006",
+      "cobertizo_id": "303A",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis"
+    },
+    {
+      "id": "480007",
+      "cobertizo_id": "303B",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis"
+    },
+    {
+      "id": "480008",
+      "cobertizo_id": "303B",
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tflow_cat\tlocalizacion\tdireccion\n330028\t128\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tOpuesto Castillo San Cristobal, fte plaza Colón\n330029\t128\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tOpuesto Castillo San Cristobal, fte plaza Colón\n480001\t131A\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\n480002\t131A\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\n480003\t131B\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\n480004\t131B\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\n480012\t156\t041\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte col San Agustin\n480005\t303A\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\n480006\t303A\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\n480007\t303B\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\n480008\t303B\t041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\n",
+  "stderr": "",
+  "execution_time_ms": 378
+}
