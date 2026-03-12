@@ -368,6 +368,10 @@ export default function Instalacion() {
         <td>${formatDate(item.fechaInicio)}</td>
         <td>${formatDate(item.fechaFin)}</td>
         <td>${item.estado}</td>
+        <td class="arte-cell">${item.arteUrl
+          ? `<img src="${item.arteUrl}" class="arte-thumb" alt="Arte" />`
+          : '<span class="no-arte">Sin arte</span>'
+        }</td>
       </tr>`
       )
       .join("");
@@ -383,8 +387,10 @@ export default function Instalacion() {
           p.sub { color: #666; margin: 0 0 16px; }
           table { width: 100%; border-collapse: collapse; }
           th { background: #1a4d3c; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
-          td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; }
+          td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
           tr:nth-child(even) td { background: #f9fafb; }
+          .arte-thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 3px; border: 1px solid #d1d5db; display: block; }
+          .no-arte { color: #9ca3af; font-style: italic; font-size: 9px; }
           @media print { body { margin: 10px; } }
         </style>
       </head>
@@ -396,7 +402,7 @@ export default function Instalacion() {
             <tr>
               <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th>
               <th>Producto</th><th>Cliente</th><th>Tipo</th>
-              <th>F. Inicio</th><th>F. Fin</th><th>Estado</th>
+              <th>F. Inicio</th><th>F. Fin</th><th>Estado</th><th>Arte</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -639,6 +645,9 @@ export default function Instalacion() {
                       Estado
                     </th>
                     <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">
+                      Arte
+                    </th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">
                       Acciones
                     </th>
                   </tr>
@@ -696,6 +705,30 @@ export default function Instalacion() {
                         {formatDate(item.fechaFin)}
                       </td>
                       <td className="px-3 py-2">{estadoBadge(item.estado)}</td>
+                      <td className="px-3 py-2">
+                        {item.arteUrl ? (
+                          <button
+                            onClick={() => setArtDialogItem(item)}
+                            title="Ver arte del anuncio"
+                            className="block rounded overflow-hidden border border-purple-200 hover:border-purple-400 transition-colors"
+                          >
+                            <img
+                              src={item.arteUrl}
+                              alt="Arte"
+                              className="w-16 h-12 object-cover"
+                              onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                            />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setArtDialogItem(item)}
+                            title="Subir arte del anuncio"
+                            className="w-16 h-12 rounded border border-dashed border-gray-300 hover:border-purple-400 flex items-center justify-center bg-gray-50 hover:bg-purple-50 transition-colors"
+                          >
+                            <ImageIcon className="w-4 h-4 text-gray-300 hover:text-purple-400" />
+                          </button>
+                        )}
+                      </td>
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-1">
                           {/* GPS */}
