@@ -372,7 +372,7 @@ export default function Instalacion() {
         <td>${item.localizacion ?? '—'}</td>
         <td>${item.producto}</td>
         <td>${item.cliente}</td>
-        <td>${item.tipo}</td>
+        <td>${item.tipo === 'Fijo' ? 'F' : 'B'}</td>
         <td>${formatDate(item.fechaInicio)}</td>
         <td>${formatDate(item.fechaFin)}</td>
         <td>${item.estado}</td>
