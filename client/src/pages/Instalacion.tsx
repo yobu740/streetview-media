@@ -136,6 +136,14 @@ export default function Instalacion() {
     onError: (e) => toast.error(e.message),
   });
 
+  const backfill = trpc.instalaciones.backfill.useMutation({
+    onSuccess: (result) => {
+      utils.instalaciones.list.invalidate();
+      toast.success(`Sincronización completa: ${result.created} anuncios agregados, ${result.skipped} ya existían.`);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   const uploadFoto = trpc.instalaciones.uploadFoto.useMutation({
     onSuccess: () => {
       utils.instalaciones.list.invalidate();
@@ -373,6 +381,21 @@ export default function Instalacion() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => backfill.mutate()}
+            disabled={backfill.isPending}
+            className="gap-1.5 text-amber-700 border-amber-300 hover:bg-amber-50"
+            title="Sincronizar anuncios Programados existentes que no aparecen en esta lista"
+          >
+            {backfill.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Navigation className="w-4 h-4" />
+            )}
+            Sincronizar
+          </Button>
           <Button
             variant="outline"
             size="sm"

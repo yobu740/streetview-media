@@ -410,3 +410,45 @@ export async function updateInstalacionFoto(instalacionId: number, fotoUrl: stri
     .set({ fotoInstalacion: fotoUrl })
     .where(eq(instalaciones.id, instalacionId));
 }
+
+export async function getInstalacionByAnuncioId(anuncioId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const { instalaciones } = await import("../drizzle/schema");
+  const result = await db
+    .select()
+    .from(instalaciones)
+    .where(eq(instalaciones.anuncioId, anuncioId))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function backfillInstalaciones(): Promise<{ created: number; skipped: number }> {
+  const db = await getDb();
+  if (!db) return { created: 0, skipped: 0 };
+  const { anuncios, instalaciones } = await import("../drizzle/schema");
+  // Get all Programado anuncios that have a paradaId
+  const programados = await db
+    .select()
+    .from(anuncios)
+    .where(eq(anuncios.estado, "Programado"));
+  let created = 0;
+  let skipped = 0;
+  for (const anuncio of programados) {
+    if (!anuncio.paradaId) { skipped++; continue; }
+    // Check if already has an instalacion record
+    const existing = await db
+      .select({ id: instalaciones.id })
+      .from(instalaciones)
+      .where(eq(instalaciones.anuncioId, anuncio.id))
+      .limit(1);
+    if (existing.length > 0) { skipped++; continue; }
+    await db.insert(instalaciones).values({
+      anuncioId: anuncio.id,
+      paradaId: anuncio.paradaId,
+      estado: "Programado",
+    });
+    created++;
+  }
+  return { created, skipped };
+}

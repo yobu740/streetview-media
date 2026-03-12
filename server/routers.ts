@@ -657,6 +657,23 @@ export const appRouter = router({
           });
         }
         
+        // Auto-create instalacion record if anuncio is Programado and no record exists yet
+        if (anuncio && anuncio.estado === 'Programado' && anuncio.paradaId) {
+          try {
+            const { createInstalacion, getInstalacionByAnuncioId } = await import('./db');
+            const existing = await getInstalacionByAnuncioId(anuncio.id);
+            if (!existing) {
+              await createInstalacion({
+                anuncioId: anuncio.id,
+                paradaId: anuncio.paradaId,
+                estado: 'Programado',
+              });
+            }
+          } catch (e) {
+            console.error('[Instalaciones] Failed to create instalacion on approval:', e);
+          }
+        }
+        
         return { success: true };
       }),
     
@@ -1934,6 +1951,12 @@ export const appRouter = router({
         await updateInstalacionFoto(input.instalacionId, url);
         return { url };
       }),
+
+    // Backfill: create instalacion records for existing Programado anuncios that don't have one
+    backfill: adminProcedure.mutation(async () => {
+      const { backfillInstalaciones } = await import('./db');
+      return await backfillInstalaciones();
+    }),
 
     // Get all instalaciones including Instalado (for history / order generation)
     listAll: protectedProcedure.query(async () => {

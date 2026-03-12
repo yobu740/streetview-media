@@ -1255,3 +1255,9 @@
 - [x] Tarjetas de estadísticas: Programados, Relocalizaciones, Total
 - [x] Enlace en sidebar (solo admin)
 - [x] 13 tests unitarios pasando (43 total)
+
+## Instalación - Backfill y Aprobaciones
+- [ ] Fix: reservas aprobadas deben crear registro en instalaciones automáticamente
+- [ ] Fix: anuncios Programados existentes (pre-instalacion) deben aparecer en Instalación
+- [ ] Agregar endpoint de backfill para sincronizar anuncios Programados sin registro en instalaciones
+- [ ] Agregar botón de sincronización en panel de Instalación para el admin
