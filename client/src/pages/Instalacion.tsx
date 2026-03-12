@@ -369,6 +369,7 @@ export default function Instalacion() {
           ${item.direccion}<br/>
           <a href="${gpsUrl}" class="gps-link" target="_blank">&#x1F4CD; Ver en Google Maps</a>
         </td>
+        <td>${item.localizacion ?? '—'}</td>
         <td>${item.producto}</td>
         <td>${item.cliente}</td>
         <td>${item.tipo}</td>
@@ -461,7 +462,7 @@ export default function Instalacion() {
         <table>
           <thead>
             <tr>
-              <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th>
+              <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
               <th>Producto</th><th>Cliente</th><th>Tipo</th>
               <th>F. Inicio</th><th>F. Fin</th><th>Estado</th><th>Arte</th>
             </tr>
@@ -695,6 +696,9 @@ export default function Instalacion() {
                     <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide min-w-[180px]">
                       Dirección
                     </th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide min-w-[140px]">
+                      Localización
+                    </th>
                     <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">
                       Producto
                     </th>
@@ -748,6 +752,9 @@ export default function Instalacion() {
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground max-w-[220px] truncate">
                         {item.direccion}
+                      </td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground max-w-[160px] truncate">
+                        {item.localizacion ?? "—"}
                       </td>
                       <td className="px-3 py-2 font-medium text-xs max-w-[160px] truncate">
                         {item.producto}
