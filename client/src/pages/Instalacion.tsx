@@ -40,7 +40,11 @@ import {
   Loader2,
   Image as ImageIcon,
   X,
+  Bell,
 } from "lucide-react";
+import { Link } from "wouter";
+import AdminSidebar from "@/components/AdminSidebar";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -114,6 +118,11 @@ function openGps(lat: string | null, lng: string | null, direccion: string) {
 
 export default function Instalacion() {
   const utils = trpc.useUtils();
+  const { user } = useAuth();
+
+  // Notification count (for sidebar badge)
+  const { data: pendingReservations } = trpc.approvals.pending.useQuery(undefined, { enabled: !!user && user.role === 'admin' });
+  const { data: unreadCount = 0 } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: !!user });
 
   // Data
   const { data: instalaciones = [], isLoading } = trpc.instalaciones.list.useQuery();
@@ -314,7 +323,44 @@ export default function Instalacion() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <div className="flex min-h-screen bg-[#f5f5f5]">
+      {/* Sidebar */}
+      <AdminSidebar
+        pendingReservationsCount={Array.isArray(pendingReservations) ? pendingReservations.length : 0}
+        unreadCount={unreadCount}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0">
+        {/* Header */}
+        <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
+          <div className="container flex items-center justify-between h-20">
+            <Link href="/">
+              <img
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png"
+                alt="Streetview Media"
+                className="h-12 cursor-pointer"
+              />
+            </Link>
+            <div className="flex items-center gap-3">
+              {user?.role === 'admin' && (
+                <div className="relative">
+                  <Button variant="outline" size="icon" className="relative">
+                    <Bell className="h-4 w-4" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        {/* Page Content */}
+        <div className="p-4 md:p-6 space-y-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
@@ -819,6 +865,8 @@ export default function Instalacion() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+        </div>
+      </div>
     </div>
   );
 }
