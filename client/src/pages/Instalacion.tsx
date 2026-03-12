@@ -356,12 +356,19 @@ export default function Instalacion() {
 
     const rows = items
       .map(
-        (item) => `
+        (item) => {
+          const gpsUrl = item.coordenadasLat && item.coordenadasLng
+            ? `https://maps.google.com/?q=${item.coordenadasLat},${item.coordenadasLng}`
+            : `https://maps.google.com/?q=${encodeURIComponent(item.direccion + ', Puerto Rico')}`;
+          return `
       <tr>
         <td>${item.flowCat ?? "—"}</td>
         <td>${item.cobertizoId}</td>
         <td>${item.orientacion}</td>
-        <td>${item.direccion}</td>
+        <td>
+          ${item.direccion}<br/>
+          <a href="${gpsUrl}" class="gps-link" target="_blank">&#x1F4CD; Ver en Google Maps</a>
+        </td>
         <td>${item.producto}</td>
         <td>${item.cliente}</td>
         <td>${item.tipo}</td>
@@ -372,7 +379,8 @@ export default function Instalacion() {
           ? `<img src="${item.arteUrl}" class="arte-thumb" alt="Arte" />`
           : '<span class="no-arte">Sin arte</span>'
         }</td>
-      </tr>`
+      </tr>`;
+        }
       )
       .join("");
 
@@ -417,6 +425,8 @@ export default function Instalacion() {
           tr:nth-child(even) td { background: #f9fafb; }
           .arte-thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 3px; border: 1px solid #d1d5db; display: block; }
           .no-arte { color: #9ca3af; font-style: italic; font-size: 9px; }
+          .gps-link { color: #1a4d3c; font-size: 9px; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 2px; }
+          .gps-link:hover { text-decoration: underline; }
           /* ── Footer ── */
           .print-footer {
             margin-top: 24px;
