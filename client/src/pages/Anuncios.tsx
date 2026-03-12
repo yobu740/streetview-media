@@ -52,6 +52,13 @@ export default function Anuncios() {
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: flowcats } = trpc.paradas.getFlowcats.useQuery();
+  const { data: instalacionesPendientes = [] } = trpc.instalaciones.list.useQuery();
+  // Build a Set of anuncioIds that have a pending instalacion (Programado or Relocalizacion)
+  const pendingInstalacionAnuncioIds = new Set(
+    instalacionesPendientes
+      .filter(i => i.estado === 'Programado' || i.estado === 'Relocalizacion')
+      .map(i => i.anuncioId)
+  );
   const updateAnuncio = trpc.anuncios.update.useMutation();
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const generateInvoice = trpc.invoices.generate.useMutation();
@@ -795,9 +802,21 @@ export default function Anuncios() {
                         {formatDateDisplay(anuncio.fechaFin)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getEstadoBadgeVariant(anuncio.estado)}>
-                          {anuncio.estado}
-                        </Badge>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant={getEstadoBadgeVariant(anuncio.estado)}>
+                            {anuncio.estado}
+                          </Badge>
+                          {pendingInstalacionAnuncioIds.has(anuncio.id) && (
+                            <span
+                              title="Pendiente de instalación"
+                              className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-400 text-white"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5">
+                                <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 3a1 1 0 011 1v5.586l2.707 2.707a1 1 0 01-1.414 1.414l-3-3A1 1 0 0111 12V6a1 1 0 011-1z"/>
+                              </svg>
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {user?.role === 'admin' ? (

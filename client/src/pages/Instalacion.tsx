@@ -41,7 +41,11 @@ import {
   Image as ImageIcon,
   X,
   Bell,
+  Upload,
+  History,
+  Users,
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
 import AdminSidebar from "@/components/AdminSidebar";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -126,6 +130,7 @@ export default function Instalacion() {
 
   // Data
   const { data: instalaciones = [], isLoading } = trpc.instalaciones.list.useQuery();
+  const { data: historial = [], isLoading: isLoadingHistorial } = trpc.instalaciones.historial.useQuery();
 
   // Mutations
   const markInstalado = trpc.instalaciones.markInstalado.useMutation({
@@ -154,6 +159,33 @@ export default function Instalacion() {
     onError: (e) => toast.error(e.message),
   });
 
+  const uploadArte = trpc.instalaciones.uploadArte.useMutation({
+    onSuccess: (result) => {
+      utils.instalaciones.list.invalidate();
+      utils.instalaciones.historial.invalidate();
+      toast.success("Arte del anuncio actualizado.");
+      // Update the local artDialogItem to show the new image
+      if (artDialogItem) {
+        setArtDialogItem({ ...artDialogItem, notas: result.url });
+      }
+      setPendingArteUrl(null);
+      setPendingArteBase64(null);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const bulkUploadArte = trpc.instalaciones.bulkUploadArte.useMutation({
+    onSuccess: (result) => {
+      utils.instalaciones.list.invalidate();
+      utils.instalaciones.historial.invalidate();
+      toast.success(`Arte aplicado a ${result.count} anuncio(s) del mismo cliente.`);
+      setPendingArteUrl(null);
+      setPendingArteBase64(null);
+      setArtDialogItem(null);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   // Filters
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
@@ -169,6 +201,11 @@ export default function Instalacion() {
   const [pendingFotoUrl, setPendingFotoUrl] = useState<string | null>(null);
   const [pendingFotoBase64, setPendingFotoBase64] = useState<string | null>(null);
   const [pendingFotoMime, setPendingFotoMime] = useState<string>("image/jpeg");
+  // Arte upload state
+  const [pendingArteUrl, setPendingArteUrl] = useState<string | null>(null);
+  const [pendingArteBase64, setPendingArteBase64] = useState<string | null>(null);
+  const [pendingArteMime, setPendingArteMime] = useState<string>("image/jpeg");
+  const arteInputRef = useRef<HTMLInputElement>(null);
 
   const fotoInputRef = useRef<HTMLInputElement>(null);
 
@@ -264,6 +301,46 @@ export default function Instalacion() {
     setFotoDialogItem(null);
     setPendingFotoUrl(null);
     setPendingFotoBase64(null);
+  };
+
+  // Arte file pick handler
+  const handleArteFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      const base64 = dataUrl.split(",")[1];
+      setPendingArteBase64(base64);
+      setPendingArteMime(file.type || "image/jpeg");
+      setPendingArteUrl(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadArte = async () => {
+    if (!artDialogItem || !pendingArteBase64) return;
+    await uploadArte.mutateAsync({
+      anuncioId: artDialogItem.anuncioId,
+      fileBase64: pendingArteBase64,
+      mimeType: pendingArteMime,
+    });
+  };
+
+  // Get anuncioIds from selected items that share the same client as artDialogItem
+  const sameClientAnuncioIds = artDialogItem
+    ? instalaciones
+        .filter((i) => selectedIds.has(i.id) && i.cliente === artDialogItem.cliente)
+        .map((i) => i.anuncioId)
+    : [];
+
+  const handleBulkUploadArte = async () => {
+    if (!pendingArteBase64 || sameClientAnuncioIds.length === 0) return;
+    await bulkUploadArte.mutateAsync({
+      anuncioIds: sameClientAnuncioIds,
+      fileBase64: pendingArteBase64,
+      mimeType: pendingArteMime,
+    });
   };
 
   // Generate installation order (print)
@@ -688,8 +765,151 @@ export default function Instalacion() {
         </CardContent>
       </Card>
 
+      {/* ─── Historial de Instalaciones ─────────────────────────────────── */}
+      <Card className="mt-4">
+        <CardHeader className="pb-2 pt-4 px-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <History className="w-4 h-4 text-[#1a4d3c]" />
+              Historial de Instalaciones Completadas
+            </CardTitle>
+            {historial.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-xs h-7 border-[#1a4d3c] text-[#1a4d3c] hover:bg-green-50"
+                onClick={() => {
+                  const printWindow = window.open("", "_blank");
+                  if (!printWindow) return;
+                  const rows = historial.map((h) => `
+                    <tr>
+                      <td>${h.flowCat || "—"}</td>
+                      <td>${h.cobertizoId}</td>
+                      <td>${h.orientacion}</td>
+                      <td>${h.direccion || "—"}</td>
+                      <td>${h.producto}</td>
+                      <td>${h.cliente}</td>
+                      <td>${h.tipo}</td>
+                      <td>${h.fechaInicio ? new Date(h.fechaInicio).toLocaleDateString("es-PR") : "—"}</td>
+                      <td>${h.fechaFin ? new Date(h.fechaFin).toLocaleDateString("es-PR") : "—"}</td>
+                      <td>${h.instaladoAt ? new Date(h.instaladoAt).toLocaleDateString("es-PR") : "—"}</td>
+                      <td>${h.instaladoPor || "—"}</td>
+                      <td>${h.fotoInstalacion ? `<img src="${h.fotoInstalacion}" style="max-width:80px;max-height:60px;object-fit:contain" />` : "—"}</td>
+                    </tr>
+                  `).join("");
+                  printWindow.document.write(`
+                    <!DOCTYPE html><html><head>
+                    <title>Historial de Instalaciones</title>
+                    <style>
+                      body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
+                      h2 { color: #1a4d3c; margin-bottom: 4px; }
+                      p { color: #666; margin-bottom: 16px; font-size: 10px; }
+                      table { width: 100%; border-collapse: collapse; }
+                      th { background: #1a4d3c; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+                      td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+                      tr:nth-child(even) { background: #f9fafb; }
+                    </style>
+                    </head><body>
+                    <h2>Historial de Instalaciones Completadas</h2>
+                    <p>Generado el ${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</p>
+                    <table>
+                      <thead><tr>
+                        <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th>
+                        <th>Producto</th><th>Cliente</th><th>Tipo</th>
+                        <th>Inicio</th><th>Fin</th><th>Instalado</th><th>Por</th><th>Foto</th>
+                      </tr></thead>
+                      <tbody>${rows}</tbody>
+                    </table>
+                    </body></html>
+                  `);
+                  printWindow.document.close();
+                  printWindow.print();
+                }}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                Generar Reporte
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {isLoadingHistorial ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : historial.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <History className="w-8 h-8 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No hay instalaciones completadas aún</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/40">
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Flowcat</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Cobertizo</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Orient.</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Producto / Cliente</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Tipo</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Fecha Instalación</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Instalado por</th>
+                    <th className="px-3 py-2 text-left font-semibold text-xs text-muted-foreground uppercase tracking-wide">Foto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historial.map((h) => (
+                    <tr key={h.id} className="border-b hover:bg-muted/20 transition-colors">
+                      <td className="px-3 py-2">
+                        <Badge variant="outline" className="text-xs font-mono">{h.flowCat || "—"}</Badge>
+                      </td>
+                      <td className="px-3 py-2 font-medium">{h.cobertizoId}</td>
+                      <td className="px-3 py-2">
+                        <Badge className={`text-xs ${
+                          h.orientacion === "I" ? "bg-blue-100 text-blue-800" :
+                          h.orientacion === "O" ? "bg-purple-100 text-purple-800" :
+                          "bg-gray-100 text-gray-700"
+                        }`}>{h.orientacion}</Badge>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="font-medium text-xs">{h.producto}</div>
+                        <div className="text-xs text-muted-foreground">{h.cliente}</div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <Badge variant="outline" className="text-xs">{h.tipo}</Badge>
+                      </td>
+                      <td className="px-3 py-2 text-xs">
+                        {h.instaladoAt ? new Date(h.instaladoAt).toLocaleDateString("es-PR") : "—"}
+                      </td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground">{h.instaladoPor || "—"}</td>
+                      <td className="px-3 py-2">
+                        {h.fotoInstalacion ? (
+                          <button
+                            onClick={() => window.open(h.fotoInstalacion!, "_blank")}
+                            className="block"
+                            title="Ver foto"
+                          >
+                            <img
+                              src={h.fotoInstalacion}
+                              alt="Foto instalación"
+                              className="w-12 h-10 object-cover rounded border hover:opacity-80 transition-opacity"
+                            />
+                          </button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* ─── Art Preview Dialog ─────────────────────────────────────────────── */}
-      <Dialog open={!!artDialogItem} onOpenChange={() => setArtDialogItem(null)}>
+      <Dialog open={!!artDialogItem} onOpenChange={() => { setArtDialogItem(null); setPendingArteUrl(null); setPendingArteBase64(null); }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-base">
@@ -700,25 +920,74 @@ export default function Instalacion() {
             <div className="text-sm text-muted-foreground">
               <span className="font-medium text-foreground">{artDialogItem?.producto}</span>
               {" · "}
-              {artDialogItem?.cliente}
+              <span className="text-[#1a4d3c] font-medium">{artDialogItem?.cliente}</span>
             </div>
-            {artDialogItem?.notas ? (
+
+            {/* Current or preview arte */}
+            {pendingArteUrl ? (
+              <div className="rounded-md border overflow-hidden relative">
+                <img src={pendingArteUrl} alt="Preview" className="w-full object-contain max-h-72" />
+                <Button
+                  variant="ghost" size="icon"
+                  className="absolute top-1 right-1 h-6 w-6 bg-white/80 hover:bg-white"
+                  onClick={() => { setPendingArteUrl(null); setPendingArteBase64(null); }}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            ) : artDialogItem?.notas ? (
               <div className="rounded-md border overflow-hidden">
                 <img
                   src={artDialogItem.notas}
                   alt="Arte del anuncio"
-                  className="w-full object-contain max-h-80"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+                  className="w-full object-contain max-h-72"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 rounded-md border bg-muted/30 text-muted-foreground gap-2">
+              <div className="flex flex-col items-center justify-center py-10 rounded-md border bg-muted/30 text-muted-foreground gap-2">
                 <ImageIcon className="w-8 h-8 opacity-40" />
                 <p className="text-sm">No hay arte disponible para este anuncio</p>
               </div>
             )}
+
+            {/* Upload controls */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Button
+                variant="outline" size="sm" className="gap-1.5"
+                onClick={() => arteInputRef.current?.click()}
+              >
+                <Upload className="w-4 h-4" />
+                {artDialogItem?.notas ? "Cambiar arte" : "Subir arte"}
+              </Button>
+
+              {pendingArteBase64 && (
+                <>
+                  <Button
+                    size="sm"
+                    className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white gap-1.5"
+                    onClick={handleUploadArte}
+                    disabled={uploadArte.isPending}
+                  >
+                    {uploadArte.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                    Guardar para este anuncio
+                  </Button>
+
+                  {sameClientAnuncioIds.length > 1 && (
+                    <Button
+                      size="sm" variant="outline"
+                      className="gap-1.5 border-[#ff6b35] text-[#ff6b35] hover:bg-orange-50"
+                      onClick={handleBulkUploadArte}
+                      disabled={bulkUploadArte.isPending}
+                    >
+                      {bulkUploadArte.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Users className="w-4 h-4" />}
+                      Aplicar a {sameClientAnuncioIds.length} seleccionados de {artDialogItem?.cliente}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+            <input ref={arteInputRef} type="file" accept="image/*" className="hidden" onChange={handleArteFilePick} />
           </div>
         </DialogContent>
       </Dialog>

@@ -1261,3 +1261,9 @@
 - [ ] Fix: anuncios Programados existentes (pre-instalacion) deben aparecer en Instalación
 - [ ] Agregar endpoint de backfill para sincronizar anuncios Programados sin registro en instalaciones
 - [ ] Agregar botón de sincronización en panel de Instalación para el admin
+
+## Instalación - Mejoras v2
+- [ ] Historial tab en Instalación: mostrar instalaciones completadas con fecha, quién marcó y foto
+- [ ] Arte upload en el viewer dialog con opción de subir arte al anuncio
+- [ ] Bulk arte upload: si hay múltiples anuncios del mismo cliente seleccionados, subir el mismo arte a todos
+- [ ] Badge/indicador en Gestor de Anuncios para anuncios con instalación pendiente (Programado/Relocalizacion)

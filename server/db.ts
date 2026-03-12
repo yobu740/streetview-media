@@ -452,3 +452,44 @@ export async function backfillInstalaciones(): Promise<{ created: number; skippe
   }
   return { created, skipped };
 }
+
+export async function getInstalacionesHistorial() {
+  const db = await getDb();
+  if (!db) return [];
+  const { instalaciones, anuncios, paradas } = await import("../drizzle/schema");
+  const { eq, asc } = await import("drizzle-orm");
+  const result = await db
+    .select({
+      id: instalaciones.id,
+      anuncioId: instalaciones.anuncioId,
+      paradaId: instalaciones.paradaId,
+      estado: instalaciones.estado,
+      fotoInstalacion: instalaciones.fotoInstalacion,
+      instaladoAt: instalaciones.instaladoAt,
+      instaladoPor: instalaciones.instaladoPor,
+      notas: instalaciones.notas,
+      createdAt: instalaciones.createdAt,
+      // Anuncio fields
+      producto: anuncios.producto,
+      cliente: anuncios.cliente,
+      tipo: anuncios.tipo,
+      fechaInicio: anuncios.fechaInicio,
+      fechaFin: anuncios.fechaFin,
+      estadoAnuncio: anuncios.estado,
+      arteUrl: anuncios.notas,
+      // Parada fields
+      cobertizoId: paradas.cobertizoId,
+      orientacion: paradas.orientacion,
+      direccion: paradas.direccion,
+      localizacion: paradas.localizacion,
+      flowCat: paradas.flowCat,
+      coordenadasLat: paradas.coordenadasLat,
+      coordenadasLng: paradas.coordenadasLng,
+    })
+    .from(instalaciones)
+    .innerJoin(anuncios, eq(instalaciones.anuncioId, anuncios.id))
+    .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
+    .where(eq(instalaciones.estado, "Instalado" as const))
+    .orderBy(asc(instalaciones.instaladoAt));
+  return result;
+}

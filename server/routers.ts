@@ -1958,6 +1958,56 @@ export const appRouter = router({
       return await backfillInstalaciones();
     }),
 
+    // Get historial: completed installations (estado = Instalado)
+    historial: protectedProcedure.query(async () => {
+      const { getInstalacionesHistorial } = await import('./db');
+      return await getInstalacionesHistorial();
+    }),
+
+    // Upload arte to a single anuncio
+    uploadArte: protectedProcedure
+      .input(z.object({
+        anuncioId: z.number(),
+        fileBase64: z.string(),
+        mimeType: z.string().default('image/jpeg'),
+      }))
+      .mutation(async ({ input }) => {
+        const { storagePut } = await import('./storage');
+        const { getDb } = await import('./db');
+        const { anuncios } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const buffer = Buffer.from(input.fileBase64, 'base64');
+        const ext = input.mimeType === 'image/png' ? 'png' : 'jpg';
+        const key = `arte/anuncio-${input.anuncioId}-${Date.now()}.${ext}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        await db.update(anuncios).set({ notas: url }).where(eq(anuncios.id, input.anuncioId));
+        return { url };
+      }),
+
+    // Bulk upload same arte to multiple anuncios (same client)
+    bulkUploadArte: protectedProcedure
+      .input(z.object({
+        anuncioIds: z.array(z.number()),
+        fileBase64: z.string(),
+        mimeType: z.string().default('image/jpeg'),
+      }))
+      .mutation(async ({ input }) => {
+        const { storagePut } = await import('./storage');
+        const { getDb } = await import('./db');
+        const { anuncios } = await import('../drizzle/schema');
+        const { inArray } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        const buffer = Buffer.from(input.fileBase64, 'base64');
+        const ext = input.mimeType === 'image/png' ? 'png' : 'jpg';
+        const key = `arte/bulk-${Date.now()}.${ext}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        await db.update(anuncios).set({ notas: url }).where(inArray(anuncios.id, input.anuncioIds));
+        return { url, count: input.anuncioIds.length };
+      }),
+
     // Get all instalaciones including Instalado (for history / order generation)
     listAll: protectedProcedure.query(async () => {
       const { getDb } = await import('./db');
