@@ -131,6 +131,8 @@ export default function Instalacion() {
   const markInstalado = trpc.instalaciones.markInstalado.useMutation({
     onSuccess: () => {
       utils.instalaciones.list.invalidate();
+      // Also invalidate anuncios so Gestor de Anuncios reflects the Activo status immediately
+      utils.anuncios.list.invalidate();
       toast.success("El anuncio fue marcado como instalado y activado.");
     },
     onError: (e) => toast.error(e.message),
