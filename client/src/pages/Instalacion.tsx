@@ -382,21 +382,70 @@ export default function Instalacion() {
       <head>
         <title>Orden de Instalación</title>
         <style>
-          body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
-          h1 { color: #1a4d3c; font-size: 18px; margin-bottom: 4px; }
-          p.sub { color: #666; margin: 0 0 16px; }
-          table { width: 100%; border-collapse: collapse; }
-          th { background: #1a4d3c; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+          * { box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; font-size: 11px; margin: 0; padding: 0; color: #1a1a1a; }
+          /* ── Header ── */
+          .print-header {
+            background: #1a4d3c;
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid #ff6b35;
+          }
+          .print-header img { height: 48px; display: block; }
+          .print-header-right { text-align: right; color: #fff; }
+          .print-header-right .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
+          .print-header-right .doc-meta { font-size: 10px; color: #a7c4b5; margin-top: 3px; }
+          /* ── Sub-bar ── */
+          .print-subbar {
+            background: #f0f7f4;
+            border-bottom: 1px solid #d1e8df;
+            padding: 8px 28px;
+            display: flex;
+            gap: 24px;
+            font-size: 10px;
+            color: #4a7a65;
+          }
+          .print-subbar span strong { color: #1a4d3c; }
+          /* ── Content ── */
+          .print-body { padding: 20px 28px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 0; }
+          th { background: #1a4d3c; color: white; padding: 7px 8px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
           td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
           tr:nth-child(even) td { background: #f9fafb; }
           .arte-thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 3px; border: 1px solid #d1d5db; display: block; }
           .no-arte { color: #9ca3af; font-style: italic; font-size: 9px; }
-          @media print { body { margin: 10px; } }
+          /* ── Footer ── */
+          .print-footer {
+            margin-top: 24px;
+            padding: 12px 28px;
+            border-top: 2px solid #1a4d3c;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #888;
+          }
+          @media print {
+            .print-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .print-subbar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
         </style>
       </head>
       <body>
-        <h1>Orden de Instalación</h1>
-        <p class="sub">Generada: ${new Date().toLocaleDateString("es-PR")} · ${items.length} anuncio(s)</p>
+        <div class="print-header">
+          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" alt="Streetview Media" />
+          <div class="print-header-right">
+            <div class="doc-title">ORDEN DE INSTALACIÓN</div>
+            <div class="doc-meta">Generada: ${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</div>
+          </div>
+        </div>
+        <div class="print-subbar">
+          <span><strong>${items.length}</strong> anuncio(s) seleccionado(s)</span>
+          <span><strong>Fecha de impresión:</strong> ${new Date().toLocaleTimeString("es-PR", { hour: "2-digit", minute: "2-digit" })}</span>
+        </div>
+        <div class="print-body">
         <table>
           <thead>
             <tr>
@@ -407,6 +456,11 @@ export default function Instalacion() {
           </thead>
           <tbody>${rows}</tbody>
         </table>
+        </div>
+        <div class="print-footer">
+          <span>Streetview Media · streetviewmediapr.com</span>
+          <span>Documento generado automáticamente — uso interno</span>
+        </div>
         <script>window.onload = () => { window.print(); }</script>
       </body>
       </html>
