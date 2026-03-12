@@ -61,6 +61,7 @@ type InstalacionItem = {
   instaladoAt: Date | null;
   instaladoPor: string | null;
   notas: string | null;
+  arteUrl: string | null;
   createdAt: Date;
   producto: string;
   cliente: string;
@@ -166,7 +167,7 @@ export default function Instalacion() {
       toast.success("Arte del anuncio actualizado.");
       // Update the local artDialogItem to show the new image
       if (artDialogItem) {
-        setArtDialogItem({ ...artDialogItem, notas: result.url });
+        setArtDialogItem({ ...artDialogItem, arteUrl: result.url });
       }
       setPendingArteUrl(null);
       setPendingArteBase64(null);
@@ -935,10 +936,10 @@ export default function Instalacion() {
                   <X className="w-3 h-3" />
                 </Button>
               </div>
-            ) : artDialogItem?.notas ? (
+            ) : artDialogItem?.arteUrl ? (
               <div className="rounded-md border overflow-hidden">
                 <img
-                  src={artDialogItem.notas}
+                  src={artDialogItem.arteUrl}
                   alt="Arte del anuncio"
                   className="w-full object-contain max-h-72"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -958,7 +959,7 @@ export default function Instalacion() {
                 onClick={() => arteInputRef.current?.click()}
               >
                 <Upload className="w-4 h-4" />
-                {artDialogItem?.notas ? "Cambiar arte" : "Subir arte"}
+                {artDialogItem?.arteUrl ? "Cambiar arte" : "Subir arte"}
               </Button>
 
               {pendingArteBase64 && (
