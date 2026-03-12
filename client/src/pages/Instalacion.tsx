@@ -386,26 +386,27 @@ export default function Instalacion() {
           body { font-family: Arial, sans-serif; font-size: 11px; margin: 0; padding: 0; color: #1a1a1a; }
           /* ── Header ── */
           .print-header {
-            background: #1a4d3c;
-            padding: 18px 28px;
+            background: #ffffff;
+            padding: 16px 28px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 4px solid #ff6b35;
+            border-bottom: 6px solid #1a4d3c;
           }
-          .print-header img { height: 48px; display: block; }
-          .print-header-right { text-align: right; color: #fff; }
-          .print-header-right .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
-          .print-header-right .doc-meta { font-size: 10px; color: #a7c4b5; margin-top: 3px; }
+          .print-header img { height: 52px; display: block; }
+          .print-header-right { text-align: right; color: #1a1a1a; }
+          .print-header-right .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; color: #1a4d3c; }
+          .print-header-right .doc-meta { font-size: 10px; color: #666; margin-top: 3px; }
+          .print-header-right .doc-accent { display: inline-block; width: 32px; height: 3px; background: #ff6b35; margin-bottom: 4px; }
           /* ── Sub-bar ── */
           .print-subbar {
-            background: #f0f7f4;
-            border-bottom: 1px solid #d1e8df;
-            padding: 8px 28px;
+            background: #f8f8f8;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 7px 28px;
             display: flex;
             gap: 24px;
             font-size: 10px;
-            color: #4a7a65;
+            color: #555;
           }
           .print-subbar span strong { color: #1a4d3c; }
           /* ── Content ── */
@@ -437,6 +438,7 @@ export default function Instalacion() {
         <div class="print-header">
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" alt="Streetview Media" />
           <div class="print-header-right">
+            <div class="doc-accent"></div>
             <div class="doc-title">ORDEN DE INSTALACIÓN</div>
             <div class="doc-meta">Generada: ${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</div>
           </div>
