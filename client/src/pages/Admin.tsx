@@ -1335,7 +1335,7 @@ export default function Admin() {
               <CardTitle className="text-2xl text-red-600">
                 {noDisponiblesCount}
               </CardTitle>
-              <CardDescription>No Operativas</CardDescription>
+              <CardDescription>Caras No Operativas</CardDescription>
             </CardHeader>
           </Card>
           <Card className="border-l-4 border-[#1a4d3c]">

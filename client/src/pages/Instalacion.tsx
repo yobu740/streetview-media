@@ -131,9 +131,7 @@ export default function Instalacion() {
 
   // Data
   const { data: instalaciones = [], isLoading } = trpc.instalaciones.list.useQuery();
-  const { data: historial = [], isLoading: isLoadingHistorial } = trpc.instalaciones.historial.useQuery();
-
-  // Mutations
+  // Mutationss
   const markInstalado = trpc.instalaciones.markInstalado.useMutation({
     onSuccess: () => {
       utils.instalaciones.list.invalidate();
@@ -191,6 +189,11 @@ export default function Instalacion() {
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
   const [search, setSearch] = useState("");
+  // Historial filters
+  const [histSearch, setHistSearch] = useState("");
+  const [histFilterCliente, setHistFilterCliente] = useState("all");
+  const [histFilterFlowcat, setHistFilterFlowcat] = useState("all");
+  const [histFilterCobertizo, setHistFilterCobertizo] = useState("");
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -241,6 +244,44 @@ export default function Instalacion() {
       return true;
     });
   }, [instalaciones, filterEstado, filterFlowcat, search]);
+
+  // Historial derived data
+  const { data: historialRaw = [], isLoading: isLoadingHistorial } = trpc.instalaciones.historial.useQuery();
+  const filteredHistorial = useMemo(() => {
+    return historialRaw.filter((h) => {
+      if (histFilterCliente !== "all" && h.cliente !== histFilterCliente) return false;
+      if (histFilterFlowcat !== "all" && h.flowCat !== histFilterFlowcat) return false;
+      if (histFilterCobertizo && !h.cobertizoId.toLowerCase().includes(histFilterCobertizo.toLowerCase())) return false;
+      if (histSearch) {
+        const q = histSearch.toLowerCase();
+        if (
+          !h.producto.toLowerCase().includes(q) &&
+          !h.cliente.toLowerCase().includes(q) &&
+          !(h.cobertizoId || "").toLowerCase().includes(q) &&
+          !(h.flowCat || "").toLowerCase().includes(q) &&
+          !(h.localizacion || "").toLowerCase().includes(q)
+        ) return false;
+      }
+      return true;
+    });
+  }, [historialRaw, histFilterCliente, histFilterFlowcat, histFilterCobertizo, histSearch]);
+  const historial = filteredHistorial;
+  const histClientes = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const h of historialRaw) {
+      if (h.cliente && !seen.has(h.cliente)) { seen.add(h.cliente); result.push(h.cliente); }
+    }
+    return result.sort();
+  }, [historialRaw]);
+  const histFlowcats = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const h of historialRaw) {
+      if (h.flowCat && !seen.has(h.flowCat)) { seen.add(h.flowCat); result.push(h.flowCat); }
+    }
+    return result.sort();
+  }, [historialRaw]);
 
   // Selection helpers
   const allSelected = filtered.length > 0 && filtered.every((i) => selectedIds.has(i.id));
@@ -959,6 +1000,58 @@ export default function Instalacion() {
               </Button>
             )}
           </div>
+          {/* Historial filters */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <Input
+              placeholder="Buscar producto, cliente, parada..."
+              value={histSearch}
+              onChange={(e) => setHistSearch(e.target.value)}
+              className="h-7 text-xs w-48"
+            />
+            <Select value={histFilterCliente} onValueChange={setHistFilterCliente}>
+              <SelectTrigger className="h-7 text-xs w-40">
+                <SelectValue placeholder="Todos los clientes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los clientes</SelectItem>
+                {histClientes.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={histFilterFlowcat} onValueChange={setHistFilterFlowcat}>
+              <SelectTrigger className="h-7 text-xs w-36">
+                <SelectValue placeholder="Todos los flowcats" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los flowcats</SelectItem>
+                {histFlowcats.map((fc) => (
+                  <SelectItem key={fc} value={fc}>{fc}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Parada (cobertizo)"
+              value={histFilterCobertizo}
+              onChange={(e) => setHistFilterCobertizo(e.target.value)}
+              className="h-7 text-xs w-36"
+            />
+            {(histSearch || histFilterCliente !== "all" || histFilterFlowcat !== "all" || histFilterCobertizo) && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
+                onClick={() => { setHistSearch(""); setHistFilterCliente("all"); setHistFilterFlowcat("all"); setHistFilterCobertizo(""); }}
+              >
+                <X className="w-3 h-3 mr-1" /> Limpiar
+              </Button>
+            )}
+            {filteredHistorial.length !== historialRaw.length && (
+              <span className="text-xs text-muted-foreground self-center">
+                {filteredHistorial.length} de {historialRaw.length}
+              </span>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           {isLoadingHistorial ? (
@@ -968,7 +1061,7 @@ export default function Instalacion() {
           ) : historial.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <History className="w-8 h-8 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No hay instalaciones completadas aún</p>
+              <p className="text-sm">{historialRaw.length === 0 ? "No hay instalaciones completadas aún" : "No hay resultados con los filtros aplicados"}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
