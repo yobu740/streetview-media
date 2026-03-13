@@ -786,25 +786,79 @@ export default function Admin() {
       const printWindow = window.open('', '', 'width=800,height=600');
       if (!printWindow) return;
       
+      const printParadas = getSortedPrintParadas();
+      const totalDisp = printParadas.filter(p => getParadaStatus(p).status === 'Disponible').length;
+      const totalOcup = printParadas.filter(p => getParadaStatus(p).status === 'Ocupado').length;
+      const rows = printParadas.map((parada) => {
+        const { status, anuncio } = getParadaStatus(parada);
+        const displayStatus = status === 'No Disponible' ? 'No Operativa' : status;
+        return `<tr>
+          <td>${parada.cobertizoId}</td>
+          <td>${parada.flowCat || '—'}</td>
+          <td>${parada.localizacion || '—'}</td>
+          <td>${parada.ruta || '—'}</td>
+          <td>${parada.direccion}</td>
+          <td>${parada.tipoFormato === 'Digital' ? 'B' : 'F'}</td>
+          <td>${displayStatus}</td>
+          <td>${anuncio?.cliente || '—'}</td>
+        </tr>`;
+      }).join('');
       printWindow.document.write(`
-        <html>
-          <head>
-            <title>Reporte de Paradas - Streetview Media</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              h1 { color: #1a4d3c; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #1a4d3c; color: white; }
-              tr:nth-child(even) { background-color: #f2f2f2; }
-              .stats { display: flex; gap: 20px; margin: 20px 0; }
-              .stat-card { border: 2px solid #1a4d3c; padding: 15px; border-radius: 5px; }
-            </style>
-          </head>
-          <body>
-            ${printContent.innerHTML}
-          </body>
-        </html>
+        <!DOCTYPE html><html><head>
+        <title>Reporte de Paradas - Streetview Media</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; }
+          .print-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 14px; background: #fff; }
+          .print-header img { height: 52px; display: block; }
+          .print-header-right { text-align: right; }
+          .doc-accent { display: inline-block; width: 32px; height: 3px; background: #ff6b35; margin-bottom: 4px; }
+          .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; color: #1a4d3c; }
+          .doc-meta { font-size: 10px; color: #666; margin-top: 3px; }
+          .print-divider { height: 6px; background: #1a4d3c; width: 100%; }
+          .print-subbar { background: #f3f4f6; padding: 6px 28px; font-size: 10px; color: #555; display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; }
+          .print-subbar strong { color: #1a4d3c; }
+          .stats { display: flex; gap: 16px; padding: 12px 28px; border-bottom: 1px solid #e5e7eb; }
+          .stat-card { border: 1.5px solid #1a4d3c; padding: 8px 14px; border-radius: 4px; font-size: 11px; }
+          .stat-card strong { color: #1a4d3c; }
+          .print-body { padding: 12px 28px; }
+          table { width: 100%; border-collapse: collapse; }
+          th { background: #1a4d3c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+          td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+          tr:nth-child(even) { background: #f9fafb; }
+          .print-footer { margin-top: 20px; padding: 10px 28px; border-top: 2px solid #1a4d3c; font-size: 9px; color: #888; display: flex; justify-content: space-between; }
+          @media print {
+            .print-header, .print-divider, .print-subbar, th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        </style>
+        </head><body>
+        <div class="print-header">
+          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" alt="Streetview Media" />
+          <div class="print-header-right">
+            <div class="doc-accent"></div>
+            <div class="doc-title">REPORTE DE PARADAS</div>
+            <div class="doc-meta">${new Date().toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          </div>
+        </div>
+        <div class="print-divider"></div>
+        <div class="print-subbar">
+          <span><strong>${printParadas.length}</strong> parada${printParadas.length !== 1 ? 's' : ''}</span>
+          <span>Disponibles: ${totalDisp} &nbsp;·&nbsp; Ocupadas: ${totalOcup}</span>
+        </div>
+        <div class="print-body">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Cliente</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        </div>
+        <div class="print-footer">
+          <span>streetviewmediapr.com</span>
+          <span>Documento de uso interno · Generado el ${new Date().toLocaleString('es-PR')}</span>
+        </div>
+        <script>window.onload = () => { window.print(); }<\/script>
+        </body></html>
       `);
       printWindow.document.close();
       printWindow.print();

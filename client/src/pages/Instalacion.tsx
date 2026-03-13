@@ -194,6 +194,8 @@ export default function Instalacion() {
   const [histFilterCliente, setHistFilterCliente] = useState("all");
   const [histFilterFlowcat, setHistFilterFlowcat] = useState("all");
   const [histFilterCobertizo, setHistFilterCobertizo] = useState("");
+  const [histDateFrom, setHistDateFrom] = useState("");
+  const [histDateTo, setHistDateTo] = useState("");
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -252,6 +254,16 @@ export default function Instalacion() {
       if (histFilterCliente !== "all" && h.cliente !== histFilterCliente) return false;
       if (histFilterFlowcat !== "all" && h.flowCat !== histFilterFlowcat) return false;
       if (histFilterCobertizo && !h.cobertizoId.toLowerCase().includes(histFilterCobertizo.toLowerCase())) return false;
+      if (histDateFrom) {
+        const from = new Date(histDateFrom);
+        from.setHours(0, 0, 0, 0);
+        if (!h.instaladoAt || new Date(h.instaladoAt) < from) return false;
+      }
+      if (histDateTo) {
+        const to = new Date(histDateTo);
+        to.setHours(23, 59, 59, 999);
+        if (!h.instaladoAt || new Date(h.instaladoAt) > to) return false;
+      }
       if (histSearch) {
         const q = histSearch.toLowerCase();
         if (
@@ -264,7 +276,7 @@ export default function Instalacion() {
       }
       return true;
     });
-  }, [historialRaw, histFilterCliente, histFilterFlowcat, histFilterCobertizo, histSearch]);
+  }, [historialRaw, histFilterCliente, histFilterFlowcat, histFilterCobertizo, histSearch, histDateFrom, histDateTo]);
   const historial = filteredHistorial;
   const histClientes = useMemo(() => {
     const seen = new Set<string>();
@@ -971,6 +983,11 @@ export default function Instalacion() {
                   if (histFilterFlowcat !== "all") activeFilters.push(`Flowcat: ${histFilterFlowcat}`);
                   if (histFilterCobertizo) activeFilters.push(`Parada: ${histFilterCobertizo}`);
                   if (histSearch) activeFilters.push(`Búsqueda: "${histSearch}"`);
+                  if (histDateFrom || histDateTo) {
+                    const from = histDateFrom ? new Date(histDateFrom).toLocaleDateString('es-PR') : '...';
+                    const to = histDateTo ? new Date(histDateTo).toLocaleDateString('es-PR') : '...';
+                    activeFilters.push(`Instalado: ${from} — ${to}`);
+                  }
                   const filterLabel = activeFilters.length > 0 ? activeFilters.join(' · ') : 'Todos los registros';
                   printWindow.document.write(`
                     <!DOCTYPE html><html><head>
@@ -1076,12 +1093,30 @@ export default function Instalacion() {
               onChange={(e) => setHistFilterCobertizo(e.target.value)}
               className="h-7 text-xs w-36"
             />
-            {(histSearch || histFilterCliente !== "all" || histFilterFlowcat !== "all" || histFilterCobertizo) && (
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Instalado:</span>
+              <Input
+                type="date"
+                value={histDateFrom}
+                onChange={(e) => setHistDateFrom(e.target.value)}
+                className="h-7 text-xs w-32"
+                title="Desde"
+              />
+              <span className="text-xs text-muted-foreground">—</span>
+              <Input
+                type="date"
+                value={histDateTo}
+                onChange={(e) => setHistDateTo(e.target.value)}
+                className="h-7 text-xs w-32"
+                title="Hasta"
+              />
+            </div>
+            {(histSearch || histFilterCliente !== "all" || histFilterFlowcat !== "all" || histFilterCobertizo || histDateFrom || histDateTo) && (
               <Button
                 size="sm"
                 variant="ghost"
                 className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
-                onClick={() => { setHistSearch(""); setHistFilterCliente("all"); setHistFilterFlowcat("all"); setHistFilterCobertizo(""); }}
+                onClick={() => { setHistSearch(""); setHistFilterCliente("all"); setHistFilterFlowcat("all"); setHistFilterCobertizo(""); setHistDateFrom(""); setHistDateTo(""); }}
               >
                 <X className="w-3 h-3 mr-1" /> Limpiar
               </Button>
