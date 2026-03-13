@@ -259,19 +259,44 @@ export default function Instalacion() {
   };
 
   // Photo file pick
-  const handleFotoFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Compress image to max 1920x1920, JPEG quality 85% — same as paradas photos
+  const compressImage = (file: File): Promise<{ base64: string; dataUrl: string; mime: string }> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1920;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+          } else {
+            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          const base64 = dataUrl.split(',')[1];
+          resolve({ base64, dataUrl, mime: 'image/jpeg' });
+        };
+        img.src = ev.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFotoFilePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target?.result as string;
-      // Extract base64
-      const base64 = dataUrl.split(",")[1];
-      setPendingFotoBase64(base64);
-      setPendingFotoMime(file.type || "image/jpeg");
-      setPendingFotoUrl(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    const { base64, dataUrl, mime } = await compressImage(file);
+    setPendingFotoBase64(base64);
+    setPendingFotoMime(mime);
+    setPendingFotoUrl(dataUrl);
   };
 
   const handleConfirmInstalado = async () => {
@@ -304,19 +329,14 @@ export default function Instalacion() {
     setPendingFotoBase64(null);
   };
 
-  // Arte file pick handler
-  const handleArteFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Arte file pick handler — with same compression as paradas photos
+  const handleArteFilePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target?.result as string;
-      const base64 = dataUrl.split(",")[1];
-      setPendingArteBase64(base64);
-      setPendingArteMime(file.type || "image/jpeg");
-      setPendingArteUrl(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    const { base64, dataUrl, mime } = await compressImage(file);
+    setPendingArteBase64(base64);
+    setPendingArteMime(mime);
+    setPendingArteUrl(dataUrl);
   };
 
   const handleUploadArte = async () => {
