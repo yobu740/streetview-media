@@ -966,21 +966,55 @@ export default function Instalacion() {
                       <td>${h.fotoInstalacion ? `<img src="${h.fotoInstalacion}" style="max-width:80px;max-height:60px;object-fit:contain" />` : "—"}</td>
                     </tr>
                   `).join("");
+                  const activeFilters = [];
+                  if (histFilterCliente !== "all") activeFilters.push(`Cliente: ${histFilterCliente}`);
+                  if (histFilterFlowcat !== "all") activeFilters.push(`Flowcat: ${histFilterFlowcat}`);
+                  if (histFilterCobertizo) activeFilters.push(`Parada: ${histFilterCobertizo}`);
+                  if (histSearch) activeFilters.push(`Búsqueda: "${histSearch}"`);
+                  const filterLabel = activeFilters.length > 0 ? activeFilters.join(' · ') : 'Todos los registros';
                   printWindow.document.write(`
                     <!DOCTYPE html><html><head>
-                    <title>Historial de Instalaciones</title>
+                    <title>Historial de Instalaciones Completadas</title>
                     <style>
-                      body { font-family: Arial, sans-serif; font-size: 11px; margin: 20px; }
-                      h2 { color: #1a4d3c; margin-bottom: 4px; }
-                      p { color: #666; margin-bottom: 16px; font-size: 10px; }
+                      * { box-sizing: border-box; margin: 0; padding: 0; }
+                      body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; }
+                      .print-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 14px; background: #fff; }
+                      .print-header img { height: 52px; display: block; }
+                      .print-header-right { text-align: right; color: #1a1a1a; }
+                      .print-header-right .doc-accent { display: inline-block; width: 32px; height: 3px; background: #ff6b35; margin-bottom: 4px; }
+                      .print-header-right .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; color: #1a4d3c; }
+                      .print-header-right .doc-meta { font-size: 10px; color: #666; margin-top: 3px; }
+                      .print-divider { height: 6px; background: #1a4d3c; width: 100%; }
+                      .print-subbar { background: #f3f4f6; padding: 6px 28px; font-size: 10px; color: #555; display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; }
+                      .print-subbar strong { color: #1a4d3c; }
+                      .print-body { padding: 16px 28px; }
                       table { width: 100%; border-collapse: collapse; }
-                      th { background: #1a4d3c; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+                      th { background: #1a4d3c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
                       td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
                       tr:nth-child(even) { background: #f9fafb; }
+                      .print-footer { margin-top: 20px; padding: 10px 28px; border-top: 2px solid #1a4d3c; font-size: 9px; color: #888; display: flex; justify-content: space-between; }
+                      @media print {
+                        .print-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        .print-divider { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        .print-subbar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                      }
                     </style>
                     </head><body>
-                    <h2>Historial de Instalaciones Completadas</h2>
-                    <p>Generado el ${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</p>
+                    <div class="print-header">
+                      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" alt="Streetview Media" />
+                      <div class="print-header-right">
+                        <div class="doc-accent"></div>
+                        <div class="doc-title">HISTORIAL DE INSTALACIONES</div>
+                        <div class="doc-meta">${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</div>
+                      </div>
+                    </div>
+                    <div class="print-divider"></div>
+                    <div class="print-subbar">
+                      <span><strong>${filteredHistorial.length}</strong> registro${filteredHistorial.length !== 1 ? 's' : ''}</span>
+                      <span>${filterLabel}</span>
+                    </div>
+                    <div class="print-body">
                     <table>
                       <thead><tr>
                         <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
@@ -989,6 +1023,12 @@ export default function Instalacion() {
                       </tr></thead>
                       <tbody>${rows}</tbody>
                     </table>
+                    </div>
+                    <div class="print-footer">
+                      <span>streetviewmediapr.com</span>
+                      <span>Documento de uso interno · Generado el ${new Date().toLocaleString("es-PR")}</span>
+                    </div>
+                    <script>window.onload = () => { window.print(); }<\/script>
                     </body></html>
                   `);
                   printWindow.document.close();
