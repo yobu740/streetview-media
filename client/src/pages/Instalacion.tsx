@@ -914,6 +914,7 @@ export default function Instalacion() {
                       <td>${h.cobertizoId}</td>
                       <td>${h.orientacion}</td>
                       <td>${h.direccion || "—"}</td>
+                      <td>${h.localizacion || "—"}</td>
                       <td>${h.producto}</td>
                       <td>${h.cliente}</td>
                       <td>${h.tipo}</td>
@@ -941,7 +942,7 @@ export default function Instalacion() {
                     <p>Generado el ${new Date().toLocaleDateString("es-PR", { year: "numeric", month: "long", day: "numeric" })}</p>
                     <table>
                       <thead><tr>
-                        <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th>
+                        <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
                         <th>Producto</th><th>Cliente</th><th>Tipo</th>
                         <th>Inicio</th><th>Fin</th><th>Instalado</th><th>Por</th><th>Foto</th>
                       </tr></thead>
