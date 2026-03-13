@@ -961,21 +961,25 @@ export default function Instalacion() {
                 onClick={() => {
                   const printWindow = window.open("", "_blank");
                   if (!printWindow) return;
-                  const rows = filteredHistorial.map((h) => `
-                    <tr>
-                      <td>${h.flowCat || "—"}</td>
+                  const rows = filteredHistorial.map((h) => {
+                    const fotoCell = h.fotoInstalacion
+                      ? '<img src="' + h.fotoInstalacion + '" style="max-width:80px;max-height:60px;object-fit:contain;border-radius:3px" />'
+                      : '—';
+                    const tipoCell = h.tipo === 'Bonificación' ? 'B' : h.tipo === 'Fijo' ? 'F' : h.tipo;
+                    return `<tr>
+                      <td>${h.flowCat || '—'}</td>
                       <td>${h.cobertizoId}</td>
                       <td>${h.orientacion}</td>
-                      <td>${h.direccion || "—"}</td>
-                      <td>${h.localizacion || "—"}</td>
+                      <td>${h.direccion || '—'}</td>
+                      <td>${h.localizacion || '—'}</td>
                       <td>${h.producto}</td>
                       <td>${h.cliente}</td>
-                      <td>${h.tipo === "Bonificación" ? "B" : h.tipo === "Fijo" ? "F" : h.tipo}</td>
-                      <td>${h.instaladoAt ? new Date(h.instaladoAt).toLocaleDateString("es-PR") : "—"}</td>
-                      <td>${h.instaladoPor || "—"}</td>
-                      <td>${h.fotoInstalacion ? `<img src="${h.fotoInstalacion}" style="max-width:80px;max-height:60px;object-fit:contain;border-radius:3px" />` : "—"}</td>
-                    </tr>
-                  `).join("");
+                      <td>${tipoCell}</td>
+                      <td>${h.instaladoAt ? new Date(h.instaladoAt).toLocaleDateString('es-PR') : '—'}</td>
+                      <td>${h.instaladoPor || '—'}</td>
+                      <td>${fotoCell}</td>
+                    </tr>`;
+                  }).join('');
                   const activeFilters = [];
                   if (histFilterCliente !== "all") activeFilters.push(`Cliente: ${histFilterCliente}`);
                   if (histFilterFlowcat !== "all") activeFilters.push(`Flowcat: ${histFilterFlowcat}`);
