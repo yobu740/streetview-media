@@ -961,7 +961,7 @@ export default function Instalacion() {
                 onClick={() => {
                   const printWindow = window.open("", "_blank");
                   if (!printWindow) return;
-                  const rows = historial.map((h) => `
+                  const rows = filteredHistorial.map((h) => `
                     <tr>
                       <td>${h.flowCat || "—"}</td>
                       <td>${h.cobertizoId}</td>
@@ -970,12 +970,10 @@ export default function Instalacion() {
                       <td>${h.localizacion || "—"}</td>
                       <td>${h.producto}</td>
                       <td>${h.cliente}</td>
-                      <td>${h.tipo}</td>
-                      <td>${h.fechaInicio ? new Date(h.fechaInicio).toLocaleDateString("es-PR") : "—"}</td>
-                      <td>${h.fechaFin ? new Date(h.fechaFin).toLocaleDateString("es-PR") : "—"}</td>
+                      <td>${h.tipo === "Bonificación" ? "B" : h.tipo === "Fijo" ? "F" : h.tipo}</td>
                       <td>${h.instaladoAt ? new Date(h.instaladoAt).toLocaleDateString("es-PR") : "—"}</td>
                       <td>${h.instaladoPor || "—"}</td>
-                      <td>${h.fotoInstalacion ? `<img src="${h.fotoInstalacion}" style="max-width:80px;max-height:60px;object-fit:contain" />` : "—"}</td>
+                      <td>${h.fotoInstalacion ? `<img src="${h.fotoInstalacion}" style="max-width:80px;max-height:60px;object-fit:contain;border-radius:3px" />` : "—"}</td>
                     </tr>
                   `).join("");
                   const activeFilters = [];
@@ -1036,7 +1034,7 @@ export default function Instalacion() {
                       <thead><tr>
                         <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
                         <th>Producto</th><th>Cliente</th><th>Tipo</th>
-                        <th>Inicio</th><th>Fin</th><th>Instalado</th><th>Por</th><th>Foto</th>
+                        <th>Instalado</th><th>Por</th><th>Foto</th>
                       </tr></thead>
                       <tbody>${rows}</tbody>
                     </table>
