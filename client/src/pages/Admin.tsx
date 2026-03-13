@@ -529,24 +529,26 @@ export default function Admin() {
     return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesApprovalStatus;
   }) || [];
 
-  // When Flowcat filter is active, sort by cobertizo number (numeric asc), then I before O before P
+  // Default sort: by flowcat (numeric asc), then cobertizo number, then orientation I > O > P
   const ORIENTACION_ORDER: Record<string, number> = { 'I': 0, 'O': 1, 'P': 2 };
-  const sortedFilteredParadas = filterFlowcat
-    ? [...filteredParadas].sort((a, b) => {
-        // Extract numeric part of cobertizoId (e.g. "589A" → 589, "589" → 589)
-        const numA = parseInt(a.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
-        const numB = parseInt(b.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
-        if (numA !== numB) return numA - numB;
-        // Same numeric part: sort by letter suffix (e.g. 589A < 589B)
-        const letterA = a.cobertizoId.replace(/[0-9]/g, '') || '';
-        const letterB = b.cobertizoId.replace(/[0-9]/g, '') || '';
-        if (letterA !== letterB) return letterA.localeCompare(letterB);
-        // Same cobertizo: I first, then O, then P
-        const ordA = ORIENTACION_ORDER[a.orientacion?.toUpperCase() ?? ''] ?? 9;
-        const ordB = ORIENTACION_ORDER[b.orientacion?.toUpperCase() ?? ''] ?? 9;
-        return ordA - ordB;
-      })
-    : filteredParadas;
+  const sortedFilteredParadas = [...filteredParadas].sort((a, b) => {
+    // Sort by flowcat first (numeric)
+    const fcA = parseInt((a.flowCat || '').replace(/[^0-9]/g, ''), 10) || 0;
+    const fcB = parseInt((b.flowCat || '').replace(/[^0-9]/g, ''), 10) || 0;
+    if (fcA !== fcB) return fcA - fcB;
+    // Same flowcat: sort by cobertizo number
+    const numA = parseInt(a.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+    const numB = parseInt(b.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
+    if (numA !== numB) return numA - numB;
+    // Same cobertizo: sort by letter suffix (e.g. 589A < 589B)
+    const letterA = a.cobertizoId.replace(/[0-9]/g, '') || '';
+    const letterB = b.cobertizoId.replace(/[0-9]/g, '') || '';
+    if (letterA !== letterB) return letterA.localeCompare(letterB);
+    // Same cobertizo: I first, then O, then P
+    const ordA = ORIENTACION_ORDER[a.orientacion?.toUpperCase() ?? ''] ?? 9;
+    const ordB = ORIENTACION_ORDER[b.orientacion?.toUpperCase() ?? ''] ?? 9;
+    return ordA - ordB;
+  });
   
   // Get paradas for printing with filters
   const getPrintParadas = () => {
@@ -589,20 +591,22 @@ export default function Admin() {
     }) || [];
   };
 
-  // When print Flowcat filter is active, sort print paradas by cobertizo (same logic as main table)
+  // Sort print paradas by flowcat (numeric asc), then cobertizo, then orientation
   const getSortedPrintParadas = () => {
     const base = getPrintParadas();
-    if (!printFilterFlowcat) return base;
-    const ORIENTACION_ORDER: Record<string, number> = { 'I': 0, 'O': 1, 'P': 2 };
+    const OO: Record<string, number> = { 'I': 0, 'O': 1, 'P': 2 };
     return [...base].sort((a, b) => {
+      const fcA = parseInt((a.flowCat || '').replace(/[^0-9]/g, ''), 10) || 0;
+      const fcB = parseInt((b.flowCat || '').replace(/[^0-9]/g, ''), 10) || 0;
+      if (fcA !== fcB) return fcA - fcB;
       const numA = parseInt(a.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
       const numB = parseInt(b.cobertizoId.replace(/[^0-9]/g, ''), 10) || 0;
       if (numA !== numB) return numA - numB;
       const letterA = a.cobertizoId.replace(/[0-9]/g, '') || '';
       const letterB = b.cobertizoId.replace(/[0-9]/g, '') || '';
       if (letterA !== letterB) return letterA.localeCompare(letterB);
-      const ordA = ORIENTACION_ORDER[a.orientacion?.toUpperCase() ?? ''] ?? 9;
-      const ordB = ORIENTACION_ORDER[b.orientacion?.toUpperCase() ?? ''] ?? 9;
+      const ordA = OO[a.orientacion?.toUpperCase() ?? ''] ?? 9;
+      const ordB = OO[b.orientacion?.toUpperCase() ?? ''] ?? 9;
       return ordA - ordB;
     });
   };
