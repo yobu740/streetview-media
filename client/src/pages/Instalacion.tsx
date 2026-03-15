@@ -958,12 +958,39 @@ export default function Instalacion() {
                 size="sm"
                 variant="outline"
                 className="gap-1.5 text-xs h-7 border-[#1a4d3c] text-[#1a4d3c] hover:bg-green-50"
-                onClick={() => {
+                onClick={async () => {
+                  // Convert foto URLs to base64 to avoid CORS/security blocking in print windows
+                  const toBase64 = async (url: string): Promise<string> => {
+                    try {
+                      const res = await fetch(url);
+                      const blob = await res.blob();
+                      return await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result as string);
+                        reader.readAsDataURL(blob);
+                      });
+                    } catch {
+                      return url; // fallback to original URL
+                    }
+                  };
+
+                  // Pre-load all fotos as base64
+                  const fotoMap = new Map<string, string>();
+                  await Promise.all(
+                    filteredHistorial
+                      .filter((h) => h.fotoInstalacion)
+                      .map(async (h) => {
+                        const b64 = await toBase64(h.fotoInstalacion!);
+                        fotoMap.set(h.fotoInstalacion!, b64);
+                      })
+                  );
+
                   const printWindow = window.open("", "_blank");
                   if (!printWindow) return;
                   const rows = filteredHistorial.map((h) => {
-                    const fotoCell = h.fotoInstalacion
-                      ? '<img src="' + h.fotoInstalacion + '" style="max-width:80px;max-height:60px;object-fit:contain;border-radius:3px" />'
+                    const fotoSrc = h.fotoInstalacion ? (fotoMap.get(h.fotoInstalacion) || h.fotoInstalacion) : null;
+                    const fotoCell = fotoSrc
+                      ? '<img src="' + fotoSrc + '" style="max-width:80px;max-height:60px;object-fit:contain;border-radius:3px" />'
                       : '—';
                     const tipoCell = h.tipo === 'Bonificación' ? 'B' : h.tipo === 'Fijo' ? 'F' : h.tipo;
                     return `<tr>

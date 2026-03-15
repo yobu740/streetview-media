@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/426-I_cc6821c9.jpg' WHERE id = 106;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/426-I_cc6821c9.jpg' WHERE id = 106;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 425
+}
