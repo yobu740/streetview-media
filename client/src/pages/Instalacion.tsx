@@ -433,6 +433,17 @@ export default function Instalacion() {
       return;
     }
 
+    // Open print window FIRST (must be synchronous / in click handler context)
+    // to avoid browser popup blocking
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("El navegador bloqueó la ventana emergente. Permite popups para este sitio.");
+      return;
+    }
+
+    // Show loading state in the window while we fetch images
+    printWindow.document.write('<html><body style="font-family:Arial;padding:40px;color:#555">Cargando imágenes...</body></html>');
+
     // Convert arte URLs to base64 to avoid CORS/security blocking in print windows
     const toBase64 = async (url: string): Promise<string> => {
       try {
@@ -459,8 +470,8 @@ export default function Instalacion() {
         })
     );
 
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
+    // Clear the loading state before writing the real content
+    printWindow.document.open();
 
     const rows = items
       .map(
