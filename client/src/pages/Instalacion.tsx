@@ -433,16 +433,7 @@ export default function Instalacion() {
       return;
     }
 
-    // Open print window FIRST (must be synchronous / in click handler context)
-    // to avoid browser popup blocking
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      toast.error("El navegador bloqueó la ventana emergente. Permite popups para este sitio.");
-      return;
-    }
-
-    // Show loading state in the window while we fetch images
-    printWindow.document.write('<html><body style="font-family:Arial;padding:40px;color:#555">Cargando imágenes...</body></html>');
+    toast.info("Preparando reporte...");
 
     // Convert arte URLs to base64 to avoid CORS/security blocking in print windows
     const toBase64 = async (url: string): Promise<string> => {
@@ -469,9 +460,6 @@ export default function Instalacion() {
           arteMap.set(i.arteUrl!, b64);
         })
     );
-
-    // Clear the loading state before writing the real content
-    printWindow.document.open();
 
     const rows = items
       .map(
@@ -505,8 +493,7 @@ export default function Instalacion() {
       )
       .join("");
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
+    const orderHtml = `<!DOCTYPE html>
       <html>
       <head>
         <title>Orden de Instalación</title>
@@ -596,9 +583,19 @@ export default function Instalacion() {
         </div>
         <script>window.onload = () => { window.print(); }</script>
       </body>
-      </html>
-    `);
-    printWindow.document.close();
+      </html>`;
+
+    // Use Blob URL to avoid mobile browser popup blocking
+    const orderBlob = new Blob([orderHtml], { type: 'text/html;charset=utf-8' });
+    const orderBlobUrl = URL.createObjectURL(orderBlob);
+    const orderLink = document.createElement('a');
+    orderLink.href = orderBlobUrl;
+    orderLink.target = '_blank';
+    orderLink.rel = 'noopener';
+    document.body.appendChild(orderLink);
+    orderLink.click();
+    document.body.removeChild(orderLink);
+    setTimeout(() => URL.revokeObjectURL(orderBlobUrl), 10000);
   };
 
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -1047,8 +1044,6 @@ export default function Instalacion() {
                       })
                   );
 
-                  const printWindow = window.open("", "_blank");
-                  if (!printWindow) return;
                   const rows = filteredHistorial.map((h) => {
                     const fotoSrc = h.fotoInstalacion ? (fotoMap.get(h.fotoInstalacion) || h.fotoInstalacion) : null;
                     const fotoCell = fotoSrc
@@ -1080,8 +1075,7 @@ export default function Instalacion() {
                     activeFilters.push(`Instalado: ${from} — ${to}`);
                   }
                   const filterLabel = activeFilters.length > 0 ? activeFilters.join(' · ') : 'Todos los registros';
-                  printWindow.document.write(`
-                    <!DOCTYPE html><html><head>
+                  const htmlContent = `<!DOCTYPE html><html><head>
                     <title>Historial de Instalaciones Completadas</title>
                     <style>
                       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1137,10 +1131,20 @@ export default function Instalacion() {
                       <span>Documento de uso interno · Generado el ${new Date().toLocaleString("es-PR")}</span>
                     </div>
                     <script>window.onload = () => { window.print(); }<\/script>
-                    </body></html>
-                  `);
-                  printWindow.document.close();
-                  printWindow.print();
+                    </body></html>`;
+
+                  // Use Blob URL instead of window.open() to avoid mobile browser popup blocking
+                  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                  const blobUrl = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = blobUrl;
+                  link.target = '_blank';
+                  link.rel = 'noopener';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  // Revoke after a delay to allow the page to load
+                  setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
                 }}
               >
                 <FileText className="w-3.5 h-3.5" />

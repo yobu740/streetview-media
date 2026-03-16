@@ -97,7 +97,7 @@ export default function Admin() {
   const dismissExpiring = (id: number) => {
     setDismissedExpiringIds(prev => {
       const next = new Set(prev).add(id);
-      try { localStorage.setItem('dismissedExpiringIds', JSON.stringify([...next])); } catch {}
+      try { localStorage.setItem('dismissedExpiringIds', JSON.stringify(Array.from(next))); } catch {}
       return next;
     });
   };
