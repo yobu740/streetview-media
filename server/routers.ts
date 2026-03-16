@@ -1958,6 +1958,12 @@ export const appRouter = router({
       return await backfillInstalaciones();
     }),
 
+    // ONE-TIME: sync existing installation photos to parada fotoUrl (remove after use)
+    syncFotosToParadas: adminProcedure.mutation(async () => {
+      const { syncInstalacionFotosToParadas } = await import('./db');
+      return await syncInstalacionFotosToParadas();
+    }),
+
     // Get historial: completed installations (estado = Instalado)
     historial: protectedProcedure.query(async () => {
       const { getInstalacionesHistorial } = await import('./db');

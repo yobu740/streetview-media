@@ -517,3 +517,31 @@ export async function getInstalacionesHistorial() {
     .orderBy(asc(instalaciones.instaladoAt));
   return result;
 }
+
+// ONE-TIME backfill: sync all existing installation photos to their parada's fotoUrl
+export async function syncInstalacionFotosToParadas(): Promise<{ synced: number; skipped: number }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const { instalaciones, paradas } = await import("../drizzle/schema");
+  const { eq, isNotNull } = await import("drizzle-orm");
+
+  // Get all instalaciones that have a foto
+  const withFotos = await db
+    .select({ id: instalaciones.id, paradaId: instalaciones.paradaId, fotoInstalacion: instalaciones.fotoInstalacion })
+    .from(instalaciones)
+    .where(isNotNull(instalaciones.fotoInstalacion));
+
+  let synced = 0;
+  let skipped = 0;
+
+  for (const inst of withFotos) {
+    if (!inst.paradaId || !inst.fotoInstalacion) { skipped++; continue; }
+    await db
+      .update(paradas)
+      .set({ fotoUrl: inst.fotoInstalacion })
+      .where(eq(paradas.id, inst.paradaId));
+    synced++;
+  }
+
+  return { synced, skipped };
+}

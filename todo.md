@@ -1267,3 +1267,6 @@
 - [ ] Arte upload en el viewer dialog con opción de subir arte al anuncio
 - [ ] Bulk arte upload: si hay múltiples anuncios del mismo cliente seleccionados, subir el mismo arte a todos
 - [ ] Badge/indicador en Gestor de Anuncios para anuncios con instalación pendiente (Programado/Relocalizacion)
+
+## One-time Backfill Tool
+- [ ] Add one-time backfill button to sync existing installation photos to parada fotoUrl (to be removed after use)

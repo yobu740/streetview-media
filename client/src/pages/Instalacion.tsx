@@ -142,6 +142,14 @@ export default function Instalacion() {
     onError: (e) => toast.error(e.message),
   });
 
+  const syncFotos = trpc.instalaciones.syncFotosToParadas.useMutation({
+    onSuccess: (result) => {
+      utils.instalaciones.list.invalidate();
+      toast.success(`Fotos sincronizadas: ${result.synced} paradas actualizadas, ${result.skipped} omitidas.`);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   const backfill = trpc.instalaciones.backfill.useMutation({
     onSuccess: (result) => {
       utils.instalaciones.list.invalidate();
@@ -621,6 +629,21 @@ export default function Instalacion() {
               <Navigation className="w-4 h-4" />
             )}
             Sincronizar
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => syncFotos.mutate()}
+            disabled={syncFotos.isPending}
+            className="gap-1.5 text-blue-700 border-blue-300 hover:bg-blue-50"
+            title="(Uso único) Copiar fotos de instalaciones existentes al detalle de cada parada"
+          >
+            {syncFotos.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Camera className="w-4 h-4" />
+            )}
+            Sync Fotos
           </Button>
           <Button
             variant="outline"
