@@ -368,10 +368,10 @@ export async function markInstalacionInstalada(
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const { instalaciones, anuncios } = await import("../drizzle/schema");
+  const { instalaciones, anuncios, paradas } = await import("../drizzle/schema");
   const { eq } = await import("drizzle-orm");
 
-  // Get the instalacion to find the anuncioId
+  // Get the instalacion to find the anuncioId and paradaId
   const [inst] = await db
     .select()
     .from(instalaciones)
@@ -397,18 +397,42 @@ export async function markInstalacionInstalada(
     .set({ estado: "Activo" })
     .where(eq(anuncios.id, inst.anuncioId));
 
+  // Auto-sync: if a foto was provided, update the parada's fotoUrl so the detail view stays current
+  if (fotoInstalacion && inst.paradaId) {
+    await db
+      .update(paradas)
+      .set({ fotoUrl: fotoInstalacion })
+      .where(eq(paradas.id, inst.paradaId));
+  }
+
   return inst.anuncioId;
 }
 
 export async function updateInstalacionFoto(instalacionId: number, fotoUrl: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const { instalaciones } = await import("../drizzle/schema");
+  const { instalaciones, paradas } = await import("../drizzle/schema");
   const { eq } = await import("drizzle-orm");
+
+  // Update the installation photo
   await db
     .update(instalaciones)
     .set({ fotoInstalacion: fotoUrl })
     .where(eq(instalaciones.id, instalacionId));
+
+  // Auto-sync: also update the parada's fotoUrl so the detail view in Admin stays current
+  const instalacion = await db
+    .select({ paradaId: instalaciones.paradaId })
+    .from(instalaciones)
+    .where(eq(instalaciones.id, instalacionId))
+    .limit(1);
+
+  if (instalacion[0]?.paradaId) {
+    await db
+      .update(paradas)
+      .set({ fotoUrl })
+      .where(eq(paradas.id, instalacion[0].paradaId));
+  }
 }
 
 export async function getInstalacionByAnuncioId(anuncioId: number) {
