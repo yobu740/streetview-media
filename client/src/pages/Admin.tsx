@@ -796,6 +796,18 @@ export default function Admin() {
       const rows = printParadas.map((parada) => {
         const { status, anuncio } = getParadaStatus(parada);
         const displayStatus = status === 'No Disponible' ? 'No Operativa' : status;
+        // Condición logic
+        let condicion = '';
+        if (parada.removida) {
+          condicion = 'Removida';
+        } else if (parada.enConstruccion) {
+          condicion = 'En Construcción' + (parada.fechaDisponibilidad ? ` (${new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')})` : '');
+        } else if (parada.displayPublicidad === 'No') {
+          condicion = 'Sin Display';
+        } else {
+          const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
+          condicion = isLista ? 'Lista' : 'Pendiente';
+        }
         return `<tr>
           <td>${parada.cobertizoId}</td>
           <td>${parada.flowCat || '—'}</td>
@@ -804,6 +816,7 @@ export default function Admin() {
           <td>${parada.direccion}</td>
           <td>${parada.tipoFormato === 'Digital' ? 'B' : 'F'}</td>
           <td>${displayStatus}</td>
+          <td>${condicion}</td>
           <td>${anuncio?.cliente || '—'}</td>
         </tr>`;
       }).join('');
@@ -852,7 +865,7 @@ export default function Admin() {
         <div class="print-body">
         <table>
           <thead><tr>
-            <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Cliente</th>
+            <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Cliente</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
