@@ -717,6 +717,18 @@ export default function Admin() {
       // Prepare data for export
       const exportData = paradasToExport.map(parada => {
         const { status, anuncio } = getParadaStatus(parada);
+        // Condición logic
+        let condicion = '';
+        if (parada.removida) {
+          condicion = 'Removida';
+        } else if (parada.enConstruccion) {
+          condicion = 'En Construcción' + (parada.fechaDisponibilidad ? ` (${new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')})` : '');
+        } else if (parada.displayPublicidad === 'No') {
+          condicion = 'Sin Display';
+        } else {
+          const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
+          condicion = isLista ? 'Lista' : 'Pendiente';
+        }
         return {
           'ID': parada.cobertizoId,
           'Flowcat': parada.flowCat || '',
@@ -725,7 +737,8 @@ export default function Admin() {
           'Dirección': parada.direccion || '',
           'Orientación': parada.orientacion || '',
           'Tipo': parada.tipoFormato === 'Digital' ? 'Digital (B)' : 'Fija (F)',
-          'Estado': status,
+          'Estado': status === 'No Disponible' ? 'No Operativa' : status,
+          'Condición': condicion,
           'Anuncio Actual': parada.anuncioProducto || '',
           'Cliente Actual': anuncio ? anuncio.cliente : '',
           'Fecha Inicio': anuncio ? formatDateDisplay(anuncio.fechaInicio) : '',
@@ -748,7 +761,8 @@ export default function Admin() {
         { wch: 40 },  // Dirección
         { wch: 12 },  // Orientación
         { wch: 15 },  // Tipo
-        { wch: 12 },  // Estado
+        { wch: 14 },  // Estado
+        { wch: 20 },  // Condición
         { wch: 25 },  // Anuncio Actual
         { wch: 25 },  // Cliente Actual
         { wch: 12 },  // Fecha Inicio

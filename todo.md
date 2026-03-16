@@ -1270,3 +1270,5 @@
 
 ## One-time Backfill Tool
 - [ ] Add one-time backfill button to sync existing installation photos to parada fotoUrl (to be removed after use)
+- [x] Fix photos not showing in installation order print report
+- [x] Add Condición column to Excel export in Admin panel

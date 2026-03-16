@@ -426,12 +426,39 @@ export default function Instalacion() {
   };
 
   // Generate installation order (print)
-  const handleGenerateOrder = () => {
+  const handleGenerateOrder = async () => {
     const items = filtered.filter((i) => selectedIds.has(i.id));
     if (items.length === 0) {
       toast.error("Selecciona al menos un anuncio para generar la orden.");
       return;
     }
+
+    // Convert arte URLs to base64 to avoid CORS/security blocking in print windows
+    const toBase64 = async (url: string): Promise<string> => {
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      } catch {
+        return url; // fallback to original URL
+      }
+    };
+
+    // Pre-load all arte images as base64
+    const arteMap = new Map<string, string>();
+    await Promise.all(
+      items
+        .filter((i) => i.arteUrl)
+        .map(async (i) => {
+          const b64 = await toBase64(i.arteUrl!);
+          arteMap.set(i.arteUrl!, b64);
+        })
+    );
+
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
@@ -441,6 +468,10 @@ export default function Instalacion() {
           const gpsUrl = item.coordenadasLat && item.coordenadasLng
             ? `https://maps.google.com/?q=${item.coordenadasLat},${item.coordenadasLng}`
             : `https://maps.google.com/?q=${encodeURIComponent(item.direccion + ', Puerto Rico')}`;
+          const arteSrc = item.arteUrl ? (arteMap.get(item.arteUrl) || item.arteUrl) : null;
+          const arteCell = arteSrc
+            ? '<img src="' + arteSrc + '" class="arte-thumb" alt="Arte" />'
+            : '<span class="no-arte">Sin arte</span>';
           return `
       <tr>
         <td>${item.flowCat ?? "—"}</td>
@@ -457,10 +488,7 @@ export default function Instalacion() {
         <td>${formatDate(item.fechaInicio)}</td>
         <td>${formatDate(item.fechaFin)}</td>
         <td>${item.estado}</td>
-        <td class="arte-cell">${item.arteUrl
-          ? `<img src="${item.arteUrl}" class="arte-thumb" alt="Arte" />`
-          : '<span class="no-arte">Sin arte</span>'
-        }</td>
+        <td class="arte-cell">${arteCell}</td>
       </tr>`;
         }
       )
