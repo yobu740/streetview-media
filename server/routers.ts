@@ -2014,6 +2014,65 @@ export const appRouter = router({
         return { url, count: input.anuncioIds.length };
       }),
 
+    // Check if an anuncio has a pending (Programado) instalacion record
+    // Used by Gestor de Anuncios to warn before changing estado away from Programado
+    checkPendingInstalacion: protectedProcedure
+      .input(z.object({ anuncioId: z.number() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import('./db');
+        const { instalaciones, paradas } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) return null;
+        const result = await db
+          .select({
+            id: instalaciones.id,
+            estado: instalaciones.estado,
+            cobertizoId: paradas.cobertizoId,
+            orientacion: paradas.orientacion,
+            direccion: paradas.direccion,
+            flowCat: paradas.flowCat,
+          })
+          .from(instalaciones)
+          .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
+          .where(and(
+            eq(instalaciones.anuncioId, input.anuncioId),
+            eq(instalaciones.estado, 'Programado')
+          ))
+          .limit(1);
+        return result[0] ?? null;
+      }),
+
+    // Confirm that an anuncio was installed: marks its pending instalacion as Instalado
+    // Called from Gestor de Anuncios when user confirms installation after changing estado
+    confirmInstalled: protectedProcedure
+      .input(z.object({ anuncioId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import('./db');
+        const { instalaciones } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+        // Find the pending instalacion
+        const [inst] = await db
+          .select({ id: instalaciones.id })
+          .from(instalaciones)
+          .where(and(
+            eq(instalaciones.anuncioId, input.anuncioId),
+            eq(instalaciones.estado, 'Programado')
+          ))
+          .limit(1);
+        if (!inst) throw new Error('No pending instalacion found');
+        // Mark as Instalado using the existing helper
+        const { markInstalacionInstalada } = await import('./db');
+        await markInstalacionInstalada(
+          inst.id,
+          ctx.user.name ?? ctx.user.email ?? 'Gestor de Anuncios',
+          undefined // no photo
+        );
+        return { success: true, instalacionId: inst.id };
+      }),
+
     // Get all instalaciones including Instalado (for history / order generation)
     listAll: protectedProcedure.query(async () => {
       const { getDb } = await import('./db');

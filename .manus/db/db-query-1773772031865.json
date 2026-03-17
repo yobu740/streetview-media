@@ -1,0 +1,36 @@
+{
+  "query": "\n-- Find the 2 mismatched: instalacion=Programado but anuncio=Activo (or any non-Programado)\nSELECT \n  i.id as instalacion_id,\n  i.estado as inst_estado,\n  a.id as anuncio_id,\n  a.estado as anuncio_estado,\n  a.producto,\n  a.cliente,\n  p.cobertizo_id,\n  p.flow_cat,\n  p.orientacion,\n  a.fecha_inicio,\n  a.fecha_fin\nFROM instalaciones i\nJOIN anuncios a ON i.anuncio_id = a.id\nJOIN paradas p ON i.parada_id = p.id\nWHERE i.estado = 'Programado' AND a.estado != 'Programado'\nORDER BY a.estado, a.cliente;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Find the 2 mismatched: instalacion=Programado but anuncio=Activo (or any non-Programado)\nSELECT \n  i.id as instalacion_id,\n  i.estado as inst_estado,\n  a.id as anuncio_id,\n  a.estado as anuncio_estado,\n  a.producto,\n  a.cliente,\n  p.cobertizo_id,\n  p.flow_cat,\n  p.orientacion,\n  a.fecha_inicio,\n  a.fecha_fin\nFROM instalaciones i\nJOIN anuncios a ON i.anuncio_id = a.id\nJOIN paradas p ON i.parada_id = p.id\nWHERE i.estado = 'Programado' AND a.estado != 'Programado'\nORDER BY a.estado, a.cliente;\n",
+  "rows": [
+    {
+      "instalacion_id": "4",
+      "inst_estado": "Programado",
+      "anuncio_id": "450001",
+      "anuncio_estado": "Finalizado",
+      "producto": "MC DONALDS",
+      "cliente": "OMD",
+      "cobertizo_id": "429",
+      "flow_cat": "027",
+      "orientacion": "I",
+      "fecha_inicio": "2026-02-12 00:00:00",
+      "fecha_fin": "2026-03-14 00:00:00"
+    },
+    {
+      "instalacion_id": "5",
+      "inst_estado": "Programado",
+      "anuncio_id": "450002",
+      "anuncio_estado": "Finalizado",
+      "producto": "MC DONALDS",
+      "cliente": "OMD",
+      "cobertizo_id": "066",
+      "flow_cat": "027",
+      "orientacion": "O",
+      "fecha_inicio": "2026-02-12 00:00:00",
+      "fecha_fin": "2026-03-14 00:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "instalacion_id\tinst_estado\tanuncio_id\tanuncio_estado\tproducto\tcliente\tcobertizo_id\tflow_cat\torientacion\tfecha_inicio\tfecha_fin\n4\tProgramado\t450001\tFinalizado\tMC DONALDS\tOMD\t429\t027\tI\t2026-02-12 00:00:00\t2026-03-14 00:00:00\n5\tProgramado\t450002\tFinalizado\tMC DONALDS\tOMD\t066\t027\tO\t2026-02-12 00:00:00\t2026-03-14 00:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 375
+}

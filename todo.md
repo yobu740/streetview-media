@@ -1272,3 +1272,9 @@
 - [ ] Add one-time backfill button to sync existing installation photos to parada fotoUrl (to be removed after use)
 - [x] Fix photos not showing in installation order print report
 - [x] Add Condición column to Excel export in Admin panel
+
+## Alerta de Instalación al Cambiar Estado en Gestor de Anuncios
+- [x] Add backend procedure to check if anuncio has pending instalacion when estado changes
+- [x] Add backend procedure confirmInstalled to mark instalacion as Instalado from Anuncios page
+- [x] Add frontend dialog in Anuncios.tsx: when changing Programado → Activo/Finalizado, if pending instalacion exists, ask "¿Este anuncio fue instalado?"
+- [x] If user confirms, auto-mark instalacion as Instalado (with current date/timestamp)

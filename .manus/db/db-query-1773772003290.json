@@ -1,0 +1,26 @@
+{
+  "query": "\n-- Count by estado in anuncios table\nSELECT estado, COUNT(*) as total FROM anuncios GROUP BY estado ORDER BY estado;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Count by estado in anuncios table\nSELECT estado, COUNT(*) as total FROM anuncios GROUP BY estado ORDER BY estado;\n",
+  "rows": [
+    {
+      "estado": "Activo",
+      "total": "282"
+    },
+    {
+      "estado": "Programado",
+      "total": "119"
+    },
+    {
+      "estado": "Finalizado",
+      "total": "468"
+    },
+    {
+      "estado": "Inactivo",
+      "total": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "estado\ttotal\nActivo\t282\nProgramado\t119\nFinalizado\t468\nInactivo\t15\n",
+  "stderr": "",
+  "execution_time_ms": 1000
+}

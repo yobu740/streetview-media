@@ -106,6 +106,19 @@ export default function Anuncios() {
   const [selectedAnuncioForHistory, setSelectedAnuncioForHistory] = useState<number | null>(null);
   const [highlightAnuncioId, setHighlightAnuncioId] = useState<number | null>(null);
 
+  // Installation confirmation dialog: shown when changing Programado -> Activo/Finalizado
+  const [installConfirmDialog, setInstallConfirmDialog] = useState<{
+    open: boolean;
+    anuncioId: number | null;
+    cobertizoId: string;
+    orientacion: string;
+    direccion: string;
+    flowCat: string | null;
+    onConfirmSave: (() => void) | null;
+  }>({ open: false, anuncioId: null, cobertizoId: '', orientacion: '', direccion: '', flowCat: null, onConfirmSave: null });
+
+  const confirmInstalled = trpc.instalaciones.confirmInstalled.useMutation();
+
   // Support ?anuncioId=X URL param from Mantenimiento relocalizar button
   const searchString = useSearch();
   useEffect(() => {
@@ -198,17 +211,9 @@ export default function Anuncios() {
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = () => {
+  const doSaveEdit = () => {
     if (!selectedAnuncio) return;
-
-    if (!editForm.producto || !editForm.cliente || !editForm.fechaInicio || !editForm.fechaFin) {
-      toast.error("Por favor completa todos los campos requeridos");
-      return;
-    }
-
-    // Auto-set cost to 0 for Bonificación
     const finalCost = editForm.tipo === "Bonificación" ? 0 : parseFloat(editForm.costoPorUnidad) || 0;
-
     updateAnuncio.mutate(
       {
         id: selectedAnuncio.id,
@@ -226,10 +231,11 @@ export default function Anuncios() {
         onSuccess: async () => {
           toast.success("Anuncio actualizado exitosamente");
           setIsEditDialogOpen(false);
-          // Invalidate both queries to refresh data
           await Promise.all([
             utils.anuncios.list.invalidate(),
-            utils.paradas.list.invalidate()
+            utils.paradas.list.invalidate(),
+            utils.instalaciones.list.invalidate(),
+            utils.instalaciones.historial.invalidate(),
           ]);
         },
         onError: (error) => {
@@ -237,6 +243,42 @@ export default function Anuncios() {
         },
       }
     );
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedAnuncio) return;
+
+    if (!editForm.producto || !editForm.cliente || !editForm.fechaInicio || !editForm.fechaFin) {
+      toast.error("Por favor completa todos los campos requeridos");
+      return;
+    }
+
+    // If changing a Programado anuncio to Activo or Finalizado, and it has a pending instalacion,
+    // ask the user if the physical installation was done
+    const wasProgamado = selectedAnuncio.estado === 'Programado';
+    const isChangingToActiveOrFinished = editForm.estado === 'Activo' || editForm.estado === 'Finalizado';
+
+    if (wasProgamado && isChangingToActiveOrFinished && pendingInstalacionAnuncioIds.has(selectedAnuncio.id)) {
+      try {
+        const result = await utils.client.instalaciones.checkPendingInstalacion.query({ anuncioId: selectedAnuncio.id });
+        if (result) {
+          setInstallConfirmDialog({
+            open: true,
+            anuncioId: selectedAnuncio.id,
+            cobertizoId: result.cobertizoId,
+            orientacion: result.orientacion,
+            direccion: result.direccion,
+            flowCat: result.flowCat,
+            onConfirmSave: doSaveEdit,
+          });
+          return; // Wait for user response in dialog
+        }
+      } catch (e) {
+        console.error('[InstallCheck] Failed to check pending instalacion:', e);
+      }
+    }
+
+    doSaveEdit();
   };
 
   const handleGenerateInvoice = async () => {
@@ -1393,6 +1435,72 @@ export default function Anuncios() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsHistoryDialogOpen(false)}>
               Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Installation Confirmation Dialog */}
+      {/* Shown when changing a Programado anuncio to Activo/Finalizado and it has a pending instalacion */}
+      <Dialog
+        open={installConfirmDialog.open}
+        onOpenChange={(open) => {
+          if (!open) setInstallConfirmDialog(prev => ({ ...prev, open: false }));
+        }}
+      >
+        <DialogContent className="sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#1a4d3c]">
+              <span className="text-2xl">&#x1F6A8;</span> ¿Este anuncio fue instalado?
+            </DialogTitle>
+            <DialogDescription>
+              Este anuncio estaba <strong>Programado</strong> y tiene una instalación pendiente en el área de instalaciones.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-2">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+              <p className="font-semibold text-blue-800 mb-2">Instalación pendiente:</p>
+              <p className="text-blue-700">
+                <span className="font-medium">Cobertizo:</span> {installConfirmDialog.cobertizoId} [{installConfirmDialog.orientacion}]
+              </p>
+              {installConfirmDialog.flowCat && (
+                <p className="text-blue-700">
+                  <span className="font-medium">Flowcat:</span> {installConfirmDialog.flowCat}
+                </p>
+              )}
+              <p className="text-blue-700 mt-1">{installConfirmDialog.direccion}</p>
+            </div>
+            <p className="text-sm text-gray-600 mt-3">
+              Si el anuncio <strong>sí fue instalado físicamente</strong>, haz clic en “Sí, fue instalado” para registrarlo en el historial de instalaciones.
+              Si aún no ha sido instalado, haz clic en “No, solo cambiar estado”.
+            </p>
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setInstallConfirmDialog(prev => ({ ...prev, open: false }));
+                installConfirmDialog.onConfirmSave?.();
+              }}
+            >
+              No, solo cambiar estado
+            </Button>
+            <Button
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
+              disabled={confirmInstalled.isPending}
+              onClick={async () => {
+                if (!installConfirmDialog.anuncioId) return;
+                try {
+                  await confirmInstalled.mutateAsync({ anuncioId: installConfirmDialog.anuncioId });
+                  toast.success("✅ Instalación registrada en el historial");
+                } catch (e: any) {
+                  toast.error(`Error al registrar instalación: ${e.message}`);
+                }
+                setInstallConfirmDialog(prev => ({ ...prev, open: false }));
+                installConfirmDialog.onConfirmSave?.();
+              }}
+            >
+              {confirmInstalled.isPending ? "Registrando..." : "✅ Sí, fue instalado"}
             </Button>
           </DialogFooter>
         </DialogContent>

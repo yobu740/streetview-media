@@ -1,0 +1,22 @@
+{
+  "query": "\n-- Check instalaciones pending count\nSELECT i.estado as inst_estado, COUNT(*) as total FROM instalaciones i GROUP BY i.estado ORDER BY i.estado;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \n-- Check instalaciones pending count\nSELECT i.estado as inst_estado, COUNT(*) as total FROM instalaciones i GROUP BY i.estado ORDER BY i.estado;\n",
+  "rows": [
+    {
+      "inst_estado": "Programado",
+      "total": "123"
+    },
+    {
+      "inst_estado": "Relocalizacion",
+      "total": "1"
+    },
+    {
+      "inst_estado": "Instalado",
+      "total": "55"
+    }
+  ],
+  "messages": [],
+  "stdout": "inst_estado\ttotal\nProgramado\t123\nRelocalizacion\t1\nInstalado\t55\n",
+  "stderr": "",
+  "execution_time_ms": 370
+}
