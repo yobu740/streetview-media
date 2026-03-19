@@ -235,7 +235,7 @@ export default function Home() {
             </div>
             <div className="relative">
               <img 
-                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/akCQAUPPSFjmkLQn.png"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/GeneratedImageMarch19,2026-3_02PM_be349272.jpg"
                 alt="Parada de guagua con publicidad"
                 className="w-full shadow-2xl border-8 border-[#1a4d3c]"
               />
@@ -251,7 +251,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative order-2 md:order-1">
               <img 
-                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/RdXjWiUfDHukhAsL.png"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/GeneratedImageMarch19,2026-2_42PM_127d87cd.jpg"
                 alt="Parada de guagua con publicidad"
                 className="w-full shadow-2xl border-8 border-[#ff6b35]"
               />
