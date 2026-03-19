@@ -1,0 +1,50 @@
+{
+  "query": "\nSELECT id, cobertizo_id, orientacion\nFROM paradas\nWHERE id IN (91167, 91168, 91556, 91555, 91469, 91222, 91872, 91470);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT id, cobertizo_id, orientacion\nFROM paradas\nWHERE id IN (91167, 91168, 91556, 91555, 91469, 91222, 91872, 91470);\n",
+  "rows": [
+    {
+      "id": "91167",
+      "cobertizo_id": "547",
+      "orientacion": "I"
+    },
+    {
+      "id": "91168",
+      "cobertizo_id": "547",
+      "orientacion": "O"
+    },
+    {
+      "id": "91556",
+      "cobertizo_id": "223",
+      "orientacion": "O"
+    },
+    {
+      "id": "91555",
+      "cobertizo_id": "223",
+      "orientacion": "I"
+    },
+    {
+      "id": "91469",
+      "cobertizo_id": "082A",
+      "orientacion": "I"
+    },
+    {
+      "id": "91222",
+      "cobertizo_id": "520",
+      "orientacion": "I"
+    },
+    {
+      "id": "91872",
+      "cobertizo_id": "445",
+      "orientacion": "I"
+    },
+    {
+      "id": "91470",
+      "cobertizo_id": "082A",
+      "orientacion": "O"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\torientacion\n91167\t547\tI\n91168\t547\tO\n91556\t223\tO\n91555\t223\tI\n91469\t082A\tI\n91222\t520\tI\n91872\t445\tI\n91470\t082A\tO\n",
+  "stderr": "",
+  "execution_time_ms": 358
+}

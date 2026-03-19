@@ -1,0 +1,98 @@
+{
+  "query": "\nSELECT i.id, i.anuncio_id, i.estado, i.from_parada_id, i.notas,\n       p.cobertizo_id as dest_cobertizo, p.orientacion as dest_orient,\n       a.producto, a.cliente\nFROM instalaciones i\nJOIN paradas p ON i.parada_id = p.id\nJOIN anuncios a ON i.anuncio_id = a.id\nWHERE i.estado = 'Relocalizacion'\nORDER BY i.id;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT i.id, i.anuncio_id, i.estado, i.from_parada_id, i.notas,\n       p.cobertizo_id as dest_cobertizo, p.orientacion as dest_orient,\n       a.producto, a.cliente\nFROM instalaciones i\nJOIN paradas p ON i.parada_id = p.id\nJOIN anuncios a ON i.anuncio_id = a.id\nWHERE i.estado = 'Relocalizacion'\nORDER BY i.id;\n",
+  "rows": [
+    {
+      "id": "150001",
+      "anuncio_id": "210007",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91167",
+      "dest_cobertizo": "547",
+      "dest_orient": "O",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    },
+    {
+      "id": "150002",
+      "anuncio_id": "210007",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91168",
+      "dest_cobertizo": "553",
+      "dest_orient": "O",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    },
+    {
+      "id": "150003",
+      "anuncio_id": "570004",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91556",
+      "dest_cobertizo": "657",
+      "dest_orient": "I",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    },
+    {
+      "id": "150004",
+      "anuncio_id": "600001",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91555",
+      "dest_cobertizo": "223",
+      "dest_orient": "O",
+      "producto": "BETIS",
+      "cliente": "SAY MEDIA"
+    },
+    {
+      "id": "150005",
+      "anuncio_id": "210049",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91469",
+      "dest_cobertizo": "082A",
+      "dest_orient": "O",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    },
+    {
+      "id": "150006",
+      "anuncio_id": "210013",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91222",
+      "dest_cobertizo": "520",
+      "dest_orient": "O",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    },
+    {
+      "id": "150007",
+      "anuncio_id": "1320008",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91872",
+      "dest_cobertizo": "628",
+      "dest_orient": "O",
+      "producto": "Streetview Media",
+      "cliente": "Streetview Media"
+    },
+    {
+      "id": "150016",
+      "anuncio_id": "210049",
+      "estado": "Relocalizacion",
+      "from_parada_id": "NULL",
+      "notas": "Relocalizado desde parada #91470",
+      "dest_cobertizo": "092B",
+      "dest_orient": "O",
+      "producto": "OPIOIDES DIJERON",
+      "cliente": "MUNICIPIO SAN JUAN"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tanuncio_id\testado\tfrom_parada_id\tnotas\tdest_cobertizo\tdest_orient\tproducto\tcliente\n150001\t210007\tRelocalizacion\tNULL\tRelocalizado desde parada #91167\t547\tO\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n150002\t210007\tRelocalizacion\tNULL\tRelocalizado desde parada #91168\t553\tO\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n150003\t570004\tRelocalizacion\tNULL\tRelocalizado desde parada #91556\t657\tI\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n150004\t600001\tRelocalizacion\tNULL\tRelocalizado desde parada #91555\t223\tO\tBETIS\tSAY MEDIA\n150005\t210049\tRelocalizacion\tNULL\tRelocalizado desde parada #91469\t082A\tO\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n150006\t210013\tRelocalizacion\tNULL\tRelocalizado desde parada #91222\t520\tO\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n150007\t1320008\tRelocalizacion\tNULL\tRelocalizado desde parada #91872\t628\tO\tStreetview Media\tStreetview Media\n150016\t210049\tRelocalizacion\tNULL\tRelocalizado desde parada #91470\t092B\tO\tOPIOIDES DIJERON\tMUNICIPIO SAN JUAN\n",
+  "stderr": "",
+  "execution_time_ms": 388
+}

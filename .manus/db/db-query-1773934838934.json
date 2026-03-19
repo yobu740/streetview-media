@@ -1,0 +1,9 @@
+{
+  "query": "\nUPDATE instalaciones SET from_parada_id = 91167 WHERE id = 150001;\nUPDATE instalaciones SET from_parada_id = 91168 WHERE id = 150002;\nUPDATE instalaciones SET from_parada_id = 91556 WHERE id = 150003;\nUPDATE instalaciones SET from_parada_id = 91555 WHERE id = 150004;\nUPDATE instalaciones SET from_parada_id = 91469 WHERE id = 150005;\nUPDATE instalaciones SET from_parada_id = 91222 WHERE id = 150006;\nUPDATE instalaciones SET from_parada_id = 91872 WHERE id = 150007;\nUPDATE instalaciones SET from_parada_id = 91470 WHERE id = 150016;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nUPDATE instalaciones SET from_parada_id = 91167 WHERE id = 150001;\nUPDATE instalaciones SET from_parada_id = 91168 WHERE id = 150002;\nUPDATE instalaciones SET from_parada_id = 91556 WHERE id = 150003;\nUPDATE instalaciones SET from_parada_id = 91555 WHERE id = 150004;\nUPDATE instalaciones SET from_parada_id = 91469 WHERE id = 150005;\nUPDATE instalaciones SET from_parada_id = 91222 WHERE id = 150006;\nUPDATE instalaciones SET from_parada_id = 91872 WHERE id = 150007;\nUPDATE instalaciones SET from_parada_id = 91470 WHERE id = 150016;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 802
+}
