@@ -490,10 +490,10 @@ export default function Instalacion() {
             : '<span class="no-arte">Sin arte</span>';
           const isReloc = item.estado === 'Relocalizacion' && item.fromCobertizoId;
           const cobertizoCell = isReloc
-            ? `<span style="text-decoration:line-through;color:#999;font-size:9px">${item.fromCobertizoId}</span><br/><strong>${item.cobertizoId}</strong>`
+            ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromCobertizoId}</span><br/><strong>${item.cobertizoId}</strong>`
             : item.cobertizoId;
           const orientCell = isReloc
-            ? `<span style="text-decoration:line-through;color:#999;font-size:9px">${item.fromOrientacion ?? ''}</span><br/><strong>${item.orientacion}</strong>`
+            ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromOrientacion ?? ''}</span><br/><strong>${item.orientacion}</strong>`
             : item.orientacion;
           return `
       <tr>
@@ -913,7 +913,7 @@ export default function Instalacion() {
                       <td className="px-3 py-2 font-mono font-semibold text-xs">
                         {item.estado === "Relocalizacion" && item.fromCobertizoId ? (
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] text-muted-foreground line-through">{item.fromCobertizoId}</span>
+                            <span className="text-[10px] text-red-500 font-semibold">{item.fromCobertizoId}</span>
                             <span className="text-[#1a4d3c]">{item.cobertizoId}</span>
                           </div>
                         ) : item.cobertizoId}
@@ -921,7 +921,7 @@ export default function Instalacion() {
                       <td className="px-3 py-2">
                         {item.estado === "Relocalizacion" && item.fromOrientacion ? (
                           <div className="flex flex-col gap-0.5">
-                            <Badge variant="outline" className="text-[10px] font-mono opacity-50 line-through">{item.fromOrientacion}</Badge>
+                            <Badge variant="outline" className="text-[10px] font-mono text-red-500 border-red-300">{item.fromOrientacion}</Badge>
                             <Badge variant="outline" className="text-xs font-mono">{item.orientacion}</Badge>
                           </div>
                         ) : (
@@ -931,7 +931,7 @@ export default function Instalacion() {
                       <td className="px-3 py-2 text-xs text-muted-foreground max-w-[220px] truncate">
                         {item.estado === "Relocalizacion" && item.fromLocalizacion ? (
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-[10px] line-through opacity-50">{item.fromLocalizacion}</span>
+                            <span className="text-[10px] text-red-500">{item.fromLocalizacion}</span>
                             <span>{item.localizacion ?? "—"}</span>
                           </div>
                         ) : item.direccion}
