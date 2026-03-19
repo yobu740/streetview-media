@@ -488,11 +488,18 @@ export default function Instalacion() {
           const arteCell = arteSrc
             ? '<img src="' + arteSrc + '" class="arte-thumb" alt="Arte" />'
             : '<span class="no-arte">Sin arte</span>';
+          const isReloc = item.estado === 'Relocalizacion' && item.fromCobertizoId;
+          const cobertizoCell = isReloc
+            ? `<span style="text-decoration:line-through;color:#999;font-size:9px">${item.fromCobertizoId}</span><br/><strong>${item.cobertizoId}</strong>`
+            : item.cobertizoId;
+          const orientCell = isReloc
+            ? `<span style="text-decoration:line-through;color:#999;font-size:9px">${item.fromOrientacion ?? ''}</span><br/><strong>${item.orientacion}</strong>`
+            : item.orientacion;
           return `
       <tr>
         <td>${item.flowCat ?? "—"}</td>
-        <td>${item.cobertizoId}</td>
-        <td>${item.orientacion}</td>
+        <td>${cobertizoCell}</td>
+        <td>${orientCell}</td>
         <td>
           ${item.direccion}<br/>
           <a href="${gpsUrl}" class="gps-link" target="_blank">&#x1F4CD; Ver en Google Maps</a>
