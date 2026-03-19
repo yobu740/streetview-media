@@ -176,39 +176,44 @@ export default function Home() {
       </nav>
 
       {/* Hero Section - Video */}
-      <section id="inicio" className="relative h-screen mt-20">
+      <section id="inicio" className="relative h-screen mt-20 overflow-hidden">
+        {/* Full-bleed video background */}
         <div className="absolute inset-0 bg-[#1a4d3c]">
           <video 
             autoPlay 
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           >
-            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(1)_4c06b01b.mp4" type="video/mp4" />
+            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(2)_a2b1d313.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1a4d3c]/80 to-transparent"></div>
+          {/* Subtle dark vignette only at the very bottom so text is readable */}
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/60 to-transparent"></div>
         </div>
-        <div className="relative h-full container flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-display text-5xl md:text-6xl text-white mb-6 leading-tight">
-              Tu Marca en el Camino
-            </h1>
-            <p className="text-body text-xl text-white/90 mb-8 max-w-xl">
-              La nueva red de publicidad exterior especializada en mobiliario urbano de alto impacto en Puerto Rico.
-            </p>
-            <Button 
-              size="lg" 
-              onClick={() => {
-                const mapSection = document.getElementById('mapa');
-                if (mapSection) {
-                  mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#ff6b35] hover:border-white transition-all"
-            >
-              Ver Localizaciones
-            </Button>
+        {/* Text + CTA anchored to bottom-left, small footprint */}
+        <div className="relative h-full flex items-end pb-10 md:pb-14">
+          <div className="container">
+            <div className="inline-block bg-black/50 backdrop-blur-sm rounded-xl px-5 py-4 max-w-sm md:max-w-md">
+              <h1 className="text-display text-2xl md:text-3xl text-white mb-2 leading-tight">
+                Tu Marca en el Camino
+              </h1>
+              <p className="text-body text-sm md:text-base text-white/90 mb-4">
+                La nueva red de publicidad exterior en Puerto Rico.
+              </p>
+              <Button 
+                size="sm"
+                onClick={() => {
+                  const mapSection = document.getElementById('mapa');
+                  if (mapSection) {
+                    mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+                className="bg-[#ff6b35] hover:bg-[#e65a25] text-white text-display text-sm md:text-base px-5 py-2 h-auto border-2 border-[#ff6b35] hover:border-white transition-all"
+              >
+                Ver Localizaciones
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -251,7 +256,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative order-2 md:order-1">
               <img 
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/GeneratedImageMarch19,2026-2_42PM_127d87cd.jpg"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/GeneratedImageMarch19,2026-6_33PM_bb5ec3c3.jpg"
                 alt="Parada de guagua con publicidad"
                 className="w-full shadow-2xl border-8 border-[#ff6b35]"
               />
