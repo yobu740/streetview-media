@@ -112,6 +112,27 @@ export default function Calendar() {
     
     return paradas
       .map(parada => {
+        // Check if parada is non-operative (blocked regardless of date conflicts)
+        const isRemovida = !!(parada as any).removida;
+        const isEnConstruccion = !!(parada as any).enConstruccion;
+        const isSinDisplay = (parada as any).displayPublicidad === 'No';
+        const isNoOperativa = isRemovida || isEnConstruccion || isSinDisplay;
+
+        // Determine block reason label
+        let blockReason: string | null = null;
+        if (isRemovida) blockReason = 'Removida';
+        else if (isEnConstruccion) blockReason = 'En Construcción';
+        else if (isSinDisplay) blockReason = 'Sin Display';
+
+        if (isNoOperativa) {
+          return {
+            ...parada,
+            isAvailable: false,
+            availableAfter: null,
+            blockReason,
+          };
+        }
+
         // Find conflicting anuncios for this parada
         const conflictingAnuncios = anuncios.filter(anuncio => {
           if (anuncio.paradaId !== parada.id || (anuncio.estado !== "Activo" && anuncio.estado !== "Programado")) return false;
@@ -134,13 +155,14 @@ export default function Calendar() {
             return currentEnd > latestEnd ? current : latest;
           });
           availableAfter = new Date(latestAnuncio.fechaFin);
-          availableAfter.setDate(availableAfter.getDate() + 1); // Available day after the anuncio ends
+          availableAfter.setDate(availableAfter.getDate() + 1);
         }
         
         return {
           ...parada,
           isAvailable: !hasConflict,
           availableAfter,
+          blockReason: null,
         };
       })
       .filter(parada => {
@@ -573,8 +595,10 @@ export default function Calendar() {
                       {getAvailableParadas().length === 0 ? (
                         <p className="text-sm text-gray-500">No hay paradas disponibles para las fechas seleccionadas.</p>
                       ) : (
-                        getAvailableParadas().map(parada => (
-                    <div key={parada.id} className={`flex items-center space-x-2 py-2 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
+                        getAvailableParadas().map(parada => {
+                          const isNoOperativa = !!(parada as any).blockReason;
+                          return (
+                    <div key={parada.id} className={`flex items-center space-x-2 py-2 border-b last:border-0 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
                       <Checkbox
                         id={`parada-${parada.id}`}
                         checked={reservaForm.selectedParadas.includes(parada.id)}
@@ -597,11 +621,20 @@ export default function Calendar() {
                         htmlFor={`parada-${parada.id}`}
                         className={`text-sm flex-1 ${parada.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                       >
-                        <div>
-                          <span className="font-medium">{parada.cobertizoId}</span>
-                          <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                          {" - "}{parada.direccion}
-                          {parada.ruta && <span className="text-gray-500 ml-2">(Ruta: {parada.ruta})</span>}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`font-medium ${isNoOperativa ? 'line-through text-muted-foreground' : ''}`}>{parada.cobertizoId}</span>
+                          <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{parada.orientacion}</span>
+                          <span className={isNoOperativa ? 'line-through text-muted-foreground' : ''}>{parada.direccion}</span>
+                          {parada.ruta && <span className="text-gray-500">(Ruta: {parada.ruta})</span>}
+                          {(parada as any).blockReason === 'Removida' && (
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">Removida</span>
+                          )}
+                          {(parada as any).blockReason === 'En Construcción' && (
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">En Construcción</span>
+                          )}
+                          {(parada as any).blockReason === 'Sin Display' && (
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Sin Display</span>
+                          )}
                         </div>
                         {!parada.isAvailable && parada.availableAfter && (
                           <div className="text-xs text-red-600 mt-1">
@@ -610,7 +643,8 @@ export default function Calendar() {
                         )}
                       </label>
                     </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                     <p className="text-sm text-gray-500 mt-2">
@@ -676,8 +710,10 @@ export default function Calendar() {
                               return <p className="text-sm text-gray-500">No hay paradas disponibles en esta ruta para las fechas seleccionadas.</p>;
                             }
                             
-                            return availableInRoute.map(parada => (
-                              <div key={parada.id} className={`flex items-center space-x-2 py-2 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
+                            return availableInRoute.map(parada => {
+                              const isNoOperativa = !!(parada as any).blockReason;
+                              return (
+                              <div key={parada.id} className={`flex items-center space-x-2 py-2 border-b last:border-0 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
                                 <Checkbox
                                   id={`parada-ruta-${parada.id}`}
                                   checked={reservaForm.selectedParadas.includes(parada.id)}
@@ -700,10 +736,19 @@ export default function Calendar() {
                                   htmlFor={`parada-ruta-${parada.id}`}
                                   className={`text-sm flex-1 ${parada.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                                 >
-                                  <div>
-                                    <span className="font-medium">{parada.cobertizoId}</span>
-                                    <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded ml-1">{parada.orientacion}</span>
-                                    {" - "}{parada.direccion}
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className={`font-medium ${isNoOperativa ? 'line-through text-muted-foreground' : ''}`}>{parada.cobertizoId}</span>
+                                    <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{parada.orientacion}</span>
+                                    <span className={isNoOperativa ? 'line-through text-muted-foreground' : ''}>{parada.direccion}</span>
+                                    {(parada as any).blockReason === 'Removida' && (
+                                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">Removida</span>
+                                    )}
+                                    {(parada as any).blockReason === 'En Construcción' && (
+                                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">En Construcción</span>
+                                    )}
+                                    {(parada as any).blockReason === 'Sin Display' && (
+                                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Sin Display</span>
+                                    )}
                                   </div>
                                   {!parada.isAvailable && parada.availableAfter && (
                                     <div className="text-xs text-red-600 mt-1">
@@ -712,7 +757,8 @@ export default function Calendar() {
                                   )}
                                 </label>
                               </div>
-                            ));
+                              );
+                            });
                           })()}
                         </div>
                         <p className="text-sm text-gray-500 mt-2">

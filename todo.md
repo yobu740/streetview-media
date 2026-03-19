@@ -1283,3 +1283,4 @@
 - [x] Add fromParadaId column to instalaciones schema for Relocalizacion origin tracking
 - [x] Show Removida paradas as visually blocked in Anuncios.tsx parada combobox
 - [x] Add Cancel Installation button in Instalacion.tsx bulk action bar
+- [x] Block all non-operative paradas (Removida, En Construccion, Sin Display) visually in Calendar.tsx reserva modal
