@@ -185,7 +185,7 @@ export default function Home() {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/GnIjzAPVbfuLkxle.mp4" type="video/mp4" />
+            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(1)_4c06b01b.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a4d3c]/80 to-transparent"></div>
         </div>
