@@ -1,0 +1,22 @@
+{
+  "query": "SELECT p.cobertizo_id, p.orientacion, p.foto_url AS parada_foto, i.foto_instalacion FROM paradas p LEFT JOIN instalaciones i ON i.parada_id = p.id WHERE p.id IN (91438, 91445);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT p.cobertizo_id, p.orientacion, p.foto_url AS parada_foto, i.foto_instalacion FROM paradas p LEFT JOIN instalaciones i ON i.parada_id = p.id WHERE p.id IN (91438, 91445);",
+  "rows": [
+    {
+      "cobertizo_id": "066",
+      "orientacion": "O",
+      "parada_foto": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg",
+      "foto_instalacion": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg"
+    },
+    {
+      "cobertizo_id": "429",
+      "orientacion": "I",
+      "parada_foto": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg",
+      "foto_instalacion": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg"
+    }
+  ],
+  "messages": [],
+  "stdout": "cobertizo_id\torientacion\tparada_foto\tfoto_instalacion\n066\tO\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg\n429\tI\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg\n",
+  "stderr": "",
+  "execution_time_ms": 349
+}

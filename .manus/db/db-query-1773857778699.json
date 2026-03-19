@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, cobertizo_id, orientacion, foto_url FROM paradas WHERE id IN (91438, 91445);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, orientacion, foto_url FROM paradas WHERE id IN (91438, 91445);",
+  "rows": [
+    {
+      "id": "91438",
+      "cobertizo_id": "066",
+      "orientacion": "O",
+      "foto_url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-5-1773851058383.jpg"
+    },
+    {
+      "id": "91445",
+      "cobertizo_id": "429",
+      "orientacion": "I",
+      "foto_url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-4-1773851091380.jpg"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\torientacion\tfoto_url\n91438\t066\tO\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-5-1773851058383.jpg\n91445\t429\tI\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-4-1773851091380.jpg\n",
+  "stderr": "",
+  "execution_time_ms": 344
+}

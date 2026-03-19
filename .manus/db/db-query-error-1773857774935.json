@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, cobertizo_id, orientacion, foto_url, foto_instalacion_url FROM paradas WHERE id IN (91438, 91445);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, orientacion, foto_url, foto_instalacion_url FROM paradas WHERE id IN (91438, 91445);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'foto_instalacion_url' in 'field list'"
+  ]
+}

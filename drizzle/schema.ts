@@ -268,6 +268,7 @@ export const instalaciones = mysqlTable("instalaciones", {
   id: int("id").autoincrement().primaryKey(),
   anuncioId: int("anuncio_id").notNull(), // FK to anuncios
   paradaId: int("parada_id").notNull(), // FK to paradas (destination parada)
+  fromParadaId: int("from_parada_id"), // FK to paradas (origin parada, only set for Relocalizacion)
   estado: mysqlEnum("estado", ["Programado", "Relocalizacion", "Instalado"]).default("Programado").notNull(),
   fotoInstalacion: text("foto_instalacion"), // S3 URL of the installed photo (uploaded after installation)
   instaladoAt: timestamp("instalado_at"), // When it was marked as Instalado

@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, cobertizo_id, orientacion, localizacion FROM paradas WHERE (cobertizo_id = '066' AND orientacion = 'O') OR (cobertizo_id = '429' AND orientacion = 'I');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, orientacion, localizacion FROM paradas WHERE (cobertizo_id = '066' AND orientacion = 'O') OR (cobertizo_id = '429' AND orientacion = 'I');",
+  "rows": [
+    {
+      "id": "91438",
+      "cobertizo_id": "066",
+      "orientacion": "O",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA"
+    },
+    {
+      "id": "91445",
+      "cobertizo_id": "429",
+      "orientacion": "I",
+      "localizacion": "AVE. FERNANDEZ JUNCOS PTA. TIERRA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\torientacion\tlocalizacion\n91438\t066\tO\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\n91445\t429\tI\tAVE. FERNANDEZ JUNCOS PTA. TIERRA\n",
+  "stderr": "",
+  "execution_time_ms": 368
+}

@@ -56,6 +56,7 @@ type InstalacionItem = {
   id: number;
   anuncioId: number;
   paradaId: number;
+  fromParadaId: number | null;
   estado: "Programado" | "Relocalizacion" | "Instalado";
   fotoInstalacion: string | null;
   instaladoAt: Date | null;
@@ -76,6 +77,10 @@ type InstalacionItem = {
   flowCat: string | null;
   coordenadasLat: string | null;
   coordenadasLng: string | null;
+  // Origin parada fields (only set for Relocalizacion)
+  fromCobertizoId: string | null;
+  fromOrientacion: string | null;
+  fromLocalizacion: string | null;
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -193,6 +198,17 @@ export default function Instalacion() {
     onError: (e) => toast.error(e.message),
   });
 
+  const cancelInstalaciones = trpc.instalaciones.cancel.useMutation({
+    onSuccess: (result) => {
+      utils.instalaciones.list.invalidate();
+      utils.anuncios.list.invalidate();
+      setSelectedIds(new Set());
+      setCancelConfirmOpen(false);
+      toast.success(`${result.deleted} instalación(es) cancelada(s). Los anuncios fueron revertidos a Disponible.`);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   // Filters
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
@@ -209,6 +225,7 @@ export default function Instalacion() {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   // Dialogs
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
   const [artDialogItem, setArtDialogItem] = useState<InstalacionItem | null>(null);
   const [fotoDialogItem, setFotoDialogItem] = useState<InstalacionItem | null>(null);
   const [confirmInstalado, setConfirmInstalado] = useState<InstalacionItem | null>(null);
@@ -691,6 +708,18 @@ export default function Instalacion() {
             <FileText className="w-4 h-4" />
             Orden de Instalación ({selectedIds.size})
           </Button>
+          {user?.role === 'admin' && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCancelConfirmOpen(true)}
+              disabled={selectedIds.size === 0}
+              className="gap-1.5 text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700"
+            >
+              <X className="w-4 h-4" />
+              Cancelar Instalación ({selectedIds.size})
+            </Button>
+          )}
         </div>
       </div>
 
@@ -875,15 +904,30 @@ export default function Instalacion() {
                         </span>
                       </td>
                       <td className="px-3 py-2 font-mono font-semibold text-xs">
-                        {item.cobertizoId}
+                        {item.estado === "Relocalizacion" && item.fromCobertizoId ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[10px] text-muted-foreground line-through">{item.fromCobertizoId}</span>
+                            <span className="text-[#1a4d3c]">{item.cobertizoId}</span>
+                          </div>
+                        ) : item.cobertizoId}
                       </td>
                       <td className="px-3 py-2">
-                        <Badge variant="outline" className="text-xs font-mono">
-                          {item.orientacion}
-                        </Badge>
+                        {item.estado === "Relocalizacion" && item.fromOrientacion ? (
+                          <div className="flex flex-col gap-0.5">
+                            <Badge variant="outline" className="text-[10px] font-mono opacity-50 line-through">{item.fromOrientacion}</Badge>
+                            <Badge variant="outline" className="text-xs font-mono">{item.orientacion}</Badge>
+                          </div>
+                        ) : (
+                          <Badge variant="outline" className="text-xs font-mono">{item.orientacion}</Badge>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground max-w-[220px] truncate">
-                        {item.direccion}
+                        {item.estado === "Relocalizacion" && item.fromLocalizacion ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[10px] line-through opacity-50">{item.fromLocalizacion}</span>
+                            <span>{item.localizacion ?? "—"}</span>
+                          </div>
+                        ) : item.direccion}
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground max-w-[160px] truncate">
                         {item.localizacion ?? "—"}
@@ -1546,6 +1590,52 @@ export default function Instalacion() {
                 <CheckCircle2 className="w-4 h-4 mr-2" />
               )}
               Confirmar Instalado
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Cancel Installation Confirmation Dialog */}
+      <AlertDialog open={cancelConfirmOpen} onOpenChange={setCancelConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600 flex items-center gap-2">
+              <X className="w-5 h-5" />
+              Cancelar {selectedIds.size} Instalación(es)
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Esta acción eliminará permanentemente los registros de instalación seleccionados y revertirá los anuncios a estado <strong>Disponible</strong>.
+                </p>
+                <div className="max-h-48 overflow-y-auto border rounded-md divide-y text-sm">
+                  {filtered
+                    .filter((i) => selectedIds.has(i.id))
+                    .map((i) => (
+                      <div key={i.id} className="px-3 py-2 flex items-center gap-3">
+                        <span className="font-mono font-bold text-[#1a4d3c] text-xs w-16 shrink-0">{i.cobertizoId}-{i.orientacion}</span>
+                        <span className="text-xs text-muted-foreground flex-1 truncate">{i.producto} — {i.cliente}</span>
+                        {estadoBadge(i.estado)}
+                      </div>
+                    ))}
+                </div>
+                <p className="text-xs text-red-600 font-medium">⚠️ Esta acción no se puede deshacer.</p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Volver</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => cancelInstalaciones.mutate({ ids: Array.from(selectedIds) })}
+              disabled={cancelInstalaciones.isPending}
+            >
+              {cancelInstalaciones.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <X className="w-4 h-4 mr-2" />
+              )}
+              Sí, Cancelar Instalación
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

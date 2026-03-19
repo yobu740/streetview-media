@@ -1,0 +1,26 @@
+{
+  "query": "SELECT i.id, i.parada_id, i.anuncio_id, i.estado, i.foto_instalacion, i.instalado_at FROM instalaciones i WHERE i.parada_id IN (91438, 91445) ORDER BY i.id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT i.id, i.parada_id, i.anuncio_id, i.estado, i.foto_instalacion, i.instalado_at FROM instalaciones i WHERE i.parada_id IN (91438, 91445) ORDER BY i.id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "5",
+      "parada_id": "91438",
+      "anuncio_id": "450002",
+      "estado": "Instalado",
+      "foto_instalacion": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-5-1773851058383.jpg",
+      "instalado_at": "2026-03-18 16:24:19"
+    },
+    {
+      "id": "4",
+      "parada_id": "91445",
+      "anuncio_id": "450001",
+      "estado": "Instalado",
+      "foto_instalacion": "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-4-1773851091380.jpg",
+      "instalado_at": "2026-03-18 16:24:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tparada_id\tanuncio_id\testado\tfoto_instalacion\tinstalado_at\n5\t91438\t450002\tInstalado\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-5-1773851058383.jpg\t2026-03-18 16:24:19\n4\t91445\t450001\tInstalado\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/instalaciones/foto-4-1773851091380.jpg\t2026-03-18 16:24:52\n",
+  "stderr": "",
+  "execution_time_ms": 365
+}

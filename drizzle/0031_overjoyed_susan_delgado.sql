@@ -1,0 +1,1 @@
+ALTER TABLE `instalaciones` ADD `from_parada_id` int;

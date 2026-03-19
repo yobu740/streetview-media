@@ -1278,3 +1278,8 @@
 - [x] Add backend procedure confirmInstalled to mark instalacion as Instalado from Anuncios page
 - [x] Add frontend dialog in Anuncios.tsx: when changing Programado → Activo/Finalizado, if pending instalacion exists, ask "¿Este anuncio fue instalado?"
 - [x] If user confirms, auto-mark instalacion as Instalado (with current date/timestamp)
+
+## Mejoras Instalaciones y Paradas - Mar 2026
+- [x] Add fromParadaId column to instalaciones schema for Relocalizacion origin tracking
+- [x] Show Removida paradas as visually blocked in Anuncios.tsx parada combobox
+- [x] Add Cancel Installation button in Instalacion.tsx bulk action bar

@@ -409,6 +409,7 @@ export const appRouter = router({
                 await createInstalacion({
                   anuncioId: id,
                   paradaId: input.paradaId,
+                  fromParadaId: current.paradaId ?? undefined,
                   estado: 'Relocalizacion',
                   notas: `Relocalizado desde parada #${current.paradaId}`,
                 });
@@ -2071,6 +2072,44 @@ export const appRouter = router({
           undefined // no photo
         );
         return { success: true, instalacionId: inst.id };
+      }),
+
+    // Cancel (delete) one or more instalacion records and revert anuncio to Disponible
+    cancel: adminProcedure
+      .input(z.object({ ids: z.array(z.number()) }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import('./db');
+        const { instalaciones, anuncios } = await import('../drizzle/schema');
+        const { eq, inArray } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+
+        // Get anuncio IDs before deleting
+        const records = await db
+          .select({ id: instalaciones.id, anuncioId: instalaciones.anuncioId })
+          .from(instalaciones)
+          .where(inArray(instalaciones.id, input.ids));
+
+        const anuncioIds = [...new Set(records.map(r => r.anuncioId))];
+
+        // Delete the instalacion records
+        await db.delete(instalaciones).where(inArray(instalaciones.id, input.ids));
+
+        // Revert each anuncio to Disponible (only if it has no other pending instalacion)
+        for (const anuncioId of anuncioIds) {
+          const remaining = await db
+            .select({ id: instalaciones.id })
+            .from(instalaciones)
+            .where(eq(instalaciones.anuncioId, anuncioId))
+            .limit(1);
+          if (remaining.length === 0) {
+            await db.update(anuncios)
+              .set({ estado: 'Disponible' })
+              .where(eq(anuncios.id, anuncioId));
+          }
+        }
+
+        return { success: true, deleted: input.ids.length };
       }),
 
     // Get all instalaciones including Instalado (for history / order generation)

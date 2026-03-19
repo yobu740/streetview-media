@@ -298,6 +298,7 @@ export async function getAnuncioHistory(anuncioId: number) {
 export async function createInstalacion(entry: {
   anuncioId: number;
   paradaId: number;
+  fromParadaId?: number;
   estado: "Programado" | "Relocalizacion";
   notas?: string;
 }) {
@@ -311,6 +312,7 @@ export async function createInstalacion(entry: {
     await db.insert(instalaciones).values({
       anuncioId: entry.anuncioId,
       paradaId: entry.paradaId,
+      fromParadaId: entry.fromParadaId ?? null,
       estado: entry.estado,
       notas: entry.notas ?? null,
     });
@@ -324,11 +326,14 @@ export async function getInstalaciones() {
   const db = await getDb();
   if (!db) return [];
   const { instalaciones, anuncios, paradas } = await import("../drizzle/schema");
+  const { alias } = await import("drizzle-orm/mysql-core");
+  const fromParadas = alias(paradas, "from_paradas");
   const result = await db
     .select({
       id: instalaciones.id,
       anuncioId: instalaciones.anuncioId,
       paradaId: instalaciones.paradaId,
+      fromParadaId: instalaciones.fromParadaId,
       estado: instalaciones.estado,
       fotoInstalacion: instalaciones.fotoInstalacion,
       instaladoAt: instalaciones.instaladoAt,
@@ -344,7 +349,7 @@ export async function getInstalaciones() {
       fechaFin: anuncios.fechaFin,
       estadoAnuncio: anuncios.estado,
       arteUrl: anuncios.notas, // re-use notas field for arteUrl lookup — actual arte stored separately
-      // Parada fields
+      // Parada (destination) fields
       cobertizoId: paradas.cobertizoId,
       orientacion: paradas.orientacion,
       direccion: paradas.direccion,
@@ -352,10 +357,15 @@ export async function getInstalaciones() {
       flowCat: paradas.flowCat,
       coordenadasLat: paradas.coordenadasLat,
       coordenadasLng: paradas.coordenadasLng,
+      // From parada (origin) fields — only set for Relocalizacion
+      fromCobertizoId: fromParadas.cobertizoId,
+      fromOrientacion: fromParadas.orientacion,
+      fromLocalizacion: fromParadas.localizacion,
     })
     .from(instalaciones)
     .innerJoin(anuncios, eq(instalaciones.anuncioId, anuncios.id))
     .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
+    .leftJoin(fromParadas, eq(instalaciones.fromParadaId, fromParadas.id))
     .where(ne(instalaciones.estado, "Instalado" as const))
     .orderBy(asc(paradas.flowCat), asc(paradas.cobertizoId));
   return result;

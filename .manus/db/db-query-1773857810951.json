@@ -1,0 +1,9 @@
+{
+  "query": "\nUPDATE paradas SET foto_url = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg' WHERE id = 91438;\n\nUPDATE paradas SET foto_url = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg' WHERE id = 91445;\n\nUPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg' WHERE id = 5;\n\nUPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg' WHERE id = 4;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nUPDATE paradas SET foto_url = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg' WHERE id = 91438;\n\nUPDATE paradas SET foto_url = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg' WHERE id = 91445;\n\nUPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/066-O_eed916d6.jpg' WHERE id = 5;\n\nUPDATE instalaciones SET foto_instalacion = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/429-I_0ba6486d.jpg' WHERE id = 4;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 540
+}

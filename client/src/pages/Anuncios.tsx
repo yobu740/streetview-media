@@ -960,24 +960,41 @@ export default function Anuncios() {
                             });
                             return !hasConflict;
                           })
-                          .map((parada) => (
+                          .map((parada) => {
+                            const isRemovida = !!(parada as any).removida;
+                            const isEnConstruccion = !!(parada as any).enConstruccion;
+                            const isBlocked = isRemovida || isEnConstruccion;
+                            return (
                             <CommandItem
                               key={parada.id}
                               value={`${parada.cobertizoId} ${parada.orientacion} ${parada.localizacion} ${parada.direccion || ""}`}
                               onSelect={() => {
+                                if (isBlocked) return;
                                 setEditForm({ ...editForm, paradaId: parada.id });
                                 setIsParadaComboboxOpen(false);
                               }}
+                              className={isBlocked ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}
                             >
                               <Check
                                 className={`mr-2 h-4 w-4 ${editForm.paradaId === parada.id ? "opacity-100" : "opacity-0"}`}
                               />
-                              <div className="flex flex-col">
-                                <span className="font-medium">{parada.cobertizoId} [{parada.orientacion}]</span>
+                              <div className="flex flex-col flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-medium ${isBlocked ? "line-through text-muted-foreground" : ""}`}>
+                                    {parada.cobertizoId} [{parada.orientacion}]
+                                  </span>
+                                  {isRemovida && (
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">Removida</span>
+                                  )}
+                                  {isEnConstruccion && (
+                                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">En Construcción</span>
+                                  )}
+                                </div>
                                 <span className="text-xs text-muted-foreground">{parada.localizacion}{parada.direccion ? ` - ${parada.direccion}` : ""}</span>
                               </div>
                             </CommandItem>
-                          ))}
+                            );
+                          })}
                       </CommandGroup>
                     </CommandList>
                   </Command>
