@@ -195,7 +195,7 @@ export default function Home() {
         <div className="relative h-full flex items-center justify-center text-center px-4">
           <div className="max-w-5xl">
             <div
-              className="font-black text-white leading-none uppercase"
+              className="font-bold text-white leading-none uppercase"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
                 fontSize: 'clamp(3rem, 10vw, 9rem)',
@@ -214,6 +214,17 @@ export default function Home() {
               }}
             >
               MEDIA
+            </div>
+            <div
+              className="font-light text-white/90"
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 'clamp(0.85rem, 1.8vw, 1.5rem)',
+                letterSpacing: '0.18em',
+                marginTop: '1em',
+              }}
+            >
+              Tu Marca en el Camino
             </div>
           </div>
         </div>
