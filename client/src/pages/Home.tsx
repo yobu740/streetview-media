@@ -186,18 +186,35 @@ export default function Home() {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(3)_e9f11365.mp4" type="video/mp4" />
+            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(4)_658bc6d9.mp4" type="video/mp4" />
           </video>
           {/* Green semi-transparent overlay — low opacity so video stays visible */}
           <div className="absolute inset-0" style={{backgroundColor: 'rgba(26, 77, 60, 0.45)'}}></div>
         </div>
-        {/* Centered text — bmedia.agency style */}
+        {/* Centered text — Montserrat logo-style */}
         <div className="relative h-full flex items-center justify-center text-center px-4">
-          <div className="max-w-4xl">
-            <h1 className="text-display font-black text-white leading-none tracking-tight"
-              style={{fontSize: 'clamp(2.5rem, 8vw, 7rem)'}}>
-              Tu Marca en el Camino
-            </h1>
+          <div className="max-w-5xl">
+            <div
+              className="font-black text-white leading-none uppercase"
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 'clamp(3rem, 10vw, 9rem)',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              STREETVIEW
+            </div>
+            <div
+              className="font-bold text-white uppercase"
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 'clamp(1rem, 3vw, 2.8rem)',
+                letterSpacing: '0.55em',
+                marginTop: '0.1em',
+              }}
+            >
+              MEDIA
+            </div>
           </div>
         </div>
       </section>
