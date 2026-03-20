@@ -208,7 +208,7 @@ export default function Home() {
               className="font-bold text-white uppercase"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(1.2rem, 3.5vw, 3.5rem)',
+                fontSize: 'clamp(1.6rem, 4.5vw, 4.5rem)',
                 letterSpacing: '0.55em',
                 marginTop: '-0.05em',
               }}
@@ -219,7 +219,7 @@ export default function Home() {
               className="font-medium text-white/90 uppercase"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(1rem, 2.2vw, 1.9rem)',
+                fontSize: 'clamp(1.1rem, 2.6vw, 2.3rem)',
                 letterSpacing: '0.2em',
                 marginTop: '0.35em',
               }}
