@@ -476,7 +476,6 @@ export default function Home() {
                 <a href="#nosotros" className="block hover:text-[#ff6b35] transition-colors">Nosotros</a>
                 <a href="#servicios" className="block hover:text-[#ff6b35] transition-colors">Servicios</a>
                 <a href="#contacto" className="block hover:text-[#ff6b35] transition-colors">Contacto</a>
-                <a href="/admin" className="block hover:text-[#ff6b35] transition-colors">Admin</a>
               </div>
             </div>
           </div>
