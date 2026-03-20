@@ -176,8 +176,9 @@ export default function Home() {
       </nav>
 
       {/* Hero Section - Video */}
-      <section id="inicio" className="relative h-screen mt-20">
-        <div className="absolute inset-0 bg-[#1a4d3c]">
+      <section id="inicio" className="relative h-screen mt-20 overflow-hidden">
+        {/* Video background */}
+        <div className="absolute inset-0">
           <video 
             autoPlay 
             loop 
@@ -185,30 +186,18 @@ export default function Home() {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(2)_a2b1d313.mp4" type="video/mp4" />
+            <source src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/banner_streetview(3)_e9f11365.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1a4d3c]/80 to-transparent"></div>
+          {/* Green semi-transparent overlay — low opacity so video stays visible */}
+          <div className="absolute inset-0" style={{backgroundColor: 'rgba(26, 77, 60, 0.45)'}}></div>
         </div>
-        <div className="relative h-full container flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-display text-5xl md:text-6xl text-white mb-6 leading-tight">
+        {/* Centered text — bmedia.agency style */}
+        <div className="relative h-full flex items-center justify-center text-center px-4">
+          <div className="max-w-4xl">
+            <h1 className="text-display font-black text-white leading-none tracking-tight"
+              style={{fontSize: 'clamp(2.5rem, 8vw, 7rem)'}}>
               Tu Marca en el Camino
             </h1>
-            <p className="text-body text-xl text-white/90 mb-8 max-w-xl">
-              La nueva red de publicidad exterior especializada en mobiliario urbano de alto impacto en Puerto Rico.
-            </p>
-            <Button 
-              size="lg" 
-              onClick={() => {
-                const mapSection = document.getElementById('mapa');
-                if (mapSection) {
-                  mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white text-display text-xl px-8 py-6 h-auto border-4 border-[#ff6b35] hover:border-white transition-all"
-            >
-              Ver Localizaciones
-            </Button>
           </div>
         </div>
       </section>
