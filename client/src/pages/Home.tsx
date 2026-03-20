@@ -216,12 +216,12 @@ export default function Home() {
               MEDIA
             </div>
             <div
-              className="font-light text-white/90"
+              className="font-medium text-white/90 uppercase"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(0.85rem, 1.8vw, 1.5rem)',
-                letterSpacing: '0.18em',
-                marginTop: '1em',
+                fontSize: 'clamp(1rem, 2.2vw, 1.9rem)',
+                letterSpacing: '0.2em',
+                marginTop: '0.35em',
               }}
             >
               Tu Marca en el Camino
