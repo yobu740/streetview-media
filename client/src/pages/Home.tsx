@@ -199,7 +199,7 @@ export default function Home() {
               style={{
                 fontFamily: "'Montserrat', sans-serif",
                 fontSize: 'clamp(3rem, 10vw, 9rem)',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.06em',
               }}
             >
               STREETVIEW
@@ -208,9 +208,9 @@ export default function Home() {
               className="font-bold text-white uppercase"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: 'clamp(1rem, 3vw, 2.8rem)',
+                fontSize: 'clamp(1.2rem, 3.5vw, 3.5rem)',
                 letterSpacing: '0.55em',
-                marginTop: '0.1em',
+                marginTop: '-0.05em',
               }}
             >
               MEDIA
