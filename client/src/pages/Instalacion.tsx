@@ -693,21 +693,6 @@ export default function Instalacion() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => syncFotos.mutate()}
-            disabled={syncFotos.isPending}
-            className="gap-1.5 text-blue-700 border-blue-300 hover:bg-blue-50"
-            title="(Uso único) Copiar fotos de instalaciones existentes al detalle de cada parada"
-          >
-            {syncFotos.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Camera className="w-4 h-4" />
-            )}
-            Sync Fotos
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
             onClick={handleGenerateOrder}
             disabled={selectedIds.size === 0}
             className="gap-1.5"

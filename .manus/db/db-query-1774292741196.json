@@ -1,0 +1,20 @@
+{
+  "query": "SELECT flow_cat, localizacion, COUNT(*) as total_paradas\nFROM paradas\nWHERE flow_cat IN ('041', '045')\nGROUP BY flow_cat, localizacion\nORDER BY flow_cat;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT flow_cat, localizacion, COUNT(*) as total_paradas\nFROM paradas\nWHERE flow_cat IN ('041', '045')\nGROUP BY flow_cat, localizacion\nORDER BY flow_cat;",
+  "rows": [
+    {
+      "flow_cat": "041",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "total_paradas": "10"
+    },
+    {
+      "flow_cat": "045",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "total_paradas": "18"
+    }
+  ],
+  "messages": [],
+  "stdout": "flow_cat\tlocalizacion\ttotal_paradas\n041\tAVE. MUÑOZ RIVERA PTA DE TIERRA\t10\n045\tAVE. PONCE DE LEÓN PTA DE TIERRA\t18\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}

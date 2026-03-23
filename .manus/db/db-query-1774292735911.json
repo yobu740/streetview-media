@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE paradas SET flow_cat = '041' WHERE localizacion = 'AVE. MUÑOZ RIVERA PTA DE TIERRA';\nUPDATE paradas SET flow_cat = '045' WHERE localizacion = 'AVE. PONCE DE LEÓN PTA DE TIERRA';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE paradas SET flow_cat = '041' WHERE localizacion = 'AVE. MUÑOZ RIVERA PTA DE TIERRA';\nUPDATE paradas SET flow_cat = '045' WHERE localizacion = 'AVE. PONCE DE LEÓN PTA DE TIERRA';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 399
+}

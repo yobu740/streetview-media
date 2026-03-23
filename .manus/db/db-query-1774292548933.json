@@ -1,0 +1,1530 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE flow_cat IN ('041', '045') \nORDER BY flow_cat, cobertizo_id\nLIMIT 20 OFFSET 20;\n\nSELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE (localizacion LIKE '%MUÑOZ RIVERA%' OR localizacion LIKE '%PONCE DE LEÓN%') \nAND flow_cat NOT IN ('041', '045')\nORDER BY localizacion, cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE flow_cat IN ('041', '045') \nORDER BY flow_cat, cobertizo_id\nLIMIT 20 OFFSET 20;\n\nSELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE (localizacion LIKE '%MUÑOZ RIVERA%' OR localizacion LIKE '%PONCE DE LEÓN%') \nAND flow_cat NOT IN ('041', '045')\nORDER BY localizacion, cobertizo_id;",
+  "rows": [
+    {
+      "id": "480020",
+      "cobertizo_id": "350A",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Camara de Representantes",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480019",
+      "cobertizo_id": "350A",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Camara de Representantes",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480022",
+      "cobertizo_id": "350B",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Camara de Representantes",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480021",
+      "cobertizo_id": "350B",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Camara de Representantes",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480023",
+      "cobertizo_id": "400",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Ateneo Puertorriqueño",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480024",
+      "cobertizo_id": "400",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Ateneo Puertorriqueño",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480026",
+      "cobertizo_id": "574",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Salida VSJ opuesto Casa España",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480025",
+      "cobertizo_id": "574",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Salida VSJ opuesto Casa España",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "id",
+      "cobertizo_id": "cobertizo_id",
+      "localizacion": "localizacion",
+      "direccion": "direccion",
+      "orientacion": "orientacion",
+      "flow_cat": "flow_cat"
+    },
+    {
+      "id": "91563",
+      "cobertizo_id": "112A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91564",
+      "cobertizo_id": "112A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91565",
+      "cobertizo_id": "112B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91566",
+      "cobertizo_id": "112B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte estacionamiento Centro Judicial",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91567",
+      "cobertizo_id": "113",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opuesto a Walgreens",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91568",
+      "cobertizo_id": "113A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91569",
+      "cobertizo_id": "113B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91570",
+      "cobertizo_id": "113C",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91572",
+      "cobertizo_id": "113D",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91571",
+      "cobertizo_id": "113E",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91573",
+      "cobertizo_id": "113F",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91574",
+      "cobertizo_id": "113G",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91575",
+      "cobertizo_id": "113H",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91576",
+      "cobertizo_id": "115",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte edificio del BPPR",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91577",
+      "cobertizo_id": "115",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte edificio del BPPR",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91578",
+      "cobertizo_id": "118",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Antes entrada de Union Dealer",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91579",
+      "cobertizo_id": "118",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Antes entrada de Union Dealer",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91580",
+      "cobertizo_id": "123",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte a Walgreens",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91581",
+      "cobertizo_id": "123",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte a Walgreens",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91582",
+      "cobertizo_id": "125",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Frente al BPPR",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91583",
+      "cobertizo_id": "125",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Frente al BPPR",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91584",
+      "cobertizo_id": "305",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte Tribunal de Apelaciones de PR",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91585",
+      "cobertizo_id": "305",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Muñoz Rivera Fte Tribunal de Apelaciones de PR",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91586",
+      "cobertizo_id": "306",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Esq Calaf antes del Choliseo",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91587",
+      "cobertizo_id": "306",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Esq Calaf antes del Choliseo",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "330024",
+      "cobertizo_id": "307",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY",
+      "direccion": "Fte Tinto y Blanco, opuesto Popular Center",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "330025",
+      "cobertizo_id": "307",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY",
+      "direccion": "Fte Tinto y Blanco, opuesto Popular Center",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91588",
+      "cobertizo_id": "308",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a estacion tren Opuesto a CVS",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91589",
+      "cobertizo_id": "308",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a estacion tren Opuesto a CVS",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91590",
+      "cobertizo_id": "311",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto a Asoc de Maestros",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91591",
+      "cobertizo_id": "311",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto a Asoc de Maestros",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91592",
+      "cobertizo_id": "313",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a Monte Mall",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91593",
+      "cobertizo_id": "313",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a Monte Mall",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91594",
+      "cobertizo_id": "319",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte Edificio Darlington",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91595",
+      "cobertizo_id": "319",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte Edificio Darlington",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91596",
+      "cobertizo_id": "451A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91597",
+      "cobertizo_id": "451A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91598",
+      "cobertizo_id": "451B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91599",
+      "cobertizo_id": "451B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opuesto Tmobile Plaza",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91600",
+      "cobertizo_id": "472A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a First Bank ",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91601",
+      "cobertizo_id": "472A",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a First Bank ",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91602",
+      "cobertizo_id": "472B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a First Bank ",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91603",
+      "cobertizo_id": "472B",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a First Bank ",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91604",
+      "cobertizo_id": "481",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a Monte Mall Townhouses",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91605",
+      "cobertizo_id": "481",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte a Monte Mall Townhouses",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91606",
+      "cobertizo_id": "532",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opu, fte Denny's opuesto al Darlington",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91607",
+      "cobertizo_id": "532",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Opu, fte Denny's opuesto al Darlington",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91608",
+      "cobertizo_id": "542",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte Centro Unido de Detallistas",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91609",
+      "cobertizo_id": "542",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY ",
+      "direccion": "Ave. Munoz Rivera Fte Centro Unido de Detallistas",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "330026",
+      "cobertizo_id": "571",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY",
+      "direccion": "Marginal Fte edificio del FEI",
+      "orientacion": "I",
+      "flow_cat": "039"
+    },
+    {
+      "id": "330027",
+      "cobertizo_id": "571",
+      "localizacion": "AVE. MUÑOZ RIVERA HATO REY",
+      "direccion": "Marginal Fte edificio del FEI",
+      "orientacion": "O",
+      "flow_cat": "039"
+    },
+    {
+      "id": "91610",
+      "cobertizo_id": "069A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91611",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91612",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91613",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91614",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91615",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91616",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91617",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91618",
+      "cobertizo_id": "069AI",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91619",
+      "cobertizo_id": "069B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91620",
+      "cobertizo_id": "069B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Centro de Bellas Artes",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91621",
+      "cobertizo_id": "134",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91622",
+      "cobertizo_id": "134A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91623",
+      "cobertizo_id": "134B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91624",
+      "cobertizo_id": "134C",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91625",
+      "cobertizo_id": "134D",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91626",
+      "cobertizo_id": "134E",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91627",
+      "cobertizo_id": "134F",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91628",
+      "cobertizo_id": "134G",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91629",
+      "cobertizo_id": "134H",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91630",
+      "cobertizo_id": "135A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91631",
+      "cobertizo_id": "135A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91632",
+      "cobertizo_id": "135B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91633",
+      "cobertizo_id": "135B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asilo en Miramar",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91634",
+      "cobertizo_id": "137",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a Marshalls",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91635",
+      "cobertizo_id": "137",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a Marshalls",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91636",
+      "cobertizo_id": "139",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Rubén's Café",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91637",
+      "cobertizo_id": "139",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Rubén's Café",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91638",
+      "cobertizo_id": "140",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes del Hosp Santurce Medical Mall opt",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91639",
+      "cobertizo_id": "140",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes del Hosp Santurce Medical Mall opt",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91640",
+      "cobertizo_id": "143",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte edificio Mercantil Plaza",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91641",
+      "cobertizo_id": "143",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte edificio Mercantil Plaza",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91642",
+      "cobertizo_id": "147",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte entrada Hosp Auxilio Mutuo",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91643",
+      "cobertizo_id": "147",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte entrada Hosp Auxilio Mutuo",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91644",
+      "cobertizo_id": "148",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León detrás del Centro Judicial",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91645",
+      "cobertizo_id": "148",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León detrás del Centro Judicial",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91646",
+      "cobertizo_id": "151",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte oficinas de la Telefonica ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91647",
+      "cobertizo_id": "151",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte oficinas de la Telefonica ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91649",
+      "cobertizo_id": "158",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Leonardo's",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91648",
+      "cobertizo_id": "158",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Leonardo's",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91650",
+      "cobertizo_id": "317A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a UPR",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91651",
+      "cobertizo_id": "317A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a UPR",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91652",
+      "cobertizo_id": "317B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a UPR",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91653",
+      "cobertizo_id": "317B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a UPR",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91654",
+      "cobertizo_id": "331A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asociacion de Maestros ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91655",
+      "cobertizo_id": "331A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asociacion de Maestros ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91656",
+      "cobertizo_id": "331B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asociacion de Maestros ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91657",
+      "cobertizo_id": "331B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Asociacion de Maestros ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91658",
+      "cobertizo_id": "349",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes de Miramar Plz Opt Consv",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91659",
+      "cobertizo_id": "349",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes de Miramar Plz Opt Consv",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91660",
+      "cobertizo_id": "353",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a la Escuela de Bellas Artes",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91661",
+      "cobertizo_id": "353",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a la Escuela de Bellas Artes",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91662",
+      "cobertizo_id": "359",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto Pueblo antes de Fine Art Miramar",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91663",
+      "cobertizo_id": "359",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto Pueblo antes de Fine Art Miramar",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91664",
+      "cobertizo_id": "372",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91665",
+      "cobertizo_id": "372",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91666",
+      "cobertizo_id": "393",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Tribunal de Justicia en Miramar",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91667",
+      "cobertizo_id": "393",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Tribunal de Justicia en Miramar",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91668",
+      "cobertizo_id": "398",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes del Conservatorio Miramar",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91669",
+      "cobertizo_id": "398",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León antes del Conservatorio Miramar",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91670",
+      "cobertizo_id": "454",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Cobians Plaza",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91671",
+      "cobertizo_id": "454",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Cobians Plaza",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91672",
+      "cobertizo_id": "456",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Liceo Tecnológico",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91673",
+      "cobertizo_id": "456",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Liceo Tecnológico",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91674",
+      "cobertizo_id": "466",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opt al estacionamiento de Comercio UPR",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91675",
+      "cobertizo_id": "466",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opt al estacionamiento de Comercio UPR",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91676",
+      "cobertizo_id": "469",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte estacionamiento Comercio UPR",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91677",
+      "cobertizo_id": "469",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte estacionamiento Comercio UPR",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91678",
+      "cobertizo_id": "506",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León opt a Gasolinera Puma ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91679",
+      "cobertizo_id": "506",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León opt a Gasolinera Puma ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91680",
+      "cobertizo_id": "507A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91681",
+      "cobertizo_id": "507A ",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91682",
+      "cobertizo_id": "507B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91683",
+      "cobertizo_id": "507B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a La Cueva Chicken Inn",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91684",
+      "cobertizo_id": "511",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto Colegio Abogados",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91685",
+      "cobertizo_id": "511",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto Colegio Abogados",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91686",
+      "cobertizo_id": "518",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte al Liceo Tecnologico",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91687",
+      "cobertizo_id": "518",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte al Liceo Tecnologico",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91688",
+      "cobertizo_id": "530",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Rest. El Camaron",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91689",
+      "cobertizo_id": "530",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto al Rest. El Camaron",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91690",
+      "cobertizo_id": "534",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Escuela de Bellas Artes",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91691",
+      "cobertizo_id": "534",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Escuela de Bellas Artes",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91693",
+      "cobertizo_id": "572",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Esq Entrada Universidad Sagrado Corazón",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91692",
+      "cobertizo_id": "572",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Esq Entrada Universidad Sagrado Corazón",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91694",
+      "cobertizo_id": "581",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Hacia Condado Fte Tribunal de Justicia",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91695",
+      "cobertizo_id": "581",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Hacia Condado Fte Tribunal de Justicia",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91696",
+      "cobertizo_id": "634",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a Centro Europa ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91697",
+      "cobertizo_id": "634",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte a Centro Europa ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91698",
+      "cobertizo_id": "641",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Oficina de Arquitectos (V Architecture)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91699",
+      "cobertizo_id": "641",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Oficina de Arquitectos (V Architecture)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91700",
+      "cobertizo_id": "642",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte al Cobians Plaza",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91701",
+      "cobertizo_id": "642",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte al Cobians Plaza",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91702",
+      "cobertizo_id": "642",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte al Cobians Plaza",
+      "orientacion": "P",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91703",
+      "cobertizo_id": "655",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto CVS Tren Urbano Sagrado",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91704",
+      "cobertizo_id": "655",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto CVS Tren Urbano Sagrado",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "510028",
+      "cobertizo_id": "672",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Fte Vig Tower",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "510027",
+      "cobertizo_id": "672",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Fte Vig Tower",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91705",
+      "cobertizo_id": "673",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Opuesto a MUSAN antes HERA Impresos",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91706",
+      "cobertizo_id": "673",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Opuesto a MUSAN antes HERA Impresos",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91707",
+      "cobertizo_id": "676",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte. Doctors' Center Clinic",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91708",
+      "cobertizo_id": "676",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte. Doctor's Center Clinic",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91709",
+      "cobertizo_id": "679",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León después de Santurce Medical Mall",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91710",
+      "cobertizo_id": "679",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León después de Santurce Medical Mall",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91711",
+      "cobertizo_id": "680",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Junta de Relaciones del Trabajo",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91712",
+      "cobertizo_id": "680",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Junta de Relaciones del Trabajo",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91713",
+      "cobertizo_id": "680",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Opuesto a Junta de Relaciones del Trabajo",
+      "orientacion": "P",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91715",
+      "cobertizo_id": "681",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte a Ruben's Café ",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91714",
+      "cobertizo_id": "681",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Fte a Ruben's Café ",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91716",
+      "cobertizo_id": "711",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91717",
+      "cobertizo_id": "711",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91718",
+      "cobertizo_id": "739",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Opuesto entrada UPR",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91719",
+      "cobertizo_id": "739",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de Léon Opuesto entrada UPR",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91720",
+      "cobertizo_id": "745A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91721",
+      "cobertizo_id": "745A",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91722",
+      "cobertizo_id": "745B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91723",
+      "cobertizo_id": "745B",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91724",
+      "cobertizo_id": "745C",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91725",
+      "cobertizo_id": "745C",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91727",
+      "cobertizo_id": "745D",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91726",
+      "cobertizo_id": "745D",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91729",
+      "cobertizo_id": "745E",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91728",
+      "cobertizo_id": "745E",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91730",
+      "cobertizo_id": "745F",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santurce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91731",
+      "cobertizo_id": "745F",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91732",
+      "cobertizo_id": "745G",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91733",
+      "cobertizo_id": "745G",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91734",
+      "cobertizo_id": "745H",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91735",
+      "cobertizo_id": "745H",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Calle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)",
+      "orientacion": "O",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91736",
+      "cobertizo_id": "753",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Colegio Inmaculada",
+      "orientacion": "I",
+      "flow_cat": "043"
+    },
+    {
+      "id": "91737",
+      "cobertizo_id": "753",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "direccion": "Ave. Ponce de León Fte Colegio Inmaculada",
+      "orientacion": "O",
+      "flow_cat": "043"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tdireccion\torientacion\tflow_cat\n480020\t350A\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Camara de Representantes\tO\t045\n480019\t350A\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Camara de Representantes\tI\t045\n480022\t350B\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Camara de Representantes\tO\t045\n480021\t350B\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Camara de Representantes\tI\t045\n480023\t400\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Ateneo Puertorriqueño\tI\t045\n480024\t400\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Ateneo Puertorriqueño\tO\t045\n480026\t574\tAVE. PONCE DE LEÓN PTA DE TIERRA\tSalida VSJ opuesto Casa España\tO\t045\n480025\t574\tAVE. PONCE DE LEÓN PTA DE TIERRA\tSalida VSJ opuesto Casa España\tI\t045\nid\tcobertizo_id\tlocalizacion\tdireccion\torientacion\tflow_cat\n91563\t112A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte estacionamiento Centro Judicial\tI\t039\n91564\t112A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte estacionamiento Centro Judicial\tO\t039\n91565\t112B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte estacionamiento Centro Judicial\tI\t039\n91566\t112B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte estacionamiento Centro Judicial\tO\t039\n91567\t113\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opuesto a Walgreens\tI\t039\n91568\t113A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91569\t113B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91570\t113C\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91572\t113D\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91571\t113E\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91573\t113F\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91574\t113G\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91575\t113H\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte. Green Mile Opt a Walgreens (DIGITAL)\tI\t039\n91576\t115\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte edificio del BPPR\tI\t039\n91577\t115\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte edificio del BPPR\tO\t039\n91578\t118\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Antes entrada de Union Dealer\tI\t039\n91579\t118\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Antes entrada de Union Dealer\tO\t039\n91580\t123\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte a Walgreens\tI\t039\n91581\t123\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte a Walgreens\tO\t039\n91582\t125\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Frente al BPPR\tI\t039\n91583\t125\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Frente al BPPR\tO\t039\n91584\t305\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte Tribunal de Apelaciones de PR\tI\t039\n91585\t305\tAVE. MUÑOZ RIVERA HATO REY \tAve. Muñoz Rivera Fte Tribunal de Apelaciones de PR\tO\t039\n91586\t306\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Esq Calaf antes del Choliseo\tI\t039\n91587\t306\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Esq Calaf antes del Choliseo\tO\t039\n330024\t307\tAVE. MUÑOZ RIVERA HATO REY\tFte Tinto y Blanco, opuesto Popular Center\tI\t039\n330025\t307\tAVE. MUÑOZ RIVERA HATO REY\tFte Tinto y Blanco, opuesto Popular Center\tO\t039\n91588\t308\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a estacion tren Opuesto a CVS\tI\t039\n91589\t308\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a estacion tren Opuesto a CVS\tO\t039\n91590\t311\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto a Asoc de Maestros\tI\t039\n91591\t311\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto a Asoc de Maestros\tO\t039\n91592\t313\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a Monte Mall\tI\t039\n91593\t313\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a Monte Mall\tO\t039\n91594\t319\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte Edificio Darlington\tI\t039\n91595\t319\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte Edificio Darlington\tO\t039\n91596\t451A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto Tmobile Plaza\tI\t039\n91597\t451A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto Tmobile Plaza\tO\t039\n91598\t451B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto Tmobile Plaza\tI\t039\n91599\t451B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opuesto Tmobile Plaza\tO\t039\n91600\t472A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a First Bank \tI\t039\n91601\t472A\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a First Bank \tO\t039\n91602\t472B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a First Bank \tI\t039\n91603\t472B\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a First Bank \tO\t039\n91604\t481\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a Monte Mall Townhouses\tI\t039\n91605\t481\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte a Monte Mall Townhouses\tO\t039\n91606\t532\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opu, fte Denny's opuesto al Darlington\tI\t039\n91607\t532\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Opu, fte Denny's opuesto al Darlington\tO\t039\n91608\t542\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte Centro Unido de Detallistas\tI\t039\n91609\t542\tAVE. MUÑOZ RIVERA HATO REY \tAve. Munoz Rivera Fte Centro Unido de Detallistas\tO\t039\n330026\t571\tAVE. MUÑOZ RIVERA HATO REY\tMarginal Fte edificio del FEI\tI\t039\n330027\t571\tAVE. MUÑOZ RIVERA HATO REY\tMarginal Fte edificio del FEI\tO\t039\n91610\t069A\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes\tO\t043\n91611\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91612\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91613\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91614\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91615\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91616\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91617\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91618\t069AI\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes (DIGITAL)\tI\t043\n91619\t069B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes\tI\t043\n91620\t069B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Centro de Bellas Artes\tO\t043\n91621\t134\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza \tI\t043\n91622\t134A\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91623\t134B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91624\t134C\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91625\t134D\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91626\t134E\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91627\t134F\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91628\t134G\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91629\t134H\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte al Caribbean Office Plaza (DIGITAL)\tO\t043\n91630\t135A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asilo en Miramar\tI\t043\n91631\t135A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asilo en Miramar\tO\t043\n91632\t135B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asilo en Miramar\tI\t043\n91633\t135B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asilo en Miramar\tO\t043\n91634\t137\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a Marshalls\tI\t043\n91635\t137\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a Marshalls\tO\t043\n91636\t139\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Rubén's Café\tI\t043\n91637\t139\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Rubén's Café\tO\t043\n91638\t140\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes del Hosp Santurce Medical Mall opt\tI\t043\n91639\t140\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes del Hosp Santurce Medical Mall opt\tO\t043\n91640\t143\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte edificio Mercantil Plaza\tI\t043\n91641\t143\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte edificio Mercantil Plaza\tO\t043\n91642\t147\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte entrada Hosp Auxilio Mutuo\tI\t043\n91643\t147\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte entrada Hosp Auxilio Mutuo\tO\t043\n91644\t148\tAVE. PONCE DE LEÓN\tAve. Ponce de León detrás del Centro Judicial\tI\t043\n91645\t148\tAVE. PONCE DE LEÓN\tAve. Ponce de León detrás del Centro Judicial\tO\t043\n91646\t151\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte oficinas de la Telefonica \tI\t043\n91647\t151\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte oficinas de la Telefonica \tO\t043\n91649\t158\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Leonardo's\tO\t043\n91648\t158\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Leonardo's\tI\t043\n91650\t317A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a UPR\tI\t043\n91651\t317A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a UPR\tO\t043\n91652\t317B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a UPR\tI\t043\n91653\t317B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a UPR\tO\t043\n91654\t331A\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asociacion de Maestros \tI\t043\n91655\t331A\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asociacion de Maestros \tO\t043\n91656\t331B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asociacion de Maestros \tI\t043\n91657\t331B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Asociacion de Maestros \tO\t043\n91658\t349\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes de Miramar Plz Opt Consv\tI\t043\n91659\t349\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes de Miramar Plz Opt Consv\tO\t043\n91660\t353\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a la Escuela de Bellas Artes\tI\t043\n91661\t353\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a la Escuela de Bellas Artes\tO\t043\n91662\t359\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto Pueblo antes de Fine Art Miramar\tI\t043\n91663\t359\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto Pueblo antes de Fine Art Miramar\tO\t043\n91664\t372\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro\tI\t043\n91665\t372\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Edif. Piloto 151 y Starbucks Milla de Oro\tO\t043\n91666\t393\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Tribunal de Justicia en Miramar\tI\t043\n91667\t393\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Tribunal de Justicia en Miramar\tO\t043\n91668\t398\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes del Conservatorio Miramar\tI\t043\n91669\t398\tAVE. PONCE DE LEÓN\tAve. Ponce de León antes del Conservatorio Miramar\tO\t043\n91670\t454\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Cobians Plaza\tI\t043\n91671\t454\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Cobians Plaza\tO\t043\n91672\t456\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Liceo Tecnológico\tI\t043\n91673\t456\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Liceo Tecnológico\tO\t043\n91674\t466\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opt al estacionamiento de Comercio UPR\tI\t043\n91675\t466\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opt al estacionamiento de Comercio UPR\tO\t043\n91676\t469\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte estacionamiento Comercio UPR\tI\t043\n91677\t469\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte estacionamiento Comercio UPR\tO\t043\n91678\t506\tAVE. PONCE DE LEÓN\tAve. Ponce de León opt a Gasolinera Puma \tI\t043\n91679\t506\tAVE. PONCE DE LEÓN\tAve. Ponce de León opt a Gasolinera Puma \tO\t043\n91680\t507A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a La Cueva Chicken Inn\tI\t043\n91681\t507A \tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a La Cueva Chicken Inn\tO\t043\n91682\t507B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a La Cueva Chicken Inn\tI\t043\n91683\t507B\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a La Cueva Chicken Inn\tO\t043\n91684\t511\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto Colegio Abogados\tI\t043\n91685\t511\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto Colegio Abogados\tO\t043\n91686\t518\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte al Liceo Tecnologico\tI\t043\n91687\t518\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte al Liceo Tecnologico\tO\t043\n91688\t530\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Rest. El Camaron\tI\t043\n91689\t530\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto al Rest. El Camaron\tO\t043\n91690\t534\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Escuela de Bellas Artes\tI\t043\n91691\t534\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Escuela de Bellas Artes\tO\t043\n91693\t572\tAVE. PONCE DE LEÓN\tAve. Ponce de León Esq Entrada Universidad Sagrado Corazón\tO\t043\n91692\t572\tAVE. PONCE DE LEÓN\tAve. Ponce de León Esq Entrada Universidad Sagrado Corazón\tI\t043\n91694\t581\tAVE. PONCE DE LEÓN\tAve. Ponce de León Hacia Condado Fte Tribunal de Justicia\tI\t043\n91695\t581\tAVE. PONCE DE LEÓN\tAve. Ponce de León Hacia Condado Fte Tribunal de Justicia\tO\t043\n91696\t634\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a Centro Europa \tI\t043\n91697\t634\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte a Centro Europa \tO\t043\n91698\t641\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Oficina de Arquitectos (V Architecture)\tI\t043\n91699\t641\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Oficina de Arquitectos (V Architecture)\tO\t043\n91700\t642\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte al Cobians Plaza\tI\t043\n91701\t642\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte al Cobians Plaza\tO\t043\n91702\t642\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte al Cobians Plaza\tP\t043\n91703\t655\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto CVS Tren Urbano Sagrado\tI\t043\n91704\t655\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto CVS Tren Urbano Sagrado\tO\t043\n510028\t672\tAVE. PONCE DE LEÓN\tFte Vig Tower\tO\t043\n510027\t672\tAVE. PONCE DE LEÓN\tFte Vig Tower\tI\t043\n91705\t673\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Opuesto a MUSAN antes HERA Impresos\tI\t043\n91706\t673\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Opuesto a MUSAN antes HERA Impresos\tO\t043\n91707\t676\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte. Doctors' Center Clinic\tI\t043\n91708\t676\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte. Doctor's Center Clinic\tO\t043\n91709\t679\tAVE. PONCE DE LEÓN\tAve. Ponce de León después de Santurce Medical Mall\tI\t043\n91710\t679\tAVE. PONCE DE LEÓN\tAve. Ponce de León después de Santurce Medical Mall\tO\t043\n91711\t680\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Junta de Relaciones del Trabajo\tI\t043\n91712\t680\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Junta de Relaciones del Trabajo\tO\t043\n91713\t680\tAVE. PONCE DE LEÓN\tAve. Ponce de León Opuesto a Junta de Relaciones del Trabajo\tP\t043\n91715\t681\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte a Ruben's Café \tO\t043\n91714\t681\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Fte a Ruben's Café \tI\t043\n91716\t711\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon\tI\t043\n91717\t711\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte estacion Tren Urbano en Sagrado Corazon\tO\t043\n91718\t739\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Opuesto entrada UPR\tI\t043\n91719\t739\tAVE. PONCE DE LEÓN\tAve. Ponce de Léon Opuesto entrada UPR\tO\t043\n91720\t745A\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91721\t745A\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91722\t745B\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91723\t745B\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91724\t745C\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91725\t745C\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91727\t745D\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91726\t745D\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91729\t745E\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91728\t745E\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91730\t745F\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santurce (DIGITAL)\tI\t043\n91731\t745F\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91732\t745G\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91733\t745G\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91734\t745H\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tI\t043\n91735\t745H\tAVE. PONCE DE LEÓN\tCalle Canals fte. Restaurante De La Vida Placita Santruce (DIGITAL)\tO\t043\n91736\t753\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Colegio Inmaculada\tI\t043\n91737\t753\tAVE. PONCE DE LEÓN\tAve. Ponce de León Fte Colegio Inmaculada\tO\t043\n",
+  "stderr": "",
+  "execution_time_ms": 417
+}

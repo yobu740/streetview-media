@@ -1,0 +1,234 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE localizacion LIKE '%PTA DE TIERRA%'\nORDER BY localizacion, cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, direccion, orientacion, flow_cat \nFROM paradas \nWHERE localizacion LIKE '%PTA DE TIERRA%'\nORDER BY localizacion, cobertizo_id;",
+  "rows": [
+    {
+      "id": "330028",
+      "cobertizo_id": "128",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Opuesto Castillo San Cristobal, fte plaza Colón",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "330029",
+      "cobertizo_id": "128",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Opuesto Castillo San Cristobal, fte plaza Colón",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480001",
+      "cobertizo_id": "131A",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480002",
+      "cobertizo_id": "131A",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480003",
+      "cobertizo_id": "131B",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480004",
+      "cobertizo_id": "131B",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Desp de el Hamburger, antes de KFC",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480005",
+      "cobertizo_id": "303A",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480006",
+      "cobertizo_id": "303A",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480007",
+      "cobertizo_id": "303B",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480008",
+      "cobertizo_id": "303B",
+      "localizacion": "AVE. MUÑOZ RIVERA PTA DE TIERRA",
+      "direccion": "Detras de col San Agustin, opuesto rest Ladis",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480009",
+      "cobertizo_id": "155",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Capitolio",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480010",
+      "cobertizo_id": "155",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Capitolio",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480011",
+      "cobertizo_id": "156",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte col San Agustin",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480012",
+      "cobertizo_id": "156",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte col San Agustin",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480013",
+      "cobertizo_id": "301",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Antes de parque Luis Muños Marín",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480014",
+      "cobertizo_id": "301",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Antes de parque Luis Muñoz Marín",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480016",
+      "cobertizo_id": "325",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Antes de comité PPD",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480015",
+      "cobertizo_id": "325",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Antes de comité PPD",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "91738",
+      "cobertizo_id": "335",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Ave. Ponce de León opuesto al Luis Muñoz Rivera, fte edif Millenium",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "91739",
+      "cobertizo_id": "335",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Ave. Ponce de León opuesto al Luis Muñoz Rivera, fte edif Millenium",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480019",
+      "cobertizo_id": "350A",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Camara de Representantes",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480020",
+      "cobertizo_id": "350A",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Camara de Representantes",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480021",
+      "cobertizo_id": "350B",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Camara de Representantes",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480022",
+      "cobertizo_id": "350B",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Camara de Representantes",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480023",
+      "cobertizo_id": "400",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "fte Ateneo Puertorriqueño",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480024",
+      "cobertizo_id": "400",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Fte Ateneo Puertorriqueño",
+      "orientacion": "O",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480025",
+      "cobertizo_id": "574",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Salida VSJ opuesto Casa España",
+      "orientacion": "I",
+      "flow_cat": "045"
+    },
+    {
+      "id": "480026",
+      "cobertizo_id": "574",
+      "localizacion": "AVE. PONCE DE LEÓN PTA DE TIERRA",
+      "direccion": "Salida VSJ opuesto Casa España",
+      "orientacion": "O",
+      "flow_cat": "045"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\tdireccion\torientacion\tflow_cat\n330028\t128\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tOpuesto Castillo San Cristobal, fte plaza Colón\tI\t045\n330029\t128\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tOpuesto Castillo San Cristobal, fte plaza Colón\tO\t045\n480001\t131A\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\tI\t045\n480002\t131A\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\tO\t045\n480003\t131B\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\tI\t045\n480004\t131B\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDesp de el Hamburger, antes de KFC\tO\t045\n480005\t303A\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\tI\t045\n480006\t303A\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\tO\t045\n480007\t303B\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\tI\t045\n480008\t303B\tAVE. MUÑOZ RIVERA PTA DE TIERRA\tDetras de col San Agustin, opuesto rest Ladis\tO\t045\n480009\t155\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Capitolio\tI\t045\n480010\t155\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Capitolio\tO\t045\n480011\t156\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte col San Agustin\tI\t045\n480012\t156\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte col San Agustin\tO\t045\n480013\t301\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAntes de parque Luis Muños Marín\tI\t045\n480014\t301\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAntes de parque Luis Muñoz Marín\tO\t045\n480016\t325\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAntes de comité PPD\tO\t045\n480015\t325\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAntes de comité PPD\tI\t045\n91738\t335\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAve. Ponce de León opuesto al Luis Muñoz Rivera, fte edif Millenium\tI\t045\n91739\t335\tAVE. PONCE DE LEÓN PTA DE TIERRA\tAve. Ponce de León opuesto al Luis Muñoz Rivera, fte edif Millenium\tI\t045\n480019\t350A\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Camara de Representantes\tI\t045\n480020\t350A\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Camara de Representantes\tO\t045\n480021\t350B\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Camara de Representantes\tI\t045\n480022\t350B\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Camara de Representantes\tO\t045\n480023\t400\tAVE. PONCE DE LEÓN PTA DE TIERRA\tfte Ateneo Puertorriqueño\tI\t045\n480024\t400\tAVE. PONCE DE LEÓN PTA DE TIERRA\tFte Ateneo Puertorriqueño\tO\t045\n480025\t574\tAVE. PONCE DE LEÓN PTA DE TIERRA\tSalida VSJ opuesto Casa España\tI\t045\n480026\t574\tAVE. PONCE DE LEÓN PTA DE TIERRA\tSalida VSJ opuesto Casa España\tO\t045\n",
+  "stderr": "",
+  "execution_time_ms": 356
+}
