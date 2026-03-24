@@ -179,7 +179,8 @@ export default function Mantenimiento() {
       (filterCondicion === "removida" && p.removida) ||
       (filterCondicion === "pintada" && p.condicionPintada) ||
       (filterCondicion === "arreglada" && p.condicionArreglada) ||
-      (filterCondicion === "limpia" && p.condicionLimpia);
+      (filterCondicion === "limpia" && p.condicionLimpia) ||
+      (filterCondicion === "sinDisplay" && p.displayPublicidad === "No");
 
     return matchesSearch && matchesCondicion;
   });
@@ -536,6 +537,7 @@ export default function Mantenimiento() {
                     <SelectItem value="pintada">Pintadas</SelectItem>
                     <SelectItem value="arreglada">Arregladas</SelectItem>
                     <SelectItem value="limpia">Limpias</SelectItem>
+                    <SelectItem value="sinDisplay">Sin Display</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
