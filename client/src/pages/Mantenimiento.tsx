@@ -59,7 +59,7 @@ export default function Mantenimiento() {
   // Multi-select state
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
-  const [bulkAction, setBulkAction] = useState<"construccion" | "removida" | "sinDisplay" | "limpiar" | null>(null);
+  const [bulkAction, setBulkAction] = useState<"construccion" | "removida" | "sinDisplay" | "restaurarDisplay" | "limpiar" | null>(null);
   const [bulkFecha, setBulkFecha] = useState<string>("");
   const [isBulkPending, setIsBulkPending] = useState(false);
 
@@ -80,7 +80,7 @@ export default function Mantenimiento() {
     }
   };
 
-  const openBulkAction = (action: "construccion" | "removida" | "sinDisplay" | "limpiar") => {
+  const openBulkAction = (action: "construccion" | "removida" | "sinDisplay" | "restaurarDisplay" | "limpiar") => {
     setBulkAction(action);
     setBulkFecha("");
     setIsBulkDialogOpen(true);
@@ -102,6 +102,8 @@ export default function Mantenimiento() {
           return updateCondicion.mutateAsync({ paradaId, removida: 1, enConstruccion: 0, fechaRetorno: new Date(bulkFecha + "T00:00:00") });
         } else if (bulkAction === "sinDisplay") {
           return updateCondicion.mutateAsync({ paradaId, displayPublicidad: "No" });
+        } else if (bulkAction === "restaurarDisplay") {
+          return updateCondicion.mutateAsync({ paradaId, displayPublicidad: "Si" });
         } else {
           return updateCondicion.mutateAsync({ paradaId, enConstruccion: 0, removida: 0 });
         }
@@ -569,6 +571,9 @@ export default function Mantenimiento() {
                 </Button>
                 <Button size="sm" onClick={() => openBulkAction("sinDisplay")} className="bg-gray-600 hover:bg-gray-700 text-white">
                   Sin Display
+                </Button>
+                <Button size="sm" onClick={() => openBulkAction("restaurarDisplay")} className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Restaurar Display
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => openBulkAction("limpiar")} className="bg-white text-gray-800 hover:bg-gray-100">
                   Limpiar Condición
