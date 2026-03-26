@@ -322,6 +322,8 @@ export const contratos = mysqlTable("contratos", {
   total: varchar("total", { length: 20 }), // Total
   notas: text("notas"), // Internal notes
   pdfUrl: text("pdf_url"), // S3 URL to generated PDF
+  poDocumentUrl: text("po_document_url"), // S3 URL to uploaded PO document
+  numMeses: int("num_meses").default(1), // Number of months (multiplier for line items except production)
   estado: mysqlEnum("estado", ["Borrador", "Enviado", "Firmado", "Cancelado"]).default("Borrador").notNull(),
   createdBy: int("created_by"), // FK to users
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -341,6 +343,7 @@ export const contratoItems = mysqlTable("contrato_items", {
   concepto: varchar("concepto", { length: 255 }).notNull(), // CONCEPT
   precioPorUnidad: varchar("precio_por_unidad", { length: 20 }), // PRICE PER UNIT
   total: varchar("total", { length: 20 }), // TOTAL (can be "NO CHARGE")
+  isProduccion: int("is_produccion").default(0).notNull(), // 1 = production cost (not multiplied by months)
   orden: int("orden").default(0).notNull(), // Display order
 });
 

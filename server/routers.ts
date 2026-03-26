@@ -2253,19 +2253,22 @@ export const appRouter = router({
         subtotal: z.string().nullish(),
         total: z.string().nullish(),
         notas: z.string().nullish(),
+        numMeses: z.number().optional().nullable(),
+        poDocumentUrl: z.string().optional().nullable(),
         estado: z.enum(["Borrador", "Enviado", "Firmado", "Cancelado"]).default("Borrador"),
         items: z.array(z.object({
           cantidad: z.number().default(1),
           concepto: z.string().min(1),
           precioPorUnidad: z.string().nullish(),
           total: z.string().nullish(),
+          isProduccion: z.number().optional().default(0),
         })),
       }))
       .mutation(async ({ ctx, input }) => {
         const { items, ...contratoData } = input;
         const id = await db.createContrato(
           { ...contratoData, createdBy: ctx.user.id },
-          items.map((item, i) => ({ ...item, contratoId: 0, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null }))
+          items.map((item, i) => ({ ...item, contratoId: 0, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null, isProduccion: item.isProduccion ?? 0 }))
         );
         return { id };
       }),
@@ -2285,6 +2288,8 @@ export const appRouter = router({
         subtotal: z.string().optional().nullable(),
         total: z.string().optional().nullable(),
         notas: z.string().optional().nullable(),
+        numMeses: z.number().optional().nullable(),
+        poDocumentUrl: z.string().optional().nullable(),
         estado: z.enum(["Borrador", "Enviado", "Firmado", "Cancelado"]).optional(),
         pdfUrl: z.string().optional().nullable(),
         items: z.array(z.object({
@@ -2292,13 +2297,14 @@ export const appRouter = router({
           concepto: z.string().min(1),
           precioPorUnidad: z.string().optional(),
           total: z.string().optional(),
+          isProduccion: z.number().optional().default(0),
         })).optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, items, ...data } = input;
         await db.updateContrato(id, data);
         if (items !== undefined) {
-          await db.updateContratoItems(id, items.map((item, i) => ({ ...item, contratoId: id, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null })));
+          await db.updateContratoItems(id, items.map((item, i) => ({ ...item, contratoId: id, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null, isProduccion: item.isProduccion ?? 0 })));
         }
         return { success: true };
       }),
@@ -2338,6 +2344,34 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.updateContratoExhibitA(input.contratoId, input.rows);
         return { success: true };
+      }),
+
+    // Get active anuncios for a client name (for importing into Exhibit A)
+    getAnunciosByCliente: adminProcedure
+      .input(z.object({ clienteNombre: z.string() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import('./db');
+        const { anuncios, paradas } = await import('../drizzle/schema');
+        const { eq, and, like } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) return [];
+        const results = await database
+          .select({
+            anuncioId: anuncios.id,
+            producto: anuncios.producto,
+            tipo: anuncios.tipo,
+            cobertizoId: paradas.cobertizoId,
+            localizacion: paradas.localizacion,
+            direccion: paradas.direccion,
+            orientacion: paradas.orientacion,
+          })
+          .from(anuncios)
+          .innerJoin(paradas, eq(anuncios.paradaId, paradas.id))
+          .where(and(
+            like(anuncios.cliente, `%${input.clienteNombre}%`),
+            eq(anuncios.estado, 'Activo'),
+          ));
+        return results;
       }),
   }),
 });

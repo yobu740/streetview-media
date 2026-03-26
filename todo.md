@@ -1288,3 +1288,14 @@
 - [x] Replace hero video with banner_streetview(2).mp4
 - [x] Replace second about-section image with new photo
 - [x] Improve hero section layout for mobile (text/button not obstructing video)
+
+## Clientes/Contratos Fixes (Round 2)
+
+- [ ] Fix PDF: line items (QNTY, CONCEPT, PRICE PER UNIT, TOTAL) not showing in generated PDF
+- [ ] Add Due Date input field to contract modal
+- [ ] Fix decorative lines not showing in print/PDF version
+- [ ] Add PO document upload to each contract
+- [ ] Auto-fill vendor name in legal page ("represented by ___")
+- [ ] Add months multiplier field (multiplies line item totals except production costs)
+- [ ] Import Exhibit A from Anuncios button
+- [ ] Fix Clientes header (missing Streetview Media logo and notification bell)

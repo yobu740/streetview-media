@@ -25,18 +25,20 @@ import {
   Edit,
   Trash2,
   FileText,
-  Building2,
   Eye,
   Printer,
   Loader2,
   X,
   ChevronLeft,
   Copy,
-  Download,
   MapPin,
+  Bell,
+  Upload,
+  Download,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,6 +64,7 @@ type ContratoItem = {
   concepto: string;
   precioPorUnidad: string;
   total: string;
+  isProduccion?: number; // 1 = production cost, not multiplied by months
 };
 
 type ExhibitARow = {
@@ -88,6 +91,8 @@ type Contrato = {
   total: string | null;
   notas: string | null;
   pdfUrl: string | null;
+  numMeses: number | null;
+  poDocumentUrl: string | null;
   estado: "Borrador" | "Enviado" | "Firmado" | "Cancelado";
   createdAt: Date;
   items?: ContratoItem[];
@@ -107,11 +112,27 @@ function fmtDate(d: Date | null | string) {
   return `${mm}/${dd}/${yy}`;
 }
 
-function calcTotal(items: ContratoItem[]) {
+function parseAmount(s: string): number {
+  const raw = (s || "").replace(/[^0-9.]/g, "");
+  return raw ? parseFloat(raw) : 0;
+}
+
+function calcSubtotalWithMonths(items: ContratoItem[], numMeses: number): number {
   let sum = 0;
   for (const item of items) {
-    const raw = (item.total || "").replace(/[^0-9.]/g, "");
-    if (raw) sum += parseFloat(raw);
+    const lineTotal = parseAmount(item.total);
+    if (lineTotal > 0) {
+      // Production costs are NOT multiplied by months
+      sum += item.isProduccion ? lineTotal : lineTotal * numMeses;
+    }
+  }
+  return sum;
+}
+
+function calcRawTotal(items: ContratoItem[]): number {
+  let sum = 0;
+  for (const item of items) {
+    sum += parseAmount(item.total);
   }
   return sum;
 }
@@ -122,18 +143,27 @@ function fmtMoney(n: number) {
 
 function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: ExhibitARow[]) {
   const items = contrato.items || [];
-  const totalNum = calcTotal(items);
-  const subtotalStr = contrato.subtotal || (totalNum > 0 ? fmtMoney(totalNum) : "");
+  const numMeses = contrato.numMeses && contrato.numMeses > 1 ? contrato.numMeses : 1;
+  const computedSubtotal = calcSubtotalWithMonths(items, numMeses);
+  const subtotalStr = contrato.subtotal || (computedSubtotal > 0 ? fmtMoney(computedSubtotal) : "");
   const totalStr = contrato.total || subtotalStr;
+  const vendedor = contrato.vendedor || "____________";
 
-  // Build item rows (min 3 rows)
-  const itemRowsHtml = items.map(item => `
+  // Build item rows
+  const itemRowsHtml = items.map(item => {
+    const lineTotal = parseAmount(item.total);
+    const displayTotal = item.isProduccion
+      ? (item.total || "")
+      : (lineTotal > 0 && numMeses > 1 ? fmtMoney(lineTotal * numMeses) : (item.total || ""));
+    return `
     <tr>
       <td style="padding:10px 8px;border:1px solid #ccc;text-align:center;font-size:13px;">${item.cantidad}</td>
-      <td style="padding:10px 8px;border:1px solid #ccc;font-size:13px;">${item.concepto}</td>
+      <td style="padding:10px 8px;border:1px solid #ccc;font-size:13px;">${item.concepto}${item.isProduccion ? ' <span style="font-size:10px;color:#888;">(producción)</span>' : ""}</td>
       <td style="padding:10px 8px;border:1px solid #ccc;text-align:right;font-size:13px;">${item.precioPorUnidad || ""}</td>
-      <td style="padding:10px 8px;border:1px solid #ccc;text-align:right;font-size:13px;">${item.total || ""}</td>
-    </tr>`).join("");
+      <td style="padding:10px 8px;border:1px solid #ccc;text-align:right;font-size:13px;font-weight:600;">${displayTotal}</td>
+    </tr>`;
+  }).join("");
+
   const emptyRows = Math.max(0, 3 - items.length);
   const emptyRowsHtml = Array(emptyRows).fill(`
     <tr>
@@ -143,7 +173,7 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       <td style="padding:18px 8px;border:1px solid #ccc;"></td>
     </tr>`).join("");
 
-  // Exhibit A rows grouped by localizacion
+  // Exhibit A rows
   let exhibitRowsHtml = "";
   let lastLoc = "";
   for (const row of exhibitA) {
@@ -197,10 +227,12 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
   .dur-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
   .dur-table th { background: #1a4d3c; color: white; padding: 8px 10px; font-size: 11px; text-align: left; letter-spacing: 0.5px; }
   .dur-table td { border: 1px solid #ccc; padding: 10px; font-size: 13px; background: #f9f9f9; }
-  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
   .items-table th { background: #1a1a1a; color: white; padding: 9px 10px; font-size: 12px; text-align: left; }
   .items-table th:first-child { width: 55px; text-align: center; }
   .items-table th:nth-child(3), .items-table th:nth-child(4) { width: 130px; text-align: right; }
+  .items-table td { border: 1px solid #ccc; }
+  .items-section { margin-bottom: 16px; }
   .totals-wrap { display: flex; justify-content: flex-end; margin-bottom: 50px; }
   .totals-tbl { width: 240px; border-collapse: collapse; }
   .totals-tbl td { padding: 7px 12px; font-size: 13px; }
@@ -227,8 +259,10 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
   .exhibit-table th:nth-child(2) { text-align: center; }
   .exhibit-table th:nth-child(4), .exhibit-table th:nth-child(6) { text-align: center; }
   @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     .page { margin: 0; padding: 40px 48px; }
     .page-break { page-break-before: always; }
+    .top-stripe, .bottom-stripe, .divider { -webkit-print-color-adjust: exact !important; }
   }
 </style>
 </head>
@@ -248,8 +282,7 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       <div class="contact-block">
         787-708-5115<br>
         www.streetviewmedia.com<br>
-        130 Ave. Winston Churchill - PMB 167<br>
-        San Juan, PR 00926
+        info@streetviewmedia.com
       </div>
     </div>
   </div>
@@ -261,21 +294,14 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       <div class="for-label">FOR:</div>
       <div class="for-name">${cliente.nombre}</div>
       ${clientAddr ? `<div class="for-addr">${clientAddr}</div>` : ""}
+      ${cliente.email ? `<div class="for-addr" style="margin-top:4px;">${cliente.email}</div>` : ""}
     </div>
     <div>
-      <div class="meta-row">
-        <span class="meta-label">CONTRACT N.°:</span>
-        <span class="meta-val">${contrato.numeroContrato}${contrato.numeroPO ? " / PO: " + contrato.numeroPO : ""}</span>
-      </div>
-      <div class="meta-row">
-        <span class="meta-label">DATE:</span>
-        <span class="meta-val">${fmtDate(contrato.fecha)}</span>
-      </div>
-      <div class="meta-row">
-        <span class="meta-label">CUSTOMER ID.:</span>
-        <span class="meta-val">${contrato.customerId || ""}</span>
-      </div>
-      ${cliente.email ? `<div class="meta-row"><span class="meta-label">EMAIL:</span><span class="meta-val">${cliente.email}</span></div>` : ""}
+      <div class="meta-row"><span class="meta-label">CONTRACT #:</span> <span class="meta-val">${contrato.numeroContrato}</span></div>
+      ${contrato.numeroPO ? `<div class="meta-row"><span class="meta-label">PO #:</span> <span class="meta-val">${contrato.numeroPO}</span></div>` : ""}
+      <div class="meta-row"><span class="meta-label">DATE:</span> <span class="meta-val">${fmtDate(contrato.fecha)}</span></div>
+      ${contrato.customerId ? `<div class="meta-row"><span class="meta-label">CUSTOMER ID:</span> <span class="meta-val">${contrato.customerId}</span></div>` : ""}
+      ${contrato.vendedor ? `<div class="meta-row"><span class="meta-label">SALES REP:</span> <span class="meta-val">${contrato.vendedor}</span></div>` : ""}
     </div>
   </div>
 
@@ -283,45 +309,47 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
     <thead>
       <tr>
         <th>SALES DURATION</th>
-        <th>SALESPERSON</th>
-        <th>PAYMENT</th>
+        <th>PAYMENT METHOD</th>
         <th>DUE DATE</th>
+        ${numMeses > 1 ? `<th>CONTRACT MONTHS</th>` : ""}
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>${contrato.salesDuration || ""}</td>
-        <td>${contrato.vendedor || ""}</td>
         <td>${contrato.metodoPago || "ACH / Wire Transfer"}</td>
         <td>${fmtDate(contrato.fechaVencimiento)}</td>
+        ${numMeses > 1 ? `<td style="text-align:center;font-weight:700;">${numMeses} months</td>` : ""}
       </tr>
     </tbody>
   </table>
 
-  <table class="items-table">
-    <thead>
-      <tr>
-        <th>QNTY</th>
-        <th>CONCEPT</th>
-        <th style="text-align:right;">PRICE PER UNIT</th>
-        <th style="text-align:right;">TOTAL</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${itemRowsHtml}
-      ${emptyRowsHtml}
-    </tbody>
-  </table>
+  <div class="items-section">
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th style="text-align:center;">QNTY</th>
+          <th>CONCEPT</th>
+          <th style="text-align:right;">PRICE PER UNIT</th>
+          <th style="text-align:right;">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${itemRowsHtml}
+        ${emptyRowsHtml}
+      </tbody>
+    </table>
+  </div>
 
   <div class="totals-wrap">
     <table class="totals-tbl">
       <tr>
-        <td class="lbl">SUBTOTAL</td>
+        <td class="lbl">SUBTOTAL${numMeses > 1 ? ` (×${numMeses} mo.)` : ""}</td>
         <td class="amt">${subtotalStr}</td>
       </tr>
       <tr>
-        <td style="padding:7px 12px;"></td>
-        <td class="amt" style="background:#e8f5e9;"></td>
+        <td style="padding:7px 12px;font-size:11px;color:#888;">Tax / IVU</td>
+        <td class="amt" style="background:#e8f5e9;font-size:11px;color:#888;">Exempt</td>
       </tr>
       <tr class="total-row">
         <td class="lbl">TOTAL</td>
@@ -332,67 +360,61 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
 
   <div class="sigs">
     <div>
-      <div style="height:48px;"></div>
-      <div class="sig-line">SALESPERSON NAME</div>
+      <div class="sig-line">AUTHORIZED SIGNATURE / DATE</div>
     </div>
     <div>
-      <div style="height:48px;"></div>
-      <div class="sig-line">CLIENT</div>
+      <div class="sig-line">CLIENT SIGNATURE / DATE</div>
     </div>
   </div>
 
-  <div class="footer-note">
-    PAYMENTS WILL BE MADE BY CHECK OR BANK TRANSFER. CHECKS WILL BE MADE UNDER THE NAME: STREETVIEW MEDIA<br>
-    FIRST MONTH AND PRODUCTION MUST BE PAID IN ADVANCE. CANCELLATION MUST BE MADE 60 DAYS PRIOR TO CANCELLATION.
-    12 MONTH CONTRACT. NO CANCELLATION IN MONTHLY CONTRACTS. INVOICES WILL BE PAID MONTHLY.
-  </div>
   <div class="bottom-stripe"></div>
+
+  <div class="footer-note">
+    Require Puerto Rico, Inc. d/b/a Street View Media &nbsp;|&nbsp; PO Box 194000 San Juan, PR 00919 &nbsp;|&nbsp; 787-708-5115 &nbsp;|&nbsp; www.streetviewmedia.com<br>
+    This contract is subject to the terms and conditions on the reverse side.
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ PAGE 2 ══ -->
 <div class="page page-break">
   <div class="top-stripe"></div>
 
-  <div style="text-align:center;margin-bottom:20px;">
-    <img src="${LOGO_URL}" alt="Streetview Media" style="height:56px;" />
-  </div>
-
   <div class="legal-title">Advertising Space Agreement – Bus Shelters</div>
 
   <div class="legal-intro">
-    This Advertising Space Agreement ("<strong>Agreement</strong>") is entered into by and between:
+    This Advertising Space Agreement ("Agreement") is entered into as of ${fmtDate(contrato.fecha)}, by and between:
   </div>
 
   <div class="legal-party">
-    <strong>COMPANY:</strong> Require Puerto Rico, Inc., a Puerto Rico corporation, doing business as Street View Media ("<strong>Company</strong>"), represented by ____________.
+    <strong>COMPANY:</strong> Require Puerto Rico, Inc., a Puerto Rico corporation, doing business as Street View Media ("Company"), represented by <strong>${vendedor}</strong>.
   </div>
-  <div class="legal-party" style="margin-bottom:14px;">
-    <strong>CUSTOMER / ADVERTISER:</strong> <strong>${cliente.nombre}</strong> ("<strong>Customer</strong>").
+  <div class="legal-party">
+    <strong>CUSTOMER:</strong> ${cliente.nombre} ("Customer").
   </div>
 
   <div class="legal-whereas">
-    WHEREAS, Company operates a network of digital and static advertising bus shelters in the metropolitan area of Puerto Rico; and
-  </div>
-  <div class="legal-whereas" style="margin-bottom:14px;">
-    WHEREAS, Customer desires to advertise its products and/or services through Company's bus shelter network;
+    WHEREAS, Company manages advertising space on bus shelters located throughout the metropolitan area of San Juan, Puerto Rico; and<br>
+    WHEREAS, Customer desires to advertise on certain bus shelter panels managed by Company;
   </div>
 
-  <div class="legal-intro"><strong>NOW, THEREFORE,</strong> the parties agree as follows:</div>
+  <div class="legal-intro">
+    NOW, THEREFORE, in consideration of the mutual covenants and agreements contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the parties agree as follows:
+  </div>
 
   <div class="legal-clause">
-    <div class="legal-clause-title">1. Services and Locations</div>
-    <div class="legal-clause-body">Company agrees to provide Customer with advertising space in the digital and/or static bus shelters described in Exhibit A attached hereto (the "Services"), subject to availability and applicable municipal regulations.</div>
+    <div class="legal-clause-title">1. Services</div>
+    <div class="legal-clause-body">Company agrees to provide Customer with advertising space on bus shelter panels ("Shelters") as specified in the contract summary and Exhibit A attached hereto ("Services"). The specific locations, dimensions, and quantities of advertising panels are detailed in Exhibit A.</div>
   </div>
   <div class="legal-clause">
-    <div class="legal-clause-title">2. Contract Term and Commencement</div>
-    <div class="legal-clause-body">The Services shall be provided for the term specified in Exhibit A ("Contract Term"). The commencement date shall be the date on which full payment for the first billing period is received by Company and all creative materials have been delivered in compliance with this Agreement.</div>
+    <div class="legal-clause-title">2. Contract Term</div>
+    <div class="legal-clause-body">The Services shall commence on the start date specified in the Sales Duration field and continue for the term indicated therein ("Contract Term"), unless earlier terminated in accordance with the terms of this Agreement.</div>
   </div>
   <div class="legal-clause">
-    <div class="legal-clause-title">3. Payment Terms</div>
-    <div class="legal-clause-body">The first payment is due upon execution of this Agreement. Thereafter, monthly payments shall be due no later than the fifth (5th) day of each month. Late payments shall accrue a late charge of five percent (5%) per month. Company may suspend Services for non-payment without credit or liability.</div>
+    <div class="legal-clause-title">3. Fees and Payment</div>
+    <div class="legal-clause-body">Customer shall pay Company the total amount specified in this Agreement. Payment is due by the Due Date indicated. Invoices not paid within thirty (30) days of the due date shall accrue interest at the rate of 1.5% per month. All fees are exclusive of applicable taxes.</div>
   </div>
   <div class="legal-clause">
-    <div class="legal-clause-title">4. Delivery of Creative Materials</div>
+    <div class="legal-clause-title">4. Creative Materials</div>
     <div class="legal-clause-body">If Customer provides the creative materials, it shall be delivered with at least twenty-four (24) hours prior to commencement for electronic shelters, and five (5) days prior for static shelters. Failure to timely deliver materials shall not delay billing or the Contract Term.</div>
   </div>
   <div class="legal-clause">
@@ -445,37 +467,36 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       <div style="font-size:11px;font-weight:700;margin-bottom:4px;">COMPANY:</div>
       <div style="font-size:10.5px;color:#555;margin-bottom:28px;">Require Puerto Rico, Inc. d/b/a Street View Media</div>
       <div class="legal-sig-line">By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: __________</div>
+      <div style="font-size:10px;margin-top:4px;color:#555;">Name: ${vendedor}</div>
     </div>
     <div>
       <div style="font-size:11px;font-weight:700;margin-bottom:4px;">CUSTOMER:</div>
       <div style="font-size:10.5px;color:#555;margin-bottom:28px;">${cliente.nombre}</div>
       <div class="legal-sig-line">By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: __________</div>
+      <div style="font-size:10px;margin-top:4px;color:#555;">Name / Title: ___________________________</div>
     </div>
   </div>
 
-  <div class="bottom-stripe"></div>
+  <div class="bottom-stripe" style="margin-top:24px;"></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════ PAGE 3 ══ -->
 <div class="page page-break">
   <div class="top-stripe"></div>
 
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-    <img src="${LOGO_URL}" alt="Streetview Media" style="height:48px;" />
-    <div>
-      <div style="font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">Exhibit A</div>
-      <div style="font-size:11px;color:#555;">Advertising Locations — Contract ${contrato.numeroContrato}</div>
-    </div>
+  <div class="exhibit-title">Exhibit A – Advertising Locations</div>
+  <div style="text-align:center;font-size:12px;color:#555;margin-bottom:16px;">
+    Contract #${contrato.numeroContrato} &nbsp;|&nbsp; ${cliente.nombre} &nbsp;|&nbsp; ${fmtDate(contrato.fecha)}
   </div>
 
   <table class="exhibit-table">
     <thead>
       <tr>
-        <th style="width:22%;">LOCALIZACIÓN</th>
-        <th style="width:10%;text-align:center;">#COB.</th>
-        <th style="width:32%;">DIRECCIÓN</th>
+        <th style="width:28%;">LOCALIZATION</th>
+        <th style="width:10%;text-align:center;">SHELTER #</th>
+        <th style="width:28%;">ADDRESS</th>
         <th style="width:8%;text-align:center;">I/O/P</th>
-        <th style="width:20%;">PRODUCTO</th>
+        <th style="width:18%;">PRODUCT</th>
         <th style="width:8%;text-align:center;">F/B</th>
       </tr>
     </thead>
@@ -484,14 +505,14 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
     </tbody>
   </table>
 
-  <div class="bottom-stripe"></div>
+  <div class="bottom-stripe" style="margin-top:24px;"></div>
 </div>
 
 </body>
 </html>`;
 }
 
-// ─── Estado badge ─────────────────────────────────────────────────────────────
+// ─── Estado Badge ─────────────────────────────────────────────────────────────
 
 function EstadoBadge({ estado }: { estado: string }) {
   const map: Record<string, string> = {
@@ -510,10 +531,11 @@ function EstadoBadge({ estado }: { estado: string }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function Clientes() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const utils = trpc.useUtils();
 
   const { data: clientes = [], isLoading } = trpc.clientes.list.useQuery();
+  const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: isAuthenticated });
 
   const [search, setSearch] = useState("");
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
@@ -592,124 +614,151 @@ export default function Clientes() {
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
       <AdminSidebar />
-      <main className="flex-1 p-6 overflow-auto">
-        {view === "list" ? (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-display text-3xl text-[#1a4d3c] font-bold">Clientes</h1>
-                <p className="text-body text-gray-500 mt-1">Gestión de clientes y contratos</p>
+      <div className="flex-1 min-w-0">
+        {/* Header — same as Admin.tsx */}
+        <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
+          <div className="container flex items-center justify-between h-20">
+            <Link href="/">
+              <img
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png"
+                alt="Streetview Media"
+                className="h-12 cursor-pointer"
+              />
+            </Link>
+            {user?.role === "admin" && (
+              <div className="relative">
+                <Button variant="outline" size="icon" className="relative">
+                  <Bell className="h-4 w-4" />
+                  {unreadCount && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#ff6b35] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Button>
               </div>
-              <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white" onClick={() => { setEditingCliente(null); setShowClienteForm(true); }}>
-                <Plus size={16} className="mr-2" /> Nuevo Cliente
-              </Button>
-            </div>
+            )}
+          </div>
+        </nav>
 
-            <div className="relative mb-4">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <Input className="pl-9" placeholder="Buscar por nombre, email o contacto..." value={search} onChange={(e) => setSearch(e.target.value)} />
-            </div>
+        <main className="p-6 overflow-auto">
+          {view === "list" ? (
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h1 className="text-display text-3xl text-[#1a4d3c] font-bold">Clientes</h1>
+                  <p className="text-body text-gray-500 mt-1">Gestión de clientes y contratos</p>
+                </div>
+                <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white" onClick={() => { setEditingCliente(null); setShowClienteForm(true); }}>
+                  <Plus size={16} className="mr-2" /> Nuevo Cliente
+                </Button>
+              </div>
 
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#1a4d3c]" size={32} /></div>
-            ) : (
-              <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
-                <table className="w-full text-sm">
-                  <thead className="bg-[#1a4d3c] text-white">
-                    <tr>
-                      <th className="p-3 text-left">Cliente</th>
-                      <th className="p-3 text-left">Tipo</th>
-                      <th className="p-3 text-left">Contacto</th>
-                      <th className="p-3 text-left">Email</th>
-                      <th className="p-3 text-left">Teléfono</th>
-                      <th className="p-3 w-28"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.length === 0 ? (
-                      <tr><td colSpan={6} className="p-8 text-center text-gray-400">No hay clientes</td></tr>
-                    ) : filtered.map((c) => (
-                      <tr key={c.id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => handleSelectCliente(c as Cliente)}>
-                        <td className="p-3 font-semibold text-[#1a4d3c]">{c.nombre}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${c.esAgencia ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
-                            {c.esAgencia ? "Agencia" : "Directo"}
-                          </span>
-                        </td>
-                        <td className="p-3 text-gray-600">{c.contactoPrincipal || "—"}</td>
-                        <td className="p-3 text-gray-600">{c.email || "—"}</td>
-                        <td className="p-3 text-gray-600">{c.telefono || "—"}</td>
-                        <td className="p-3" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setEditingCliente(c as Cliente); setShowClienteForm(true); }}>
-                              <Edit size={13} />
-                            </Button>
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400" onClick={() => { if (confirm(`¿Eliminar ${c.nombre}?`)) deleteCliente.mutate({ id: c.id }); }}>
-                              <Trash2 size={13} />
-                            </Button>
-                          </div>
-                        </td>
+              <div className="relative mb-4">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Input className="pl-9" placeholder="Buscar por nombre, email o contacto..." value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+
+              {isLoading ? (
+                <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#1a4d3c]" size={32} /></div>
+              ) : (
+                <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#1a4d3c] text-white">
+                      <tr>
+                        <th className="p-3 text-left">Cliente</th>
+                        <th className="p-3 text-left">Tipo</th>
+                        <th className="p-3 text-left">Contacto</th>
+                        <th className="p-3 text-left">Email</th>
+                        <th className="p-3 text-left">Teléfono</th>
+                        <th className="p-3 w-28"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {/* Detail view */}
-            <div className="flex items-center gap-3 mb-6">
-              <Button variant="ghost" size="sm" onClick={() => setView("list")}>
-                <ChevronLeft size={16} className="mr-1" /> Clientes
-              </Button>
-              <span className="text-gray-400">/</span>
-              <h1 className="text-display text-2xl text-[#1a4d3c] font-bold">{selectedCliente?.nombre}</h1>
-              <div className="ml-auto flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => { setEditingCliente(selectedCliente); setShowClienteForm(true); }}>
-                  <Edit size={14} className="mr-1" /> Editar Cliente
+                    </thead>
+                    <tbody>
+                      {filtered.length === 0 ? (
+                        <tr><td colSpan={6} className="p-8 text-center text-gray-400">No hay clientes</td></tr>
+                      ) : filtered.map((c) => (
+                        <tr key={c.id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => handleSelectCliente(c as Cliente)}>
+                          <td className="p-3 font-semibold text-[#1a4d3c]">{c.nombre}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${c.esAgencia ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}>
+                              {c.esAgencia ? "Agencia" : "Directo"}
+                            </span>
+                          </td>
+                          <td className="p-3 text-gray-600">{c.contactoPrincipal || "—"}</td>
+                          <td className="p-3 text-gray-600">{c.email || "—"}</td>
+                          <td className="p-3 text-gray-600">{c.telefono || "—"}</td>
+                          <td className="p-3" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setEditingCliente(c as Cliente); setShowClienteForm(true); }}>
+                                <Edit size={13} />
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400" onClick={() => { if (confirm(`¿Eliminar ${c.nombre}?`)) deleteCliente.mutate({ id: c.id }); }}>
+                                <Trash2 size={13} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Detail view */}
+              <div className="flex items-center gap-3 mb-6">
+                <Button variant="ghost" size="sm" onClick={() => setView("list")}>
+                  <ChevronLeft size={16} className="mr-1" /> Clientes
                 </Button>
-                <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white" size="sm" onClick={() => { setEditingContrato(null); setDuplicatingContrato(null); setShowContratoForm(true); }}>
-                  <Plus size={14} className="mr-1" /> Nuevo Contrato
-                </Button>
+                <span className="text-gray-400">/</span>
+                <h1 className="text-display text-2xl text-[#1a4d3c] font-bold">{selectedCliente?.nombre}</h1>
+                <div className="ml-auto flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => { setEditingCliente(selectedCliente); setShowClienteForm(true); }}>
+                    <Edit size={14} className="mr-1" /> Editar Cliente
+                  </Button>
+                  <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white" size="sm" onClick={() => { setEditingContrato(null); setDuplicatingContrato(null); setShowContratoForm(true); }}>
+                    <Plus size={14} className="mr-1" /> Nuevo Contrato
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Client info card */}
-            <div className="bg-white rounded-xl border p-5 mb-6 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Tipo</div><div>{selectedCliente?.esAgencia ? "Agencia" : "Directo"}</div></div>
-              <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Contacto</div><div>{selectedCliente?.contactoPrincipal || "—"}</div></div>
-              <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Email Facturación</div><div className={selectedCliente?.email ? "" : "text-orange-500 italic"}>{selectedCliente?.email || "Pendiente"}</div></div>
-              <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Teléfono</div><div>{selectedCliente?.telefono || "—"}</div></div>
-              {selectedCliente?.direccion && <div className="col-span-2"><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Dirección</div><div>{[selectedCliente.direccion, selectedCliente.ciudad, selectedCliente.estado].filter(Boolean).join(", ")}</div></div>}
-              {selectedCliente?.notas && <div className="col-span-2 md:col-span-4"><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Notas</div><div className="text-gray-600">{selectedCliente.notas}</div></div>}
-            </div>
+              {/* Client info card */}
+              <div className="bg-white rounded-xl border p-5 mb-6 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Tipo</div><div>{selectedCliente?.esAgencia ? "Agencia" : "Directo"}</div></div>
+                <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Contacto</div><div>{selectedCliente?.contactoPrincipal || "—"}</div></div>
+                <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Email Facturación</div><div className={selectedCliente?.email ? "" : "text-orange-500 italic"}>{selectedCliente?.email || "Pendiente"}</div></div>
+                <div><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Teléfono</div><div>{selectedCliente?.telefono || "—"}</div></div>
+                {selectedCliente?.direccion && <div className="col-span-2"><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Dirección</div><div>{[selectedCliente.direccion, selectedCliente.ciudad, selectedCliente.estado].filter(Boolean).join(", ")}</div></div>}
+                {selectedCliente?.notas && <div className="col-span-2 md:col-span-4"><div className="text-gray-400 text-xs uppercase font-semibold mb-1">Notas</div><div className="text-gray-600">{selectedCliente.notas}</div></div>}
+              </div>
 
-            {/* Contracts list */}
-            <h2 className="text-lg font-bold text-[#1a4d3c] mb-3">Contratos</h2>
-            {contratos.length === 0 ? (
-              <div className="bg-white rounded-xl border p-10 text-center text-gray-400 shadow-sm">
-                <FileText size={32} className="mx-auto mb-3 opacity-30" />
-                <p>No hay contratos para este cliente</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {contratos.map((c) => (
-                  <ContratoCard
-                    key={c.id}
-                    contrato={c as Contrato}
-                    onEdit={() => { setEditingContrato(c as Contrato); setDuplicatingContrato(null); setShowContratoForm(true); }}
-                    onDelete={() => { if (confirm("¿Eliminar este contrato?")) deleteContrato.mutate({ id: c.id }); }}
-                    onPrint={() => handlePrintContract(c as Contrato)}
-                    onPreview={() => handlePreviewContract(c as Contrato)}
-                    onDuplicate={() => handleDuplicate(c as Contrato)}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </main>
+              {/* Contracts list */}
+              <h2 className="text-lg font-bold text-[#1a4d3c] mb-3">Contratos</h2>
+              {contratos.length === 0 ? (
+                <div className="bg-white rounded-xl border p-10 text-center text-gray-400 shadow-sm">
+                  <FileText size={32} className="mx-auto mb-3 opacity-30" />
+                  <p>No hay contratos para este cliente</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {contratos.map((c) => (
+                    <ContratoCard
+                      key={c.id}
+                      contrato={c as Contrato}
+                      onEdit={() => { setEditingContrato(c as Contrato); setDuplicatingContrato(null); setShowContratoForm(true); }}
+                      onDelete={() => { if (confirm("¿Eliminar este contrato?")) deleteContrato.mutate({ id: c.id }); }}
+                      onPrint={() => handlePrintContract(c as Contrato)}
+                      onPreview={() => handlePreviewContract(c as Contrato)}
+                      onDuplicate={() => handleDuplicate(c as Contrato)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
 
       {/* Client Form Dialog */}
       {showClienteForm && (
@@ -733,6 +782,7 @@ export default function Clientes() {
           contrato={editingContrato}
           duplicateFrom={duplicatingContrato}
           clienteId={selectedCliente.id}
+          clienteNombre={selectedCliente.nombre}
           onSave={(data, exhibitARows) => {
             if (editingContrato) {
               updateContrato.mutate({ id: editingContrato.id, ...data }, {
@@ -796,7 +846,10 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
   onPreview: () => void;
   onDuplicate: () => void;
 }) {
-  const total = contrato.total || contrato.subtotal || (contrato.items ? (calcTotal(contrato.items) > 0 ? fmtMoney(calcTotal(contrato.items)) : "—") : "—");
+  const numMeses = contrato.numMeses && contrato.numMeses > 1 ? contrato.numMeses : 1;
+  const rawTotal = contrato.items ? calcRawTotal(contrato.items) : 0;
+  const computedTotal = contrato.items ? calcSubtotalWithMonths(contrato.items, numMeses) : 0;
+  const displayTotal = contrato.total || contrato.subtotal || (computedTotal > 0 ? fmtMoney(computedTotal) : (rawTotal > 0 ? fmtMoney(rawTotal) : "—"));
   return (
     <div className="bg-white rounded-xl border shadow-sm p-4 flex items-center gap-4">
       <div className="flex-shrink-0 w-10 h-10 bg-[#1a4d3c]/10 rounded-lg flex items-center justify-center">
@@ -806,13 +859,19 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-bold text-[#1a4d3c]">{contrato.numeroContrato}</span>
           {contrato.numeroPO && <span className="text-xs text-gray-400">PO: {contrato.numeroPO}</span>}
+          {numMeses > 1 && <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{numMeses} meses</span>}
           <EstadoBadge estado={contrato.estado} />
+          {contrato.poDocumentUrl && (
+            <a href={contrato.poDocumentUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+              <Download size={10} /> PO
+            </a>
+          )}
         </div>
         <div className="text-xs text-gray-500 mt-0.5 flex gap-3 flex-wrap">
           <span>{new Date(contrato.fecha).toLocaleDateString("es-PR")}</span>
           {contrato.customerId && <span>{contrato.customerId}</span>}
           {contrato.salesDuration && <span>{contrato.salesDuration}</span>}
-          <span className="font-semibold text-[#1a4d3c]">{total}</span>
+          <span className="font-semibold text-[#1a4d3c]">{displayTotal}</span>
         </div>
       </div>
       <div className="flex gap-1 flex-shrink-0">
@@ -894,9 +953,9 @@ function ClienteFormDialog({ open, onClose, cliente, onSave, saving }: {
 
 // ─── Contrato Form Dialog ─────────────────────────────────────────────────────
 
-function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId, onSave, saving }: {
+function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId, clienteNombre, onSave, saving }: {
   open: boolean; onClose: () => void; contrato: Contrato | null; duplicateFrom: Contrato | null;
-  clienteId: number; onSave: (data: any, exhibitA: ExhibitARow[]) => void; saving: boolean;
+  clienteId: number; clienteNombre: string; onSave: (data: any, exhibitA: ExhibitARow[]) => void; saving: boolean;
 }) {
   const source = contrato || duplicateFrom;
   const today = new Date().toISOString().split("T")[0];
@@ -905,20 +964,24 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
     numeroContrato: duplicateFrom ? `${duplicateFrom.numeroContrato}-copia` : (contrato?.numeroContrato || "2026-"),
     numeroPO: source?.numeroPO || "",
     fecha: source?.fecha ? new Date(source.fecha).toISOString().split("T")[0] : today,
+    fechaVencimiento: source?.fechaVencimiento ? new Date(source.fechaVencimiento).toISOString().split("T")[0] : "",
     customerId: source?.customerId || "",
     salesDuration: source?.salesDuration || "",
     vendedor: source?.vendedor || "",
     metodoPago: source?.metodoPago || "ACH / Wire Transfer",
+    numMeses: source?.numMeses ?? 1,
     subtotal: source?.subtotal || "",
     total: source?.total || "",
     notas: source?.notas || "",
     estado: ((duplicateFrom ? "Borrador" : source?.estado) || "Borrador") as "Borrador" | "Enviado" | "Firmado" | "Cancelado",
-    items: (source?.items || [{ cantidad: 1, concepto: "", precioPorUnidad: "", total: "" }]) as ContratoItem[],
+    items: (source?.items || [{ cantidad: 1, concepto: "", precioPorUnidad: "", total: "", isProduccion: 0 }]) as ContratoItem[],
   });
 
   const [exhibitA, setExhibitA] = useState<ExhibitARow[]>([]);
   const [activeTab, setActiveTab] = useState<"contrato" | "exhibit">("contrato");
   const [loadingExhibit, setLoadingExhibit] = useState(false);
+  const [uploadingPO, setUploadingPO] = useState(false);
+  const [poDocumentUrl, setPoDocumentUrl] = useState<string>(source?.poDocumentUrl || "");
   const utils = trpc.useUtils();
 
   // Load exhibit A when editing or duplicating
@@ -931,14 +994,15 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
   }, [source?.id]);
 
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
-  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { cantidad: 1, concepto: "", precioPorUnidad: "", total: "" }] }));
+  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { cantidad: 1, concepto: "", precioPorUnidad: "", total: "", isProduccion: 0 }] }));
   const removeItem = (i: number) => setForm(f => ({ ...f, items: f.items.filter((_, idx) => idx !== i) }));
+
   const updateItem = (i: number, field: keyof ContratoItem, value: any) => {
     setForm(f => {
       const items = f.items.map((item, idx) => {
         if (idx !== i) return item;
         const updated = { ...item, [field]: value };
-        // Auto-calc total when cantidad or precioPorUnidad changes
+        // Auto-calc line total when cantidad or precioPorUnidad changes
         if (field === "cantidad" || field === "precioPorUnidad") {
           const qty = field === "cantidad" ? Number(value) : item.cantidad;
           const priceRaw = (field === "precioPorUnidad" ? String(value) : item.precioPorUnidad).replace(/[^0-9.]/g, "");
@@ -953,8 +1017,10 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
     });
   };
 
+  const numMeses = form.numMeses && form.numMeses > 0 ? form.numMeses : 1;
+
   const autoSubtotal = () => {
-    const n = calcTotal(form.items);
+    const n = calcSubtotalWithMonths(form.items, numMeses);
     return n > 0 ? fmtMoney(n) : "";
   };
 
@@ -964,6 +1030,49 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
   const updateExhibitRow = (i: number, field: keyof ExhibitARow, value: string) =>
     setExhibitA(rows => rows.map((r, idx) => idx === i ? { ...r, [field]: value } : r));
 
+  // Import Exhibit A from Anuncios
+  const importFromAnuncios = async () => {
+    try {
+      const results = await utils.contratos.getAnunciosByCliente.fetch({ clienteNombre });
+      if (!results || results.length === 0) {
+        toast.info("No se encontraron anuncios activos para este cliente");
+        return;
+      }
+      const rows: ExhibitARow[] = results.map((r: any) => ({
+        localizacion: r.localizacion || "",
+        cobertizo: r.cobertizoId || "",
+        direccion: r.direccion || "",
+        iop: r.orientacion || "",
+        producto: r.producto || "",
+        fb: "",
+      }));
+      setExhibitA(rows);
+      toast.success(`${rows.length} localizaciones importadas desde Anuncios`);
+    } catch {
+      toast.error("Error al importar anuncios");
+    }
+  };
+
+  // Upload PO document
+  const handlePOUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPO(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setPoDocumentUrl(data.url);
+      toast.success("Documento PO subido correctamente");
+    } catch {
+      toast.error("Error al subir el documento PO");
+    } finally {
+      setUploadingPO(false);
+    }
+  };
+
   const handleSubmit = () => {
     if (!form.numeroContrato.trim()) { toast.error("El número de contrato es requerido"); return; }
     const subtotal = form.subtotal || autoSubtotal();
@@ -972,6 +1081,7 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
       clienteId,
       ...form,
       fecha: new Date(form.fecha),
+      fechaVencimiento: form.fechaVencimiento ? new Date(form.fechaVencimiento) : null,
       subtotal: subtotal || null,
       total: total || null,
       numeroPO: form.numeroPO || null,
@@ -979,6 +1089,8 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
       salesDuration: form.salesDuration || null,
       vendedor: form.vendedor || null,
       notas: form.notas || null,
+      numMeses: form.numMeses || 1,
+      poDocumentUrl: poDocumentUrl || null,
       items: form.items.filter(i => i.concepto.trim()),
     }, exhibitA.filter(r => r.cobertizo.trim() || r.localizacion.trim()));
   };
@@ -1009,10 +1121,22 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
               <div><Label>Número de Contrato *</Label><Input value={form.numeroContrato} onChange={e => set("numeroContrato", e.target.value)} placeholder="2026-1" /></div>
               <div><Label>Número PO (si aplica)</Label><Input value={form.numeroPO} onChange={e => set("numeroPO", e.target.value)} placeholder="161400" /></div>
               <div><Label>Fecha</Label><Input type="date" value={form.fecha} onChange={e => set("fecha", e.target.value)} /></div>
+              <div><Label>Due Date (Fecha de Vencimiento)</Label><Input type="date" value={form.fechaVencimiento} onChange={e => set("fechaVencimiento", e.target.value)} /></div>
               <div><Label>Customer ID (Marca)</Label><Input value={form.customerId} onChange={e => set("customerId", e.target.value)} placeholder="Taco Bell, CLARO..." /></div>
               <div><Label>Duración de Ventas</Label><Input value={form.salesDuration} onChange={e => set("salesDuration", e.target.value)} placeholder="February 2026 - November 2026" /></div>
               <div><Label>Vendedor(es)</Label><Input value={form.vendedor} onChange={e => set("vendedor", e.target.value)} placeholder="Carmen Esteve" /></div>
               <div><Label>Método de Pago</Label><Input value={form.metodoPago} onChange={e => set("metodoPago", e.target.value)} placeholder="ACH / Wire Transfer" /></div>
+              <div>
+                <Label>Meses del Contrato</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={form.numMeses}
+                  onChange={e => set("numMeses", Number(e.target.value))}
+                  placeholder="1"
+                />
+                <p className="text-xs text-gray-400 mt-1">Multiplica el total de cada línea (excepto producción) × meses</p>
+              </div>
               <div>
                 <Label>Estado</Label>
                 <Select value={form.estado} onValueChange={v => set("estado", v)}>
@@ -1024,6 +1148,29 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
                     <SelectItem value="Cancelado">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* PO Document Upload */}
+            <div>
+              <Label>Documento Orden de Compra (PO)</Label>
+              <div className="flex items-center gap-3 mt-1">
+                {poDocumentUrl ? (
+                  <div className="flex items-center gap-2 flex-1">
+                    <a href={poDocumentUrl} target="_blank" rel="noreferrer" className="text-sm text-blue-600 underline truncate flex-1">
+                      Ver documento PO
+                    </a>
+                    <Button size="sm" variant="ghost" className="text-red-400 h-7 px-2" onClick={() => setPoDocumentUrl("")}>
+                      <X size={12} />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex items-center gap-2 cursor-pointer border rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                    {uploadingPO ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    {uploadingPO ? "Subiendo..." : "Subir documento PO (PDF, imagen)"}
+                    <input type="file" className="hidden" accept=".pdf,.png,.jpg,.jpeg" onChange={handlePOUpload} disabled={uploadingPO} />
+                  </label>
+                )}
               </div>
             </div>
 
@@ -1039,14 +1186,15 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
                     <tr>
                       <th className="p-2 text-left w-16">Cant.</th>
                       <th className="p-2 text-left">Concepto</th>
-                      <th className="p-2 text-left w-32">Precio/Unidad</th>
-                      <th className="p-2 text-left w-32">Total</th>
+                      <th className="p-2 text-left w-28">Precio/Unidad</th>
+                      <th className="p-2 text-left w-28">Total línea</th>
+                      <th className="p-2 text-center w-20 text-xs">Producción</th>
                       <th className="p-2 w-8"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {form.items.map((item, i) => (
-                      <tr key={i} className="border-t">
+                      <tr key={i} className={`border-t ${item.isProduccion ? "bg-amber-50" : ""}`}>
                         <td className="p-1">
                           <Input type="number" value={item.cantidad} onChange={e => updateItem(i, "cantidad", Number(e.target.value))} className="h-8 text-center" min={1} />
                         </td>
@@ -1059,6 +1207,15 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
                         <td className="p-1">
                           <Input value={item.total} onChange={e => updateItem(i, "total", e.target.value)} className="h-8 font-medium" placeholder="$2,400.00" />
                         </td>
+                        <td className="p-1 text-center">
+                          <input
+                            type="checkbox"
+                            checked={!!item.isProduccion}
+                            onChange={e => updateItem(i, "isProduccion", e.target.checked ? 1 : 0)}
+                            title="Costo de producción (no se multiplica por meses)"
+                            className="w-4 h-4 accent-[#ff6b35]"
+                          />
+                        </td>
                         <td className="p-1">
                           {form.items.length > 1 && (
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400" onClick={() => removeItem(i)}><X size={12} /></Button>
@@ -1070,6 +1227,9 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
                 </table>
               </div>
               <div className="flex justify-end mt-2 gap-6 text-sm pr-2">
+                {numMeses > 1 && (
+                  <span className="text-orange-600 font-medium">×{numMeses} meses</span>
+                )}
                 <span className="text-gray-500">Subtotal automático: <strong className="text-[#1a4d3c]">{autoSubtotal() || "—"}</strong></span>
               </div>
             </div>
@@ -1085,7 +1245,12 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
           <div>
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm text-gray-500">Tabla de localizaciones que aparece en la Página 3 del contrato.</p>
-              <Button size="sm" variant="outline" onClick={addExhibitRow}><Plus size={13} className="mr-1" /> Añadir Fila</Button>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={importFromAnuncios}>
+                  <Download size={13} className="mr-1" /> Importar desde Anuncios
+                </Button>
+                <Button size="sm" variant="outline" onClick={addExhibitRow}><Plus size={13} className="mr-1" /> Añadir Fila</Button>
+              </div>
             </div>
             {loadingExhibit ? (
               <div className="flex justify-center py-8"><Loader2 className="animate-spin text-[#1a4d3c]" size={24} /></div>
@@ -1105,7 +1270,7 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
                   </thead>
                   <tbody>
                     {exhibitA.length === 0 ? (
-                      <tr><td colSpan={7} className="p-6 text-center text-gray-400">No hay filas. Haz clic en "Añadir Fila" para comenzar.</td></tr>
+                      <tr><td colSpan={7} className="p-6 text-center text-gray-400">No hay filas. Haz clic en "Añadir Fila" o "Importar desde Anuncios".</td></tr>
                     ) : exhibitA.map((row, i) => (
                       <tr key={i} className="border-t">
                         <td className="p-1"><Input value={row.localizacion} onChange={e => updateExhibitRow(i, "localizacion", e.target.value)} className="h-7 text-xs" placeholder="AVE. MUÑOZ RIVERA" /></td>
@@ -1123,7 +1288,6 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
             )}
           </div>
         )}
-
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white" onClick={handleSubmit} disabled={saving}>
