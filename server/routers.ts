@@ -2316,6 +2316,29 @@ export const appRouter = router({
         await db.updateContratoPdfUrl(input.id, input.pdfUrl);
         return { success: true };
       }),
+
+    getExhibitA: adminProcedure
+      .input(z.object({ contratoId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getContratoExhibitA(input.contratoId);
+      }),
+
+    saveExhibitA: adminProcedure
+      .input(z.object({
+        contratoId: z.number(),
+        rows: z.array(z.object({
+          localizacion: z.string(),
+          cobertizo: z.string(),
+          direccion: z.string(),
+          iop: z.string().nullish(),
+          producto: z.string().nullish(),
+          fb: z.string().nullish(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateContratoExhibitA(input.contratoId, input.rows);
+        return { success: true };
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

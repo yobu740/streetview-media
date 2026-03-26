@@ -346,3 +346,20 @@ export const contratoItems = mysqlTable("contrato_items", {
 
 export type ContratoItem = typeof contratoItems.$inferSelect;
 export type InsertContratoItem = typeof contratoItems.$inferInsert;
+
+/**
+ * Exhibit A location rows for a contrato
+ */
+export const contratoExhibitA = mysqlTable("contrato_exhibit_a", {
+  id: int("id").autoincrement().primaryKey(),
+  contratoId: int("contrato_id").notNull(),
+  localizacion: varchar("localizacion", { length: 255 }).notNull().default(""),
+  cobertizo: varchar("cobertizo", { length: 64 }).notNull().default(""),
+  direccion: varchar("direccion", { length: 512 }).notNull().default(""),
+  iop: varchar("iop", { length: 10 }).default(""),
+  producto: varchar("producto", { length: 255 }).default(""),
+  fb: varchar("fb", { length: 10 }).default(""),
+  orden: int("orden").default(0).notNull(),
+});
+export type ContratoExhibitA = typeof contratoExhibitA.$inferSelect;
+export type InsertContratoExhibitA = typeof contratoExhibitA.$inferInsert;

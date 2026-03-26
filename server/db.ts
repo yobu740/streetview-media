@@ -654,3 +654,37 @@ export async function updateContratoPdfUrl(id: number, pdfUrl: string) {
   if (!db) throw new Error("DB not available");
   await db.update(contratos).set({ pdfUrl }).where(eq(contratos.id, id));
 }
+
+// ─── Exhibit A helpers ────────────────────────────────────────────────────────
+export async function getContratoExhibitA(contratoId: number) {
+  const { contratoExhibitA } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(contratoExhibitA)
+    .where(eq(contratoExhibitA.contratoId, contratoId))
+    .orderBy(asc(contratoExhibitA.orden));
+}
+
+export async function updateContratoExhibitA(
+  contratoId: number,
+  rows: Array<{ localizacion: string; cobertizo: string; direccion: string; iop?: string | null; producto?: string | null; fb?: string | null }>
+) {
+  const { contratoExhibitA } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.delete(contratoExhibitA).where(eq(contratoExhibitA.contratoId, contratoId));
+  if (rows.length > 0) {
+    await db.insert(contratoExhibitA).values(
+      rows.map((r, i) => ({
+        contratoId,
+        localizacion: r.localizacion,
+        cobertizo: r.cobertizo,
+        direccion: r.direccion,
+        iop: r.iop ?? "",
+        producto: r.producto ?? "",
+        fb: r.fb ?? "",
+        orden: i,
+      }))
+    );
+  }
+}
