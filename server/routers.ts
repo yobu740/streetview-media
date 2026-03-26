@@ -6,6 +6,7 @@ import { publicProcedure, protectedProcedure, adminProcedure, vendedorProcedure,
 import { z } from "zod";
 import * as paradasDb from "./paradas-db";
 import { uploadParadaFoto } from "./upload-foto";
+import * as db from "./db";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -2149,6 +2150,172 @@ export const appRouter = router({
         .innerJoin(paradas, eq(instalaciones.paradaId, paradas.id))
         .orderBy(asc(paradas.flowCat), asc(paradas.cobertizoId));
     }),
+  }),
+  // ─── Clientes routerr ─────────────────────────────────────────────────────────
+  clientes: router({
+    list: adminProcedure.query(async () => {
+      return await db.listClientes();
+    }),
+
+    getById: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const cliente = await db.getClienteById(input.id);
+        if (!cliente) throw new TRPCError({ code: "NOT_FOUND", message: "Cliente no encontrado" });
+        return cliente;
+      }),
+
+    create: adminProcedure
+      .input(z.object({
+        nombre: z.string().min(1),
+        esAgencia: z.number().default(0),
+        direccion: z.string().optional(),
+        ciudad: z.string().optional(),
+        estado: z.string().optional(),
+        codigoPostal: z.string().optional(),
+        email: z.string().email().optional().or(z.literal("")),
+        telefono: z.string().optional(),
+        contactoPrincipal: z.string().optional(),
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createCliente({
+          nombre: input.nombre,
+          esAgencia: input.esAgencia,
+          direccion: input.direccion ?? null,
+          ciudad: input.ciudad ?? null,
+          estado: input.estado ?? null,
+          codigoPostal: input.codigoPostal ?? null,
+          email: input.email || null,
+          telefono: input.telefono ?? null,
+          contactoPrincipal: input.contactoPrincipal ?? null,
+          notas: input.notas ?? null,
+        });
+        return { id };
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        nombre: z.string().min(1).optional(),
+        esAgencia: z.number().optional(),
+        direccion: z.string().optional().nullable(),
+        ciudad: z.string().optional().nullable(),
+        estado: z.string().optional().nullable(),
+        codigoPostal: z.string().optional().nullable(),
+        email: z.string().optional().nullable(),
+        telefono: z.string().optional().nullable(),
+        contactoPrincipal: z.string().optional().nullable(),
+        notas: z.string().optional().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateCliente(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteCliente(input.id);
+        return { success: true };
+      }),
+  }),
+
+  // ─── Contratos router ─────────────────────────────────────────────────────────
+  contratos: router({
+    list: adminProcedure
+      .input(z.object({ clienteId: z.number().optional() }))
+      .query(async ({ input }) => {
+        return await db.listContratos(input.clienteId);
+      }),
+
+    getById: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const contrato = await db.getContratoById(input.id);
+        if (!contrato) throw new TRPCError({ code: "NOT_FOUND", message: "Contrato no encontrado" });
+        const items = await db.getContratoItems(input.id);
+        return { ...contrato, items };
+      }),
+
+    create: adminProcedure
+      .input(z.object({
+        clienteId: z.number(),
+        numeroContrato: z.string().min(1),
+        numeroPO: z.string().optional(),
+        fecha: z.date(),
+        customerId: z.string().optional(),
+        salesDuration: z.string().optional(),
+        vendedor: z.string().optional(),
+        metodoPago: z.string().optional(),
+        fechaVencimiento: z.date().optional(),
+        subtotal: z.string().optional(),
+        total: z.string().optional(),
+        notas: z.string().optional(),
+        estado: z.enum(["Borrador", "Enviado", "Firmado", "Cancelado"]).default("Borrador"),
+        items: z.array(z.object({
+          cantidad: z.number().default(1),
+          concepto: z.string().min(1),
+          precioPorUnidad: z.string().optional(),
+          total: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { items, ...contratoData } = input;
+        const id = await db.createContrato(
+          { ...contratoData, createdBy: ctx.user.id },
+          items.map((item, i) => ({ ...item, contratoId: 0, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null }))
+        );
+        return { id };
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        clienteId: z.number().optional(),
+        numeroContrato: z.string().optional(),
+        numeroPO: z.string().optional().nullable(),
+        fecha: z.date().optional(),
+        customerId: z.string().optional().nullable(),
+        salesDuration: z.string().optional().nullable(),
+        vendedor: z.string().optional().nullable(),
+        metodoPago: z.string().optional().nullable(),
+        fechaVencimiento: z.date().optional().nullable(),
+        subtotal: z.string().optional().nullable(),
+        total: z.string().optional().nullable(),
+        notas: z.string().optional().nullable(),
+        estado: z.enum(["Borrador", "Enviado", "Firmado", "Cancelado"]).optional(),
+        pdfUrl: z.string().optional().nullable(),
+        items: z.array(z.object({
+          cantidad: z.number().default(1),
+          concepto: z.string().min(1),
+          precioPorUnidad: z.string().optional(),
+          total: z.string().optional(),
+        })).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, items, ...data } = input;
+        await db.updateContrato(id, data);
+        if (items !== undefined) {
+          await db.updateContratoItems(id, items.map((item, i) => ({ ...item, contratoId: id, orden: i, precioPorUnidad: item.precioPorUnidad ?? null, total: item.total ?? null })));
+        }
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteContrato(input.id);
+        return { success: true };
+      }),
+
+    savePdfUrl: adminProcedure
+      .input(z.object({ id: z.number(), pdfUrl: z.string() }))
+      .mutation(async ({ input }) => {
+        await db.updateContratoPdfUrl(input.id, input.pdfUrl);
+        return { success: true };
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

@@ -555,3 +555,102 @@ export async function syncInstalacionFotosToParadas(): Promise<{ synced: number;
 
   return { synced, skipped };
 }
+
+import { clientes, contratos, contratoItems, InsertCliente, InsertContrato, InsertContratoItem } from "../drizzle/schema";
+
+// ─── Clientes ────────────────────────────────────────────────────────────────
+
+export async function listClientes() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(clientes).orderBy(clientes.nombre);
+}
+
+export async function getClienteById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(clientes).where(eq(clientes.id, id));
+  return rows[0] ?? null;
+}
+
+export async function createCliente(data: InsertCliente) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const result = await db.insert(clientes).values(data);
+  return result[0].insertId as number;
+}
+
+export async function updateCliente(id: number, data: Partial<InsertCliente>) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(clientes).set(data).where(eq(clientes.id, id));
+}
+
+export async function deleteCliente(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.delete(clientes).where(eq(clientes.id, id));
+}
+
+// ─── Contratos ───────────────────────────────────────────────────────────────
+
+export async function listContratos(clienteId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  if (clienteId) {
+    return db.select().from(contratos).where(eq(contratos.clienteId, clienteId)).orderBy(contratos.fecha);
+  }
+  return db.select().from(contratos).orderBy(contratos.fecha);
+}
+
+export async function getContratoById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(contratos).where(eq(contratos.id, id));
+  return rows[0] ?? null;
+}
+
+export async function getContratoItems(contratoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(contratoItems).where(eq(contratoItems.contratoId, contratoId)).orderBy(contratoItems.orden);
+}
+
+export async function createContrato(data: InsertContrato, items: InsertContratoItem[]) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const result = await db.insert(contratos).values(data);
+  const contratoId = result[0].insertId as number;
+  if (items.length > 0) {
+    await db.insert(contratoItems).values(items.map((item, i) => ({ ...item, contratoId, orden: i })));
+  }
+  return contratoId;
+}
+
+export async function updateContrato(id: number, data: Partial<InsertContrato>) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(contratos).set(data).where(eq(contratos.id, id));
+}
+
+export async function updateContratoItems(contratoId: number, items: InsertContratoItem[]) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.delete(contratoItems).where(eq(contratoItems.contratoId, contratoId));
+  if (items.length > 0) {
+    await db.insert(contratoItems).values(items.map((item, i) => ({ ...item, contratoId, orden: i })));
+  }
+}
+
+export async function deleteContrato(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.delete(contratoItems).where(eq(contratoItems.contratoId, id));
+  await db.delete(contratos).where(eq(contratos.id, id));
+}
+
+export async function updateContratoPdfUrl(id: number, pdfUrl: string) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(contratos).set({ pdfUrl }).where(eq(contratos.id, id));
+}

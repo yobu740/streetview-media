@@ -1,0 +1,9 @@
+{
+  "query": "-- Change flowcat from 093 to 046 and update localizacion to AVE. SAN JORGE for paradas 714 and 715\nUPDATE paradas \nSET flow_cat = '046', localizacion = 'AVE. SAN JORGE'\nWHERE cobertizo_id IN ('714', '715');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Change flowcat from 093 to 046 and update localizacion to AVE. SAN JORGE for paradas 714 and 715\nUPDATE paradas \nSET flow_cat = '046', localizacion = 'AVE. SAN JORGE'\nWHERE cobertizo_id IN ('714', '715');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 380
+}

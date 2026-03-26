@@ -1,0 +1,82 @@
+{
+  "query": "-- Cobertizos con sufijo letra (ej: 601A, 601B, 131A, 131B)\nSELECT COUNT(DISTINCT cobertizo_id) as con_letra \nFROM paradas \nWHERE cobertizo_id REGEXP '[A-Za-z]$';\n\n-- Cobertizos sin sufijo letra\nSELECT COUNT(DISTINCT cobertizo_id) as sin_letra \nFROM paradas \nWHERE cobertizo_id NOT REGEXP '[A-Za-z]$';\n\n-- Ejemplos de cobertizos con letra para entender el patrón\nSELECT cobertizo_id, localizacion, orientacion \nFROM paradas \nWHERE cobertizo_id REGEXP '[A-Za-z]$'\nORDER BY cobertizo_id \nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Cobertizos con sufijo letra (ej: 601A, 601B, 131A, 131B)\nSELECT COUNT(DISTINCT cobertizo_id) as con_letra \nFROM paradas \nWHERE cobertizo_id REGEXP '[A-Za-z]$';\n\n-- Cobertizos sin sufijo letra\nSELECT COUNT(DISTINCT cobertizo_id) as sin_letra \nFROM paradas \nWHERE cobertizo_id NOT REGEXP '[A-Za-z]$';\n\n-- Ejemplos de cobertizos con letra para entender el patrón\nSELECT cobertizo_id, localizacion, orientacion \nFROM paradas \nWHERE cobertizo_id REGEXP '[A-Za-z]$'\nORDER BY cobertizo_id \nLIMIT 20;",
+  "rows": [
+    {
+      "con_letra": "183"
+    },
+    {
+      "con_letra": "sin_letra"
+    },
+    {
+      "con_letra": "427"
+    },
+    {
+      "con_letra": "cobertizo_id\tlocalizacion\torientacion"
+    },
+    {
+      "con_letra": "028A\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028B\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028C\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028D\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028E\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028F\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028G\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "028H\tAVE. PIÑERO / CENTRAL\tI"
+    },
+    {
+      "con_letra": "031A\tMISCELÁNEOS\tI"
+    },
+    {
+      "con_letra": "031A\tMISCELÁNEOS\tO"
+    },
+    {
+      "con_letra": "031B\tMISCELÁNEOS\tO"
+    },
+    {
+      "con_letra": "031B\tMISCELÁNEOS\tI"
+    },
+    {
+      "con_letra": "038A\tAVE. DE DIEGO SANTURCE\tO"
+    },
+    {
+      "con_letra": "038A\tAVE. DE DIEGO SANTURCE\tI"
+    },
+    {
+      "con_letra": "038B\tAVE. DE DIEGO SANTURCE\tI"
+    },
+    {
+      "con_letra": "038B\tAVE. DE DIEGO SANTURCE\tO"
+    },
+    {
+      "con_letra": "039A\tAVE. DE DIEGO SANTURCE\tI"
+    },
+    {
+      "con_letra": "039A\tAVE. DE DIEGO SANTURCE\tO"
+    },
+    {
+      "con_letra": "039B\tAVE. DE DIEGO SANTURCE\tI"
+    },
+    {
+      "con_letra": "039B\tAVE. DE DIEGO SANTURCE\tO"
+    }
+  ],
+  "messages": [],
+  "stdout": "con_letra\n183\nsin_letra\n427\ncobertizo_id\tlocalizacion\torientacion\n028A\tAVE. PIÑERO / CENTRAL\tI\n028B\tAVE. PIÑERO / CENTRAL\tI\n028C\tAVE. PIÑERO / CENTRAL\tI\n028D\tAVE. PIÑERO / CENTRAL\tI\n028E\tAVE. PIÑERO / CENTRAL\tI\n028F\tAVE. PIÑERO / CENTRAL\tI\n028G\tAVE. PIÑERO / CENTRAL\tI\n028H\tAVE. PIÑERO / CENTRAL\tI\n031A\tMISCELÁNEOS\tI\n031A\tMISCELÁNEOS\tO\n031B\tMISCELÁNEOS\tO\n031B\tMISCELÁNEOS\tI\n038A\tAVE. DE DIEGO SANTURCE\tO\n038A\tAVE. DE DIEGO SANTURCE\tI\n038B\tAVE. DE DIEGO SANTURCE\tI\n038B\tAVE. DE DIEGO SANTURCE\tO\n039A\tAVE. DE DIEGO SANTURCE\tI\n039A\tAVE. DE DIEGO SANTURCE\tO\n039B\tAVE. DE DIEGO SANTURCE\tI\n039B\tAVE. DE DIEGO SANTURCE\tO\n",
+  "stderr": "",
+  "execution_time_ms": 468
+}

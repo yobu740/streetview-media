@@ -1,0 +1,88 @@
+{
+  "query": "-- Total de filas (caras)\nSELECT COUNT(*) as total_caras FROM paradas;\n\n-- Paradas físicas únicas por cobertizo_id\nSELECT COUNT(DISTINCT cobertizo_id) as total_cobertizos_unicos FROM paradas;\n\n-- Cobertizos con variantes A/B (misma base numérica)\nSELECT COUNT(DISTINCT REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '')) as total_fisicas_estimado FROM paradas;\n\n-- Ejemplos de cobertizos con múltiples variantes\nSELECT cobertizo_id, COUNT(*) as caras FROM paradas GROUP BY cobertizo_id ORDER BY cobertizo_id LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Total de filas (caras)\nSELECT COUNT(*) as total_caras FROM paradas;\n\n-- Paradas físicas únicas por cobertizo_id\nSELECT COUNT(DISTINCT cobertizo_id) as total_cobertizos_unicos FROM paradas;\n\n-- Cobertizos con variantes A/B (misma base numérica)\nSELECT COUNT(DISTINCT REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '')) as total_fisicas_estimado FROM paradas;\n\n-- Ejemplos de cobertizos con múltiples variantes\nSELECT cobertizo_id, COUNT(*) as caras FROM paradas GROUP BY cobertizo_id ORDER BY cobertizo_id LIMIT 20;",
+  "rows": [
+    {
+      "total_caras": "1154"
+    },
+    {
+      "total_caras": "total_cobertizos_unicos"
+    },
+    {
+      "total_caras": "610"
+    },
+    {
+      "total_caras": "total_fisicas_estimado"
+    },
+    {
+      "total_caras": "477"
+    },
+    {
+      "total_caras": "cobertizo_id\tcaras"
+    },
+    {
+      "total_caras": "001\t2"
+    },
+    {
+      "total_caras": "002\t2"
+    },
+    {
+      "total_caras": "003\t2"
+    },
+    {
+      "total_caras": "004\t2"
+    },
+    {
+      "total_caras": "005\t2"
+    },
+    {
+      "total_caras": "006\t2"
+    },
+    {
+      "total_caras": "007\t2"
+    },
+    {
+      "total_caras": "008\t2"
+    },
+    {
+      "total_caras": "009\t2"
+    },
+    {
+      "total_caras": "010\t2"
+    },
+    {
+      "total_caras": "011\t2"
+    },
+    {
+      "total_caras": "012\t2"
+    },
+    {
+      "total_caras": "013\t2"
+    },
+    {
+      "total_caras": "014\t2"
+    },
+    {
+      "total_caras": "015\t2"
+    },
+    {
+      "total_caras": "016\t2"
+    },
+    {
+      "total_caras": "017\t2"
+    },
+    {
+      "total_caras": "018\t2"
+    },
+    {
+      "total_caras": "019\t2"
+    },
+    {
+      "total_caras": "020\t2"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_caras\n1154\ntotal_cobertizos_unicos\n610\ntotal_fisicas_estimado\n477\ncobertizo_id\tcaras\n001\t2\n002\t2\n003\t2\n004\t2\n005\t2\n006\t2\n007\t2\n008\t2\n009\t2\n010\t2\n011\t2\n012\t2\n013\t2\n014\t2\n015\t2\n016\t2\n017\t2\n018\t2\n019\t2\n020\t2\n",
+  "stderr": "",
+  "execution_time_ms": 514
+}

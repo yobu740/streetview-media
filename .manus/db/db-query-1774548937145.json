@@ -1,0 +1,55 @@
+{
+  "query": "-- Current state of flowcat 093\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '093' ORDER BY cobertizo_id;\n\n-- Current state of paradas 714 and 715\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE cobertizo_id IN ('714', '715') ORDER BY cobertizo_id;\n\n-- Check if flowcat 046 already exists\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '046' ORDER BY cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Current state of flowcat 093\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '093' ORDER BY cobertizo_id;\n\n-- Current state of paradas 714 and 715\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE cobertizo_id IN ('714', '715') ORDER BY cobertizo_id;\n\n-- Check if flowcat 046 already exists\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '046' ORDER BY cobertizo_id;",
+  "rows": [
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "cobertizo_id",
+      "localizacion": "localizacion",
+      "flow_cat": "flow_cat"
+    },
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. EDUARDO CONDE",
+      "flow_cat": "093"
+    }
+  ],
+  "messages": [],
+  "stdout": "cobertizo_id\tlocalizacion\tflow_cat\n714\tAVE. EDUARDO CONDE\t093\n714\tAVE. EDUARDO CONDE\t093\n715\tAVE. EDUARDO CONDE\t093\n715\tAVE. EDUARDO CONDE\t093\ncobertizo_id\tlocalizacion\tflow_cat\n714\tAVE. EDUARDO CONDE\t093\n714\tAVE. EDUARDO CONDE\t093\n715\tAVE. EDUARDO CONDE\t093\n715\tAVE. EDUARDO CONDE\t093\n",
+  "stderr": "",
+  "execution_time_ms": 454
+}

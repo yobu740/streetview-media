@@ -280,3 +280,69 @@ export const instalaciones = mysqlTable("instalaciones", {
 
 export type Instalacion = typeof instalaciones.$inferSelect;
 export type InsertInstalacion = typeof instalaciones.$inferInsert;
+
+/**
+ * Clientes (clients/agencies) table
+ */
+export const clientes = mysqlTable("clientes", {
+  id: int("id").autoincrement().primaryKey(),
+  nombre: varchar("nombre", { length: 255 }).notNull(), // Agency / client company name
+  esAgencia: int("es_agencia").default(0).notNull(), // 1 = advertising agency, 0 = direct client
+  direccion: text("direccion"), // Physical address
+  ciudad: varchar("ciudad", { length: 100 }), // City
+  estado: varchar("estado", { length: 100 }), // State / Province
+  codigoPostal: varchar("codigo_postal", { length: 20 }), // ZIP code
+  email: varchar("email", { length: 320 }), // Billing email
+  telefono: varchar("telefono", { length: 30 }), // Phone number
+  contactoPrincipal: varchar("contacto_principal", { length: 255 }), // Main contact person name
+  notas: text("notas"), // Internal notes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Cliente = typeof clientes.$inferSelect;
+export type InsertCliente = typeof clientes.$inferInsert;
+
+/**
+ * Contratos (contracts) table
+ * Each contract belongs to a client and has one or more line items
+ */
+export const contratos = mysqlTable("contratos", {
+  id: int("id").autoincrement().primaryKey(),
+  clienteId: int("cliente_id").notNull(), // FK to clientes
+  numeroContrato: varchar("numero_contrato", { length: 64 }).notNull(), // e.g. 2026-2
+  numeroPO: varchar("numero_po", { length: 64 }), // Purchase Order number (for agencies)
+  fecha: timestamp("fecha").notNull(), // Contract date
+  customerId: varchar("customer_id", { length: 255 }), // Brand name (e.g. "Taco Bell", "CLARO")
+  salesDuration: varchar("sales_duration", { length: 255 }), // e.g. "February 2026 - November 2026"
+  vendedor: varchar("vendedor", { length: 255 }), // Salesperson name(s)
+  metodoPago: varchar("metodo_pago", { length: 100 }).default("ACH / Wire Transfer"), // Payment method
+  fechaVencimiento: timestamp("fecha_vencimiento"), // Due date
+  subtotal: varchar("subtotal", { length: 20 }), // Subtotal
+  total: varchar("total", { length: 20 }), // Total
+  notas: text("notas"), // Internal notes
+  pdfUrl: text("pdf_url"), // S3 URL to generated PDF
+  estado: mysqlEnum("estado", ["Borrador", "Enviado", "Firmado", "Cancelado"]).default("Borrador").notNull(),
+  createdBy: int("created_by"), // FK to users
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Contrato = typeof contratos.$inferSelect;
+export type InsertContrato = typeof contratos.$inferInsert;
+
+/**
+ * Contrato line items table
+ */
+export const contratoItems = mysqlTable("contrato_items", {
+  id: int("id").autoincrement().primaryKey(),
+  contratoId: int("contrato_id").notNull(), // FK to contratos
+  cantidad: int("cantidad").notNull().default(1), // QNTY
+  concepto: varchar("concepto", { length: 255 }).notNull(), // CONCEPT
+  precioPorUnidad: varchar("precio_por_unidad", { length: 20 }), // PRICE PER UNIT
+  total: varchar("total", { length: 20 }), // TOTAL (can be "NO CHARGE")
+  orden: int("orden").default(0).notNull(), // Display order
+});
+
+export type ContratoItem = typeof contratoItems.$inferSelect;
+export type InsertContratoItem = typeof contratoItems.$inferInsert;

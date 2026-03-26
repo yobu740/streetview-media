@@ -1,0 +1,42 @@
+{
+  "query": "-- Verify paradas 714 and 715 now have flowcat 046 and localizacion AVE. SAN JORGE\nSELECT cobertizo_id, localizacion, flow_cat, orientacion FROM paradas \nWHERE cobertizo_id IN ('714', '715') \nORDER BY cobertizo_id, orientacion;\n\n-- Confirm flowcat 093 is now empty\nSELECT COUNT(*) as remaining_093 FROM paradas WHERE flow_cat = '093';\n\n-- Confirm flowcat 046 now has the paradas\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '046' ORDER BY cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Verify paradas 714 and 715 now have flowcat 046 and localizacion AVE. SAN JORGE\nSELECT cobertizo_id, localizacion, flow_cat, orientacion FROM paradas \nWHERE cobertizo_id IN ('714', '715') \nORDER BY cobertizo_id, orientacion;\n\n-- Confirm flowcat 093 is now empty\nSELECT COUNT(*) as remaining_093 FROM paradas WHERE flow_cat = '093';\n\n-- Confirm flowcat 046 now has the paradas\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE flow_cat = '046' ORDER BY cobertizo_id;",
+  "rows": [
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. SAN JORGE",
+      "flow_cat": "046",
+      "orientacion": "I"
+    },
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. SAN JORGE",
+      "flow_cat": "046",
+      "orientacion": "O"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. SAN JORGE",
+      "flow_cat": "046",
+      "orientacion": "I"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. SAN JORGE",
+      "flow_cat": "046",
+      "orientacion": "O"
+    }
+  ],
+  "messages": [
+    "remaining_093",
+    "0",
+    "cobertizo_id\tlocalizacion\tflow_cat",
+    "714\tAVE. SAN JORGE\t046",
+    "714\tAVE. SAN JORGE\t046",
+    "715\tAVE. SAN JORGE\t046",
+    "715\tAVE. SAN JORGE\t046"
+  ],
+  "stdout": "cobertizo_id\tlocalizacion\tflow_cat\torientacion\n714\tAVE. SAN JORGE\t046\tI\n714\tAVE. SAN JORGE\t046\tO\n715\tAVE. SAN JORGE\t046\tI\n715\tAVE. SAN JORGE\t046\tO\nremaining_093\n0\ncobertizo_id\tlocalizacion\tflow_cat\n714\tAVE. SAN JORGE\t046\n714\tAVE. SAN JORGE\t046\n715\tAVE. SAN JORGE\t046\n715\tAVE. SAN JORGE\t046\n",
+  "stderr": "",
+  "execution_time_ms": 440
+}

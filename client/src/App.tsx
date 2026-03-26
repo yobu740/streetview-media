@@ -17,6 +17,7 @@ import Facturacion from "./pages/Facturacion";
 import Seguimientos from "./pages/Seguimientos";
 import Notificaciones from "./pages/Notificaciones";
 import Instalacion from "./pages/Instalacion";
+import Clientes from "./pages/Clientes";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -34,6 +35,7 @@ function Router() {
       <Route path={"/seguimientos"} component={Seguimientos} />
       <Route path={"/notificaciones"} component={Notificaciones} />
       <Route path={"/instalacion"} component={Instalacion} />
+      <Route path={"/clientes"} component={Clientes} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

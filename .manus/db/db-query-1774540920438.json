@@ -1,0 +1,76 @@
+{
+  "query": "-- Contar estructuras físicas únicas agrupando por base numérica\n-- Ej: 601A y 601B = 1 estructura física \"601\"\nSELECT COUNT(DISTINCT REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '')) as paradas_fisicas\nFROM paradas;\n\n-- Ver cuántas bases numéricas tienen múltiples letras (A, B, C...)\nSELECT base, COUNT(DISTINCT cobertizo_id) as variantes, GROUP_CONCAT(DISTINCT cobertizo_id ORDER BY cobertizo_id) as ids\nFROM (\n  SELECT cobertizo_id, REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '') as base\n  FROM paradas\n) t\nGROUP BY base\nHAVING variantes > 1\nORDER BY CAST(base AS UNSIGNED)\nLIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute -- Contar estructuras físicas únicas agrupando por base numérica\n-- Ej: 601A y 601B = 1 estructura física \"601\"\nSELECT COUNT(DISTINCT REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '')) as paradas_fisicas\nFROM paradas;\n\n-- Ver cuántas bases numéricas tienen múltiples letras (A, B, C...)\nSELECT base, COUNT(DISTINCT cobertizo_id) as variantes, GROUP_CONCAT(DISTINCT cobertizo_id ORDER BY cobertizo_id) as ids\nFROM (\n  SELECT cobertizo_id, REGEXP_REPLACE(cobertizo_id, '[A-Za-z]+$', '') as base\n  FROM paradas\n) t\nGROUP BY base\nHAVING variantes > 1\nORDER BY CAST(base AS UNSIGNED)\nLIMIT 20;",
+  "rows": [
+    {
+      "paradas_fisicas": "477"
+    },
+    {
+      "paradas_fisicas": "base\tvariantes\tids"
+    },
+    {
+      "paradas_fisicas": "028\t9\t028,028A,028B,028C,028D,028E,028F,028G,028H"
+    },
+    {
+      "paradas_fisicas": "031\t2\t031A,031B"
+    },
+    {
+      "paradas_fisicas": "038\t2\t038A,038B"
+    },
+    {
+      "paradas_fisicas": "039\t2\t039A,039B"
+    },
+    {
+      "paradas_fisicas": "040\t2\t040A,040B"
+    },
+    {
+      "paradas_fisicas": "042\t2\t042A,042B"
+    },
+    {
+      "paradas_fisicas": "044\t2\t044A,044B"
+    },
+    {
+      "paradas_fisicas": "046\t2\t046A,046B"
+    },
+    {
+      "paradas_fisicas": "069\t3\t069A,069AI,069B"
+    },
+    {
+      "paradas_fisicas": "079\t2\t079A,079B"
+    },
+    {
+      "paradas_fisicas": "082\t2\t082A,082B"
+    },
+    {
+      "paradas_fisicas": "092\t2\t092A,092B"
+    },
+    {
+      "paradas_fisicas": "094\t3\t094A,094B,094BO"
+    },
+    {
+      "paradas_fisicas": "112\t2\t112A,112B"
+    },
+    {
+      "paradas_fisicas": "113\t9\t113,113A,113B,113C,113D,113E,113F,113G,113H"
+    },
+    {
+      "paradas_fisicas": "131\t2\t131A,131B"
+    },
+    {
+      "paradas_fisicas": "134\t9\t134,134A,134B,134C,134D,134E,134F,134G,134H"
+    },
+    {
+      "paradas_fisicas": "207\t2\t207A,207B"
+    },
+    {
+      "paradas_fisicas": "258\t2\t258A,258B"
+    },
+    {
+      "paradas_fisicas": "300\t2\t300A,300B"
+    }
+  ],
+  "messages": [],
+  "stdout": "paradas_fisicas\n477\nbase\tvariantes\tids\n028\t9\t028,028A,028B,028C,028D,028E,028F,028G,028H\n031\t2\t031A,031B\n038\t2\t038A,038B\n039\t2\t039A,039B\n040\t2\t040A,040B\n042\t2\t042A,042B\n044\t2\t044A,044B\n046\t2\t046A,046B\n069\t3\t069A,069AI,069B\n079\t2\t079A,079B\n082\t2\t082A,082B\n092\t2\t092A,092B\n094\t3\t094A,094B,094BO\n112\t2\t112A,112B\n113\t9\t113,113A,113B,113C,113D,113E,113F,113G,113H\n131\t2\t131A,131B\n134\t9\t134,134A,134B,134C,134D,134E,134F,134G,134H\n207\t2\t207A,207B\n258\t2\t258A,258B\n300\t2\t300A,300B\n",
+  "stderr": "",
+  "execution_time_ms": 420
+}

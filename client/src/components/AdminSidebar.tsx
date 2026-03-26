@@ -20,6 +20,7 @@ import {
   UserCheck,
   Bell,
   Package,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -88,6 +89,12 @@ export default function AdminSidebar({
       label: "Facturación",
       icon: Receipt,
       href: "/facturacion",
+      adminOnly: true,
+    },
+    {
+      label: "Clientes",
+      icon: Building2,
+      href: "/clientes",
       adminOnly: true,
     },
     {

@@ -1,0 +1,30 @@
+{
+  "query": "UPDATE paradas \nSET localizacion = 'AVE. SAN JORGE (SANTURCE)'\nWHERE cobertizo_id IN ('714', '715');\n\n-- Verify\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE cobertizo_id IN ('714', '715') ORDER BY cobertizo_id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute UPDATE paradas \nSET localizacion = 'AVE. SAN JORGE (SANTURCE)'\nWHERE cobertizo_id IN ('714', '715');\n\n-- Verify\nSELECT cobertizo_id, localizacion, flow_cat FROM paradas WHERE cobertizo_id IN ('714', '715') ORDER BY cobertizo_id;",
+  "rows": [
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. SAN JORGE (SANTURCE)",
+      "flow_cat": "046"
+    },
+    {
+      "cobertizo_id": "714",
+      "localizacion": "AVE. SAN JORGE (SANTURCE)",
+      "flow_cat": "046"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. SAN JORGE (SANTURCE)",
+      "flow_cat": "046"
+    },
+    {
+      "cobertizo_id": "715",
+      "localizacion": "AVE. SAN JORGE (SANTURCE)",
+      "flow_cat": "046"
+    }
+  ],
+  "messages": [],
+  "stdout": "cobertizo_id\tlocalizacion\tflow_cat\n714\tAVE. SAN JORGE (SANTURCE)\t046\n714\tAVE. SAN JORGE (SANTURCE)\t046\n715\tAVE. SAN JORGE (SANTURCE)\t046\n715\tAVE. SAN JORGE (SANTURCE)\t046\n",
+  "stderr": "",
+  "execution_time_ms": 407
+}
