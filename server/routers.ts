@@ -2431,9 +2431,30 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const { getDb } = await import('./db');
         const { anuncios, paradas } = await import('../drizzle/schema');
-        const { eq, and, like, inArray } = await import('drizzle-orm');
+        const { eq, and, like, or, inArray } = await import('drizzle-orm');
         const database = await getDb();
         if (!database) return [];
+
+        // Build keyword-based search to handle special characters like & that may
+        // get encoded differently between the clientes table and anuncios.cliente field.
+        // Extract meaningful words (3+ chars, skip stopwords) and search for any of them.
+        const stopwords = new Set(['and', 'the', 'los', 'las', 'del', 'de', 'la', 'el', 'y']);
+        const keywords = input.clienteNombre
+          .split(/[\s&,\/\\]+/)
+          .map(w => w.replace(/[^a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑ]/g, '').trim())
+          .filter(w => w.length >= 3 && !stopwords.has(w.toLowerCase()));
+
+        // Fall back to full-name LIKE if no keywords extracted
+        const whereClause = keywords.length > 0
+          ? and(
+              or(...keywords.map(kw => like(anuncios.cliente, `%${kw}%`))),
+              inArray(anuncios.estado, ['Activo', 'Programado']),
+            )
+          : and(
+              like(anuncios.cliente, `%${input.clienteNombre}%`),
+              inArray(anuncios.estado, ['Activo', 'Programado']),
+            );
+
         const results = await database
           .select({
             anuncioId: anuncios.id,
@@ -2444,13 +2465,11 @@ export const appRouter = router({
             localizacion: paradas.localizacion,
             direccion: paradas.direccion,
             orientacion: paradas.orientacion,
+            clienteAnuncio: anuncios.cliente,
           })
           .from(anuncios)
           .innerJoin(paradas, eq(anuncios.paradaId, paradas.id))
-          .where(and(
-            like(anuncios.cliente, `%${input.clienteNombre}%`),
-            inArray(anuncios.estado, ['Activo', 'Programado']),
-          ));
+          .where(whereClause);
         return results;
       }),
   }),

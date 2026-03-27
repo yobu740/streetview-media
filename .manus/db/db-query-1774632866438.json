@@ -1,0 +1,18 @@
+{
+  "query": "\nSELECT id, cliente, estado FROM anuncios WHERE cliente LIKE '%BADILLO%' OR cliente LIKE '%Badillo%' OR cliente LIKE '%badillo%' LIMIT 10;\nSELECT id, nombre FROM clientes WHERE nombre LIKE '%BADILLO%' OR nombre LIKE '%Badillo%' OR nombre LIKE '%badillo%' LIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT id, cliente, estado FROM anuncios WHERE cliente LIKE '%BADILLO%' OR cliente LIKE '%Badillo%' OR cliente LIKE '%badillo%' LIMIT 10;\nSELECT id, nombre FROM clientes WHERE nombre LIKE '%BADILLO%' OR nombre LIKE '%Badillo%' OR nombre LIKE '%badillo%' LIMIT 10;\n",
+  "rows": [
+    {
+      "id": "420001",
+      "cliente": "BADILLO SAATCHI & SAATCHI",
+      "estado": "Activo"
+    }
+  ],
+  "messages": [
+    "id\tnombre",
+    "12\tBadillo Saatchi & Saatchi"
+  ],
+  "stdout": "id\tcliente\testado\n420001\tBADILLO SAATCHI & SAATCHI\tActivo\nid\tnombre\n12\tBadillo Saatchi & Saatchi\n",
+  "stderr": "",
+  "execution_time_ms": 498
+}
