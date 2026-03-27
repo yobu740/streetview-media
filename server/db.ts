@@ -299,7 +299,7 @@ export async function createInstalacion(entry: {
   anuncioId: number;
   paradaId: number;
   fromParadaId?: number;
-  estado: "Programado" | "Relocalizacion";
+  estado: "Programado" | "Relocalizacion" | "CambioArte";
   notas?: string;
 }) {
   const db = await getDb();

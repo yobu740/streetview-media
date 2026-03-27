@@ -44,6 +44,7 @@ import {
   Upload,
   History,
   Users,
+  Palette,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
@@ -57,7 +58,7 @@ type InstalacionItem = {
   anuncioId: number;
   paradaId: number;
   fromParadaId: number | null;
-  estado: "Programado" | "Relocalizacion" | "Instalado";
+  estado: "Programado" | "Relocalizacion" | "CambioArte" | "Instalado";
   fotoInstalacion: string | null;
   instaladoAt: Date | null;
   instaladoPor: string | null;
@@ -96,6 +97,12 @@ function estadoBadge(estado: string) {
     return (
       <Badge className="bg-amber-100 text-amber-800 border-amber-300 font-semibold">
         Relocalización
+      </Badge>
+    );
+  if (estado === "CambioArte")
+    return (
+      <Badge className="bg-purple-100 text-purple-800 border-purple-300 font-semibold">
+        Cambio de Arte
       </Badge>
     );
   return (
@@ -743,6 +750,19 @@ export default function Instalacion() {
             </div>
           </CardContent>
         </Card>
+        <Card className="border-purple-200">
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+              <Palette className="w-4 h-4 text-purple-700" />
+            </div>
+            <div>
+              <div className="text-xl font-bold text-purple-700">
+                {instalaciones.filter((i) => i.estado === "CambioArte").length}
+              </div>
+              <div className="text-xs text-muted-foreground">Cambios de Arte</div>
+            </div>
+          </CardContent>
+        </Card>
         <Card className="border-gray-200 col-span-2 md:col-span-1">
           <CardContent className="p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
@@ -774,6 +794,7 @@ export default function Instalacion() {
                 <SelectItem value="all">Todos los estados</SelectItem>
                 <SelectItem value="Programado">Programado</SelectItem>
                 <SelectItem value="Relocalizacion">Relocalización</SelectItem>
+                <SelectItem value="CambioArte">Cambio de Arte</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterFlowcat} onValueChange={setFilterFlowcat}>

@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check, Plus } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check, Plus, Palette } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useSearch } from "wouter";
 import { useState, useEffect } from "react";
@@ -64,6 +64,14 @@ export default function Anuncios() {
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const generateInvoice = trpc.invoices.generate.useMutation();
   const createAnuncio = trpc.anuncios.create.useMutation();
+  const markCambioArte = trpc.instalaciones.markCambioArte.useMutation({
+    onSuccess: () => {
+      utils.instalaciones.list.invalidate();
+      utils.anuncios.list.invalidate();
+      toast.success("Cambio de Arte registrado — el anuncio fue agregado a la lista de instalaciones.");
+    },
+    onError: (err) => toast.error(err.message),
+  });
   const utils = trpc.useUtils();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -948,6 +956,21 @@ export default function Anuncios() {
                             >
                               <Edit size={16} />
                             </Button>
+                            {anuncio.estado === 'Activo' && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                title="Marcar Cambio de Arte"
+                                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                onClick={() => {
+                                  if (confirm(`¿Marcar cambio de arte para el anuncio de ${anuncio.cliente}?`)) {
+                                    markCambioArte.mutate({ anuncioId: anuncio.id });
+                                  }
+                                }}
+                              >
+                                <Palette size={16} />
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"

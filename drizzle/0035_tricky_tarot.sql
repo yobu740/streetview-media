@@ -1,0 +1,1 @@
+ALTER TABLE `instalaciones` MODIFY COLUMN `estado` enum('Programado','Relocalizacion','CambioArte','Instalado') NOT NULL DEFAULT 'Programado';

@@ -2113,6 +2113,42 @@ export const appRouter = router({
         return { success: true, deleted: input.ids.length };
       }),
 
+    // Mark an active anuncio for art change — creates a CambioArte instalacion record
+    markCambioArte: adminProcedure
+      .input(z.object({
+        anuncioId: z.number(),
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb, createInstalacion } = await import('./db');
+        const { instalaciones, anuncios, paradas } = await import('../drizzle/schema');
+        const { eq, and, ne } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+
+        // Get the anuncio to verify it is Activo
+        const [anuncio] = await db.select().from(anuncios).where(eq(anuncios.id, input.anuncioId)).limit(1);
+        if (!anuncio) throw new TRPCError({ code: 'NOT_FOUND', message: 'Anuncio no encontrado' });
+        if (anuncio.estado !== 'Activo') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Solo se puede marcar cambio de arte en anuncios Activos' });
+
+        // Check if there is already a pending CambioArte for this anuncio
+        const existing = await db
+          .select({ id: instalaciones.id })
+          .from(instalaciones)
+          .where(and(eq(instalaciones.anuncioId, input.anuncioId), eq(instalaciones.estado, 'CambioArte')))
+          .limit(1);
+        if (existing.length > 0) throw new TRPCError({ code: 'BAD_REQUEST', message: 'Este anuncio ya tiene un cambio de arte pendiente' });
+
+        await createInstalacion({
+          anuncioId: input.anuncioId,
+          paradaId: anuncio.paradaId,
+          estado: 'CambioArte',
+          notas: input.notas,
+        });
+
+        return { success: true };
+      }),
+
     // Get all instalaciones including Instalado (for history / order generation)
     listAll: protectedProcedure.query(async () => {
       const { getDb } = await import('./db');
