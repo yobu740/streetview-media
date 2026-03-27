@@ -2205,14 +2205,14 @@ export const appRouter = router({
       .input(z.object({
         nombre: z.string().min(1),
         esAgencia: z.number().default(0),
-        direccion: z.string().optional(),
-        ciudad: z.string().optional(),
-        estado: z.string().optional(),
-        codigoPostal: z.string().optional(),
-        email: z.string().email().optional().or(z.literal("")),
-        telefono: z.string().optional(),
-        contactoPrincipal: z.string().optional(),
-        notas: z.string().optional(),
+        direccion: z.string().optional().nullable(),
+        ciudad: z.string().optional().nullable(),
+        estado: z.string().optional().nullable(),
+        codigoPostal: z.string().optional().nullable(),
+        email: z.string().email().optional().nullable().or(z.literal("")),
+        telefono: z.string().optional().nullable(),
+        contactoPrincipal: z.string().optional().nullable(),
+        notas: z.string().optional().nullable(),
       }))
       .mutation(async ({ input }) => {
         const id = await db.createCliente({
