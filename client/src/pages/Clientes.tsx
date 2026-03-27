@@ -300,7 +300,7 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       <div class="for-label">FOR:</div>
       <div class="for-name">${cliente.nombre}</div>
       ${clientAddr ? `<div class="for-addr">${clientAddr}</div>` : ""}
-      ${cliente.email ? `<div class="for-addr" style="margin-top:4px;">${cliente.email}</div>` : ""}
+
     </div>
     <div>
       <div class="meta-row"><span class="meta-label">CONTRACT #:</span> <span class="meta-val">${contrato.numeroContrato}</span></div>
