@@ -43,7 +43,8 @@ import {
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check } from "lucide-react";
+import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check, Plus } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useSearch } from "wouter";
 import { useState, useEffect } from "react";
 
@@ -62,6 +63,7 @@ export default function Anuncios() {
   const updateAnuncio = trpc.anuncios.update.useMutation();
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const generateInvoice = trpc.invoices.generate.useMutation();
+  const createAnuncio = trpc.anuncios.create.useMutation();
   const utils = trpc.useUtils();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,6 +107,62 @@ export default function Anuncios() {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [selectedAnuncioForHistory, setSelectedAnuncioForHistory] = useState<number | null>(null);
   const [highlightAnuncioId, setHighlightAnuncioId] = useState<number | null>(null);
+
+  // Crear Anuncio dialog
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    producto: "",
+    cliente: "",
+    fechaInicio: "",
+    fechaFin: "",
+    tipo: "Fijo" as "Fijo" | "Bonificación",
+    costoPorUnidad: "",
+    selectionMode: "paradas" as "paradas" | "rutas",
+    selectedParadas: [] as number[],
+    selectedRutas: [] as string[],
+  });
+  const [createParadaSearchTerm, setCreateParadaSearchTerm] = useState("");
+
+  const getAvailableParadasForCreate = () => {
+    if (!createForm.fechaInicio || !createForm.fechaFin || !paradas || !anuncios) return [];
+    const inicio = new Date(createForm.fechaInicio);
+    const fin = new Date(createForm.fechaFin);
+    return paradas
+      .map(parada => {
+        const isRemovida = !!(parada as any).removida;
+        const isEnConstruccion = !!(parada as any).enConstruccion;
+        const isSinDisplay = (parada as any).displayPublicidad === 'No';
+        const isNoOperativa = isRemovida || isEnConstruccion || isSinDisplay;
+        let blockReason: string | null = null;
+        if (isRemovida) blockReason = 'Removida';
+        else if (isEnConstruccion) blockReason = 'En Construcción';
+        else if (isSinDisplay) blockReason = 'Sin Display';
+        if (isNoOperativa) return { ...parada, isAvailable: false, availableAfter: null, blockReason };
+        const conflictingAnuncios = anuncios.filter(a => {
+          if (a.paradaId !== parada.id || (a.estado !== 'Activo' && a.estado !== 'Programado')) return false;
+          const aStart = new Date(a.fechaInicio);
+          const aEnd = new Date(a.fechaFin);
+          return !(fin < aStart || inicio > aEnd);
+        });
+        const hasConflict = conflictingAnuncios.length > 0;
+        let availableAfter = null;
+        if (hasConflict) {
+          const latest = conflictingAnuncios.reduce((l, c) => new Date(c.fechaFin) > new Date(l.fechaFin) ? c : l);
+          availableAfter = new Date(latest.fechaFin);
+          availableAfter.setDate(availableAfter.getDate() + 1);
+        }
+        return { ...parada, isAvailable: !hasConflict, availableAfter, blockReason: null };
+      })
+      .filter(p => {
+        if (!createParadaSearchTerm) return true;
+        const s = createParadaSearchTerm.toLowerCase().trim();
+        if (s.includes(',')) {
+          const ids = s.split(',').map(id => id.trim());
+          return ids.some(id => p.cobertizoId.toLowerCase().includes(id));
+        }
+        return p.cobertizoId.toLowerCase().includes(s) || p.localizacion.toLowerCase().includes(s);
+      });
+  };
 
   // Installation confirmation dialog: shown when changing Programado -> Activo/Finalizado
   const [installConfirmDialog, setInstallConfirmDialog] = useState<{
@@ -666,6 +724,15 @@ export default function Anuncios() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
+            {user?.role === 'admin' && (
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
+              >
+                <Plus size={16} className="mr-2" />
+                Crear Anuncio
+              </Button>
+            )}
             {hasActiveFilters && (
               <Button
                 variant="outline"
@@ -1520,6 +1587,220 @@ export default function Anuncios() {
               }}
             >
               {confirmInstalled.isPending ? "Registrando..." : "✅ Sí, fue instalado"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Crear Anuncio Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-[#1a4d3c]">Crear Anuncio</DialogTitle>
+            <DialogDescription>Selecciona las fechas y paradas para crear un nuevo anuncio</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div>
+              <Label htmlFor="create-producto">Producto/Anuncio *</Label>
+              <Input id="create-producto" value={createForm.producto} onChange={e => setCreateForm({ ...createForm, producto: e.target.value })} placeholder="Ej: Coca Cola, iPhone 15, etc." />
+            </div>
+            <div>
+              <Label htmlFor="create-cliente">Nombre del Cliente *</Label>
+              <Input id="create-cliente" value={createForm.cliente} onChange={e => setCreateForm({ ...createForm, cliente: e.target.value })} placeholder="Ej: Coca Cola Company" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="create-fechaInicio">Fecha de Inicio *</Label>
+                <Input id="create-fechaInicio" type="date" value={createForm.fechaInicio} onChange={e => setCreateForm({ ...createForm, fechaInicio: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="create-fechaFin">Fecha de Fin *</Label>
+                <Input id="create-fechaFin" type="date" value={createForm.fechaFin} onChange={e => setCreateForm({ ...createForm, fechaFin: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="create-tipo">Tipo de Anuncio</Label>
+              <Select value={createForm.tipo} onValueChange={(v: any) => setCreateForm({ ...createForm, tipo: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Fijo">Fijo</SelectItem>
+                  <SelectItem value="Bonificación">Bonificación</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="create-costo">Costo por Unidad ($)</Label>
+              <Input id="create-costo" type="number" step="0.01" min="0" value={createForm.costoPorUnidad} onChange={e => setCreateForm({ ...createForm, costoPorUnidad: e.target.value })} placeholder="Ej: 1500.00" />
+            </div>
+
+            {/* Selection Mode */}
+            <div>
+              <Label>Seleccionar por:</Label>
+              <div className="flex gap-4 mt-2">
+                <Button type="button" variant={createForm.selectionMode === 'paradas' ? 'default' : 'outline'} onClick={() => setCreateForm({ ...createForm, selectionMode: 'paradas', selectedRutas: [] })} className={createForm.selectionMode === 'paradas' ? 'bg-[#1a4d3c] hover:bg-[#0f3a2a]' : ''}>
+                  Paradas Específicas
+                </Button>
+                <Button type="button" variant={createForm.selectionMode === 'rutas' ? 'default' : 'outline'} onClick={() => setCreateForm({ ...createForm, selectionMode: 'rutas', selectedParadas: [] })} className={createForm.selectionMode === 'rutas' ? 'bg-[#1a4d3c] hover:bg-[#0f3a2a]' : ''}>
+                  Por Rutas
+                </Button>
+              </div>
+            </div>
+
+            {/* Paradas Selection */}
+            {createForm.selectionMode === 'paradas' && (
+              <div>
+                <Label>Seleccionar Paradas Disponibles</Label>
+                {!createForm.fechaInicio || !createForm.fechaFin ? (
+                  <div className="border rounded-md p-4 mt-2 bg-yellow-50 text-yellow-800">
+                    <p className="text-sm">Por favor selecciona las fechas de inicio y fin primero.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mt-2 mb-3">
+                      <Input placeholder="Buscar por ID de parada (ej: 123, 456, 789)" value={createParadaSearchTerm} onChange={e => setCreateParadaSearchTerm(e.target.value)} />
+                    </div>
+                    <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                      {getAvailableParadasForCreate().length === 0 ? (
+                        <p className="text-sm text-gray-500">No hay paradas disponibles para las fechas seleccionadas.</p>
+                      ) : (
+                        getAvailableParadasForCreate().map(parada => {
+                          const isNoOperativa = !!(parada as any).blockReason;
+                          return (
+                            <div key={parada.id} className={`flex items-center space-x-2 py-2 border-b last:border-0 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
+                              <Checkbox
+                                id={`create-parada-${parada.id}`}
+                                checked={createForm.selectedParadas.includes(parada.id)}
+                                disabled={!parada.isAvailable}
+                                onCheckedChange={checked => {
+                                  setCreateForm(prev => ({
+                                    ...prev,
+                                    selectedParadas: checked
+                                      ? [...prev.selectedParadas, parada.id]
+                                      : prev.selectedParadas.filter(id => id !== parada.id)
+                                  }));
+                                }}
+                              />
+                              <label htmlFor={`create-parada-${parada.id}`} className={`text-sm flex-1 ${parada.isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className={`font-medium ${isNoOperativa ? 'line-through text-muted-foreground' : ''}`}>{parada.cobertizoId}</span>
+                                  <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{parada.orientacion}</span>
+                                  <span className={isNoOperativa ? 'line-through text-muted-foreground' : ''}>{parada.direccion}</span>
+                                  {(parada as any).blockReason === 'Removida' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">Removida</span>}
+                                  {(parada as any).blockReason === 'En Construcción' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">En Construcción</span>}
+                                  {(parada as any).blockReason === 'Sin Display' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Sin Display</span>}
+                                </div>
+                                {!parada.isAvailable && (parada as any).availableAfter && (
+                                  <div className="text-xs text-red-600 mt-1">Disponible después de {new Date((parada as any).availableAfter).toLocaleDateString('es-PR')}</div>
+                                )}
+                              </label>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">{createForm.selectedParadas.length} parada(s) seleccionada(s)</p>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Rutas Selection */}
+            {createForm.selectionMode === 'rutas' && (
+              <div>
+                <Label>Filtrar por Ruta</Label>
+                {!createForm.fechaInicio || !createForm.fechaFin ? (
+                  <div className="border rounded-md p-4 mt-2 bg-yellow-50 text-yellow-800">
+                    <p className="text-sm">Por favor selecciona las fechas de inicio y fin primero.</p>
+                  </div>
+                ) : (
+                  <>
+                    <Select value={createForm.selectedRutas[0] || 'all'} onValueChange={v => {
+                      if (v === 'all') setCreateForm({ ...createForm, selectedRutas: [], selectedParadas: [] });
+                      else setCreateForm({ ...createForm, selectedRutas: [v], selectedParadas: [] });
+                    }}>
+                      <SelectTrigger className="mt-2"><SelectValue placeholder="Selecciona una ruta" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las rutas</SelectItem>
+                        {Array.from(new Set(paradas?.map(p => p.ruta).filter(Boolean))).map(ruta => (
+                          <SelectItem key={ruta} value={ruta!}>Ruta {ruta}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {createForm.selectedRutas.length > 0 && (
+                      <div className="mt-4">
+                        <Label>Paradas Disponibles en Ruta {createForm.selectedRutas[0]}</Label>
+                        <div className="mt-2 mb-3">
+                          <Input placeholder="Buscar por ID de parada" value={createParadaSearchTerm} onChange={e => setCreateParadaSearchTerm(e.target.value)} />
+                        </div>
+                        <div className="border rounded-md p-4 max-h-64 overflow-y-auto mt-2">
+                          {getAvailableParadasForCreate().filter(p => p.ruta === createForm.selectedRutas[0]).length === 0 ? (
+                            <p className="text-sm text-gray-500">No hay paradas disponibles en esta ruta para las fechas seleccionadas.</p>
+                          ) : (
+                            getAvailableParadasForCreate().filter(p => p.ruta === createForm.selectedRutas[0]).map(parada => (
+                              <div key={parada.id} className={`flex items-center space-x-2 py-2 border-b last:border-0 ${!parada.isAvailable ? 'opacity-60' : ''}`}>
+                                <Checkbox
+                                  id={`create-ruta-parada-${parada.id}`}
+                                  checked={createForm.selectedParadas.includes(parada.id)}
+                                  disabled={!parada.isAvailable}
+                                  onCheckedChange={checked => {
+                                    setCreateForm(prev => ({
+                                      ...prev,
+                                      selectedParadas: checked
+                                        ? [...prev.selectedParadas, parada.id]
+                                        : prev.selectedParadas.filter(id => id !== parada.id)
+                                    }));
+                                  }}
+                                />
+                                <label htmlFor={`create-ruta-parada-${parada.id}`} className="text-sm flex-1 cursor-pointer">
+                                  <span className="font-medium">{parada.cobertizoId}</span> <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">{parada.orientacion}</span> {parada.direccion}
+                                </label>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-2">{createForm.selectedParadas.length} parada(s) seleccionada(s)</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>Cancelar</Button>
+            <Button
+              className="bg-[#ff6b35] hover:bg-[#e65a25]"
+              disabled={createAnuncio.isPending || !createForm.producto || !createForm.cliente || !createForm.fechaInicio || !createForm.fechaFin || createForm.selectedParadas.length === 0}
+              onClick={async () => {
+                let successCount = 0;
+                let errorCount = 0;
+                await Promise.all(
+                  createForm.selectedParadas.map(paradaId =>
+                    createAnuncio.mutateAsync({
+                      paradaId,
+                      producto: createForm.producto,
+                      cliente: createForm.cliente,
+                      tipo: createForm.tipo,
+                      costoPorUnidad: createForm.costoPorUnidad ? parseFloat(createForm.costoPorUnidad) : undefined,
+                      fechaInicio: new Date(createForm.fechaInicio),
+                      fechaFin: new Date(createForm.fechaFin),
+                      estado: 'Programado',
+                    }).then(() => { successCount++; }).catch(() => { errorCount++; })
+                  )
+                );
+                if (successCount > 0) {
+                  toast.success(`${successCount} anuncio(s) creado(s) exitosamente`);
+                  utils.anuncios.list.invalidate();
+                }
+                if (errorCount > 0) toast.error(`${errorCount} anuncio(s) fallaron`);
+                setIsCreateDialogOpen(false);
+                setCreateForm({ producto: '', cliente: '', fechaInicio: '', fechaFin: '', tipo: 'Fijo', costoPorUnidad: '', selectionMode: 'paradas', selectedParadas: [], selectedRutas: [] });
+                setCreateParadaSearchTerm('');
+              }}
+            >
+              {createAnuncio.isPending ? 'Creando...' : `Crear Anuncio${createForm.selectedParadas.length > 1 ? 's' : ''}`}
             </Button>
           </DialogFooter>
         </DialogContent>
