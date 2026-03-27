@@ -1,0 +1,19 @@
+{
+  "query": "\nSELECT a.id, a.cliente, a.estado, a.producto, a.parada_id,\n       p.id as pid, p.cobertizo_id\nFROM anuncios a\nLEFT JOIN paradas p ON a.parada_id = p.id\nWHERE a.id = 420001;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT a.id, a.cliente, a.estado, a.producto, a.parada_id,\n       p.id as pid, p.cobertizo_id\nFROM anuncios a\nLEFT JOIN paradas p ON a.parada_id = p.id\nWHERE a.id = 420001;\n",
+  "rows": [
+    {
+      "id": "420001",
+      "cliente": "BADILLO SAATCHI & SAATCHI",
+      "estado": "Activo",
+      "producto": "CLARO",
+      "parada_id": "91646",
+      "pid": "91646",
+      "cobertizo_id": "151"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\testado\tproducto\tparada_id\tpid\tcobertizo_id\n420001\tBADILLO SAATCHI & SAATCHI\tActivo\tCLARO\t91646\t91646\t151\n",
+  "stderr": "",
+  "execution_time_ms": 369
+}

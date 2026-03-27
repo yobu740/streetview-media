@@ -2445,8 +2445,13 @@ export const appRouter = router({
 
         // Build individual LIKE conditions and combine with or()
         // Use at least one keyword; fall back to full name if none extracted
-        const searchTerms = keywords.length > 0 ? keywords : [input.clienteNombre];
-        const likeConditions = searchTerms.map(kw => like(anuncios.cliente, `%${kw}%`));
+        // Convert to uppercase to handle case-sensitive DB collation (utf8mb4_bin)
+        const searchTerms = (keywords.length > 0 ? keywords : [input.clienteNombre])
+          .map((kw: string) => kw.toUpperCase());
+        // Deduplicate
+        const uniqueTerms = [...new Set(searchTerms)];
+        console.log('[getAnunciosByCliente] input:', input.clienteNombre, '| searchTerms:', uniqueTerms);
+        const likeConditions = uniqueTerms.map(kw => like(anuncios.cliente, `%${kw}%`));
 
         // Drizzle or() requires at least 2 args; handle single term separately
         const clienteFilter = likeConditions.length === 1

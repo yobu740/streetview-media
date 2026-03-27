@@ -1,0 +1,9 @@
+{
+  "query": "\nSELECT a.id, a.cliente, a.estado, a.producto, p.cobertizo_id, p.localizacion, p.direccion, p.orientacion\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE (a.cliente LIKE '%Badillo%' OR a.cliente LIKE '%Saatchi%' OR a.cliente LIKE '%Saatchi%')\nAND a.estado IN ('Activo', 'Programado')\nORDER BY a.id DESC\nLIMIT 100;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT a.id, a.cliente, a.estado, a.producto, p.cobertizo_id, p.localizacion, p.direccion, p.orientacion\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE (a.cliente LIKE '%Badillo%' OR a.cliente LIKE '%Saatchi%' OR a.cliente LIKE '%Saatchi%')\nAND a.estado IN ('Activo', 'Programado')\nORDER BY a.id DESC\nLIMIT 100;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 380
+}
