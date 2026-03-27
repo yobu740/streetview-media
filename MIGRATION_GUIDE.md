@@ -17,8 +17,15 @@ Antes de comenzar, asegúrate de tener instalado:
 
 ---
 
-## 1. Clonar el Proyecto
+## 1. Clonar / Descomprimir el Proyecto
 
+Si tienes el ZIP del proyecto:
+```bash
+unzip streetview-media.zip -d streetview-media
+cd streetview-media
+```
+
+Si tienes acceso a un repositorio Git:
 ```bash
 git clone <URL_DEL_REPOSITORIO>
 cd streetview-media
@@ -102,9 +109,9 @@ Este comando ejecuta internamente `drizzle-kit generate && drizzle-kit migrate`,
 1. Genera los archivos SQL de migración a partir del esquema en `drizzle/schema.ts`.
 2. Aplica todas las migraciones pendientes a la base de datos configurada en `DATABASE_URL`.
 
-### Migraciones disponibles
+### Tablas que se crean
 
-El proyecto tiene **32 migraciones** acumuladas (de `0000` a `0031`) que crean y evolucionan las siguientes tablas:
+El proyecto tiene **35 migraciones** acumuladas (de `0000` a `0034`) que crean y evolucionan las siguientes tablas:
 
 | Tabla | Descripción |
 |---|---|
@@ -121,6 +128,10 @@ El proyecto tiene **32 migraciones** acumuladas (de `0000` a `0031`) que crean y
 | `mantenimiento_historial` | Historial de cambios de condición de paradas |
 | `anuncio_historial` | Historial de cambios en anuncios |
 | `announcements` | Avisos configurables que aparecen al entrar al panel |
+| `clientes` | Clientes (empresas/agencias) con datos de contacto y facturación |
+| `contratos` | Contratos de publicidad por cliente |
+| `contrato_items` | Líneas de detalle de cada contrato (paradas, precios, meses) |
+| `contrato_exhibit_a` | Tabla Exhibit A de cada contrato (ubicaciones y especificaciones) |
 
 ---
 
@@ -129,7 +140,7 @@ El proyecto tiene **32 migraciones** acumuladas (de `0000` a `0031`) que crean y
 Después de ejecutar las migraciones, el primer usuario que inicie sesión con OAuth tendrá rol `user` por defecto. Para promoverlo a `admin`, ejecuta este SQL directamente en la base de datos:
 
 ```sql
-UPDATE users SET role = 'admin' WHERE email = 'tu-email@ejemplo.com';
+UPDATE users SET role = 'admin' WHERE email = 'tu-email@streetviewmediapr.com';
 ```
 
 O si prefieres buscar por nombre:
@@ -140,7 +151,22 @@ UPDATE users SET role = 'admin' WHERE name = 'Tu Nombre';
 
 ---
 
-## 7. Iniciar el Servidor de Desarrollo
+## 7. Configurar Azure AD (Microsoft OAuth)
+
+El sistema usa Microsoft Azure AD para autenticación. Para configurarlo:
+
+1. Ve a [portal.azure.com](https://portal.azure.com) → **Azure Active Directory** → **App registrations** → **New registration**.
+2. Nombre: `Streetview Media`
+3. Tipos de cuenta soportados: selecciona según tu necesidad.
+4. URI de redirección: `https://TU_DOMINIO/api/auth/microsoft/callback`
+5. Copia el **Application (client) ID** → `MICROSOFT_CLIENT_ID`
+6. Copia el **Directory (tenant) ID** → `MICROSOFT_TENANT_ID`
+7. En **Certificates & secrets** → crea un nuevo secreto → `MICROSOFT_CLIENT_SECRET`
+8. En **API permissions** → agrega `User.Read` (Microsoft Graph).
+
+---
+
+## 8. Iniciar el Servidor de Desarrollo
 
 ```bash
 pnpm dev
@@ -150,7 +176,7 @@ El servidor estará disponible en `http://localhost:3000`.
 
 ---
 
-## 8. Compilar para Producción
+## 9. Compilar para Producción
 
 ```bash
 pnpm build
@@ -168,9 +194,9 @@ node dist/index.js
 
 ---
 
-## 9. Notas sobre el Almacenamiento de Archivos (S3)
+## 10. Notas sobre el Almacenamiento de Archivos (S3)
 
-Las fotos de paradas e instalaciones se almacenan en **AWS S3** a través de la API de Manus. Si migras fuera de la plataforma Manus, deberás:
+Las fotos de paradas, instalaciones y documentos PO se almacenan en **AWS S3** a través de la API de Manus. Si migras fuera de la plataforma Manus, deberás:
 
 1. Configurar un bucket S3 propio en AWS.
 2. Actualizar las funciones `storagePut` y `storageGet` en `server/storage.ts` con tus credenciales AWS (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_BUCKET_NAME`).
@@ -178,7 +204,7 @@ Las fotos de paradas e instalaciones se almacenan en **AWS S3** a través de la 
 
 ---
 
-## 10. Solución de Problemas Comunes
+## 11. Solución de Problemas Comunes
 
 | Problema | Causa probable | Solución |
 |---|---|---|
@@ -187,10 +213,12 @@ Las fotos de paradas e instalaciones se almacenan en **AWS S3** a través de la 
 | `Table already exists` | Migraciones ya aplicadas parcialmente | Drizzle es idempotente; puedes re-ejecutar `pnpm db:push` |
 | `JWT_SECRET not set` | Variable de entorno faltante | Agrega `JWT_SECRET` al archivo `.env` |
 | Fotos no cargan | S3 no configurado | Verifica las variables `BUILT_IN_FORGE_API_*` |
+| Login falla con Microsoft | Azure AD mal configurado | Verifica `MICROSOFT_CLIENT_ID`, `MICROSOFT_TENANT_ID` y la URI de redirección |
+| `Unknown column` en SQL | Migración incompleta | Ejecuta `pnpm db:push` de nuevo |
 
 ---
 
-## Estructura del Proyecto
+## 12. Estructura del Proyecto
 
 ```
 streetview-media/
@@ -203,11 +231,14 @@ streetview-media/
 ├── drizzle/
 │   ├── schema.ts            # Definición de todas las tablas
 │   ├── relations.ts         # Relaciones entre tablas
-│   └── migrations/          # Archivos SQL de migración (0000–0031)
+│   └── 0000_*.sql … 0034_*.sql  # Archivos SQL de migración
 ├── server/
 │   ├── db.ts                # Funciones de consulta a la BD
 │   ├── routers.ts           # Procedimientos tRPC (API)
-│   └── storage.ts           # Helpers de AWS S3
+│   ├── storage.ts           # Helpers de AWS S3
+│   ├── email-service.ts     # Envío de correos (SMTP)
+│   ├── invoice-generator.ts # Generación de facturas PDF
+│   └── scheduled-jobs.ts    # Tareas programadas (notificaciones)
 ├── shared/                  # Tipos y constantes compartidos
 ├── .env                     # Variables de entorno (NO subir a Git)
 ├── drizzle.config.ts        # Configuración de Drizzle ORM
@@ -216,4 +247,19 @@ streetview-media/
 
 ---
 
-*Generado el 20 de marzo de 2026 — Streetview Media PR*
+---
+
+## 13. Scripts Disponibles
+
+| Comando | Descripción |
+|---|---|
+| `pnpm dev` | Inicia el servidor de desarrollo (puerto 3000) |
+| `pnpm build` | Compila frontend y backend para producción |
+| `pnpm start` | Inicia el servidor compilado en producción |
+| `pnpm db:push` | Genera y aplica migraciones de base de datos |
+| `pnpm test` | Ejecuta los tests con Vitest |
+| `pnpm check` | Verifica tipos TypeScript sin compilar |
+
+---
+
+*Actualizado el 26 de marzo de 2026 — Streetview Media PR*

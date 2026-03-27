@@ -954,6 +954,8 @@ export default function Anuncios() {
                             const hasConflict = anuncios?.some((a) => {
                               if (a.id === selectedAnuncio?.id) return false;
                               if (a.paradaId !== parada.id) return false;
+                              // Finalizado e Inactivo no bloquean disponibilidad
+                              if (a.estado === 'Finalizado' || a.estado === 'Inactivo') return false;
                               const aStart = new Date(a.fechaInicio);
                               const aEnd = new Date(a.fechaFin);
                               return aStart <= endDate && aEnd >= startDate;
