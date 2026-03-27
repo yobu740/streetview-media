@@ -1,0 +1,18 @@
+{
+  "query": "\nSELECT a.id, a.cliente, a.estado, a.parada_id, p.cobertizo_id, p.localizacion\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE (a.cliente LIKE '%BADILLO%' OR a.cliente LIKE '%SAATCHI%')\nAND a.estado IN ('Activo', 'Programado')\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT a.id, a.cliente, a.estado, a.parada_id, p.cobertizo_id, p.localizacion\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE (a.cliente LIKE '%BADILLO%' OR a.cliente LIKE '%SAATCHI%')\nAND a.estado IN ('Activo', 'Programado')\nLIMIT 10;\n",
+  "rows": [
+    {
+      "id": "420001",
+      "cliente": "BADILLO SAATCHI & SAATCHI",
+      "estado": "Activo",
+      "parada_id": "91646",
+      "cobertizo_id": "151",
+      "localizacion": "AVE. PONCE DE LEÓN"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\testado\tparada_id\tcobertizo_id\tlocalizacion\n420001\tBADILLO SAATCHI & SAATCHI\tActivo\t91646\t151\tAVE. PONCE DE LEÓN\n",
+  "stderr": "",
+  "execution_time_ms": 373
+}

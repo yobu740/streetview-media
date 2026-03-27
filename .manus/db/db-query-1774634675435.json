@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, cobertizo_id, localizacion, orientacion FROM paradas WHERE id = 91646;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT id, cobertizo_id, localizacion, orientacion FROM paradas WHERE id = 91646;",
+  "rows": [
+    {
+      "id": "91646",
+      "cobertizo_id": "151",
+      "localizacion": "AVE. PONCE DE LEÓN",
+      "orientacion": "I"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcobertizo_id\tlocalizacion\torientacion\n91646\t151\tAVE. PONCE DE LEÓN\tI\n",
+  "stderr": "",
+  "execution_time_ms": 357
+}
