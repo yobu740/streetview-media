@@ -2352,7 +2352,7 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const { getDb } = await import('./db');
         const { anuncios, paradas } = await import('../drizzle/schema');
-        const { eq, and, like } = await import('drizzle-orm');
+        const { eq, and, like, inArray } = await import('drizzle-orm');
         const database = await getDb();
         if (!database) return [];
         const results = await database
@@ -2360,6 +2360,7 @@ export const appRouter = router({
             anuncioId: anuncios.id,
             producto: anuncios.producto,
             tipo: anuncios.tipo,
+            estado: anuncios.estado,
             cobertizoId: paradas.cobertizoId,
             localizacion: paradas.localizacion,
             direccion: paradas.direccion,
@@ -2369,7 +2370,7 @@ export const appRouter = router({
           .innerJoin(paradas, eq(anuncios.paradaId, paradas.id))
           .where(and(
             like(anuncios.cliente, `%${input.clienteNombre}%`),
-            eq(anuncios.estado, 'Activo'),
+            inArray(anuncios.estado, ['Activo', 'Programado']),
           ));
         return results;
       }),

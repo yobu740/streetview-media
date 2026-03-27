@@ -39,6 +39,7 @@ import {
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { useSearch } from "wouter";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -213,7 +214,7 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
   /* ── Page 1 ── */
   .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
   .logo-block img { height: 68px; }
-  .logo-tagline { font-size: 10px; color: #888; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .logo-tagline { font-size: 10px; color: #888; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
   .contract-word { font-size: 58px; font-weight: 900; color: #1a1a1a; line-height: 1; letter-spacing: -2px; }
   .contact-block { text-align: right; font-size: 11px; color: #555; margin-top: 6px; line-height: 1.7; }
   .divider { height: 3px; background: linear-gradient(90deg, #1a4d3c, #ff6b35); margin-bottom: 20px; }
@@ -259,10 +260,14 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
   .exhibit-table th:nth-child(2) { text-align: center; }
   .exhibit-table th:nth-child(4), .exhibit-table th:nth-child(6) { text-align: center; }
   @media print {
+    @page { size: letter; margin: 0; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .page { margin: 0; padding: 40px 48px; }
+    body { margin: 0; }
+    .page { margin: 0 auto; padding: 40px 48px; }
     .page-break { page-break-before: always; }
-    .top-stripe, .bottom-stripe, .divider { -webkit-print-color-adjust: exact !important; }
+    .top-stripe { height: 6px !important; background: linear-gradient(90deg, #1a4d3c 60%, #ff6b35 80%, #ffd700 100%) !important; display: block !important; -webkit-print-color-adjust: exact !important; }
+    .bottom-stripe { height: 6px !important; background: linear-gradient(90deg, #1a4d3c 60%, #ff6b35 80%, #ffd700 100%) !important; display: block !important; -webkit-print-color-adjust: exact !important; }
+    .divider { height: 3px !important; background: linear-gradient(90deg, #1a4d3c, #ff6b35) !important; display: block !important; -webkit-print-color-adjust: exact !important; }
   }
 </style>
 </head>
@@ -537,6 +542,8 @@ export default function Clientes() {
   const { data: clientes = [], isLoading } = trpc.clientes.list.useQuery();
   const { data: unreadCount } = trpc.notifications.unreadCount.useQuery(undefined, { enabled: isAuthenticated });
 
+  const searchString = useSearch();
+  const urlParams = new URLSearchParams(searchString);
   const [search, setSearch] = useState("");
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [view, setView] = useState<"list" | "detail">("list");
@@ -546,6 +553,30 @@ export default function Clientes() {
   const [editingContrato, setEditingContrato] = useState<Contrato | null>(null);
   const [duplicatingContrato, setDuplicatingContrato] = useState<Contrato | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [urlHandled, setUrlHandled] = useState(false);
+
+  // Auto-open modals based on URL params (from Calendar shortcuts)
+  useEffect(() => {
+    if (urlHandled || isLoading || clientes.length === 0) return;
+    const newContrato = urlParams.get("newContrato");
+    const newCliente = urlParams.get("newCliente");
+    const clienteParam = urlParams.get("cliente") || urlParams.get("nombre") || "";
+    if (newCliente === "1") {
+      setShowClienteForm(true);
+      setUrlHandled(true);
+    } else if (newContrato === "1") {
+      // Find matching client or open new contract form
+      const match = clientes.find(c => c.nombre.toLowerCase() === clienteParam.toLowerCase());
+      if (match) {
+        setSelectedCliente(match);
+        setView("detail");
+        setShowContratoForm(true);
+      } else {
+        setShowContratoForm(true);
+      }
+      setUrlHandled(true);
+    }
+  }, [urlHandled, isLoading, clientes]);
 
   const createCliente = trpc.clientes.create.useMutation({
     onSuccess: () => { utils.clientes.list.invalidate(); toast.success("Cliente creado"); setShowClienteForm(false); },
@@ -984,6 +1015,31 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
   const [poDocumentUrl, setPoDocumentUrl] = useState<string>(source?.poDocumentUrl || "");
   const utils = trpc.useUtils();
 
+  // Reinitialize form when contrato/duplicateFrom changes (e.g. opening a different contract to edit)
+  useEffect(() => {
+    if (!open) return;
+    setForm({
+      numeroContrato: duplicateFrom ? `${duplicateFrom.numeroContrato}-copia` : (contrato?.numeroContrato || "2026-"),
+      numeroPO: source?.numeroPO || "",
+      fecha: source?.fecha ? new Date(source.fecha).toISOString().split("T")[0] : today,
+      fechaVencimiento: source?.fechaVencimiento ? new Date(source.fechaVencimiento).toISOString().split("T")[0] : "",
+      customerId: source?.customerId || "",
+      salesDuration: source?.salesDuration || "",
+      vendedor: source?.vendedor || "",
+      metodoPago: source?.metodoPago || "ACH / Wire Transfer",
+      numMeses: source?.numMeses ?? 1,
+      subtotal: source?.subtotal || "",
+      total: source?.total || "",
+      notas: source?.notas || "",
+      estado: ((duplicateFrom ? "Borrador" : source?.estado) || "Borrador") as "Borrador" | "Enviado" | "Firmado" | "Cancelado",
+      items: (source?.items && source.items.length > 0
+        ? source.items
+        : [{ cantidad: 1, concepto: "", precioPorUnidad: "", total: "", isProduccion: 0 }]) as ContratoItem[],
+    });
+    setPoDocumentUrl(source?.poDocumentUrl || "");
+    setActiveTab("contrato");
+  }, [open, contrato?.id, duplicateFrom?.id]);
+
   // Load exhibit A when editing or duplicating
   useEffect(() => {
     if (!source?.id) return;
@@ -1243,14 +1299,11 @@ function ContratoFormDialog({ open, onClose, contrato, duplicateFrom, clienteId,
         ) : (
           /* Exhibit A tab */
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-gray-500">Tabla de localizaciones que aparece en la Página 3 del contrato.</p>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={importFromAnuncios}>
-                  <Download size={13} className="mr-1" /> Importar desde Anuncios
-                </Button>
-                <Button size="sm" variant="outline" onClick={addExhibitRow}><Plus size={13} className="mr-1" /> Añadir Fila</Button>
-              </div>
+            <div className="flex items-center justify-end gap-2 mb-3">
+              <Button size="sm" variant="outline" onClick={importFromAnuncios}>
+                <Download size={13} className="mr-1" /> Importar desde Anuncios
+              </Button>
+              <Button size="sm" variant="outline" onClick={addExhibitRow}><Plus size={13} className="mr-1" /> Añadir Fila</Button>
             </div>
             {loadingExhibit ? (
               <div className="flex justify-center py-8"><Loader2 className="animate-spin text-[#1a4d3c]" size={24} /></div>

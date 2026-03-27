@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
+import { useLocation } from "wouter";
 
 export default function Calendar() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -817,7 +818,27 @@ export default function Calendar() {
                   )
                 ).then(() => {
                   if (successCount > 0) {
-                    toast.success(`${successCount} reserva(s) creada(s) exitosamente`);
+                    const clienteCreado = reservaForm.cliente;
+                    toast.success(
+                      <div className="flex flex-col gap-2">
+                        <span>{successCount} reserva(s) creada(s) exitosamente</span>
+                        <div className="flex gap-2 flex-wrap">
+                          <a
+                            href={`/clientes?newContrato=1&cliente=${encodeURIComponent(clienteCreado)}`}
+                            className="text-xs bg-[#1a4d3c] text-white px-2 py-1 rounded hover:bg-[#0f3a2a] no-underline"
+                          >
+                            + Crear Contrato
+                          </a>
+                          <a
+                            href={`/clientes?newCliente=1&nombre=${encodeURIComponent(clienteCreado)}`}
+                            className="text-xs bg-[#ff6b35] text-white px-2 py-1 rounded hover:bg-[#e65a25] no-underline"
+                          >
+                            + Crear Cliente Nuevo
+                          </a>
+                        </div>
+                      </div> as any,
+                      { duration: 8000 }
+                    );
                     utils.anuncios.list.invalidate();
                     utils.approvals.pending.invalidate();
                   }

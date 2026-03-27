@@ -597,10 +597,17 @@ export async function deleteCliente(id: number) {
 export async function listContratos(clienteId?: number) {
   const db = await getDb();
   if (!db) return [];
-  if (clienteId) {
-    return db.select().from(contratos).where(eq(contratos.clienteId, clienteId)).orderBy(contratos.fecha);
-  }
-  return db.select().from(contratos).orderBy(contratos.fecha);
+  const rows = clienteId
+    ? await db.select().from(contratos).where(eq(contratos.clienteId, clienteId)).orderBy(contratos.fecha)
+    : await db.select().from(contratos).orderBy(contratos.fecha);
+  // Attach items to each contract so the edit modal can pre-populate them
+  const withItems = await Promise.all(
+    rows.map(async (c) => {
+      const items = await db.select().from(contratoItems).where(eq(contratoItems.contratoId, c.id)).orderBy(contratoItems.orden);
+      return { ...c, items };
+    })
+  );
+  return withItems;
 }
 
 export async function getContratoById(id: number) {
