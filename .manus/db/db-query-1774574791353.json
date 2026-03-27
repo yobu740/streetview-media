@@ -1,0 +1,186 @@
+{
+  "query": "SELECT ci.*, c.numero_contrato FROM contrato_items ci JOIN contratos c ON ci.contrato_id = c.id LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute SELECT ci.*, c.numero_contrato FROM contrato_items ci JOIN contratos c ON ci.contrato_id = c.id LIMIT 20;",
+  "rows": [
+    {
+      "id": "1",
+      "contrato_id": "2",
+      "cantidad": "8",
+      "concepto": "Taco Bell – Bus Shelter Advertising",
+      "precio_por_unidad": "$300/month",
+      "total": "$24,000",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-2"
+    },
+    {
+      "id": "2",
+      "contrato_id": "3",
+      "cantidad": "1",
+      "concepto": "CLARO – Bus Shelter Advertising",
+      "precio_por_unidad": "$360",
+      "total": "$360",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-6"
+    },
+    {
+      "id": "3",
+      "contrato_id": "4",
+      "cantidad": "1",
+      "concepto": "CLARO – Bus Shelter Advertising",
+      "precio_por_unidad": "$360",
+      "total": "$360",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-12"
+    },
+    {
+      "id": "4",
+      "contrato_id": "5",
+      "cantidad": "8",
+      "concepto": "AHF – Bus Shelter Advertising",
+      "precio_por_unidad": "$250/month",
+      "total": "$22,000",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-1"
+    },
+    {
+      "id": "5",
+      "contrato_id": "5",
+      "cantidad": "1",
+      "concepto": "Production",
+      "precio_por_unidad": "NO CHARGE",
+      "total": "$0",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-1"
+    },
+    {
+      "id": "6",
+      "contrato_id": "6",
+      "cantidad": "1",
+      "concepto": "Cooperativa Naguabeña – Bus Shelter Advertising",
+      "precio_por_unidad": "$300/month",
+      "total": "$3,300",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-8"
+    },
+    {
+      "id": "7",
+      "contrato_id": "6",
+      "cantidad": "1",
+      "concepto": "Production (first month)",
+      "precio_por_unidad": "$42",
+      "total": "$42",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-8"
+    },
+    {
+      "id": "8",
+      "contrato_id": "7",
+      "cantidad": "1",
+      "concepto": "COSVI – Bus Shelter Advertising",
+      "precio_por_unidad": "$350/month",
+      "total": "$3,850",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-3"
+    },
+    {
+      "id": "9",
+      "contrato_id": "7",
+      "cantidad": "1",
+      "concepto": "Production",
+      "precio_por_unidad": "NO CHARGE",
+      "total": "$0",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-3"
+    },
+    {
+      "id": "10",
+      "contrato_id": "8",
+      "cantidad": "10",
+      "concepto": "CoC PR-502 – Bus Shelter Advertising",
+      "precio_por_unidad": "$350",
+      "total": "$3,500",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-4"
+    },
+    {
+      "id": "11",
+      "contrato_id": "8",
+      "cantidad": "1",
+      "concepto": "Production",
+      "precio_por_unidad": "$600",
+      "total": "$600",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-4"
+    },
+    {
+      "id": "13",
+      "contrato_id": "10",
+      "cantidad": "1",
+      "concepto": "Mi Banco Pagos – Bus Shelter Advertising",
+      "precio_por_unidad": "$350/month",
+      "total": "$4,200",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-5"
+    },
+    {
+      "id": "14",
+      "contrato_id": "11",
+      "cantidad": "5",
+      "concepto": "BETIS – Bus Shelter Advertising",
+      "precio_por_unidad": "$300/month",
+      "total": "$4,500",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-9"
+    },
+    {
+      "id": "15",
+      "contrato_id": "11",
+      "cantidad": "8",
+      "concepto": "Production",
+      "precio_por_unidad": "$60",
+      "total": "$480",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-9"
+    },
+    {
+      "id": "16",
+      "contrato_id": "12",
+      "cantidad": "10",
+      "concepto": "Wilson's Stuff – Bus Shelter Advertising",
+      "precio_por_unidad": "$350",
+      "total": "$3,500",
+      "orden": "0",
+      "is_produccion": "0",
+      "numero_contrato": "2026-11"
+    },
+    {
+      "id": "17",
+      "contrato_id": "12",
+      "cantidad": "1",
+      "concepto": "Production",
+      "precio_por_unidad": "NO CHARGE",
+      "total": "$0",
+      "orden": "1",
+      "is_produccion": "0",
+      "numero_contrato": "2026-11"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcontrato_id\tcantidad\tconcepto\tprecio_por_unidad\ttotal\torden\tis_produccion\tnumero_contrato\n1\t2\t8\tTaco Bell – Bus Shelter Advertising\t$300/month\t$24,000\t0\t0\t2026-2\n2\t3\t1\tCLARO – Bus Shelter Advertising\t$360\t$360\t0\t0\t2026-6\n3\t4\t1\tCLARO – Bus Shelter Advertising\t$360\t$360\t0\t0\t2026-12\n4\t5\t8\tAHF – Bus Shelter Advertising\t$250/month\t$22,000\t0\t0\t2026-1\n5\t5\t1\tProduction\tNO CHARGE\t$0\t1\t0\t2026-1\n6\t6\t1\tCooperativa Naguabeña – Bus Shelter Advertising\t$300/month\t$3,300\t0\t0\t2026-8\n7\t6\t1\tProduction (first month)\t$42\t$42\t1\t0\t2026-8\n8\t7\t1\tCOSVI – Bus Shelter Advertising\t$350/month\t$3,850\t0\t0\t2026-3\n9\t7\t1\tProduction\tNO CHARGE\t$0\t1\t0\t2026-3\n10\t8\t10\tCoC PR-502 – Bus Shelter Advertising\t$350\t$3,500\t0\t0\t2026-4\n11\t8\t1\tProduction\t$600\t$600\t1\t0\t2026-4\n13\t10\t1\tMi Banco Pagos – Bus Shelter Advertising\t$350/month\t$4,200\t0\t0\t2026-5\n14\t11\t5\tBETIS – Bus Shelter Advertising\t$300/month\t$4,500\t0\t0\t2026-9\n15\t11\t8\tProduction\t$60\t$480\t1\t0\t2026-9\n16\t12\t10\tWilson's Stuff – Bus Shelter Advertising\t$350\t$3,500\t0\t0\t2026-11\n17\t12\t1\tProduction\tNO CHARGE\t$0\t1\t0\t2026-11\n",
+  "stderr": "",
+  "execution_time_ms": 428
+}

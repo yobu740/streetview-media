@@ -619,8 +619,13 @@ export default function Clientes() {
 
   const handlePrintContract = async (contrato: Contrato) => {
     if (!selectedCliente) return;
-    const exhibitRows = await utils.contratos.getExhibitA.fetch({ contratoId: contrato.id });
-    const html = generateContractHTML(contrato, selectedCliente, exhibitRows as ExhibitARow[]);
+    // Always fetch fresh items from server — the list query may not include items
+    const [fullContrato, exhibitRows] = await Promise.all([
+      utils.contratos.getById.fetch({ id: contrato.id }),
+      utils.contratos.getExhibitA.fetch({ contratoId: contrato.id }),
+    ]);
+    const contratoWithItems: Contrato = { ...contrato, items: (fullContrato?.items || []) as ContratoItem[] };
+    const html = generateContractHTML(contratoWithItems, selectedCliente, exhibitRows as ExhibitARow[]);
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(html);
@@ -631,8 +636,13 @@ export default function Clientes() {
 
   const handlePreviewContract = async (contrato: Contrato) => {
     if (!selectedCliente) return;
-    const exhibitRows = await utils.contratos.getExhibitA.fetch({ contratoId: contrato.id });
-    const html = generateContractHTML(contrato, selectedCliente, exhibitRows as ExhibitARow[]);
+    // Always fetch fresh items from server — the list query may not include items
+    const [fullContrato, exhibitRows] = await Promise.all([
+      utils.contratos.getById.fetch({ id: contrato.id }),
+      utils.contratos.getExhibitA.fetch({ contratoId: contrato.id }),
+    ]);
+    const contratoWithItems: Contrato = { ...contrato, items: (fullContrato?.items || []) as ContratoItem[] };
+    const html = generateContractHTML(contratoWithItems, selectedCliente, exhibitRows as ExhibitARow[]);
     setPreviewHtml(html);
   };
 
