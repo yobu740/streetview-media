@@ -1,0 +1,15 @@
+{
+  "query": "\nSELECT COLUMN_NAME, CHARACTER_SET_NAME, COLLATION_NAME\nFROM information_schema.COLUMNS\nWHERE TABLE_NAME = 'anuncios' AND COLUMN_NAME = 'cliente';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT COLUMN_NAME, CHARACTER_SET_NAME, COLLATION_NAME\nFROM information_schema.COLUMNS\nWHERE TABLE_NAME = 'anuncios' AND COLUMN_NAME = 'cliente';\n",
+  "rows": [
+    {
+      "COLUMN_NAME": "cliente",
+      "CHARACTER_SET_NAME": "utf8mb4",
+      "COLLATION_NAME": "utf8mb4_bin"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\tCHARACTER_SET_NAME\tCOLLATION_NAME\ncliente\tutf8mb4\tutf8mb4_bin\n",
+  "stderr": "",
+  "execution_time_ms": 366
+}

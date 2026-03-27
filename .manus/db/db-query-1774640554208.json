@@ -1,0 +1,35 @@
+{
+  "query": "\nSELECT a.id, a.cliente, a.estado\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE UPPER(a.cliente) LIKE UPPER('%Wilson%')\nAND a.estado IN ('Activo', 'Programado')\nLIMIT 5;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT a.id, a.cliente, a.estado\nFROM anuncios a\nINNER JOIN paradas p ON a.parada_id = p.id\nWHERE UPPER(a.cliente) LIKE UPPER('%Wilson%')\nAND a.estado IN ('Activo', 'Programado')\nLIMIT 5;\n",
+  "rows": [
+    {
+      "id": "780006",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo"
+    },
+    {
+      "id": "780007",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo"
+    },
+    {
+      "id": "780008",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo"
+    },
+    {
+      "id": "780009",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo"
+    },
+    {
+      "id": "780010",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\testado\n780006\tWilson's Stuff\tActivo\n780007\tWilson's Stuff\tActivo\n780008\tWilson's Stuff\tActivo\n780009\tWilson's Stuff\tActivo\n780010\tWilson's Stuff\tActivo\n",
+  "stderr": "",
+  "execution_time_ms": 374
+}

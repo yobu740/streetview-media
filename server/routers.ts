@@ -2431,32 +2431,31 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const { getDb } = await import('./db');
         const { anuncios, paradas } = await import('../drizzle/schema');
-        const { eq, and, like, or, inArray } = await import('drizzle-orm');
+        const { eq, and, sql, inArray } = await import('drizzle-orm');
         const database = await getDb();
         if (!database) return [];
 
-        // Extract meaningful keywords (3+ chars) from the client name, ignoring
-        // special characters like & that may be encoded differently.
+        // Extract meaningful keywords (3+ chars), ignoring special chars like & ' etc.
+        // The anuncios.cliente column uses utf8mb4_bin (case-sensitive), so we use
+        // UPPER(column) LIKE UPPER(?) to force case-insensitive matching.
         const stopwords = new Set(['and', 'the', 'los', 'las', 'del', 'de', 'la', 'el', 'y']);
         const keywords = input.clienteNombre
-          .split(/[\s&,\/\\]+/)
+          .split(/[\s&,\/\\'\u2019]+/)
           .map((w: string) => w.replace(/[^a-zA-Z0-9]/g, '').trim())
           .filter((w: string) => w.length >= 3 && !stopwords.has(w.toLowerCase()));
 
-        // Build individual LIKE conditions and combine with or()
-        // Use at least one keyword; fall back to full name if none extracted
-        // Convert to uppercase to handle case-sensitive DB collation (utf8mb4_bin)
-        const searchTerms = (keywords.length > 0 ? keywords : [input.clienteNombre])
-          .map((kw: string) => kw.toUpperCase());
-        // Deduplicate
-        const uniqueTerms = [...new Set(searchTerms)];
+        const uniqueTerms = [...new Set(
+          (keywords.length > 0 ? keywords : [input.clienteNombre]).map((kw: string) => kw.toUpperCase())
+        )];
         console.log('[getAnunciosByCliente] input:', input.clienteNombre, '| searchTerms:', uniqueTerms);
-        const likeConditions = uniqueTerms.map(kw => like(anuncios.cliente, `%${kw}%`));
 
-        // Drizzle or() requires at least 2 args; handle single term separately
-        const clienteFilter = likeConditions.length === 1
-          ? likeConditions[0]
-          : or(...likeConditions as [ReturnType<typeof like>, ReturnType<typeof like>, ...ReturnType<typeof like>[]]);
+        // Build UPPER(cliente) LIKE UPPER('%kw%') conditions joined with OR
+        const likeClause = uniqueTerms
+          .map(kw => `UPPER(a.cliente) LIKE UPPER('%${kw.replace(/'/g, "''")}%')`)
+          .join(' OR ');
+
+        // Use sql template for the full query to bypass Drizzle or() spread issues
+        const clienteFilter = sql.raw(`(${likeClause})`);
 
         const results = await database
           .select({

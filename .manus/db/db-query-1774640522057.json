@@ -1,0 +1,80 @@
+{
+  "query": "\nSELECT a.id, a.cliente, a.estado, a.producto, a.parada_id\nFROM anuncios a\nWHERE a.cliente LIKE '%WILSON%' OR a.cliente LIKE '%Wilson%'\nLIMIT 10;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4MNpKPTYaa3AiSj.root --database NB4DzLv3DwSWij5HcQ7rQi --execute \nSELECT a.id, a.cliente, a.estado, a.producto, a.parada_id\nFROM anuncios a\nWHERE a.cliente LIKE '%WILSON%' OR a.cliente LIKE '%Wilson%'\nLIMIT 10;\n",
+  "rows": [
+    {
+      "id": "780006",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "91637"
+    },
+    {
+      "id": "780007",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "91671"
+    },
+    {
+      "id": "780008",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "91472"
+    },
+    {
+      "id": "780009",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "92098"
+    },
+    {
+      "id": "780010",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "92137"
+    },
+    {
+      "id": "780011",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "91690"
+    },
+    {
+      "id": "780012",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "92075"
+    },
+    {
+      "id": "780013",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "92074"
+    },
+    {
+      "id": "780014",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "91475"
+    },
+    {
+      "id": "990002",
+      "cliente": "Wilson's Stuff",
+      "estado": "Activo",
+      "producto": "Wilson's Stuff",
+      "parada_id": "92016"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcliente\testado\tproducto\tparada_id\n780006\tWilson's Stuff\tActivo\tWilson's Stuff\t91637\n780007\tWilson's Stuff\tActivo\tWilson's Stuff\t91671\n780008\tWilson's Stuff\tActivo\tWilson's Stuff\t91472\n780009\tWilson's Stuff\tActivo\tWilson's Stuff\t92098\n780010\tWilson's Stuff\tActivo\tWilson's Stuff\t92137\n780011\tWilson's Stuff\tActivo\tWilson's Stuff\t91690\n780012\tWilson's Stuff\tActivo\tWilson's Stuff\t92075\n780013\tWilson's Stuff\tActivo\tWilson's Stuff\t92074\n780014\tWilson's Stuff\tActivo\tWilson's Stuff\t91475\n990002\tWilson's Stuff\tActivo\tWilson's Stuff\t92016\n",
+  "stderr": "",
+  "execution_time_ms": 548
+}
