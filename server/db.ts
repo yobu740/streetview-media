@@ -355,6 +355,7 @@ export async function getInstalaciones() {
       direccion: paradas.direccion,
       localizacion: paradas.localizacion,
       flowCat: paradas.flowCat,
+      ruta: paradas.ruta,
       coordenadasLat: paradas.coordenadasLat,
       coordenadasLng: paradas.coordenadasLng,
       // From parada (origin) fields — only set for Relocalizacion
@@ -517,6 +518,7 @@ export async function getInstalacionesHistorial() {
       direccion: paradas.direccion,
       localizacion: paradas.localizacion,
       flowCat: paradas.flowCat,
+      ruta: paradas.ruta,
       coordenadasLat: paradas.coordenadasLat,
       coordenadasLng: paradas.coordenadasLng,
     })

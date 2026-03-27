@@ -76,6 +76,7 @@ type InstalacionItem = {
   direccion: string;
   localizacion: string;
   flowCat: string | null;
+  ruta: string | null;
   coordenadasLat: string | null;
   coordenadasLng: string | null;
   // Origin parada fields (only set for Relocalizacion)
@@ -219,6 +220,7 @@ export default function Instalacion() {
   // Filters
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
+  const [filterRuta, setFilterRuta] = useState<string>("all");
   const [search, setSearch] = useState("");
   // Historial filters
   const [histSearch, setHistSearch] = useState("");
@@ -260,11 +262,25 @@ export default function Instalacion() {
     return result.sort();
   }, [instalaciones]);
 
+  // Distinct rutas from data
+  const rutas = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const item of instalaciones) {
+      if (item.ruta && !seen.has(item.ruta)) {
+        seen.add(item.ruta);
+        result.push(item.ruta);
+      }
+    }
+    return result.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  }, [instalaciones]);
+
   // Filtered list
   const filtered = useMemo(() => {
     return instalaciones.filter((item) => {
       if (filterEstado !== "all" && item.estado !== filterEstado) return false;
       if (filterFlowcat !== "all" && item.flowCat !== filterFlowcat) return false;
+      if (filterRuta !== "all" && item.ruta !== filterRuta) return false;
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -277,7 +293,7 @@ export default function Instalacion() {
       }
       return true;
     });
-  }, [instalaciones, filterEstado, filterFlowcat, search]);
+  }, [instalaciones, filterEstado, filterFlowcat, filterRuta, search]);
 
   // Historial derived data
   const { data: historialRaw = [], isLoading: isLoadingHistorial } = trpc.instalaciones.historial.useQuery();
@@ -826,7 +842,20 @@ export default function Instalacion() {
                 ))}
               </SelectContent>
             </Select>
-            {(filterEstado !== "all" || filterFlowcat !== "all" || search) && (
+            <Select value={filterRuta} onValueChange={setFilterRuta}>
+              <SelectTrigger className="w-36 h-8 text-sm">
+                <SelectValue placeholder="Ruta" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las rutas</SelectItem>
+                {rutas.map((r) => (
+                  <SelectItem key={r} value={r}>
+                    Ruta {r}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {(filterEstado !== "all" || filterFlowcat !== "all" || filterRuta !== "all" || search) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -834,6 +863,7 @@ export default function Instalacion() {
                 onClick={() => {
                   setFilterEstado("all");
                   setFilterFlowcat("all");
+                  setFilterRuta("all");
                   setSearch("");
                 }}
               >
