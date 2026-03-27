@@ -260,7 +260,7 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
   .exhibit-table th:nth-child(2) { text-align: center; }
   .exhibit-table th:nth-child(4), .exhibit-table th:nth-child(6) { text-align: center; }
   @media print {
-    @page { size: letter; margin: 0; }
+    @page { size: letter; margin: 36px 0 0 0; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     body { margin: 0; }
     .page { margin: 0 auto; padding: 40px 48px; }
