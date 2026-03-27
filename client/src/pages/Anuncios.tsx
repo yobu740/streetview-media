@@ -60,10 +60,17 @@ export default function Anuncios() {
       .filter(i => i.estado === 'Programado' || i.estado === 'Relocalizacion')
       .map(i => i.anuncioId)
   );
+  // Build a Set of anuncioIds that have a pending CambioArte
+  const pendingCambioArteAnuncioIds = new Set(
+    instalacionesPendientes
+      .filter(i => i.estado === 'CambioArte')
+      .map(i => i.anuncioId)
+  );
   const updateAnuncio = trpc.anuncios.update.useMutation();
   const deleteAnuncio = trpc.anuncios.delete.useMutation();
   const generateInvoice = trpc.invoices.generate.useMutation();
   const createAnuncio = trpc.anuncios.create.useMutation();
+  const bulkMarkCambioArte = trpc.instalaciones.bulkMarkCambioArte.useMutation();
   const markCambioArte = trpc.instalaciones.markCambioArte.useMutation({
     onSuccess: () => {
       utils.instalaciones.list.invalidate();
@@ -768,6 +775,32 @@ export default function Anuncios() {
                       <Trash2 size={16} className="mr-2" />
                       Eliminar Seleccionados ({selectedAnuncios.length})
                     </Button>
+                    <Button
+                      onClick={() => {
+                        if (confirm(`¿Marcar cambio de arte para los ${selectedAnuncios.length} anuncio(s) seleccionados? Solo se aplicará a los que estén Activos y no tengan uno pendiente.`)) {
+                          bulkMarkCambioArte.mutate(
+                            { anuncioIds: selectedAnuncios },
+                            {
+                              onSuccess: (res: { created: number; skipped: number; results: any[] }) => {
+                                utils.instalaciones.list.invalidate();
+                                utils.anuncios.list.invalidate();
+                                if (res.skipped > 0) {
+                                  toast.success(`Cambio de Arte: ${res.created} marcado(s), ${res.skipped} omitido(s) (no Activos o ya tienen uno pendiente).`);
+                                } else {
+                                  toast.success(`${res.created} anuncio(s) marcados para Cambio de Arte.`);
+                                }
+                              },
+                              onError: (err: any) => toast.error(err.message),
+                            }
+                          );
+                        }
+                      }}
+                      disabled={bulkMarkCambioArte.isPending}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Palette size={16} className="mr-2" />
+                      Cambio de Arte ({selectedAnuncios.length})
+                    </Button>
                   </>
                 )}
                 <Button
@@ -931,6 +964,15 @@ export default function Anuncios() {
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-2.5 h-2.5">
                                 <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 3a1 1 0 011 1v5.586l2.707 2.707a1 1 0 01-1.414 1.414l-3-3A1 1 0 0111 12V6a1 1 0 011-1z"/>
                               </svg>
+                            </span>
+                          )}
+                          {pendingCambioArteAnuncioIds.has(anuncio.id) && (
+                            <span
+                              title="Cambio de Arte pendiente"
+                              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[9px] font-semibold border border-purple-300"
+                            >
+                              <Palette className="w-2.5 h-2.5" />
+                              Arte
                             </span>
                           )}
                         </div>

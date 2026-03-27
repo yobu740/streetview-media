@@ -2149,6 +2149,49 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    bulkMarkCambioArte: adminProcedure
+      .input(z.object({
+        anuncioIds: z.array(z.number()).min(1),
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb, createInstalacion } = await import('./db');
+        const { instalaciones, anuncios } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+
+        const results: { anuncioId: number; success: boolean; reason?: string }[] = [];
+
+        for (const anuncioId of input.anuncioIds) {
+          const [anuncio] = await db.select().from(anuncios).where(eq(anuncios.id, anuncioId)).limit(1);
+          if (!anuncio || anuncio.estado !== 'Activo') {
+            results.push({ anuncioId, success: false, reason: 'No es Activo' });
+            continue;
+          }
+          const existing = await db
+            .select({ id: instalaciones.id })
+            .from(instalaciones)
+            .where(and(eq(instalaciones.anuncioId, anuncioId), eq(instalaciones.estado, 'CambioArte')))
+            .limit(1);
+          if (existing.length > 0) {
+            results.push({ anuncioId, success: false, reason: 'Ya tiene cambio de arte pendiente' });
+            continue;
+          }
+          await createInstalacion({
+            anuncioId,
+            paradaId: anuncio.paradaId,
+            estado: 'CambioArte',
+            notas: input.notas,
+          });
+          results.push({ anuncioId, success: true });
+        }
+
+        const created = results.filter(r => r.success).length;
+        const skipped = results.filter(r => !r.success).length;
+        return { created, skipped, results };
+      }),
+
     // Get all instalaciones including Instalado (for history / order generation)
     listAll: protectedProcedure.query(async () => {
       const { getDb } = await import('./db');

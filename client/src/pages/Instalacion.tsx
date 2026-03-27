@@ -485,26 +485,24 @@ export default function Instalacion() {
         })
     );
 
-    const rows = items
-      .map(
-        (item) => {
-          const gpsUrl = item.coordenadasLat && item.coordenadasLng
-            ? `https://maps.google.com/?q=${item.coordenadasLat},${item.coordenadasLng}`
-            : `https://maps.google.com/?q=${encodeURIComponent(item.direccion + ', Puerto Rico')}`;
-          const arteSrc = item.arteUrl ? (arteMap.get(item.arteUrl) || item.arteUrl) : null;
-          const arteCell = arteSrc
-            ? '<img src="' + arteSrc + '" class="arte-thumb" alt="Arte" />'
-            : '<span class="no-arte">Sin arte</span>';
-          const isReloc = item.estado === 'Relocalizacion' && item.fromCobertizoId;
-          const cobertizoCell = isReloc
-            ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromCobertizoId}</span><br/><strong>${item.cobertizoId}</strong>`
-            : item.cobertizoId;
-          const orientCell = isReloc
-            ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromOrientacion ?? ''}</span><br/><strong>${item.orientacion}</strong>`
-            : item.orientacion;
-          return `
+    const buildRow = (item: typeof items[0]) => {
+      const gpsUrl = item.coordenadasLat && item.coordenadasLng
+        ? `https://maps.google.com/?q=${item.coordenadasLat},${item.coordenadasLng}`
+        : `https://maps.google.com/?q=${encodeURIComponent(item.direccion + ', Puerto Rico')}`;
+      const arteSrc = item.arteUrl ? (arteMap.get(item.arteUrl) || item.arteUrl) : null;
+      const arteCell = arteSrc
+        ? '<img src="' + arteSrc + '" class="arte-thumb" alt="Arte" />'
+        : '<span class="no-arte">Sin arte</span>';
+      const isReloc = item.estado === 'Relocalizacion' && item.fromCobertizoId;
+      const cobertizoCell = isReloc
+        ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromCobertizoId}</span><br/><strong>${item.cobertizoId}</strong>`
+        : item.cobertizoId;
+      const orientCell = isReloc
+        ? `<span style="color:#dc2626;font-size:9px;font-weight:600">${item.fromOrientacion ?? ''}</span><br/><strong>${item.orientacion}</strong>`
+        : item.orientacion;
+      return `
       <tr>
-        <td>${item.flowCat ?? "—"}</td>
+        <td>${item.flowCat ?? '—'}</td>
         <td>${cobertizoCell}</td>
         <td>${orientCell}</td>
         <td>
@@ -517,12 +515,39 @@ export default function Instalacion() {
         <td>${item.tipo === 'Fijo' ? 'F' : 'B'}</td>
         <td>${formatDate(item.fechaInicio)}</td>
         <td>${formatDate(item.fechaFin)}</td>
-        <td>${item.estado}</td>
         <td class="arte-cell">${arteCell}</td>
       </tr>`;
-        }
-      )
-      .join("");
+    };
+
+    const programadosItems = items.filter(i => i.estado === 'Programado');
+    const relocalizacionItems = items.filter(i => i.estado === 'Relocalizacion');
+    const cambioArteItems = items.filter(i => i.estado === 'CambioArte');
+
+    const buildSection = (sectionItems: typeof items, title: string, headerColor: string, badgeColor: string) => {
+      if (sectionItems.length === 0) return '';
+      const rows = sectionItems.map(buildRow).join('');
+      return `
+        <div class="section-header" style="background:${headerColor};color:white;padding:8px 12px;margin-top:20px;margin-bottom:0;font-size:12px;font-weight:bold;letter-spacing:0.5px;display:flex;align-items:center;gap:8px">
+          <span style="background:${badgeColor};padding:2px 8px;border-radius:3px;font-size:10px">${sectionItems.length}</span>
+          ${title}
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
+              <th>Producto</th><th>Cliente</th><th>Tipo</th>
+              <th>F. Inicio</th><th>F. Fin</th><th>Arte</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    };
+
+    const sections = [
+      buildSection(programadosItems, 'INSTALACIONES NUEVAS', '#1a4d3c', 'rgba(255,255,255,0.25)'),
+      buildSection(relocalizacionItems, 'RELOCALIZACIONES', '#b45309', 'rgba(255,255,255,0.25)'),
+      buildSection(cambioArteItems, 'CAMBIOS DE ARTE', '#7c3aed', 'rgba(255,255,255,0.25)'),
+    ].filter(Boolean).join('');
 
     const orderHtml = `<!DOCTYPE html>
       <html>
@@ -597,16 +622,7 @@ export default function Instalacion() {
           <span><strong>Fecha de impresión:</strong> ${new Date().toLocaleTimeString("es-PR", { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
         <div class="print-body">
-        <table>
-          <thead>
-            <tr>
-              <th>Flowcat</th><th>Cobertizo</th><th>Orient.</th><th>Dirección</th><th>Localización</th>
-              <th>Producto</th><th>Cliente</th><th>Tipo</th>
-              <th>F. Inicio</th><th>F. Fin</th><th>Estado</th><th>Arte</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+          ${sections}
         </div>
         <div class="print-footer">
           <span>Streetview Media · streetviewmediapr.com</span>
@@ -1535,13 +1551,24 @@ export default function Instalacion() {
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <span className="block text-sm">
-                  El anuncio{" "}
-                  <strong>
-                    {confirmInstalado?.producto} — {confirmInstalado?.cobertizoId} (
-                    {confirmInstalado?.orientacion})
-                  </strong>{" "}
-                  será marcado como <strong>Instalado</strong> y el estado en Gestor de Anuncios
-                  cambiará automáticamente a <strong>Activo</strong>.
+                  {confirmInstalado?.estado === 'CambioArte' ? (
+                    <>
+                      El cambio de arte para{" "}
+                      <strong>
+                        {confirmInstalado?.producto} — {confirmInstalado?.cobertizoId} ({confirmInstalado?.orientacion})
+                      </strong>{" "}
+                      será marcado como <strong>completado</strong>. El anuncio continuará <strong>Activo</strong>.
+                    </>
+                  ) : (
+                    <>
+                      El anuncio{" "}
+                      <strong>
+                        {confirmInstalado?.producto} — {confirmInstalado?.cobertizoId} ({confirmInstalado?.orientacion})
+                      </strong>{" "}
+                      será marcado como <strong>Instalado</strong> y el estado en Gestor de Anuncios
+                      cambiará automáticamente a <strong>Activo</strong>.
+                    </>
+                  )}
                 </span>
 
                 {/* Optional photo upload before confirming */}
