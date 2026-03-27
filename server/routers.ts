@@ -2430,10 +2430,11 @@ export const appRouter = router({
       .input(z.object({ clienteNombre: z.string() }))
       .query(async ({ input }) => {
         const { getDb } = await import('./db');
+        const { anuncios, paradas } = await import('../drizzle/schema');
+        const { eq, and, like, or, inArray } = await import('drizzle-orm');
         const database = await getDb();
         if (!database) return [];
 
-        // Use raw SQL to avoid Drizzle or() spread issues with dynamic arrays.
         // Extract meaningful keywords (3+ chars) from the client name, ignoring
         // special characters like & that may be encoded differently.
         const stopwords = new Set(['and', 'the', 'los', 'las', 'del', 'de', 'la', 'el', 'y']);
@@ -2442,45 +2443,35 @@ export const appRouter = router({
           .map((w: string) => w.replace(/[^a-zA-Z0-9]/g, '').trim())
           .filter((w: string) => w.length >= 3 && !stopwords.has(w.toLowerCase()));
 
-        // Build the LIKE conditions string for raw SQL
-        const likeConditions = keywords.length > 0
-          ? keywords.map(() => `a.cliente LIKE ?`).join(' OR ')
-          : `a.cliente LIKE ?`;
-        const likeParams = keywords.length > 0
-          ? keywords.map((kw: string) => `%${kw}%`)
-          : [`%${input.clienteNombre}%`];
+        // Build individual LIKE conditions and combine with or()
+        // Use at least one keyword; fall back to full name if none extracted
+        const searchTerms = keywords.length > 0 ? keywords : [input.clienteNombre];
+        const likeConditions = searchTerms.map(kw => like(anuncios.cliente, `%${kw}%`));
 
-        const sql = `
-          SELECT
-            a.id AS anuncioId,
-            a.producto,
-            a.tipo,
-            a.estado,
-            a.cliente AS clienteAnuncio,
-            p.cobertizo_id AS cobertizoId,
-            p.localizacion,
-            p.direccion,
-            p.orientacion
-          FROM anuncios a
-          INNER JOIN paradas p ON a.parada_id = p.id
-          WHERE (${likeConditions})
-            AND a.estado IN ('Activo', 'Programado')
-          ORDER BY a.id DESC
-          LIMIT 100
-        `;
+        // Drizzle or() requires at least 2 args; handle single term separately
+        const clienteFilter = likeConditions.length === 1
+          ? likeConditions[0]
+          : or(...likeConditions as [ReturnType<typeof like>, ReturnType<typeof like>, ...ReturnType<typeof like>[]]);
 
-        const [rows] = await (database as any).execute(sql, likeParams);
-        return (rows as any[]).map((r: any) => ({
-          anuncioId: r.anuncioId,
-          producto: r.producto,
-          tipo: r.tipo,
-          estado: r.estado,
-          clienteAnuncio: r.clienteAnuncio,
-          cobertizoId: r.cobertizoId,
-          localizacion: r.localizacion,
-          direccion: r.direccion,
-          orientacion: r.orientacion,
-        }));
+        const results = await database
+          .select({
+            anuncioId: anuncios.id,
+            producto: anuncios.producto,
+            tipo: anuncios.tipo,
+            estado: anuncios.estado,
+            clienteAnuncio: anuncios.cliente,
+            cobertizoId: paradas.cobertizoId,
+            localizacion: paradas.localizacion,
+            direccion: paradas.direccion,
+            orientacion: paradas.orientacion,
+          })
+          .from(anuncios)
+          .innerJoin(paradas, eq(anuncios.paradaId, paradas.id))
+          .where(and(
+            clienteFilter,
+            inArray(anuncios.estado, ['Activo', 'Programado']),
+          ));
+        return results;
       }),
   }),
 });
