@@ -2450,11 +2450,12 @@ export const appRouter = router({
         console.log('[getAnunciosByCliente] input:', input.clienteNombre, '| searchTerms:', uniqueTerms);
 
         // Build UPPER(cliente) LIKE UPPER('%kw%') conditions joined with OR
+        // Must use full table name `anuncios` not alias `a` since Drizzle doesn't alias
         const likeClause = uniqueTerms
-          .map(kw => `UPPER(a.cliente) LIKE UPPER('%${kw.replace(/'/g, "''")}%')`)
+          .map(kw => `UPPER(\`anuncios\`.\`cliente\`) LIKE UPPER('%${kw.replace(/'/g, "''")}%')`)
           .join(' OR ');
 
-        // Use sql template for the full query to bypass Drizzle or() spread issues
+        // Use sql.raw for the WHERE clause to bypass utf8mb4_bin case-sensitivity
         const clienteFilter = sql.raw(`(${likeClause})`);
 
         const results = await database
