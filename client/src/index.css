@@ -191,3 +191,74 @@ Design Philosophy: Urban Brutalism con influencias del Street Art puertorriqueñ
     font-family: var(--font-body);
   }
 }
+
+/* ─────────────────────────────────────────────
+   Dashboard UI — Corporate / Modern SaaS scope
+   Solo aplica a rutas de admin (.dashboard-ui)
+   Preserva el Urban Brutalism de la landing page
+───────────────────────────────────────────── */
+.dashboard-ui {
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-xl:  12px;
+  --background:        #f8fafc;
+  --card:              #ffffff;
+  --border:            #e2e8f0;
+  --input:             #f1f5f9;
+  --muted:             #f1f5f9;
+  --muted-foreground:  #64748b;
+  --ring:              #1a4d3c;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv02","cv03","cv04","cv11";
+}
+.dashboard-ui h1,
+.dashboard-ui h2,
+.dashboard-ui h3,
+.dashboard-ui h4,
+.dashboard-ui h5,
+.dashboard-ui h6 {
+  font-family: Inter, system-ui, sans-serif;
+  text-transform: none;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+.dashboard-ui main {
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+.dashboard-ui table { font-size: 0.875rem; }
+.dashboard-ui thead tr {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+.dashboard-ui thead th {
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 0.625rem 1rem;
+}
+.dashboard-ui tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 100ms ease;
+}
+.dashboard-ui tbody tr:hover { background-color: #f8fafc; }
+.dashboard-ui tbody td {
+  padding: 0.75rem 1rem;
+  color: #1e293b;
+}
+.dashboard-ui .card,
+.dashboard-ui [class*="Card"] {
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
+  border: 1px solid #e2e8f0;
+}
+.dashboard-ui button,
+.dashboard-ui label,
+.dashboard-ui input,
+.dashboard-ui select,
+.dashboard-ui textarea,
+.dashboard-ui [role="button"] {
+  font-family: Inter, system-ui, sans-serif;
+}

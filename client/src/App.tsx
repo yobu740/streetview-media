@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -19,24 +20,31 @@ import Notificaciones from "./pages/Notificaciones";
 import Instalacion from "./pages/Instalacion";
 import Clientes from "./pages/Clientes";
 
+/** Wrapper that scopes the modern SaaS dashboard styles.
+ *  The public landing page (/) is intentionally excluded to preserve Urban Brutalism. */
+function D({ children }: { children: React.ReactNode }) {
+  return <div className="dashboard-ui">{children}</div>;
+}
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
-      <Route path={"/admin"} component={Admin} />
-      <Route path={"/calendar"} component={Calendar} />
-      <Route path={"/metrics"} component={Metrics} />
-      <Route path={"/mis-reservas"} component={MisReservas} />
-      <Route path={"/anuncios"} component={Anuncios} />
-      <Route path={"/mantenimiento"} component={Mantenimiento} />
-      <Route path={"/facturas"} component={Facturas} />
-      <Route path={"/facturacion"} component={Facturacion} />
-      <Route path={"/seguimientos"} component={Seguimientos} />
-      <Route path={"/notificaciones"} component={Notificaciones} />
-      <Route path={"/instalacion"} component={Instalacion} />
-      <Route path={"/clientes"} component={Clientes} />
+      <Route path={"/admin"}>         <D><Admin /></D>         </Route>
+      <Route path={"/calendar"}>      <D><Calendar /></D>      </Route>
+      <Route path={"/metrics"}>       <D><Metrics /></D>       </Route>
+      <Route path={"/mis-reservas"}>  <D><MisReservas /></D>   </Route>
+      <Route path={"/anuncios"}>      <D><Anuncios /></D>      </Route>
+      <Route path={"/mantenimiento"}> <D><Mantenimiento /></D> </Route>
+      <Route path={"/facturas"}>      <D><Facturas /></D>      </Route>
+      <Route path={"/facturacion"}>   <D><Facturacion /></D>   </Route>
+      <Route path={"/seguimientos"}>  <D><Seguimientos /></D>  </Route>
+      <Route path={"/notificaciones"}><D><Notificaciones /></D></Route>
+      <Route path={"/instalacion"}>   <D><Instalacion /></D>   </Route>
+      <Route path={"/clientes"}>      <D><Clientes /></D>      </Route>
       <Route path={"/404"} component={NotFound} />
+      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );

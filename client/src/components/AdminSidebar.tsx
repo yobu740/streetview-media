@@ -1,7 +1,11 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   LayoutDashboard,
   Calendar,
@@ -20,6 +24,7 @@ import {
   UserCheck,
   Bell,
   Package,
+  ChevronDown,
   Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -35,8 +40,41 @@ interface AdminSidebarProps {
   onPrintReport?: () => void;
 }
 
+const navGroups = [
+  {
+    label: "General",
+    items: [
+      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin",    badgeKey: "pending" },
+      { label: "Calendario",      icon: Calendar,        href: "/calendar"  },
+      { label: "Métricas",        icon: BarChart3,        href: "/metrics"   },
+    ],
+  },
+  {
+    label: "Operaciones",
+    items: [
+      { label: "Anuncios",       icon: Megaphone,  href: "/anuncios"    },
+      { label: "Mantenimiento",  icon: Wrench,     href: "/mantenimiento" },
+      { label: "Instalación",    icon: Package,    href: "/instalacion",  adminOnly: true },
+      { label: "Seguimientos",   icon: UserCheck,  href: "/seguimientos" },
+    ],
+  },
+  {
+    label: "Clientes",
+    items: [
+      { label: "Clientes",    icon: Building2, href: "/clientes",   adminOnly: true },
+      { label: "Facturación", icon: Receipt,   href: "/facturacion", adminOnly: true },
+      { label: "Mis Reservas",icon: FileText,  href: "/mis-reservas", userOnly: true },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [
+      { label: "Notificaciones", icon: Bell, href: "/notificaciones", badgeKey: "pending" },
+    ],
+  },
+];
+
 export default function AdminSidebar({
-  unreadCount = 0,
   pendingReservationsCount = 0,
   onExportExcel,
   onPrintReport,
@@ -45,374 +83,255 @@ export default function AdminSidebar({
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  
-  // Fetch recent activities
+
   const { data: recentActivities = [] } = trpc.activity.recent.useQuery(undefined, {
     enabled: !!user,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 30000,
   });
 
-  const navItems = [
-    {
-      label: "Panel Principal",
-      icon: LayoutDashboard,
-      href: "/admin",
-      badge: pendingReservationsCount > 0 ? pendingReservationsCount : undefined,
-    },
-    {
-      label: "Calendario",
-      icon: Calendar,
-      href: "/calendar",
-    },
-    {
-      label: "Métricas",
-      icon: BarChart3,
-      href: "/metrics",
-    },
-    {
-      label: "Anuncios",
-      icon: Megaphone,
-      href: "/anuncios",
-    },
-    {
-      label: "Mantenimiento",
-      icon: Wrench,
-      href: "/mantenimiento",
-    },
-    {
-      label: "Instalación",
-      icon: Package,
-      href: "/instalacion",
-      adminOnly: true,
-    },
-    {
-      label: "Facturación",
-      icon: Receipt,
-      href: "/facturacion",
-      adminOnly: true,
-    },
-    {
-      label: "Clientes",
-      icon: Building2,
-      href: "/clientes",
-      adminOnly: true,
-    },
-    {
-      label: "Seguimientos",
-      icon: UserCheck,
-      href: "/seguimientos",
-    },
-    {
-      label: "Mis Reservas",
-      icon: FileText,
-      href: "/mis-reservas",
-      userOnly: true,
-    },
-    {
-      label: "Notificaciones",
-      icon: Bell,
-      href: "/notificaciones",
-      badge: (pendingReservationsCount > 0 ? pendingReservationsCount : undefined),
-    },
-  ];
+  const getBadge = (badgeKey?: string) =>
+    badgeKey === "pending" && pendingReservationsCount > 0
+      ? pendingReservationsCount
+      : undefined;
 
-  const actionItems = [
-    {
-      label: "Exportar Excel",
-      icon: FileSpreadsheet,
-      onClick: onExportExcel,
-      adminOnly: true,
-    },
-    {
-      label: "Imprimir Reporte",
-      icon: Printer,
-      onClick: onPrintReport,
-      adminOnly: true,
-    },
-  ];
+  const SidebarInner = ({ onClose }: { onClose?: () => void }) => (
+    <div className="flex flex-col h-full bg-white">
 
-  const handleLogout = () => {
-    logout();
-  };
+      {/* Brand header */}
+      <div className={cn(
+        "flex items-center h-16 px-4 border-b border-slate-100",
+        isCollapsed ? "justify-center" : "justify-between"
+      )}>
+        {!isCollapsed && (
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#1a4d3c] flex items-center justify-center flex-shrink-0">
+              <Megaphone size={13} className="text-white" />
+            </div>
+            <span className="font-semibold text-slate-900 text-sm tracking-tight">
+              Streetview Media
+            </span>
+          </div>
+        )}
+        {isCollapsed && (
+          <div className="w-7 h-7 rounded-lg bg-[#1a4d3c] flex items-center justify-center">
+            <Megaphone size={13} className="text-white" />
+          </div>
+        )}
+
+        {/* Collapse / close button */}
+        {onClose ? (
+          <button
+            type="button"
+            aria-label="Cerrar menú"
+            onClick={onClose}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={isCollapsed ? "Expandir" : "Colapsar"}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        )}
+      </div>
+
+      {/* Nav groups */}
+      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+        {navGroups.map((group) => {
+          const visible = group.items.filter((item) => {
+            if ((item as any).userOnly  && user?.role === "admin") return false;
+            if ((item as any).adminOnly && user?.role !== "admin") return false;
+            return true;
+          });
+          if (visible.length === 0) return null;
+
+          return (
+            <div key={group.label}>
+              {!isCollapsed && (
+                <p className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                  {group.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {visible.map((item) => {
+                  const Icon  = item.icon;
+                  const active = location === item.href;
+                  const badge  = getBadge((item as any).badgeKey);
+
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className={cn(
+                          "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+                          active
+                            ? "bg-[#1a4d3c]/10 text-[#1a4d3c]"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                          isCollapsed && "justify-center px-2"
+                        )}
+                      >
+                        <Icon
+                          size={16}
+                          className={cn(
+                            "flex-shrink-0",
+                            active ? "text-[#1a4d3c]" : "text-slate-400"
+                          )}
+                        />
+                        {!isCollapsed && (
+                          <>
+                            <span className="flex-1 text-left">{item.label}</span>
+                            {badge && badge > 0 && (
+                              <span className="ml-auto inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold bg-[#1a4d3c]/15 text-[#1a4d3c] rounded-full">
+                                {badge > 99 ? "99+" : badge}
+                              </span>
+                            )}
+                          </>
+                        )}
+                        {isCollapsed && badge && badge > 0 && (
+                          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#1a4d3c] rounded-full" />
+                        )}
+                      </button>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Admin tools */}
+        {user?.role === "admin" && !isCollapsed && (
+          <div>
+            <p className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              Herramientas
+            </p>
+            <div className="space-y-0.5">
+              <button
+                type="button"
+                onClick={onExportExcel}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-150"
+              >
+                <FileSpreadsheet size={16} className="text-slate-400 flex-shrink-0" />
+                <span className="flex-1 text-left">Exportar Excel</span>
+              </button>
+              <button
+                type="button"
+                onClick={onPrintReport}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-150"
+              >
+                <Printer size={16} className="text-slate-400 flex-shrink-0" />
+                <span className="flex-1 text-left">Imprimir Reporte</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* Recent activity */}
+      {!isCollapsed && recentActivities.length > 0 && (
+        <div className="px-3 pt-3 pb-2 border-t border-slate-100">
+          <p className="px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            Actividad Reciente
+          </p>
+          <div className="space-y-1">
+            {recentActivities.slice(0, 3).map((activity) => (
+              <div key={activity.id} className="px-2.5 py-2 rounded-lg bg-slate-50 text-xs">
+                <p className="font-medium text-slate-700 truncate">{activity.action}</p>
+                <p className="text-slate-400 mt-0.5">
+                  {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: es })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* User footer */}
+      <div className="px-3 py-3 border-t border-slate-100">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                "w-full flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-100 transition-colors text-left",
+                isCollapsed && "justify-center"
+              )}
+            >
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1a4d3c] to-[#0d2e24] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                {user?.name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+              {!isCollapsed && (
+                <>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate leading-none">
+                      {user?.name || user?.email}
+                    </p>
+                    <p className="text-xs text-slate-400 capitalize mt-0.5">
+                      {user?.role || "Usuario"}
+                    </p>
+                  </div>
+                  <ChevronDown size={14} className="text-slate-400 flex-shrink-0" />
+                </>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side="top" className="w-52 mb-1">
+            <div className="px-2 py-2 border-b border-slate-100 mb-1">
+              <p className="text-sm font-medium text-slate-900 truncate">{user?.name || user?.email}</p>
+              <p className="text-xs text-slate-400 truncate mt-0.5">{user?.email}</p>
+            </div>
+            <DropdownMenuItem
+              onClick={logout}
+              className="cursor-pointer text-rose-600 focus:text-rose-700 focus:bg-rose-50"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Cerrar Sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside
-        className={cn(
-          "hidden lg:flex flex-col bg-white border-r-4 border-[#1a4d3c] h-screen sticky top-0 transition-all duration-300",
-          isCollapsed ? "w-20" : "w-64"
-        )}
-      >
-        {/* Toggle Button */}
-        <div className="p-4 border-b-2 border-[#1a4d3c] flex items-center justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
-            {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </Button>
-        </div>
-
-        {/* User Info */}
-        {!isCollapsed && (
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#1a4d3c] flex items-center justify-center text-white font-bold">
-                {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.name || user?.email}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role || "Usuario"}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {navItems.map((item) => {
-            // Hide user-only items for admins
-            if (item.userOnly && user?.role === "admin") return null;
-            // Hide admin-only items for non-admins
-            if ((item as any).adminOnly === true && user?.role !== "admin") return null;
-
-            const Icon = item.icon;
-            const isActive = location === item.href;
-
-            return (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant={isActive ? "default" : "ghost"}
-                  className={cn(
-                    "w-full justify-start gap-3",
-                    isActive && "bg-[#1a4d3c] text-white hover:bg-[#0f3a2a]",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                >
-                  <Icon size={20} className="flex-shrink-0" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 text-left">{item.label}</span>
-                      {item.badge && item.badge > 0 && (
-                        <Badge variant="destructive" className="ml-auto">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                  {isCollapsed && item.badge && item.badge > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                  )}
-                </Button>
-              </Link>
-            );
-          })}
-          
-          {/* Action Items */}
-          {user?.role === 'admin' && (
-            <>
-              <div className="my-4 border-t-2 border-[#1a4d3c]" />
-              {!isCollapsed && (
-                <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Acciones
-                </div>
-              )}
-              {actionItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Button
-                    key={item.label}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start gap-3 hover:bg-[#f5f5f5]",
-                      isCollapsed && "justify-center px-2"
-                    )}
-                    onClick={item.onClick}
-                  >
-                    <Icon size={20} className="flex-shrink-0 text-[#1a4d3c]" />
-                    {!isCollapsed && <span className="flex-1 text-left font-medium">{item.label}</span>}
-                  </Button>
-                );
-              })}
-            </>
-          )}
-        </nav>
-
-        {/* Recent Activity Section */}
-        {!isCollapsed && recentActivities.length > 0 && (
-          <div className="p-4 border-t-2 border-[#1a4d3c]">
-            <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Actividad Reciente
-            </div>
-            <div className="space-y-2">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="text-xs p-2 bg-gray-50 rounded">
-                  <div className="font-medium text-gray-900">{activity.action}</div>
-                  <div className="text-gray-500 mt-1">
-                    {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: es })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom Actions */}
-        <div className="p-4 border-t border-gray-200 space-y-2">
-          <Button
-            variant="outline"
-            className={cn(
-              "w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50",
-              isCollapsed && "justify-center px-2"
-            )}
-            onClick={handleLogout}
-          >
-            <LogOut size={20} className="flex-shrink-0" />
-            {!isCollapsed && <span>Cerrar Sesión</span>}
-          </Button>
-        </div>
+      {/* Desktop sidebar */}
+      <aside className={cn(
+        "hidden lg:flex flex-col bg-white border-r border-slate-200 h-screen sticky top-0 transition-all duration-200 shadow-sm",
+        isCollapsed ? "w-[60px]" : "w-[220px]"
+      )}>
+        <SidebarInner />
       </aside>
 
-      {/* Mobile Sidebar - Hamburger Menu */}
+      {/* Mobile trigger */}
       <div className="lg:hidden">
-        {/* Hamburger Button - Fixed */}
         <button
+          type="button"
+          aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="fixed top-6 right-4 z-[60] p-3 bg-[#1a4d3c] text-white rounded-md shadow-lg hover:bg-[#0f3a2a] transition-colors"
+          className="fixed top-4 right-4 z-[60] w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-lg shadow-sm text-slate-600 hover:bg-slate-50 transition-colors"
         >
-          {isMobileOpen ? (
-            <X size={24} className="text-white" />
-          ) : (
-            <Menu size={24} className="text-white" />
-          )}
+          {isMobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
 
-        {/* Mobile Menu Overlay */}
         {isMobileOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
             onClick={() => setIsMobileOpen(false)}
           />
         )}
 
-        {/* Mobile Sidebar Drawer */}
-        <aside
-          className={cn(
-            "fixed top-0 right-0 h-full w-64 bg-white border-l-4 border-[#1a4d3c] z-50 transform transition-transform duration-300",
-            isMobileOpen ? "translate-x-0" : "translate-x-full"
-          )}
-        >
-          {/* User Info */}
-          <div className="p-4 border-b-2 border-[#1a4d3c]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#1a4d3c] flex items-center justify-center text-white font-bold">
-                {user?.name?.charAt(0) || user?.email?.charAt(0) || "U"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.name || user?.email}
-                </p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role || "Usuario"}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
-            {navItems.map((item) => {
-              if (item.userOnly && user?.role === "admin") return null;
-              if ((item as any).adminOnly === true && user?.role !== "admin") return null;
-
-              const Icon = item.icon;
-              const isActive = location === item.href;
-
-              return (
-                <Link key={item.href} href={item.href}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start gap-3",
-                      isActive && "bg-[#1a4d3c] text-white hover:bg-[#0f3a2a]"
-                    )}
-                    onClick={() => setIsMobileOpen(false)}
-                  >
-                    <Icon size={20} className="flex-shrink-0" />
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {item.badge && item.badge > 0 && (
-                      <Badge variant="destructive" className="ml-auto">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </Button>
-                </Link>
-              );
-            })}
-
-            {/* Action Items */}
-            {user?.role === 'admin' && (
-              <>
-                <div className="my-4 border-t-2 border-[#1a4d3c]" />
-                <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Acciones
-                </div>
-                {actionItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Button
-                      key={item.label}
-                      variant="ghost"
-                      className="w-full justify-start gap-3 hover:bg-[#f5f5f5]"
-                      onClick={() => {
-                        item.onClick?.();
-                        setIsMobileOpen(false);
-                      }}
-                    >
-                      <Icon size={20} className="flex-shrink-0 text-[#1a4d3c]" />
-                      <span className="flex-1 text-left font-medium">{item.label}</span>
-                    </Button>
-                  );
-                })}
-              </>
-            )}
-          </nav>
-
-          {/* Recent Activity Section */}
-          {recentActivities.length > 0 && (
-            <div className="p-4 border-t-2 border-[#1a4d3c]">
-              <div className="px-2 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Actividad Reciente
-              </div>
-              <div className="space-y-2">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="text-xs p-2 bg-gray-50 rounded">
-                    <div className="font-medium text-gray-900">{activity.action}</div>
-                    <div className="text-gray-500 mt-1">
-                      {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: es })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Bottom Actions */}
-          <div className="p-4 border-t border-gray-200">
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
-              onClick={() => {
-                handleLogout();
-                setIsMobileOpen(false);
-              }}
-            >
-              <LogOut size={20} className="flex-shrink-0" />
-              <span>Cerrar Sesión</span>
-            </Button>
-          </div>
+        <aside className={cn(
+          "fixed top-0 left-0 h-full w-[220px] bg-white border-r border-slate-200 z-50 shadow-xl transform transition-transform duration-200",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}>
+          <SidebarInner onClose={() => setIsMobileOpen(false)} />
         </aside>
       </div>
     </>
