@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Calendar,
   BarChart3,
-  Megaphone,
   FileText,
   Receipt,
   LogOut,
@@ -52,7 +51,7 @@ const navGroups = [
   {
     label: "Operaciones",
     items: [
-      { label: "Anuncios",       icon: Megaphone,  href: "/anuncios"    },
+      { label: "Anuncios",       icon: Package,    href: "/anuncios"    },
       { label: "Mantenimiento",  icon: Wrench,     href: "/mantenimiento" },
       { label: "Instalación",    icon: Package,    href: "/instalacion",  adminOnly: true },
       { label: "Seguimientos",   icon: UserCheck,  href: "/seguimientos" },
@@ -103,18 +102,19 @@ export default function AdminSidebar({
         isCollapsed ? "justify-center" : "justify-between"
       )}>
         {!isCollapsed && (
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#1a4d3c] flex items-center justify-center flex-shrink-0">
-              <Megaphone size={13} className="text-white" />
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#1a4d3c] flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-[11px] tracking-tight">SM</span>
             </div>
-            <span className="font-semibold text-slate-900 text-sm tracking-tight">
-              Streetview Media
-            </span>
+            <div className="leading-none">
+              <p className="text-[13px] font-bold text-slate-900 tracking-tight leading-none">Streetview</p>
+              <p className="text-[10px] font-medium text-[#1a4d3c] uppercase tracking-[0.08em] mt-[3px]">Media</p>
+            </div>
           </div>
         )}
         {isCollapsed && (
-          <div className="w-7 h-7 rounded-lg bg-[#1a4d3c] flex items-center justify-center">
-            <Megaphone size={13} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-[#1a4d3c] flex items-center justify-center">
+            <span className="text-white font-bold text-[11px] tracking-tight">SM</span>
           </div>
         )}
 
