@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -23,6 +23,10 @@ import Clientes from "./pages/Clientes";
 /** Wrapper that scopes the modern SaaS dashboard styles.
  *  The public landing page (/) is intentionally excluded to preserve Urban Brutalism. */
 function D({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    document.body.classList.add("dashboard-ui");
+    return () => document.body.classList.remove("dashboard-ui");
+  }, []);
   return <div className="dashboard-ui">{children}</div>;
 }
 
