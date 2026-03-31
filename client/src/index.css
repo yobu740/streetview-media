@@ -262,3 +262,97 @@ Design Philosophy: Urban Brutalism con influencias del Street Art puertorriqueñ
 .dashboard-ui [role="button"] {
   font-family: Inter, system-ui, sans-serif;
 }
+
+/* ─── Dialog / Modal — estilos globales ───────────────────────── */
+[data-slot="dialog-content"] {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.15), 0 4px 16px rgb(0 0 0 / 0.08);
+}
+
+[data-slot="dialog-content"] h2,
+[data-slot="dialog-title"] {
+  font-family: 'Inter', system-ui, sans-serif;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+[data-slot="dialog-description"] {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+[data-slot="dialog-content"] label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+[data-slot="dialog-content"] input,
+[data-slot="dialog-content"] select,
+[data-slot="dialog-content"] textarea {
+  font-family: 'Inter', system-ui, sans-serif;
+  border-radius: 6px;
+  border-color: #d1d5db;
+}
+
+[data-slot="dialog-content"] input:focus,
+[data-slot="dialog-content"] select:focus,
+[data-slot="dialog-content"] textarea:focus {
+  border-color: #1a4d3c;
+  outline-color: #1a4d3c;
+  box-shadow: 0 0 0 3px rgb(26 77 60 / 0.08);
+}
+
+[data-slot="dialog-content"] button {
+  font-family: 'Inter', system-ui, sans-serif;
+  border-radius: 6px;
+}
+
+[data-slot="dialog-content"] table {
+  font-size: 0.8125rem;
+}
+
+[data-slot="dialog-content"] thead th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  background-color: #f9fafb;
+  padding: 0.5rem;
+}
+
+[data-slot="dialog-content"] tbody td {
+  padding: 0.375rem;
+  color: #111827;
+}
+
+[data-slot="dialog-content"] tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+[data-slot="dialog-footer"] {
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+[data-slot="dialog-footer"] button {
+  min-width: 80px;
+}
+
+[data-slot="dialog-overlay"] {
+  background-color: rgb(0 0 0 / 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}

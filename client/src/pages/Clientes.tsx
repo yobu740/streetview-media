@@ -107,9 +107,11 @@ const LOGO_URL = "https://files.manuscdn.com/user_upload_by_module/session_file/
 function fmtDate(d: Date | null | string) {
   if (!d) return "__ / __ / __";
   const dt = new Date(d);
-  const mm = String(dt.getMonth() + 1).padStart(2, "0");
-  const dd = String(dt.getDate()).padStart(2, "0");
-  const yy = String(dt.getFullYear()).slice(-2);
+  // Use UTC methods to avoid timezone offset shifting the date by one day
+  // when the value is a date-only string like "2025-04-28" (parsed as UTC midnight)
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getUTCDate()).padStart(2, "0");
+  const yy = String(dt.getUTCFullYear()).slice(-2);
   return `${mm}/${dd}/${yy}`;
 }
 
