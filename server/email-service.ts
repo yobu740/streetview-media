@@ -64,10 +64,14 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false,
+    secure: parseInt(process.env.SMTP_PORT || '587') === 465,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+      ciphers: 'SSLv3',
     },
   });
 
@@ -93,7 +97,9 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
     </div>
   `;
 
-  const senderEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
+  // Outlook/Microsoft 365 requires From to exactly match the authenticated SMTP_USER
+  // Using a different From address causes silent rejection
+  const senderEmail = process.env.SMTP_USER;
   const mailOptions: any = {
     from: `"Streetview Media PR" <${senderEmail}>`,
     to: data.to,
@@ -111,10 +117,11 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   if (data.cc) mailOptions.cc = data.cc;
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`[Email Service] Invoice ${data.numeroFactura} sent to ${data.to}`);
-  } catch (error) {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[Email Service] Invoice ${data.numeroFactura} sent to ${data.to}. MessageId: ${info.messageId}`);
+  } catch (error: any) {
     console.error('[Email Service] Error sending invoice email:', error);
-    throw new Error('Error al enviar la factura por correo');
+    const detail = error?.message || error?.response || 'Unknown SMTP error';
+    throw new Error(`Error al enviar la factura: ${detail}`);
   }
 }

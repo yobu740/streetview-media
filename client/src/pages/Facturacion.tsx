@@ -360,12 +360,13 @@ export default function Facturacion() {
       );
     }
     if (dateFilterStart) {
-      const startDate = new Date(dateFilterStart);
+      // Parse as UTC start-of-day to avoid timezone shifting the date
+      const startDate = new Date(dateFilterStart + 'T00:00:00.000Z');
       filtered = filtered.filter((f: any) => new Date(f.createdAt) >= startDate);
     }
     if (dateFilterEnd) {
-      const endDate = new Date(dateFilterEnd);
-      endDate.setHours(23, 59, 59, 999);
+      // Parse as UTC end-of-day so the full selected day is included
+      const endDate = new Date(dateFilterEnd + 'T23:59:59.999Z');
       filtered = filtered.filter((f: any) => new Date(f.createdAt) <= endDate);
     }
     filtered = filtered.filter((f: any) => showArchived ? f.archivada === 1 : f.archivada === 0);
