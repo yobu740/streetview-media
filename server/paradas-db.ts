@@ -1,4 +1,4 @@
-import { eq, and, or, desc, asc, like, sql, lte, gte, inArray } from "drizzle-orm";
+import { eq, ne, and, or, desc, asc, like, sql, lte, gte, inArray } from "drizzle-orm";
 import { paradas, anuncios, type Parada, type Anuncio, type InsertParada, type InsertAnuncio } from "../drizzle/schema";
 import { getDb } from "./db";;
 
@@ -43,10 +43,26 @@ export async function getAllParadas() {
               eq(anuncios.estado, "Activo"),
               eq(anuncios.estado, "Programado")
             ),
-            sql`${anuncios.fechaFin} >= ${now}` // Only get non-expired anuncios
+            sql`${anuncios.fechaFin} >= ${now}`, // Only get non-expired anuncios
+            ne(anuncios.tipo, "Holder") // Holder anuncios don't block availability
           )
         )
         .orderBy(desc(anuncios.fechaInicio))
+        .limit(1);
+
+      // Separately fetch the holder anuncio (for badge display only)
+      const holderAnuncio = await db
+        .select({ id: anuncios.id, producto: anuncios.producto, cliente: anuncios.cliente })
+        .from(anuncios)
+        .where(
+          and(
+            eq(anuncios.paradaId, parada.id),
+            eq(anuncios.tipo, "Holder"),
+            eq(anuncios.approvalStatus, "approved"),
+            or(eq(anuncios.estado, "Activo"), eq(anuncios.estado, "Programado")),
+            sql`${anuncios.fechaFin} >= ${now}`
+          )
+        )
         .limit(1);
       
       const currentAnuncio = anuncio[0];
@@ -88,6 +104,9 @@ export async function getAllParadas() {
         anuncioFechaInicio: currentAnuncio?.fechaInicio ? currentAnuncio.fechaInicio.toISOString().split('T')[0] + 'T00:00:00.000Z' : null,
         anuncioFechaFin: currentAnuncio?.fechaFin ? currentAnuncio.fechaFin.toISOString().split('T')[0] + 'T00:00:00.000Z' : null,
         anuncioEstado: currentAnuncio?.estado || null,
+        // Holder indicator: parada has a Holder anuncio but is available for sale
+        isHolder: (holderAnuncio[0]?.id ?? null) !== null,
+        holderProducto: holderAnuncio[0]?.producto || null,
       };
     })
   );
@@ -389,7 +408,7 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
   const db = await getDb();
   if (!db) return { disponible: true, proximaFechaDisponible: null, anuncioActual: null };
   
-  // Check if there are any overlapping APPROVED anuncios
+  // Check if there are any overlapping APPROVED anuncios (excluding Holder type)
   const overlapping = await db.select().from(anuncios).where(
     and(
       eq(anuncios.paradaId, paradaId),
@@ -403,7 +422,8 @@ export async function checkParadaDisponibilidad(paradaId: number, fechaInicio: D
         eq(anuncios.estado, "Activo"),
         eq(anuncios.estado, "Programado")
       ),
-      eq(anuncios.approvalStatus, "approved") // Only consider approved anuncios
+      eq(anuncios.approvalStatus, "approved"), // Only consider approved anuncios
+      ne(anuncios.tipo, "Holder") // Holder anuncios don't block availability
     )
   ).orderBy(anuncios.fechaFin);
   

@@ -253,6 +253,13 @@
       "when": 1774624027060,
       "tag": "0035_tricky_tarot",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1775067413985,
+      "tag": "0036_sticky_northstar",
+      "breakpoints": true
     }
   ]
 }

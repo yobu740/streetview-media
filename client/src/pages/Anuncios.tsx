@@ -108,7 +108,7 @@ export default function Anuncios() {
     fechaInicio: "",
     fechaFin: "",
     estado: "Activo" as "Disponible" | "Activo" | "Programado" | "Finalizado" | "Inactivo",
-    tipo: "Fijo" as "Fijo" | "Bonificación",
+    tipo: "Fijo" as "Fijo" | "Bonificación" | "Holder",
     costoPorUnidad: "",
     notas: "",
     motivoRelocalizacion: "",
@@ -134,7 +134,7 @@ export default function Anuncios() {
     cliente: "",
     fechaInicio: "",
     fechaFin: "",
-    tipo: "Fijo" as "Fijo" | "Bonificación",
+    tipo: "Fijo" as "Fijo" | "Bonificación" | "Holder",
     costoPorUnidad: "",
     selectionMode: "paradas" as "paradas" | "rutas",
     selectedParadas: [] as number[],
@@ -705,6 +705,7 @@ export default function Anuncios() {
                   <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="Fijo">Fijo</SelectItem>
                   <SelectItem value="Bonificación">Bonificación</SelectItem>
+                  <SelectItem value="Holder">Holder</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1217,7 +1218,7 @@ export default function Anuncios() {
                 <Label htmlFor="edit-tipo">Tipo</Label>
                 <Select
                   value={editForm.tipo}
-                  onValueChange={(value: "Fijo" | "Bonificación") =>
+                  onValueChange={(value: "Fijo" | "Bonificación" | "Holder") =>
                     setEditForm({ ...editForm, tipo: value })
                   }
                 >
@@ -1227,6 +1228,7 @@ export default function Anuncios() {
                   <SelectContent>
                     <SelectItem value="Fijo">Fijo</SelectItem>
                     <SelectItem value="Bonificación">Bonificación</SelectItem>
+                    <SelectItem value="Holder">Holder (Disponible para venta)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1722,6 +1724,7 @@ export default function Anuncios() {
                 <SelectContent>
                   <SelectItem value="Fijo">Fijo</SelectItem>
                   <SelectItem value="Bonificación">Bonificación</SelectItem>
+                  <SelectItem value="Holder">Holder (Disponible para venta)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

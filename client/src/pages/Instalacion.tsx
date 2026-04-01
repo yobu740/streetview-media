@@ -68,7 +68,7 @@ type InstalacionItem = {
   createdAt: Date;
   producto: string;
   cliente: string;
-  tipo: "Fijo" | "Bonificación";
+  tipo: "Fijo" | "Bonificación" | "Holder";
   fechaInicio: Date;
   fechaFin: Date;
   estadoAnuncio: string;

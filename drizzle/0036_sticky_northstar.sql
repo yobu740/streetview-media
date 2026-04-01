@@ -1,0 +1,1 @@
+ALTER TABLE `anuncios` MODIFY COLUMN `tipo` enum('Fijo','Bonificación','Holder') NOT NULL;

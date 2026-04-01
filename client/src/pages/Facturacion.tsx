@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X, Mail } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import {
@@ -73,6 +73,45 @@ export default function Facturacion() {
   const unarchiveFactura = trpc.invoices.unarchive.useMutation();
   const generateReport = trpc.invoices.generateReport.useMutation();
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  // Email invoice dialog
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [emailFactura, setEmailFactura] = useState<any>(null);
+  const [emailTo, setEmailTo] = useState("");
+  const [emailCc, setEmailCc] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const sendInvoiceEmail = trpc.invoices.sendByEmail.useMutation();
+
+  const handleOpenEmailDialog = (factura: any) => {
+    setEmailFactura(factura);
+    setEmailTo("");
+    setEmailCc("");
+    setEmailSubject(`Factura ${factura.numeroFactura} - Streetview Media PR`);
+    setEmailMessage(`Estimado/a ${factura.cliente},\n\nAdjunto encontrará la factura ${factura.numeroFactura} correspondiente a sus servicios de publicidad exterior con Streetview Media PR.\n\nPara cualquier consulta, no dude en comunicarse con nosotros.\n\nAtentamente,\nEquipo Streetview Media PR`);
+    setIsEmailDialogOpen(true);
+  };
+
+  const handleSendEmail = async () => {
+    if (!emailFactura || !emailTo) return;
+    if (!emailFactura.pdfUrl) {
+      toast.error("Esta factura no tiene PDF generado. Genera el PDF primero.");
+      return;
+    }
+    try {
+      await sendInvoiceEmail.mutateAsync({
+        facturaId: emailFactura.id,
+        to: emailTo,
+        cc: emailCc || undefined,
+        subject: emailSubject,
+        message: emailMessage,
+      });
+      toast.success(`Factura enviada a ${emailTo}`);
+      setIsEmailDialogOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || "Error al enviar el correo");
+    }
+  };
 
   // Query pagos for the selected factura in the history dialog
   const { data: pagosData, refetch: refetchPagos } = trpc.invoices.listPagos.useQuery(
@@ -554,6 +593,11 @@ export default function Facturacion() {
                             <Button size="sm" variant="outline" onClick={() => window.open(factura.pdfUrl, "_blank")}>
                               <FileText size={14} className="mr-1" />Ver PDF
                             </Button>
+                            {factura.pdfUrl && (
+                              <Button size="sm" variant="outline" className="border-blue-400 text-blue-700 hover:bg-blue-50" onClick={() => handleOpenEmailDialog(factura)}>
+                                <Mail size={14} className="mr-1" />Enviar
+                              </Button>
+                            )}
                             {factura.estadoPago !== "Pagada" && (
                               <>
                                 <Button
@@ -840,6 +884,70 @@ export default function Facturacion() {
                 <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>Cancelar</Button>
                 <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a]" onClick={handleExportReport}>
                   <Download size={16} className="mr-2" />Exportar CSV
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Email Invoice Dialog */}
+          <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Mail size={18} className="text-blue-600" />
+                  Enviar Factura por Correo
+                </DialogTitle>
+                <DialogDescription>
+                  {emailFactura && `Factura ${emailFactura.numeroFactura} — ${emailFactura.cliente}`}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Para (email del cliente) *</Label>
+                  <Input
+                    type="email"
+                    placeholder="cliente@empresa.com"
+                    value={emailTo}
+                    onChange={e => setEmailTo(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>CC (opcional)</Label>
+                  <Input
+                    type="email"
+                    placeholder="copia@empresa.com"
+                    value={emailCc}
+                    onChange={e => setEmailCc(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Asunto</Label>
+                  <Input
+                    value={emailSubject}
+                    onChange={e => setEmailSubject(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Mensaje</Label>
+                  <textarea
+                    className="w-full min-h-[120px] rounded-md border border-input bg-background px-3 py-2 text-sm resize-y"
+                    value={emailMessage}
+                    onChange={e => setEmailMessage(e.target.value)}
+                  />
+                </div>
+                <p className="text-xs text-gray-500">
+                  El PDF de la factura se adjuntará automáticamente al correo.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>Cancelar</Button>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={handleSendEmail}
+                  disabled={!emailTo || sendInvoiceEmail.isPending}
+                >
+                  <Mail size={14} className="mr-2" />
+                  {sendInvoiceEmail.isPending ? "Enviando..." : "Enviar Factura"}
                 </Button>
               </DialogFooter>
             </DialogContent>

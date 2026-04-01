@@ -289,7 +289,7 @@ export const appRouter = router({
         paradaId: z.number(),
         producto: z.string(),
         cliente: z.string(),
-        tipo: z.enum(["Fijo", "Bonificación"]),
+        tipo: z.enum(["Fijo", "Bonificación", "Holder"]),
         costoPorUnidad: z.number().optional(),
         fechaInicio: z.date(),
         fechaFin: z.date(),
@@ -382,7 +382,7 @@ export const appRouter = router({
         paradaId: z.number().optional(),
         producto: z.string().optional(),
         cliente: z.string().optional(),
-        tipo: z.enum(["Fijo", "Bonificación"]).optional(),
+        tipo: z.enum(["Fijo", "Bonificación", "Holder"]).optional(),
         costoPorUnidad: z.number().optional(),
         fechaInicio: z.date().optional(),
         fechaFin: z.date().optional(),
@@ -429,7 +429,7 @@ export const appRouter = router({
       .input(z.object({
         anuncioIds: z.array(z.number()),
         updates: z.object({
-          tipo: z.enum(["Fijo", "Bonificación"]).optional(),
+          tipo: z.enum(["Fijo", "Bonificación", "Holder"]).optional(),
           fechaFin: z.date().optional(),
           estado: z.enum(["Disponible", "Activo", "Programado", "Finalizado", "Inactivo"]).optional(),
           producto: z.string().optional(),
@@ -1485,6 +1485,40 @@ export const appRouter = router({
           .where(eq(facturas.id, pago.facturaId));
 
         return { success: true, nuevoEstado, balance: Math.max(0, balance) };
+      }),
+
+    // Send invoice by email with PDF attachment
+    sendByEmail: adminProcedure
+      .input(z.object({
+        facturaId: z.number(),
+        to: z.string().email(),
+        cc: z.string().optional(),
+        subject: z.string(),
+        message: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        const [factura] = await db.select().from(facturas).where(eq(facturas.id, input.facturaId));
+        if (!factura) throw new TRPCError({ code: "NOT_FOUND", message: "Factura no encontrada" });
+        if (!factura.pdfUrl) throw new TRPCError({ code: "BAD_REQUEST", message: "La factura no tiene PDF generado. Genera el PDF primero." });
+
+        const { sendInvoiceEmail } = await import("./email-service");
+        await sendInvoiceEmail({
+          to: input.to,
+          cc: input.cc,
+          subject: input.subject,
+          message: input.message,
+          pdfUrl: factura.pdfUrl,
+          numeroFactura: factura.numeroFactura,
+          clienteNombre: factura.cliente,
+        });
+
+        return { success: true };
       }),
   }),
   
