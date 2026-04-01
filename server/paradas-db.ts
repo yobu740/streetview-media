@@ -384,7 +384,7 @@ export async function getParadasDisponibles(fechaInicio: Date, fechaFin: Date) {
   // Get all paradas
   const allParadas = await db.select().from(paradas).where(eq(paradas.activa, 1));
   
-  // Get anuncios that overlap with the requested date range
+  // Get anuncios that overlap with the requested date range (excluding Holder type)
   const overlappingAnuncios = await db.select().from(anuncios).where(
     and(
       or(
@@ -393,7 +393,12 @@ export async function getParadasDisponibles(fechaInicio: Date, fechaFin: Date) {
           gte(anuncios.fechaFin, fechaInicio)
         )
       ),
-      eq(anuncios.estado, "Activo")
+      or(
+        eq(anuncios.estado, "Activo"),
+        eq(anuncios.estado, "Programado")
+      ),
+      eq(anuncios.approvalStatus, "approved"),
+      ne(anuncios.tipo, "Holder") // Holder anuncios don't block availability
     )
   );
   
