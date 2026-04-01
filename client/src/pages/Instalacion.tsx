@@ -45,6 +45,7 @@ import {
   History,
   Users,
   Palette,
+  CalendarDays,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
@@ -146,11 +147,31 @@ export default function Instalacion() {
   const { data: instalaciones = [], isLoading } = trpc.instalaciones.list.useQuery();
   // Mutationss
   const markInstalado = trpc.instalaciones.markInstalado.useMutation({
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       utils.instalaciones.list.invalidate();
       // Also invalidate anuncios so Gestor de Anuncios reflects the Activo status immediately
       utils.anuncios.list.invalidate();
       toast.success("El anuncio fue marcado como instalado y activado.");
+
+      // Check if fechaInicio differs from the installation date — if so, ask user
+      if (data.fechaInicioActual && data.fechaInstalacion) {
+        const fi = new Date(data.fechaInicioActual);
+        const ins = new Date(data.fechaInstalacion);
+        // Compare only dates (ignore time)
+        const fiDay = fi.toISOString().split('T')[0];
+        const insDay = ins.toISOString().split('T')[0];
+        if (fiDay !== insDay) {
+          // Find the item that was just installed to get display info
+          const item = confirmInstalado;
+          setUpdateFechaInicioData({
+            anuncioId: data.anuncioId,
+            fechaInicioActual: fi,
+            fechaInstalacion: ins,
+            producto: item?.producto ?? '',
+            cobertizoId: item?.cobertizoId ?? '',
+          });
+        }
+      }
     },
     onError: (e) => toast.error(e.message),
   });
@@ -217,6 +238,15 @@ export default function Instalacion() {
     onError: (e) => toast.error(e.message),
   });
 
+  const updateAnuncioFechaInicio = trpc.instalaciones.updateAnuncioFechaInicio.useMutation({
+    onSuccess: () => {
+      utils.anuncios.list.invalidate();
+      toast.success("Fecha de inicio de campaña actualizada.");
+      setUpdateFechaInicioData(null);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   // Filters
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
@@ -235,6 +265,14 @@ export default function Instalacion() {
 
   // Dialogs
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
+  // Popup: ask user whether to update fechaInicio after installation
+  const [updateFechaInicioData, setUpdateFechaInicioData] = useState<{
+    anuncioId: number;
+    fechaInicioActual: Date;
+    fechaInstalacion: Date;
+    producto: string;
+    cobertizoId: string;
+  } | null>(null);
   const [artDialogItem, setArtDialogItem] = useState<InstalacionItem | null>(null);
   const [fotoDialogItem, setFotoDialogItem] = useState<InstalacionItem | null>(null);
   const [confirmInstalado, setConfirmInstalado] = useState<InstalacionItem | null>(null);
@@ -1710,6 +1748,65 @@ export default function Instalacion() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ─── Update Fecha Inicio Popup (shown after marking as installed if dates differ) ─── */}
+      <AlertDialog open={!!updateFechaInicioData} onOpenChange={(open) => { if (!open) setUpdateFechaInicioData(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-[#1a4d3c]" />
+              ¿Actualizar fecha de inicio de campaña?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm">
+                {updateFechaInicioData && (
+                  <>
+                    <p>
+                      El anuncio <strong>{updateFechaInicioData.producto} — {updateFechaInicioData.cobertizoId}</strong> fue instalado hoy{' '}
+                      <strong className="text-[#1a4d3c]">
+                        {new Date(updateFechaInicioData.fechaInstalacion).toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </strong>,
+                      pero la fecha de inicio de campaña pautada es{' '}
+                      <strong className="text-amber-600">
+                        {new Date(updateFechaInicioData.fechaInicioActual).toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      </strong>.
+                    </p>
+                    <div className="rounded-md bg-blue-50 border border-blue-200 p-3">
+                      <p className="text-blue-800 font-medium text-xs">
+                        ¿Desea actualizar la fecha de inicio de campaña al día de instalación para que la facturación cuente desde hoy?
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setUpdateFechaInicioData(null)}>
+              No, mantener fecha original
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
+              onClick={() => {
+                if (!updateFechaInicioData) return;
+                updateAnuncioFechaInicio.mutate({
+                  anuncioId: updateFechaInicioData.anuncioId,
+                  fechaInicio: updateFechaInicioData.fechaInstalacion,
+                });
+              }}
+              disabled={updateAnuncioFechaInicio.isPending}
+            >
+              {updateAnuncioFechaInicio.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <CalendarDays className="w-4 h-4 mr-2" />
+              )}
+              Sí, actualizar fecha de inicio
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
         </div>
       </div>
     </div>

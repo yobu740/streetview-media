@@ -416,7 +416,20 @@ export async function markInstalacionInstalada(
       .where(eq(paradas.id, inst.paradaId));
   }
 
-  return inst.anuncioId;
+  // Fetch the anuncio's current fechaInicio so the caller can decide whether to update it
+  const [anuncioRow] = await db
+    .select({ fechaInicio: anuncios.fechaInicio })
+    .from(anuncios)
+    .where(eq(anuncios.id, inst.anuncioId))
+    .limit(1);
+
+  const instaladoAt = new Date();
+
+  return {
+    anuncioId: inst.anuncioId,
+    fechaInicioActual: anuncioRow?.fechaInicio ?? null,
+    fechaInstalacion: instaladoAt,
+  };
 }
 
 export async function updateInstalacionFoto(instalacionId: number, fotoUrl: string) {

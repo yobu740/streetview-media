@@ -1928,12 +1928,50 @@ export const appRouter = router({
           }
         }
 
-        const anuncioId = await markInstalacionInstalada(
+        const result = await markInstalacionInstalada(
           input.instalacionId,
           ctx.user.name ?? ctx.user.email ?? 'Unknown',
           fotoUrl
         );
-        return { success: true, anuncioId };
+        return {
+          success: true,
+          anuncioId: result.anuncioId,
+          fechaInicioActual: result.fechaInicioActual,
+          fechaInstalacion: result.fechaInstalacion,
+        };
+      }),
+
+    // Update the campaign start date of an anuncio (called after marking as installed)
+    updateAnuncioFechaInicio: adminProcedure
+      .input(z.object({
+        anuncioId: z.number(),
+        fechaInicio: z.date(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { getDb } = await import('./db');
+        const { anuncios, anuncioHistorial } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new Error('Database not available');
+
+        // Get current fechaInicio for history
+        const [current] = await db.select({ fechaInicio: anuncios.fechaInicio }).from(anuncios).where(eq(anuncios.id, input.anuncioId)).limit(1);
+
+        await db.update(anuncios).set({ fechaInicio: input.fechaInicio }).where(eq(anuncios.id, input.anuncioId));
+
+        // Log in history
+        await db.insert(anuncioHistorial).values({
+          anuncioId: input.anuncioId,
+          userId: ctx.user.id,
+          userName: ctx.user.name ?? ctx.user.openId,
+          accion: 'Editado',
+          campoModificado: 'fechaInicio',
+          valorAnterior: current?.fechaInicio ? current.fechaInicio.toISOString().split('T')[0] : null,
+          valorNuevo: input.fechaInicio.toISOString().split('T')[0],
+          detalles: 'Fecha de inicio actualizada al día de instalación',
+        });
+
+        return { success: true };
       }),
 
     // Upload installation photo
