@@ -305,8 +305,14 @@ export async function updateAnuncio(id: number, data: Partial<InsertAnuncio>, us
       const oldParada = await db.select().from(paradas).where(eq(paradas.id, current.paradaId)).limit(1);
       const newParada = await db.select().from(paradas).where(eq(paradas.id, data.paradaId)).limit(1);
       
-      const oldParadaName = oldParada[0]?.localizacion || `Parada #${current.paradaId}`;
-      const newParadaName = newParada[0]?.localizacion || `Parada #${data.paradaId}`;
+      const oldP = oldParada[0];
+      const newP = newParada[0];
+      const oldParadaName = oldP
+        ? `${oldP.cobertizoId}${oldP.orientacion ? ` [${oldP.orientacion}]` : ''} - ${oldP.localizacion}`
+        : `Parada #${current.paradaId}`;
+      const newParadaName = newP
+        ? `${newP.cobertizoId}${newP.orientacion ? ` [${newP.orientacion}]` : ''} - ${newP.localizacion}`
+        : `Parada #${data.paradaId}`;
       
       await createAnuncioHistoryEntry({
         anuncioId: id,

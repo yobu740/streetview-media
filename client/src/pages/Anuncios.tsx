@@ -55,8 +55,9 @@ export default function Anuncios() {
   const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
 
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
-  // paradas (1,154 records) and flowcats only load when a modal is open
-  const { data: paradas } = trpc.paradas.list.useQuery(undefined, { enabled: isEditDialogOpen || isBulkEditDialogOpen });
+  // paradas always loads — needed to display cobertizoId, orientacion, direccion in the table
+  const { data: paradas } = trpc.paradas.list.useQuery();
+  // flowcats only loads when a modal is open (not needed for table display)
   const { data: flowcats } = trpc.paradas.getFlowcats.useQuery(undefined, { enabled: isEditDialogOpen || isBulkEditDialogOpen });
   const { data: instalacionesPendientes = [] } = trpc.instalaciones.list.useQuery();
   // Build a Set of anuncioIds that have a pending instalacion (Programado or Relocalizacion)
@@ -1533,22 +1534,37 @@ export default function Anuncios() {
               </div>
             ) : (
               <div className="space-y-3">
-                {historyData.map((entry: any, idx: number) => (
-                  <div key={entry.id} className="border rounded-lg p-4 bg-gray-50">
+                {historyData.map((entry: any) => {
+                  const isRelocation = entry.accion === 'Relocalizado';
+                  const isEstado = entry.accion === 'Estado cambiado';
+                  const isCreado = entry.accion === 'Creado';
+                  const entryDate = entry.createdAt || entry.fecha;
+                  return (
+                  <div key={entry.id} className={`border rounded-lg p-4 ${
+                    isRelocation ? 'bg-blue-50 border-blue-200' :
+                    isEstado ? 'bg-amber-50 border-amber-200' :
+                    isCreado ? 'bg-green-50 border-green-200' :
+                    'bg-gray-50'
+                  }`}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className={`text-xs font-semibold ${
+                            isRelocation ? 'border-blue-400 text-blue-700 bg-blue-100' :
+                            isEstado ? 'border-amber-400 text-amber-700 bg-amber-100' :
+                            isCreado ? 'border-green-400 text-green-700 bg-green-100' :
+                            ''
+                          }`}>
                             {entry.accion}
                           </Badge>
                           <span className="text-xs text-gray-500">
-                            {new Date(entry.fecha).toLocaleString('es-PR', {
+                            {entryDate ? new Date(entryDate).toLocaleString('es-PR', {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric',
                               hour: '2-digit',
                               minute: '2-digit'
-                            })}
+                            }) : '—'}
                           </span>
                         </div>
                         <p className="text-sm font-medium text-gray-700">
@@ -1556,33 +1572,45 @@ export default function Anuncios() {
                         </p>
                       </div>
                     </div>
-                    {entry.detalles && (
-                      <div className="mt-2 text-sm text-gray-600 bg-white p-2 rounded border">
-                        <pre className="whitespace-pre-wrap font-sans">{entry.detalles}</pre>
+                    {/* Relocation: show origin → destination prominently */}
+                    {isRelocation && entry.valorAnterior && entry.valorNuevo ? (
+                      <div className="mt-2 flex items-center gap-2 text-sm">
+                        <span className="px-2 py-1 rounded bg-red-100 text-red-700 font-medium line-through">{entry.valorAnterior}</span>
+                        <span className="text-gray-400 font-bold">→</span>
+                        <span className="px-2 py-1 rounded bg-green-100 text-green-700 font-semibold">{entry.valorNuevo}</span>
                       </div>
-                    )}
-                    {entry.campoModificado && (
-                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-500">Campo:</span>
-                          <span className="ml-1 font-medium">{entry.campoModificado}</span>
-                        </div>
-                        {entry.valorAnterior && (
-                          <div>
-                            <span className="text-gray-500">Anterior:</span>
-                            <span className="ml-1 line-through text-red-600">{entry.valorAnterior}</span>
+                    ) : (
+                      <>
+                        {entry.detalles && (
+                          <div className="mt-2 text-sm text-gray-600 bg-white p-2 rounded border">
+                            <pre className="whitespace-pre-wrap font-sans">{entry.detalles}</pre>
                           </div>
                         )}
-                        {entry.valorNuevo && (
-                          <div className="col-span-2">
-                            <span className="text-gray-500">Nuevo:</span>
-                            <span className="ml-1 text-green-600 font-medium">{entry.valorNuevo}</span>
+                        {entry.campoModificado && (
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-gray-500">Campo:</span>
+                              <span className="ml-1 font-medium">{entry.campoModificado}</span>
+                            </div>
+                            {entry.valorAnterior && (
+                              <div>
+                                <span className="text-gray-500">Anterior:</span>
+                                <span className="ml-1 line-through text-red-600">{entry.valorAnterior}</span>
+                              </div>
+                            )}
+                            {entry.valorNuevo && (
+                              <div className="col-span-2">
+                                <span className="text-gray-500">Nuevo:</span>
+                                <span className="ml-1 text-green-600 font-medium">{entry.valorNuevo}</span>
+                              </div>
+                            )}
                           </div>
                         )}
-                      </div>
+                      </>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
