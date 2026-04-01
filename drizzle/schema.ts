@@ -53,6 +53,7 @@ export const paradas = mysqlTable("paradas", {
   removida: int("removida").default(0).notNull(), // 1 = removida (physically removed), 0 = normal
   fechaRetorno: timestamp("fecha_retorno"), // Estimated return date when removida
   destacada: int("destacada").default(0).notNull(), // 1 = destacada (profitable/featured), 0 = normal
+  tags: text("tags"), // JSON array of strategic location tags e.g. ["Hospitales","Supermercados"]
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });

@@ -93,6 +93,7 @@ export async function getAllParadas() {
         removida: parada.removida,
         fechaRetorno: parada.fechaRetorno,
         destacada: parada.destacada,
+        tags: parada.tags,
         createdAt: parada.createdAt,
         updatedAt: parada.updatedAt,
         // Current anuncio fields (null if no anuncio)

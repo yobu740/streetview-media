@@ -126,6 +126,7 @@ export default function Admin() {
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [filterRuta, setFilterRuta] = useState("");
   const [filterFlowcat, setFilterFlowcat] = useState<string | null>(null);
+  const [filterTag, setFilterTag] = useState<string | null>(null);
   
   // Print filter state
   const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "no_disponible">("all");
@@ -425,7 +426,7 @@ export default function Admin() {
   };
   
   // Check if any filter is active
-  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta || filterFlowcat;
+  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta || filterFlowcat || filterTag;
   
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
@@ -520,13 +521,22 @@ export default function Admin() {
     // Flowcat filter
     const matchesFlowcat = !filterFlowcat || p.flowCat === filterFlowcat;
     
+    // Tag filter
+    const matchesTag = !filterTag || (() => {
+      if (!p.tags) return false;
+      try {
+        const paradaTags: string[] = JSON.parse(p.tags);
+        return paradaTags.includes(filterTag);
+      } catch { return false; }
+    })();
+    
     // Approval status filter (check if any anuncio for this parada matches the approval status)
     const matchesApprovalStatus = filterApprovalStatus === "all" || 
       anuncios?.some(a => 
         a.paradaId === p.id && a.approvalStatus === filterApprovalStatus
       );
     
-    return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesApprovalStatus;
+    return matchesSearch && matchesProductoSearch && matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesApprovalStatus && matchesTag;
   }) || [];
 
   // Default sort: by flowcat (numeric asc), then cobertizo number, then orientation I > O > P
@@ -1371,6 +1381,43 @@ export default function Admin() {
                           {fc.localizacion}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="flex items-center gap-1">
+                    Punto Estratégico
+                    {filterTag && (
+                      <span className="ml-1 text-xs bg-[#ff6b35] text-white px-1.5 py-0.5 rounded-full">
+                        {filterTag}
+                      </span>
+                    )}
+                  </Label>
+                  <Select
+                    value={filterTag ?? "all"}
+                    onValueChange={(v) => {
+                      setFilterTag(v === "all" ? null : v);
+                      handleFilterChange();
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos los puntos" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-64 overflow-y-auto">
+                      <SelectItem value="all">Todos los puntos</SelectItem>
+                      <SelectItem value="Hospitales">🏥 Hospitales</SelectItem>
+                      <SelectItem value="Residenciales">🏘️ Residenciales</SelectItem>
+                      <SelectItem value="Complejo Turístico">🌴 Complejo Turístico</SelectItem>
+                      <SelectItem value="Supermercados">🛒 Supermercados</SelectItem>
+                      <SelectItem value="Universidades">🎓 Universidades</SelectItem>
+                      <SelectItem value="Bancos y Cooperativas">🏦 Bancos y Cooperativas</SelectItem>
+                      <SelectItem value="Farmacias">💊 Farmacias</SelectItem>
+                      <SelectItem value="Centros Comerciales y Retail">🛍️ Centros Comerciales</SelectItem>
+                      <SelectItem value="Edificios Gubernamentales">🏛️ Edificios Gubernamentales</SelectItem>
+                      <SelectItem value="Entretenimiento y Parques">🎭 Entretenimiento y Parques</SelectItem>
+                      <SelectItem value="Cadenas de Comida Rápida">🍔 Cadenas de Comida Rápida</SelectItem>
+                      <SelectItem value="Restaurantes y Cafés">🍽️ Restaurantes y Cafés</SelectItem>
+                      <SelectItem value="Gasolineras">⛽ Gasolineras</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
