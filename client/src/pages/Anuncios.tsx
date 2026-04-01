@@ -159,6 +159,7 @@ export default function Anuncios() {
         if (isNoOperativa) return { ...parada, isAvailable: false, availableAfter: null, blockReason };
         const conflictingAnuncios = anuncios.filter(a => {
           if (a.paradaId !== parada.id || (a.estado !== 'Activo' && a.estado !== 'Programado')) return false;
+          if ((a as any).tipo === 'Holder') return false; // Holder anuncios don't block availability
           const aStart = new Date(a.fechaInicio);
           const aEnd = new Date(a.fechaFin);
           return !(fin < aStart || inicio > aEnd);

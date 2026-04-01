@@ -37,6 +37,7 @@ import {
 export default function Facturacion() {
   const { user } = useAuth();
   const { data: facturas, isLoading } = trpc.invoices.list.useQuery();
+  const { data: clientes } = trpc.clientes.list.useQuery();
   const updatePaymentStatus = trpc.invoices.updatePaymentStatus.useMutation();
   const registrarAbono = trpc.invoices.registrarAbono.useMutation();
   const deleteAbono = trpc.invoices.deleteAbono.useMutation();
@@ -85,7 +86,11 @@ export default function Facturacion() {
 
   const handleOpenEmailDialog = (factura: any) => {
     setEmailFactura(factura);
-    setEmailTo("");
+    // Pre-fill email from client profile if available
+    const clienteProfile = clientes?.find(
+      (c: any) => c.nombre?.toLowerCase().trim() === factura.cliente?.toLowerCase().trim()
+    );
+    setEmailTo(clienteProfile?.email || "");
     setEmailCc("");
     setEmailSubject(`Factura ${factura.numeroFactura} - Streetview Media PR`);
     setEmailMessage(`Estimado/a ${factura.cliente},\n\nAdjunto encontrará la factura ${factura.numeroFactura} correspondiente a sus servicios de publicidad exterior con Streetview Media PR.\n\nPara cualquier consulta, no dude en comunicarse con nosotros.\n\nAtentamente,\nEquipo Streetview Media PR`);

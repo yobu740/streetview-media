@@ -93,8 +93,9 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
     </div>
   `;
 
+  const senderEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
   const mailOptions: any = {
-    from: `"Streetview Media PR" <${process.env.SMTP_USER}>`,
+    from: `"Streetview Media PR" <${senderEmail}>`,
     to: data.to,
     subject: data.subject,
     html: emailHtml,
