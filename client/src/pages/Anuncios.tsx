@@ -50,9 +50,14 @@ import { useState, useEffect } from "react";
 
 export default function Anuncios() {
   const { user } = useAuth();
+  // Modal state declared first — used as lazy-load gates for heavy queries
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
+
   const { data: anuncios, isLoading } = trpc.anuncios.list.useQuery();
-  const { data: paradas } = trpc.paradas.list.useQuery();
-  const { data: flowcats } = trpc.paradas.getFlowcats.useQuery();
+  // paradas (1,154 records) and flowcats only load when a modal is open
+  const { data: paradas } = trpc.paradas.list.useQuery(undefined, { enabled: isEditDialogOpen || isBulkEditDialogOpen });
+  const { data: flowcats } = trpc.paradas.getFlowcats.useQuery(undefined, { enabled: isEditDialogOpen || isBulkEditDialogOpen });
   const { data: instalacionesPendientes = [] } = trpc.instalaciones.list.useQuery();
   // Build a Set of anuncioIds that have a pending instalacion (Programado or Relocalizacion)
   const pendingInstalacionAnuncioIds = new Set(
@@ -92,10 +97,8 @@ export default function Anuncios() {
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
   const [dateRangeStart, setDateRangeStart] = useState("");
   const [dateRangeEnd, setDateRangeEnd] = useState("");
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnuncio, setSelectedAnuncio] = useState<any>(null);
   const [selectedAnuncios, setSelectedAnuncios] = useState<number[]>([]);
-  const [isBulkEditDialogOpen, setIsBulkEditDialogOpen] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [editForm, setEditForm] = useState({
     paradaId: 0,

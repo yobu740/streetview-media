@@ -215,7 +215,7 @@ export default function Calendar() {
       {/* Main Content */}
       <div className="flex-1 min-w-0">
         {/* Page Header */}
-        <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50">
+        <nav className="hidden lg:flex bg-white border-b border-slate-200 sticky top-0 z-50">
           <div className="container flex items-center justify-between h-16">
             <h1 className="text-2xl font-bold text-[#1a4d3c]">Calendario de Reservas</h1>
 

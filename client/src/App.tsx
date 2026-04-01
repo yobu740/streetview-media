@@ -19,6 +19,8 @@ import Seguimientos from "./pages/Seguimientos";
 import Notificaciones from "./pages/Notificaciones";
 import Instalacion from "./pages/Instalacion";
 import Clientes from "./pages/Clientes";
+import DashboardHeader from "./components/DashboardHeader";
+import { MobileNavProvider } from "./contexts/MobileNavContext";
 
 /** Wrapper that scopes the modern SaaS dashboard styles.
  *  The public landing page (/) is intentionally excluded to preserve Urban Brutalism. */
@@ -27,7 +29,14 @@ function D({ children }: { children: React.ReactNode }) {
     document.body.classList.add("dashboard-ui");
     return () => document.body.classList.remove("dashboard-ui");
   }, []);
-  return <div className="dashboard-ui">{children}</div>;
+  return (
+    <MobileNavProvider>
+      <div className="dashboard-ui">
+        <DashboardHeader />
+        {children}
+      </div>
+    </MobileNavProvider>
+  );
 }
 
 function Router() {

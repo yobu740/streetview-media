@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useMobileNav } from "@/contexts/MobileNavContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,7 +82,7 @@ export default function AdminSidebar({
   const [location] = useLocation();
   const { user, logout } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { isMobileOpen, setIsMobileOpen } = useMobileNav();
 
   const { data: recentActivities = [] } = trpc.activity.recent.useQuery(undefined, {
     enabled: !!user,
@@ -103,9 +104,7 @@ export default function AdminSidebar({
       )}>
         {!isCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1a4d3c] flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-[11px] tracking-tight">SM</span>
-            </div>
+            <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/SV-logo-ico_9d765421.png" alt="Streetview Media" className="w-8 h-8 rounded-full flex-shrink-0 object-cover" />
             <div className="leading-none">
               <p className="text-[13px] font-bold text-slate-900 tracking-tight leading-none">Streetview</p>
               <p className="text-[10px] font-medium text-[#1a4d3c] uppercase tracking-[0.08em] mt-[3px]">Media</p>
@@ -113,9 +112,7 @@ export default function AdminSidebar({
           </div>
         )}
         {isCollapsed && (
-          <div className="w-8 h-8 rounded-lg bg-[#1a4d3c] flex items-center justify-center">
-            <span className="text-white font-bold text-[11px] tracking-tight">SM</span>
-          </div>
+          <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/SV-logo-ico_9d765421.png" alt="Streetview Media" className="w-8 h-8 rounded-full object-cover" />
         )}
 
         {/* Collapse / close button */}
@@ -309,24 +306,14 @@ export default function AdminSidebar({
         <SidebarInner />
       </aside>
 
-      {/* Mobile trigger */}
+      {/* Mobile drawer — triggered from DashboardHeader */}
       <div className="lg:hidden">
-        <button
-          type="button"
-          aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="fixed top-4 right-4 z-[60] w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-lg shadow-sm text-slate-600 hover:bg-slate-50 transition-colors"
-        >
-          {isMobileOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
-
         {isMobileOpen && (
           <div
             className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
             onClick={() => setIsMobileOpen(false)}
           />
         )}
-
         <aside className={cn(
           "fixed top-0 left-0 h-full w-[220px] bg-white border-r border-slate-200 z-50 shadow-xl transform transition-transform duration-200",
           isMobileOpen ? "translate-x-0" : "-translate-x-full"

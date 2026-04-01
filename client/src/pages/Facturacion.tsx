@@ -368,12 +368,12 @@ export default function Facturacion() {
         <div className="container py-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
                 <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Facturación</h1>
                 <p className="text-body text-gray-600">Gestión de facturas y pagos</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={handleExportReportPDF}
                   disabled={isGeneratingReport || !filteredFacturas || filteredFacturas.length === 0}

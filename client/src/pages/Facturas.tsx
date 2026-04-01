@@ -169,7 +169,7 @@ export default function Facturas() {
       <AdminSidebar />
       <div className="flex-1 min-w-0">
         {/* Header */}
-        <div className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-10">
+        <div className="hidden lg:block bg-white border-b border-slate-200 sticky top-0 z-10">
           <div className="container py-4">
             <div className="flex items-center gap-4">
               <img 

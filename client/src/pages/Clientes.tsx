@@ -660,7 +660,7 @@ export default function Clientes() {
       <AdminSidebar />
       <div className="flex-1 min-w-0">
         {/* Header — same as Admin.tsx */}
-        <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
+        <nav className="hidden lg:block bg-white border-b border-slate-200 sticky top-0 z-50 print:hidden">
           <div className="container flex items-center justify-between h-20">
             <Link href="/">
               <img
@@ -705,8 +705,8 @@ export default function Clientes() {
               {isLoading ? (
                 <div className="flex items-center justify-center py-20"><Loader2 className="animate-spin text-[#1a4d3c]" size={32} /></div>
               ) : (
-                <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
-                  <table className="w-full text-sm">
+                <div className="bg-white rounded-xl border overflow-x-auto shadow-sm">
+                  <table className="w-full text-sm min-w-[600px]">
                     <thead className="bg-[#1a4d3c] text-white">
                       <tr>
                         <th className="p-3 text-left">Cliente</th>

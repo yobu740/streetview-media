@@ -920,7 +920,7 @@ export default function Admin() {
       {/* Main Content */}
       <div className="flex-1 min-w-0">
       {/* Header */}
-      <nav className="bg-white border-b-4 border-[#1a4d3c] sticky top-0 z-50 print:hidden">
+      <nav className="hidden lg:block bg-white border-b border-slate-200 sticky top-0 z-50 print:hidden">
         <div className="container flex items-center justify-between h-20">
           <Link href="/">
             <img 
