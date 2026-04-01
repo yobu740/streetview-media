@@ -1587,7 +1587,7 @@ export default function Admin() {
                               {status === "Disponible" && parada.isHolder && (
                                 <div className="flex flex-col gap-1">
                                   <Badge variant="outline" className="border-green-600 text-green-700">Disponible</Badge>
-                                  <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-400 text-[10px] px-1 py-0">Disponible para venta</Badge>
+                                  <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-400 text-[10px] px-1 py-0">Streetview Media Holder</Badge>
                                 </div>
                               )}
                               {status === "Ocupado" && (
