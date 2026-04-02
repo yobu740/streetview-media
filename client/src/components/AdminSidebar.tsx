@@ -40,6 +40,27 @@ interface AdminSidebarProps {
   onPrintReport?: () => void;
 }
 
+// Custom billboard icon matching the Anuncios SVG asset
+const BillboardIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    {/* Billboard frame outer */}
+    <rect x="1" y="1" width="22" height="17" rx="0.5" stroke="currentColor" strokeWidth="2" fill="none" />
+    {/* Billboard frame inner (display area) */}
+    <rect x="3.5" y="3.5" width="17" height="12" rx="0" fill="none" stroke="currentColor" strokeWidth="1.5" />
+    {/* Post/stem */}
+    <rect x="10.5" y="18" width="3" height="3.5" fill="currentColor" />
+    {/* Base */}
+    <rect x="7" y="21.5" width="10" height="1.5" rx="0.5" fill="currentColor" />
+  </svg>
+);
+
 const navGroups = [
   {
     label: "General",
@@ -52,7 +73,7 @@ const navGroups = [
   {
     label: "Operaciones",
     items: [
-      { label: "Anuncios",       icon: Package,    href: "/anuncios"    },
+      { label: "Anuncios",       icon: BillboardIcon, href: "/anuncios"    },
       { label: "Mantenimiento",  icon: Wrench,     href: "/mantenimiento" },
       { label: "Instalación",    icon: Package,    href: "/instalacion",  adminOnly: true },
       { label: "Seguimientos",   icon: UserCheck,  href: "/seguimientos" },
