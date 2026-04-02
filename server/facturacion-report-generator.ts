@@ -237,10 +237,18 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     y += 30;
 
     // ── Summary breakdown ────────────────────────────────────────────────────
+    // Need ~130pt for summary block; if not enough space, add a new page
+    const summaryHeight = 130;
+    if (y + summaryHeight > doc.page.height - 60) {
+      doc.addPage({ layout: "landscape" });
+      y = 50;
+    }
+
     y += 6;
     doc.rect(50, y, pageWidth, 1).fill("#e5e7eb");
     y += 10;
-    doc.fillColor(GREEN).font("Helvetica-Bold").fontSize(11).text("Resumen por Estado de Pago", 50, y);
+    doc.fillColor(GREEN).font("Helvetica-Bold").fontSize(11)
+      .text("Resumen por Estado de Pago", 50, y, { lineBreak: false });
     y += 18;
 
     const summaryRows = [
@@ -252,9 +260,9 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
 
     summaryRows.forEach(row => {
       doc.fillColor(row.color).font("Helvetica-Bold").fontSize(9)
-        .text(`● ${row.label}`, 60, y);
+        .text(`● ${row.label}`, 60, y, { lineBreak: false });
       doc.fillColor("#111111").font("Helvetica").fontSize(9)
-        .text(`${row.count} factura${row.count !== 1 ? "s" : ""}  —  ${formatMoney(row.amount)}`, 260, y);
+        .text(`${row.count} factura${row.count !== 1 ? "s" : ""}  —  ${formatMoney(row.amount)}`, 260, y, { lineBreak: false });
       y += 16;
     });
 
@@ -263,16 +271,25 @@ export async function generateFacturacionReportPDF(options: ReportOptions): Prom
     doc.rect(50, y, pageWidth, 22).fill("#fff3cd");
     doc.rect(50, y, 4, 22).fill("#d97706");
     doc.fillColor("#92400e").font("Helvetica-Bold").fontSize(10)
-      .text("TOTAL BALANCE ADEUDADO", 60, y + 6, { width: 300 });
+      .text("TOTAL BALANCE ADEUDADO", 60, y + 6, { width: 300, lineBreak: false });
     doc.fillColor("#dc2626").font("Helvetica-Bold").fontSize(10)
-      .text(formatMoney(totalBalance), 60, y + 6, { align: "right", width: pageWidth - 20 });
+      .text(formatMoney(totalBalance), 60, y + 6, { align: "right", width: pageWidth - 20, lineBreak: false });
     y += 30;
 
     // ── Footer ───────────────────────────────────────────────────────────────
+    // Place footer at bottom of current page (no absolute page.height reference that causes blank pages)
     const footerY = doc.page.height - 40;
-    doc.rect(50, footerY - 10, pageWidth, 1).fill("#e5e7eb");
-    doc.fillColor(GRAY).font("Helvetica").fontSize(8)
-      .text("Streetview Media — Tu Marca en el Camino  |  (787) 708-5115", 50, footerY, { align: "center", width: pageWidth });
+    if (footerY > y + 10) {
+      doc.rect(50, footerY - 10, pageWidth, 1).fill("#e5e7eb");
+      doc.fillColor(GRAY).font("Helvetica").fontSize(8)
+        .text("Streetview Media — Tu Marca en el Camino  |  (787) 708-5115", 50, footerY, { align: "center", width: pageWidth, lineBreak: false });
+    } else {
+      y += 10;
+      doc.rect(50, y, pageWidth, 1).fill("#e5e7eb");
+      y += 6;
+      doc.fillColor(GRAY).font("Helvetica").fontSize(8)
+        .text("Streetview Media — Tu Marca en el Camino  |  (787) 708-5115", 50, y, { align: "center", width: pageWidth, lineBreak: false });
+    }
 
     doc.end();
   });
