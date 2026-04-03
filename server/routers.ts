@@ -7,6 +7,8 @@ import { z } from "zod";
 import * as paradasDb from "./paradas-db";
 import { uploadParadaFoto } from "./upload-foto";
 import * as db from "./db";
+import { gte } from "drizzle-orm";
+import { getDb } from "./db";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -267,6 +269,25 @@ export const appRouter = router({
   anuncios: router({
     list: protectedProcedure.query(async () => {
       return await paradasDb.getAllAnuncios();
+    }),
+
+    topClients: protectedProcedure.query(async () => {
+      const { anuncios: anunciosTable } = await import('../drizzle/schema');
+      const dbConn = await getDb();
+      if (!dbConn) return [];
+      const feb2026 = new Date('2026-02-01T00:00:00.000Z');
+      const results = await dbConn
+        .select({ cliente: anunciosTable.cliente })
+        .from(anunciosTable)
+        .where(gte(anunciosTable.fechaInicio, feb2026));
+      const freq: Record<string, number> = {};
+      for (const r of results) {
+        freq[r.cliente] = (freq[r.cliente] || 0) + 1;
+      }
+      return Object.entries(freq)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 10)
+        .map(([cliente, count]) => ({ cliente, count }));
     }),
     
     getByParadaId: publicProcedure

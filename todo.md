@@ -1344,3 +1344,6 @@
 
 ## Fix Métricas - Top 10 histórico
 - [x] Top 10: contar solo anuncios con fechaInicio desde febrero 2026 en adelante
+
+## Debug Top 10 - mover filtro al backend
+- [x] Agregar endpoint topClients en el backend con filtro por fecha desde feb 2026

@@ -46,6 +46,7 @@ export default function Metrics() {
   
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
+  const { data: topClientsData } = trpc.anuncios.topClients.useQuery();
 
   if (authLoading) {
     return (
@@ -77,18 +78,8 @@ export default function Metrics() {
   const availableCount = totalParadas - occupiedCount;
   const occupancyRate = totalParadas > 0 ? Math.round((occupiedCount / totalParadas) * 100) : 0;
   
-  // Client frequency — only count anuncios that started from February 2026 onwards
-  const feb2026 = new Date("2026-02-01T00:00:00");
-  const clientFrequency = anuncios
-    ?.filter(a => new Date(a.fechaInicio) >= feb2026)
-    .reduce((acc, anuncio) => {
-      acc[anuncio.cliente] = (acc[anuncio.cliente] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>) || {};
-  
-  const topClients = Object.entries(clientFrequency)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10);
+  // Top clients from server (filtered to Feb 2026 onwards)
+  const topClients: [string, number][] = (topClientsData || []).map(({ cliente, count }) => [cliente, count]);
   
   // Occupation by zone (using ruta as proxy for zone)
   const occupationByRuta = paradas?.reduce((acc, parada) => {
