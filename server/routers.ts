@@ -275,11 +275,11 @@ export const appRouter = router({
       const { anuncios: anunciosTable } = await import('../drizzle/schema');
       const dbConn = await getDb();
       if (!dbConn) return [];
-      const feb2026 = new Date('2026-02-01T00:00:00.000Z');
+      const mar2026 = new Date('2026-03-01T00:00:00.000Z');
       const results = await dbConn
         .select({ cliente: anunciosTable.cliente })
         .from(anunciosTable)
-        .where(gte(anunciosTable.fechaInicio, feb2026));
+        .where(gte(anunciosTable.fechaInicio, mar2026));
       const freq: Record<string, number> = {};
       for (const r of results) {
         freq[r.cliente] = (freq[r.cliente] || 0) + 1;

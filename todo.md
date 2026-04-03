@@ -1347,3 +1347,6 @@
 
 ## Debug Top 10 - mover filtro al backend
 - [x] Agregar endpoint topClients en el backend con filtro por fecha desde feb 2026
+
+## Fix Top 10 - corte marzo 2026
+- [x] Cambiar fecha de corte del Top 10 de febrero a marzo 2026 en backend y frontend

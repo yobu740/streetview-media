@@ -282,7 +282,7 @@ export default function Metrics() {
           <Card>
             <CardHeader>
               <CardTitle>Top 10 Clientes</CardTitle>
-              <CardDescription>Clientes con más anuncios históricos</CardDescription>
+              <CardDescription>Clientes con más anuncios desde marzo 2026</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
