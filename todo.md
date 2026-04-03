@@ -1327,3 +1327,6 @@
 - [x] Clientes: fix ContratoCard mobile - botones en dos filas en pantallas pequeñas
 - [x] Admin: filtro multi-select de rutas (reemplazar campo de texto por multi-select)
 - [x] Admin: botón flotante "Crear Reserva" cuando hay paradas seleccionadas con checkbox, abre Anuncios con paradas preseleccionadas
+
+## Bug Fix - Tags map error en modal Crear Anuncio
+- [x] Fix TypeError: (T.tags || []).map is not a function en Anuncios.tsx al seleccionar fechas con paradas preseleccionadas

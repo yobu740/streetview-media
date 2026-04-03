@@ -182,7 +182,9 @@ export default function Anuncios() {
       .filter(p => {
         // Tag filter (multi-select)
         if (createTagFilters.length > 0) {
-          const tags: string[] = (p as any).tags || [];
+          let tags: string[] = [];
+          try { tags = JSON.parse((p as any).tags || '[]'); } catch { tags = []; }
+          if (!Array.isArray(tags)) tags = [];
           if (!createTagFilters.some(t => tags.includes(t))) return false;
         }
         // Text search filter
@@ -199,7 +201,12 @@ export default function Anuncios() {
   // Derive unique strategic tags from all paradas for the filter dropdown
   const allStrategicTags = Array.from(
     new Set(
-      (paradas || []).flatMap(p => ((p as any).tags as string[]) || [])
+      (paradas || []).flatMap(p => {
+        try {
+          const t = JSON.parse((p as any).tags || '[]');
+          return Array.isArray(t) ? t : [];
+        } catch { return []; }
+      })
     )
   ).sort();
 
@@ -1866,7 +1873,7 @@ export default function Anuncios() {
                                   {(parada as any).blockReason === 'Removida' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 border border-red-200">Removida</span>}
                                   {(parada as any).blockReason === 'En Construcción' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 border border-amber-200">En Construcción</span>}
                                   {(parada as any).blockReason === 'Sin Display' && <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Sin Display</span>}
-                                  {((parada as any).tags as string[] || []).map((tag: string) => (
+                                  {(() => { try { const t = JSON.parse((parada as any).tags || '[]'); return Array.isArray(t) ? t : []; } catch { return []; } })().map((tag: string) => (
                                     <span key={tag} className="text-xs px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">{tag}</span>
                                   ))}
                                 </div>
