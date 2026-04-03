@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink, ChevronDown } from "lucide-react";
+import { Search, FileSpreadsheet, Printer, History, CheckCircle2, XCircle, HardHat, ExternalLink, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import IconRemovida from "@/components/IconRemovida";
 import { toast } from "sonner";
@@ -58,6 +58,8 @@ export default function Mantenimiento() {
 
   // Multi-select state
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 50;
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<"construccion" | "removida" | "sinDisplay" | "restaurarDisplay" | "limpiar" | null>(null);
   const [bulkFecha, setBulkFecha] = useState<string>("");
@@ -186,6 +188,9 @@ export default function Mantenimiento() {
 
     return matchesSearch && matchesCondicion;
   });
+
+  const totalPages = Math.ceil((filteredParadas?.length || 0) / PAGE_SIZE);
+  const paginatedParadas = filteredParadas?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handleToggleCondicion = (paradaId: number, field: string, currentValue: number) => {
     updateCondicion.mutate({
@@ -519,14 +524,14 @@ export default function Mantenimiento() {
                   <Input
                     placeholder="Buscar por ID, localización o dirección..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                     className="pl-10"
                   />
                 </div>
               </div>
               <div>
                 <Label>Filtrar por Condición</Label>
-                <Select value={filterCondicion} onValueChange={setFilterCondicion}>
+                <Select value={filterCondicion} onValueChange={(v) => { setFilterCondicion(v); setCurrentPage(1); }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -611,8 +616,8 @@ export default function Mantenimiento() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredParadas && filteredParadas.length > 0 ? (
-                    filteredParadas.map((parada) => {
+                  {paginatedParadas && paginatedParadas.length > 0 ? (
+                    paginatedParadas.map((parada) => {
                       const isRenovada =
                         parada.condicionPintada &&
                         parada.condicionArreglada &&
@@ -813,6 +818,55 @@ export default function Mantenimiento() {
               </Table>
             </div>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t bg-white">
+              <p className="text-sm text-gray-500">
+                Mostrando {((currentPage - 1) * PAGE_SIZE) + 1}–{Math.min(currentPage * PAGE_SIZE, filteredParadas?.length || 0)} de {filteredParadas?.length || 0} paradas
+              </p>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                  .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, idx) =>
+                    p === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 text-gray-400">…</span>
+                    ) : (
+                      <Button
+                        key={p}
+                        variant={currentPage === p ? "default" : "outline"}
+                        size="sm"
+                        className={currentPage === p ? "bg-[#1a4d3c] text-white" : ""}
+                        onClick={() => setCurrentPage(p as number)}
+                      >
+                        {p}
+                      </Button>
+                    )
+                  )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

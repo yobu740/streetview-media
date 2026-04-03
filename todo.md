@@ -1334,3 +1334,7 @@
 ## Filtro Multi-Select Puntos Estratégicos en Admin Panel
 - [x] Reemplazar filtro single-select de tags en Admin.tsx por multi-select con checkboxes
 - [x] Actualizar lógica matchesTag para soportar múltiples tags seleccionados
+
+## Tabs Archivados en Anuncios + Paginación Mantenimiento
+- [x] Anuncios.tsx: agregar tabs "Activos/Programados" y "Archivados" (Finalizados/Cancelados)
+- [x] Mantenimiento.tsx: agregar paginación de 50 registros por página

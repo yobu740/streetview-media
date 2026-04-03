@@ -42,6 +42,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Search, Edit, X, ArrowLeft, FileSpreadsheet, Printer, Trash2, FileText, History, ChevronsUpDown, Check, Plus, Palette } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -89,6 +90,7 @@ export default function Anuncios() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterEstado, setFilterEstado] = useState<string[]>([]);  // multi-select
+  const [anunciosTab, setAnunciosTab] = useState<"activos" | "archivados">("activos");
   const toggleEstadoFilter = (estado: string) => {
     setFilterEstado(prev =>
       prev.includes(estado) ? prev.filter(e => e !== estado) : [...prev, estado]
@@ -275,6 +277,10 @@ export default function Anuncios() {
     { enabled: !!selectedAnuncioForHistory }
   );
 
+  // Archived = Finalizado; Active = everything else (Activo, Programado, Inactivo, Disponible)
+  const ARCHIVED_ESTADOS = ["Finalizado"];
+  const ACTIVE_ESTADOS = ["Activo", "Programado", "Inactivo", "Disponible"];
+
   const filteredAnuncios = anuncios?.filter((a) => {
     const searchTerms = searchTerm.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
     const matchesSearch =
@@ -286,6 +292,11 @@ export default function Anuncios() {
         paradas?.find(p => p.id === a.paradaId)?.cobertizoId?.toString().includes(term)
       );
 
+    // Tab filter: activos tab shows non-archived, archivados tab shows archived
+    const matchesTab = anunciosTab === "archivados"
+      ? ARCHIVED_ESTADOS.includes(a.estado)
+      : ACTIVE_ESTADOS.includes(a.estado);
+
     const matchesEstado = filterEstado.length === 0 || filterEstado.includes(a.estado);
     const matchesTipo = filterTipo === "all" || a.tipo === filterTipo;
     const paradaForFlowcat = paradas?.find(p => p.id === a.paradaId);
@@ -296,7 +307,7 @@ export default function Anuncios() {
       (!dateRangeStart || new Date(a.fechaFin) >= new Date(dateRangeStart)) &&
       (!dateRangeEnd || new Date(a.fechaInicio) <= new Date(dateRangeEnd));
 
-    return matchesSearch && matchesEstado && matchesTipo && matchesDateRange && matchesFlowcat;
+    return matchesSearch && matchesTab && matchesEstado && matchesTipo && matchesDateRange && matchesFlowcat;
   });
 
   const getParadaInfo = (paradaId: number) => {
@@ -870,53 +881,96 @@ export default function Anuncios() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div 
-            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstado.length === 0 ? "ring-2 ring-[#1a4d3c]" : ""
-            }`}
-            onClick={() => setFilterEstado([])}
-          >
-            <p className="text-sm text-gray-600 mb-1">Total Anuncios</p>
-            <p className="text-3xl font-bold text-[#1a4d3c]">
-              {filteredAnuncios?.length || 0}
-            </p>
-          </div>
-          <div 
-            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstado.includes("Activo") ? "ring-2 ring-green-600" : ""
-            }`}
-            onClick={() => toggleEstadoFilter("Activo")}
-          >
-            <p className="text-sm text-gray-600 mb-1">Activos</p>
-            <p className="text-3xl font-bold text-green-600">
-              {filteredAnuncios?.filter((a) => a.estado === "Activo").length || 0}
-            </p>
-          </div>
-          <div 
-            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstado.includes("Programado") ? "ring-2 ring-blue-600" : ""
-            }`}
-            onClick={() => toggleEstadoFilter("Programado")}
-          >
-            <p className="text-sm text-gray-600 mb-1">Programados</p>
-            <p className="text-3xl font-bold text-blue-600">
-              {filteredAnuncios?.filter((a) => a.estado === "Programado").length || 0}
-            </p>
-          </div>
-          <div 
-            className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
-              filterEstado.includes("Finalizado") ? "ring-2 ring-gray-600" : ""
-            }`}
-            onClick={() => toggleEstadoFilter("Finalizado")}
-          >
-            <p className="text-sm text-gray-600 mb-1">Finalizados</p>
-            <p className="text-3xl font-bold text-gray-600">
-              {filteredAnuncios?.filter((a) => a.estado === "Finalizado").length || 0}
-            </p>
-          </div>
+        {/* Tab switcher: Activos / Archivados */}
+        <div className="flex items-center gap-4 mb-4">
+          <Tabs value={anunciosTab} onValueChange={(v) => { setAnunciosTab(v as "activos" | "archivados"); setFilterEstado([]); setSelectedAnuncios([]); }}>
+            <TabsList>
+              <TabsTrigger value="activos" className="flex items-center gap-2">
+                Activos / Programados
+                <span className="ml-1 text-xs bg-[#1a4d3c] text-white px-1.5 py-0.5 rounded-full">
+                  {anuncios?.filter(a => ACTIVE_ESTADOS.includes(a.estado)).length || 0}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="archivados" className="flex items-center gap-2">
+                Archivados
+                <span className="ml-1 text-xs bg-gray-500 text-white px-1.5 py-0.5 rounded-full">
+                  {anuncios?.filter(a => ARCHIVED_ESTADOS.includes(a.estado)).length || 0}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
+
+        {/* Stats */}
+        {anunciosTab === "activos" ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.length === 0 ? "ring-2 ring-[#1a4d3c]" : ""
+              }`}
+              onClick={() => setFilterEstado([])}
+            >
+              <p className="text-sm text-gray-600 mb-1">Total</p>
+              <p className="text-3xl font-bold text-[#1a4d3c]">{filteredAnuncios?.length || 0}</p>
+            </div>
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.includes("Activo") ? "ring-2 ring-green-600" : ""
+              }`}
+              onClick={() => toggleEstadoFilter("Activo")}
+            >
+              <p className="text-sm text-gray-600 mb-1">Activos</p>
+              <p className="text-3xl font-bold text-green-600">
+                {filteredAnuncios?.filter((a) => a.estado === "Activo").length || 0}
+              </p>
+            </div>
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.includes("Programado") ? "ring-2 ring-blue-600" : ""
+              }`}
+              onClick={() => toggleEstadoFilter("Programado")}
+            >
+              <p className="text-sm text-gray-600 mb-1">Programados</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {filteredAnuncios?.filter((a) => a.estado === "Programado").length || 0}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.length === 0 ? "ring-2 ring-gray-600" : ""
+              }`}
+              onClick={() => setFilterEstado([])}
+            >
+              <p className="text-sm text-gray-600 mb-1">Total Archivados</p>
+              <p className="text-3xl font-bold text-gray-600">{filteredAnuncios?.length || 0}</p>
+            </div>
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.includes("Finalizado") ? "ring-2 ring-gray-600" : ""
+              }`}
+              onClick={() => toggleEstadoFilter("Finalizado")}
+            >
+              <p className="text-sm text-gray-600 mb-1">Finalizados</p>
+              <p className="text-3xl font-bold text-gray-500">
+                {filteredAnuncios?.filter((a) => a.estado === "Finalizado").length || 0}
+              </p>
+            </div>
+            <div 
+              className={`bg-white rounded-lg shadow-md p-6 cursor-pointer transition-all hover:shadow-lg ${
+                filterEstado.includes("Inactivo") ? "ring-2 ring-red-400" : ""
+              }`}
+              onClick={() => toggleEstadoFilter("Inactivo")}
+            >
+              <p className="text-sm text-gray-600 mb-1">Inactivos</p>
+              <p className="text-3xl font-bold text-red-400">
+                {filteredAnuncios?.filter((a) => a.estado === "Inactivo").length || 0}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
