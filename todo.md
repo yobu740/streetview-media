@@ -1338,3 +1338,9 @@
 ## Tabs Archivados en Anuncios + Paginación Mantenimiento
 - [x] Anuncios.tsx: agregar tabs "Activos/Programados" y "Archivados" (Finalizados/Cancelados)
 - [x] Mantenimiento.tsx: agregar paginación de 50 registros por página
+
+## Fix Métricas - Top 10 histórico
+- [ ] Excluir anuncios con estado "Finalizado" del cálculo del Top 10 histórico en Métricas
+
+## Fix Métricas - Top 10 histórico
+- [x] Top 10: contar solo anuncios con fechaInicio desde febrero 2026 en adelante

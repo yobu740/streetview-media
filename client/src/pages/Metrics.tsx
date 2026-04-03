@@ -77,11 +77,14 @@ export default function Metrics() {
   const availableCount = totalParadas - occupiedCount;
   const occupancyRate = totalParadas > 0 ? Math.round((occupiedCount / totalParadas) * 100) : 0;
   
-  // Client frequency
-  const clientFrequency = anuncios?.reduce((acc, anuncio) => {
-    acc[anuncio.cliente] = (acc[anuncio.cliente] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>) || {};
+  // Client frequency — only count anuncios that started from February 2026 onwards
+  const feb2026 = new Date("2026-02-01T00:00:00");
+  const clientFrequency = anuncios
+    ?.filter(a => new Date(a.fechaInicio) >= feb2026)
+    .reduce((acc, anuncio) => {
+      acc[anuncio.cliente] = (acc[anuncio.cliente] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>) || {};
   
   const topClients = Object.entries(clientFrequency)
     .sort(([, a], [, b]) => b - a)
