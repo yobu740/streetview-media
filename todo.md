@@ -1299,3 +1299,25 @@
 - [ ] Add months multiplier field (multiplies line item totals except production costs)
 - [ ] Import Exhibit A from Anuncios button
 - [ ] Fix Clientes header (missing Streetview Media logo and notification bell)
+
+## Filtro Punto Estratégico en Modal Crear Anuncio
+- [ ] Agregar estado createTagFilter en Anuncios.tsx
+- [ ] Agregar dropdown de Punto Estratégico encima de la lista de paradas en el modal de crear anuncio
+- [ ] Filtrar paradas por tag en getAvailableParadasForCreate según el filtro seleccionado
+- [ ] Mostrar badge de tags en cada parada de la lista
+
+## Mejoras Panel Principal + Modal Crear Anuncio
+- [x] Multi-select de Puntos Estratégicos en modal crear anuncio (checkboxes, no dropdown)
+- [ ] Checkbox por parada en panel principal Admin.tsx
+- [ ] Botón "Crear Reserva" flotante/visible cuando hay paradas seleccionadas en Admin
+- [ ] Al hacer clic en "Crear Reserva" desde Admin, abrir modal de crear anuncio con esas paradas preseleccionadas
+- [ ] Pasar paradas seleccionadas vía URL param o estado compartido a Anuncios.tsx
+
+## Fix Responsividad Móvil - Clientes
+- [ ] Corregir layout de contratos/anuncios en perfil de cliente (móvil): texto encima de botones, botones fuera de margen
+- [ ] Hacer tabla de contratos responsive (scroll horizontal o card layout en móvil)
+- [ ] Asegurar que botones de acción sean accesibles en pantallas pequeñas
+
+## Filtro Multi-Ruta en Instalación
+- [x] Cambiar filtro de rutas en Instalacion.tsx de dropdown single-select a multi-select
+- [x] Actualizar lógica de filtrado para soportar múltiples rutas seleccionadas

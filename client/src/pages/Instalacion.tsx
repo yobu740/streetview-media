@@ -250,7 +250,12 @@ export default function Instalacion() {
   // Filters
   const [filterEstado, setFilterEstado] = useState<string>("all");
   const [filterFlowcat, setFilterFlowcat] = useState<string>("all");
-  const [filterRuta, setFilterRuta] = useState<string>("all");
+  const [filterRutas, setFilterRutas] = useState<string[]>([]);
+  const toggleFilterRuta = (ruta: string) => {
+    setFilterRutas(prev =>
+      prev.includes(ruta) ? prev.filter(r => r !== ruta) : [...prev, ruta]
+    );
+  };
   const [search, setSearch] = useState("");
   // Historial filters
   const [histSearch, setHistSearch] = useState("");
@@ -318,7 +323,7 @@ export default function Instalacion() {
     return instalaciones.filter((item) => {
       if (filterEstado !== "all" && item.estado !== filterEstado) return false;
       if (filterFlowcat !== "all" && item.flowCat !== filterFlowcat) return false;
-      if (filterRuta !== "all" && item.ruta !== filterRuta) return false;
+      if (filterRutas.length > 0 && !filterRutas.includes(item.ruta ?? "")) return false;
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -331,7 +336,7 @@ export default function Instalacion() {
       }
       return true;
     });
-  }, [instalaciones, filterEstado, filterFlowcat, filterRuta, search]);
+  }, [instalaciones, filterEstado, filterFlowcat, filterRutas, search]);
 
   // Historial derived data
   const { data: historialRaw = [], isLoading: isLoadingHistorial } = trpc.instalaciones.historial.useQuery();
@@ -880,20 +885,53 @@ export default function Instalacion() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={filterRuta} onValueChange={setFilterRuta}>
-              <SelectTrigger className="w-36 h-8 text-sm">
-                <SelectValue placeholder="Ruta" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las rutas</SelectItem>
-                {rutas.map((r) => (
-                  <SelectItem key={r} value={r}>
-                    Ruta {r}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {(filterEstado !== "all" || filterFlowcat !== "all" || filterRuta !== "all" || search) && (
+            {/* Multi-select route filter */}
+            <div className="relative">
+              <Select
+                value="__placeholder__"
+                onValueChange={(val) => { if (val !== "__placeholder__") toggleFilterRuta(val); }}
+              >
+                <SelectTrigger className="w-44 h-8 text-sm">
+                  <span className="truncate">
+                    {filterRutas.length === 0
+                      ? "Todas las rutas"
+                      : filterRutas.length === 1
+                      ? `Ruta ${filterRutas[0]}`
+                      : `${filterRutas.length} rutas`}
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="px-2 py-1 text-xs text-muted-foreground font-medium">Seleccionar rutas</div>
+                  {rutas.map((r) => (
+                    <div
+                      key={r}
+                      className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm text-sm"
+                      onClick={(e) => { e.preventDefault(); toggleFilterRuta(r); }}
+                    >
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                        filterRutas.includes(r) ? 'bg-[#1a4d3c] border-[#1a4d3c]' : 'border-gray-300'
+                      }`}>
+                        {filterRutas.includes(r) && (
+                          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      Ruta {r}
+                    </div>
+                  ))}
+                  {filterRutas.length > 0 && (
+                    <div
+                      className="flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm text-sm text-red-500 border-t mt-1"
+                      onClick={(e) => { e.preventDefault(); setFilterRutas([]); }}
+                    >
+                      <X className="w-3 h-3" /> Limpiar rutas
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            {(filterEstado !== "all" || filterFlowcat !== "all" || filterRutas.length > 0 || search) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -901,7 +939,7 @@ export default function Instalacion() {
                 onClick={() => {
                   setFilterEstado("all");
                   setFilterFlowcat("all");
-                  setFilterRuta("all");
+                  setFilterRutas([]);
                   setSearch("");
                 }}
               >
