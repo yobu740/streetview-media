@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { Link, useLocation } from "wouter";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Admin() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -134,7 +136,7 @@ export default function Admin() {
   // Keep filterRuta as empty string alias for backward compat with hasActiveFilters
   const filterRuta = filterRutas.length > 0 ? filterRutas.join(',') : "";
   const [filterFlowcat, setFilterFlowcat] = useState<string | null>(null);
-  const [filterTag, setFilterTag] = useState<string | null>(null);
+  const [filterTags, setFilterTags] = useState<string[]>([]);
   
   // Print filter state
   const [printFilterStatus, setPrintFilterStatus] = useState<"all" | "disponible" | "ocupada" | "no_disponible">("all");
@@ -429,12 +431,13 @@ export default function Admin() {
     setFilterTipo("all");
     setFilterRutas([]);
     setFilterFlowcat(null);
+    setFilterTags([]);
     setCurrentPage(1);
     toast.success("Filtros limpiados");
   };
   
   // Check if any filter is active
-  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta || filterFlowcat || filterTag;
+  const hasActiveFilters = searchTerm || productoSearch || filterStatus !== "all" || filterApprovalStatus !== "all" || filterTipo !== "all" || filterRuta || filterFlowcat || filterTags.length > 0;
   
   const getParadaAnuncios = (paradaId: number) => {
     return anuncios?.filter(a => a.paradaId === paradaId) || [];
@@ -530,11 +533,11 @@ export default function Admin() {
     const matchesFlowcat = !filterFlowcat || p.flowCat === filterFlowcat;
     
     // Tag filter
-    const matchesTag = !filterTag || (() => {
+    const matchesTag = filterTags.length === 0 || (() => {
       if (!p.tags) return false;
       try {
         const paradaTags: string[] = JSON.parse(p.tags);
-        return paradaTags.includes(filterTag);
+        return filterTags.some(t => paradaTags.includes(t));
       } catch { return false; }
     })();
     
@@ -1432,41 +1435,75 @@ export default function Admin() {
                   </Select>
                 </div>
                 <div>
-                  <Label className="flex items-center gap-1">
+                  <Label className="flex items-center gap-1 mb-1.5">
                     Punto Estratégico
-                    {filterTag && (
+                    {filterTags.length > 0 && (
                       <span className="ml-1 text-xs bg-[#ff6b35] text-white px-1.5 py-0.5 rounded-full">
-                        {filterTag}
+                        {filterTags.length}
                       </span>
                     )}
                   </Label>
-                  <Select
-                    value={filterTag ?? "all"}
-                    onValueChange={(v) => {
-                      setFilterTag(v === "all" ? null : v);
-                      handleFilterChange();
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Todos los puntos" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-64 overflow-y-auto">
-                      <SelectItem value="all">Todos los puntos</SelectItem>
-                      <SelectItem value="Hospitales">🏥 Hospitales</SelectItem>
-                      <SelectItem value="Residenciales">🏘️ Residenciales</SelectItem>
-                      <SelectItem value="Complejo Turístico">🌴 Complejo Turístico</SelectItem>
-                      <SelectItem value="Supermercados">🛒 Supermercados</SelectItem>
-                      <SelectItem value="Universidades">🎓 Universidades</SelectItem>
-                      <SelectItem value="Bancos y Cooperativas">🏦 Bancos y Cooperativas</SelectItem>
-                      <SelectItem value="Farmacias">💊 Farmacias</SelectItem>
-                      <SelectItem value="Centros Comerciales y Retail">🛍️ Centros Comerciales</SelectItem>
-                      <SelectItem value="Edificios Gubernamentales">🏛️ Edificios Gubernamentales</SelectItem>
-                      <SelectItem value="Entretenimiento y Parques">🎭 Entretenimiento y Parques</SelectItem>
-                      <SelectItem value="Cadenas de Comida Rápida">🍔 Cadenas de Comida Rápida</SelectItem>
-                      <SelectItem value="Restaurantes y Cafés">🍽️ Restaurantes y Cafés</SelectItem>
-                      <SelectItem value="Gasolineras">⛽ Gasolineras</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between font-normal h-9 text-sm">
+                        <span className="truncate">
+                          {filterTags.length === 0
+                            ? "Todos los puntos"
+                            : filterTags.length === 1
+                            ? filterTags[0]
+                            : `${filterTags.length} puntos seleccionados`}
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-2" align="start">
+                      <div className="flex items-center justify-between mb-2 pb-2 border-b">
+                        <span className="text-xs font-medium text-muted-foreground">Puntos Estratégicos</span>
+                        {filterTags.length > 0 && (
+                          <button
+                            className="text-xs text-[#ff6b35] hover:underline"
+                            onClick={() => { setFilterTags([]); handleFilterChange(); }}
+                          >
+                            Limpiar
+                          </button>
+                        )}
+                      </div>
+                      <div className="space-y-1 max-h-56 overflow-y-auto">
+                        {[
+                          { value: "Hospitales", label: "🏥 Hospitales" },
+                          { value: "Residenciales", label: "🏘️ Residenciales" },
+                          { value: "Complejo Turístico", label: "🌴 Complejo Turístico" },
+                          { value: "Supermercados", label: "🛒 Supermercados" },
+                          { value: "Universidades", label: "🎓 Universidades" },
+                          { value: "Bancos y Cooperativas", label: "🏦 Bancos y Cooperativas" },
+                          { value: "Farmacias", label: "💊 Farmacias" },
+                          { value: "Centros Comerciales y Retail", label: "🛍️ Centros Comerciales" },
+                          { value: "Edificios Gubernamentales", label: "🏛️ Edificios Gubernamentales" },
+                          { value: "Entretenimiento y Parques", label: "🎭 Entretenimiento y Parques" },
+                          { value: "Cadenas de Comida Rápida", label: "🍔 Cadenas de Comida Rápida" },
+                          { value: "Restaurantes y Cafés", label: "🍽️ Restaurantes y Cafés" },
+                          { value: "Gasolineras", label: "⛽ Gasolineras" },
+                        ].map(({ value, label }) => (
+                          <label
+                            key={value}
+                            className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer text-sm"
+                          >
+                            <Checkbox
+                              checked={filterTags.includes(value)}
+                              onCheckedChange={(checked) => {
+                                const next = checked
+                                  ? [...filterTags, value]
+                                  : filterTags.filter(t => t !== value);
+                                setFilterTags(next);
+                                handleFilterChange();
+                              }}
+                            />
+                            {label}
+                          </label>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </div>

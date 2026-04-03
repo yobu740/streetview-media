@@ -1330,3 +1330,7 @@
 
 ## Bug Fix - Tags map error en modal Crear Anuncio
 - [x] Fix TypeError: (T.tags || []).map is not a function en Anuncios.tsx al seleccionar fechas con paradas preseleccionadas
+
+## Filtro Multi-Select Puntos Estratégicos en Admin Panel
+- [x] Reemplazar filtro single-select de tags en Admin.tsx por multi-select con checkboxes
+- [x] Actualizar lógica matchesTag para soportar múltiples tags seleccionados
