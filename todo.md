@@ -1321,3 +1321,9 @@
 ## Filtro Multi-Ruta en Instalación
 - [x] Cambiar filtro de rutas en Instalacion.tsx de dropdown single-select a multi-select
 - [x] Actualizar lógica de filtrado para soportar múltiples rutas seleccionadas
+
+## Sprint: 4 mejoras simultáneas
+- [x] Instalacion: reducir tamaño de tarjetas de dashboard para que quepan en una sola fila
+- [x] Clientes: fix ContratoCard mobile - botones en dos filas en pantallas pequeñas
+- [x] Admin: filtro multi-select de rutas (reemplazar campo de texto por multi-select)
+- [x] Admin: botón flotante "Crear Reserva" cuando hay paradas seleccionadas con checkbox, abre Anuncios con paradas preseleccionadas

@@ -217,6 +217,7 @@ export default function Anuncios() {
   const confirmInstalled = trpc.instalaciones.confirmInstalled.useMutation();
 
   // Support ?anuncioId=X URL param from Mantenimiento relocalizar button
+  // Support ?preselect=id1,id2,... URL param from Admin panel "Crear Reserva" button
   const searchString = useSearch();
   useEffect(() => {
     const params = new URLSearchParams(searchString);
@@ -225,6 +226,14 @@ export default function Anuncios() {
       const id = parseInt(anuncioIdParam, 10);
       if (!isNaN(id)) {
         setHighlightAnuncioId(id);
+      }
+    }
+    const preselectParam = params.get("preselect");
+    if (preselectParam) {
+      const ids = preselectParam.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
+      if (ids.length > 0) {
+        setCreateForm(prev => ({ ...prev, selectedParadas: ids, selectionMode: 'paradas' }));
+        setIsCreateDialogOpen(true);
       }
     }
   }, [searchString]);

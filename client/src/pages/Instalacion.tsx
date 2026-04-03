@@ -798,54 +798,54 @@ export default function Instalacion() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         <Card className="border-blue-200">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-              <Package className="w-4 h-4 text-blue-700" />
+          <CardContent className="p-2 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <Package className="w-3.5 h-3.5 text-blue-700" />
             </div>
-            <div>
-              <div className="text-xl font-bold text-blue-700">
+            <div className="min-w-0">
+              <div className="text-lg font-bold text-blue-700 leading-tight">
                 {instalaciones.filter((i) => i.estado === "Programado").length}
               </div>
-              <div className="text-xs text-muted-foreground">Programados</div>
+              <div className="text-[11px] text-muted-foreground leading-tight truncate">Programados</div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-amber-200">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-              <Navigation className="w-4 h-4 text-amber-700" />
+          <CardContent className="p-2 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <Navigation className="w-3.5 h-3.5 text-amber-700" />
             </div>
-            <div>
-              <div className="text-xl font-bold text-amber-700">
+            <div className="min-w-0">
+              <div className="text-lg font-bold text-amber-700 leading-tight">
                 {instalaciones.filter((i) => i.estado === "Relocalizacion").length}
               </div>
-              <div className="text-xs text-muted-foreground">Relocalizaciones</div>
+              <div className="text-[11px] text-muted-foreground leading-tight truncate">Relocalizaciones</div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-purple-200">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-              <Palette className="w-4 h-4 text-purple-700" />
+          <CardContent className="p-2 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+              <Palette className="w-3.5 h-3.5 text-purple-700" />
             </div>
-            <div>
-              <div className="text-xl font-bold text-purple-700">
+            <div className="min-w-0">
+              <div className="text-lg font-bold text-purple-700 leading-tight">
                 {instalaciones.filter((i) => i.estado === "CambioArte").length}
               </div>
-              <div className="text-xs text-muted-foreground">Cambios de Arte</div>
+              <div className="text-[11px] text-muted-foreground leading-tight truncate">Cambios Arte</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-gray-200 col-span-2 md:col-span-1">
-          <CardContent className="p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-gray-600" />
+        <Card className="border-gray-200">
+          <CardContent className="p-2 flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-gray-600" />
             </div>
-            <div>
-              <div className="text-xl font-bold text-gray-700">{instalaciones.length}</div>
-              <div className="text-xs text-muted-foreground">Total pendientes</div>
+            <div className="min-w-0">
+              <div className="text-lg font-bold text-gray-700 leading-tight">{instalaciones.length}</div>
+              <div className="text-[11px] text-muted-foreground leading-tight truncate">Total</div>
             </div>
           </CardContent>
         </Card>

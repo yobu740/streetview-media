@@ -895,41 +895,44 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
   const computedTotal = contrato.items ? calcSubtotalWithMonths(contrato.items, numMeses) : 0;
   const displayTotal = contrato.total || contrato.subtotal || (computedTotal > 0 ? fmtMoney(computedTotal) : (rawTotal > 0 ? fmtMoney(rawTotal) : "—"));
   return (
-    <div className="bg-white rounded-xl border shadow-sm p-4 flex items-center gap-4">
-      <div className="flex-shrink-0 w-10 h-10 bg-[#1a4d3c]/10 rounded-lg flex items-center justify-center">
-        <FileText size={18} className="text-[#1a4d3c]" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-[#1a4d3c]">{contrato.numeroContrato}</span>
-          {contrato.numeroPO && <span className="text-xs text-gray-400">PO: {contrato.numeroPO}</span>}
-          {numMeses > 1 && <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{numMeses} meses</span>}
-          <EstadoBadge estado={contrato.estado} />
-          {contrato.poDocumentUrl && (
-            <a href={contrato.poDocumentUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
-              <Download size={10} /> PO
-            </a>
-          )}
+    <div className="bg-white rounded-xl border shadow-sm p-3 sm:p-4">
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 w-9 h-9 bg-[#1a4d3c]/10 rounded-lg flex items-center justify-center mt-0.5">
+          <FileText size={16} className="text-[#1a4d3c]" />
         </div>
-        <div className="text-xs text-gray-500 mt-0.5 flex gap-3 flex-wrap">
-          <span>{new Date(contrato.fecha).toLocaleDateString("es-PR")}</span>
-          {contrato.customerId && <span>{contrato.customerId}</span>}
-          {contrato.salesDuration && <span>{contrato.salesDuration}</span>}
-          <span className="font-semibold text-[#1a4d3c]">{displayTotal}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-[#1a4d3c] text-sm">{contrato.numeroContrato}</span>
+            {contrato.numeroPO && <span className="text-xs text-gray-400">PO: {contrato.numeroPO}</span>}
+            {numMeses > 1 && <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{numMeses} meses</span>}
+            <EstadoBadge estado={contrato.estado} />
+            {contrato.poDocumentUrl && (
+              <a href={contrato.poDocumentUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                <Download size={10} /> PO
+              </a>
+            )}
+          </div>
+          <div className="text-xs text-gray-500 mt-0.5 flex gap-3 flex-wrap">
+            <span>{new Date(contrato.fecha).toLocaleDateString("es-PR")}</span>
+            {contrato.customerId && <span>{contrato.customerId}</span>}
+            {contrato.salesDuration && <span>{contrato.salesDuration}</span>}
+            <span className="font-semibold text-[#1a4d3c]">{displayTotal}</span>
+          </div>
+          {/* Action buttons - wrap to two rows on mobile */}
+          <div className="flex flex-wrap gap-1 mt-2">
+            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onPreview} title="Vista previa">
+              <Eye size={12} className="mr-1" /> Ver
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onPrint} title="Imprimir / PDF">
+              <Printer size={12} className="mr-1" /> PDF
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onDuplicate} title="Duplicar contrato">
+              <Copy size={12} className="mr-1" /> Duplicar
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={onEdit} title="Editar"><Edit size={12} /></Button>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400" onClick={onDelete} title="Eliminar"><Trash2 size={12} /></Button>
+          </div>
         </div>
-      </div>
-      <div className="flex gap-1 flex-shrink-0">
-        <Button size="sm" variant="ghost" className="h-8 px-2 text-xs" onClick={onPreview} title="Vista previa">
-          <Eye size={13} className="mr-1" /> Ver
-        </Button>
-        <Button size="sm" variant="ghost" className="h-8 px-2 text-xs" onClick={onPrint} title="Imprimir / PDF">
-          <Printer size={13} className="mr-1" /> PDF
-        </Button>
-        <Button size="sm" variant="ghost" className="h-8 px-2 text-xs" onClick={onDuplicate} title="Duplicar contrato">
-          <Copy size={13} className="mr-1" /> Duplicar
-        </Button>
-        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={onEdit}><Edit size={13} /></Button>
-        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400" onClick={onDelete}><Trash2 size={13} /></Button>
       </div>
     </div>
   );

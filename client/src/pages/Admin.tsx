@@ -20,6 +20,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 export default function Admin() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   
   // Notification queries
   const { data: notifications } = trpc.notifications.list.useQuery(undefined, { enabled: isAuthenticated });
@@ -124,7 +125,14 @@ export default function Admin() {
 
   const [filterApprovalStatus, setFilterApprovalStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [filterTipo, setFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
-  const [filterRuta, setFilterRuta] = useState("");
+  const [filterRutas, setFilterRutas] = useState<string[]>([]);
+  const toggleAdminFilterRuta = (ruta: string) => {
+    setFilterRutas(prev =>
+      prev.includes(ruta) ? prev.filter(r => r !== ruta) : [...prev, ruta]
+    );
+  };
+  // Keep filterRuta as empty string alias for backward compat with hasActiveFilters
+  const filterRuta = filterRutas.length > 0 ? filterRutas.join(',') : "";
   const [filterFlowcat, setFilterFlowcat] = useState<string | null>(null);
   const [filterTag, setFilterTag] = useState<string | null>(null);
   
@@ -419,7 +427,7 @@ export default function Admin() {
     setFilterStatus("all");
     setFilterApprovalStatus("all");
     setFilterTipo("all");
-    setFilterRuta("");
+    setFilterRutas([]);
     setFilterFlowcat(null);
     setCurrentPage(1);
     toast.success("Filtros limpiados");
@@ -515,8 +523,8 @@ export default function Admin() {
       (filterTipo === "Fija" && p.tipoFormato === "Fija") ||
       (filterTipo === "Bonificación" && p.tipoFormato === "Digital");
     
-    // Ruta filter
-    const matchesRuta = !filterRuta || (p.ruta && p.ruta.toLowerCase().includes(filterRuta.toLowerCase()));
+    // Ruta filter (multi-select)
+    const matchesRuta = filterRutas.length === 0 || filterRutas.includes(p.ruta ?? "");
     
     // Flowcat filter
     const matchesFlowcat = !filterFlowcat || p.flowCat === filterFlowcat;
@@ -1332,11 +1340,50 @@ export default function Admin() {
                 </div>
                 <div>
                   <Label>Filtrar por Ruta</Label>
-                  <Input
-                    placeholder="Ej: Ruta 1, Ruta 2..."
-                    value={filterRuta}
-                    onChange={(e) => { setFilterRuta(e.target.value); handleFilterChange(); }}
-                  />
+                  {/* Multi-select route filter */}
+                  <Select
+                    value="__placeholder__"
+                    onValueChange={(val) => { if (val !== "__placeholder__") { toggleAdminFilterRuta(val); handleFilterChange(); } }}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <span className="truncate text-sm">
+                        {filterRutas.length === 0
+                          ? "Todas las rutas"
+                          : filterRutas.length === 1
+                          ? `Ruta ${filterRutas[0]}`
+                          : `${filterRutas.length} rutas`}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-64 overflow-y-auto">
+                      <div className="px-2 py-1 text-xs text-muted-foreground font-medium">Seleccionar rutas</div>
+                      {Array.from(new Set((paradas || []).map(p => p.ruta).filter(Boolean))).sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true })).map((r) => (
+                        <div
+                          key={String(r)}
+                          className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm text-sm"
+                          onClick={(e) => { e.preventDefault(); toggleAdminFilterRuta(String(r)); handleFilterChange(); }}
+                        >
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                            filterRutas.includes(String(r)) ? 'bg-[#1a4d3c] border-[#1a4d3c]' : 'border-gray-300'
+                          }`}>
+                            {filterRutas.includes(String(r)) && (
+                              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          Ruta {r}
+                        </div>
+                      ))}
+                      {filterRutas.length > 0 && (
+                        <div
+                          className="flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-accent rounded-sm text-sm text-red-500 border-t mt-1"
+                          onClick={(e) => { e.preventDefault(); setFilterRutas([]); handleFilterChange(); }}
+                        >
+                          <X className="w-3 h-3" /> Limpiar rutas
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
                 {user?.role === 'admin' && (
                   <div>
@@ -2666,6 +2713,35 @@ export default function Admin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Floating "Crear Reserva" button when paradas are selected */}
+      {selectedParadas.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#1a4d3c] text-white px-5 py-3 rounded-full shadow-2xl border-2 border-white/20 animate-in slide-in-from-bottom-4">
+          <span className="text-sm font-medium">
+            {selectedParadas.length} parada{selectedParadas.length !== 1 ? 's' : ''} seleccionada{selectedParadas.length !== 1 ? 's' : ''}
+          </span>
+          <div className="w-px h-4 bg-white/30" />
+          <Button
+            size="sm"
+            className="bg-[#ff6b35] hover:bg-[#e65a25] text-white border-0 h-8 px-4 font-semibold"
+            onClick={() => {
+              const ids = selectedParadas.join(',');
+              setLocation(`/anuncios?preselect=${ids}`);
+            }}
+          >
+            <Megaphone className="w-3.5 h-3.5 mr-1.5" />
+            Crear Reserva
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-white hover:bg-white/20 h-8 w-8 p-0"
+            onClick={() => setSelectedParadas([])}
+            title="Deseleccionar todo"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
       </div>
     </div>
   );
