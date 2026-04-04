@@ -1355,3 +1355,6 @@
 - [x] Recortar imagen tropical a 600x76px para header del email
 - [x] Subir imagen header y logo al CDN
 - [x] Reemplazar template HTML del email de facturas con diseño Canva
+
+## Fix Email - Saludo/Cierre duplicado
+- [x] Quitar saludo y cierre hardcodeados del template de email (ya vienen en data.message)

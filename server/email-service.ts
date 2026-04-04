@@ -140,27 +140,11 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
         <tr><td dir="ltr" style="color:#171d2b;font-size:34px;font-family:Georgia, serif;line-height:1;text-align:center;padding:0px 20px">
           Gracias por confiar<br>en nosotros
         </td></tr>
-        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 
-        <!-- Greeting -->
-        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          Estimado/a ${data.clienteNombre},
-        </td></tr>
+        <!-- Message body (includes greeting and sign-off from the modal) -->
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
-
-        <!-- Message body -->
-        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;white-space:pre-wrap;text-align:center;padding:0px 20px">
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;white-space:pre-wrap;text-align:left;padding:0px 32px">
           ${data.message}
-        </td></tr>
-        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
-
-        <!-- Sign off -->
-        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          Atentamente,
-        </td></tr>
-        <tr><td style="font-size:0;height:8px" height="8">&nbsp;</td></tr>
-        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          Equipo Streetview Media PR
         </td></tr>
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 
