@@ -1358,3 +1358,7 @@
 
 ## Fix Email - Saludo/Cierre duplicado
 - [x] Quitar saludo y cierre hardcodeados del template de email (ya vienen en data.message)
+
+## Fix Email - Saltos de línea y tagline
+- [x] Convertir saltos de línea del mensaje en <br> para que se vean en HTML
+- [x] Corregir "LA nueva red" a "La nueva red" en el footer del email

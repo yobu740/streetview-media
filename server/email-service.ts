@@ -143,8 +143,8 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
 
         <!-- Message body (includes greeting and sign-off from the modal) -->
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
-        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;white-space:pre-wrap;text-align:left;padding:0px 32px">
-          ${data.message}
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;line-height:1.7;text-align:left;padding:0px 32px">
+          ${data.message.replace(/\n/g, '<br>')}
         </td></tr>
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 
@@ -162,7 +162,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
 
         <!-- Tagline bottom -->
         <tr><td dir="ltr" style="color:#171d2b;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          LA nueva red de publicidad en Puerto Rico.
+          La nueva red de publicidad en Puerto Rico.
         </td></tr>
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 
