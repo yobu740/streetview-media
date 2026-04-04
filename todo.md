@@ -1350,3 +1350,8 @@
 
 ## Fix Top 10 - corte marzo 2026
 - [x] Cambiar fecha de corte del Top 10 de febrero a marzo 2026 en backend y frontend
+
+## Email Template Factura - Diseño Canva
+- [x] Recortar imagen tropical a 600x76px para header del email
+- [x] Subir imagen header y logo al CDN
+- [x] Reemplazar template HTML del email de facturas con diseño Canva

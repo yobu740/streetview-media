@@ -80,21 +80,143 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   if (!pdfResponse.ok) throw new Error('No se pudo descargar el PDF de la factura');
   const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer());
 
-  const emailHtml = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="background-color: #1a4d3c; padding: 24px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Streetview Media PR</h1>
-        <p style="color: #a7d9c8; margin: 4px 0 0; font-size: 13px;">streetviewmediapr.com</p>
-      </div>
-      <div style="padding: 24px; background: #ffffff;">
-        <p style="font-size: 15px; color: #333;">Estimado/a <strong>${data.clienteNombre}</strong>,</p>
-        <div style="white-space: pre-wrap; font-size: 14px; color: #444; line-height: 1.6; margin: 16px 0;">${data.message}</div>
-        <p style="font-size: 13px; color: #666;">La factura <strong>${data.numeroFactura}</strong> se adjunta en formato PDF a este correo.</p>
-      </div>
-      <div style="background: #f5f5f5; padding: 16px; text-align: center; font-size: 11px; color: #999;">
-        Streetview Media PR &middot; San Juan, Puerto Rico &middot; sales@streetviewmediapr.com
-      </div>
-    </div>
+  const LOGO_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png';
+  const HEADER_BANNER_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/email-header-banner_8a34749d.jpg';
+
+  const emailHtml = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+</head>
+<body style="width:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;background-color:#f0f1f5;margin:0;padding:0">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f0f1f5" style="background-color:#f0f1f5">
+  <tbody><tr><td style="background-color:#f0f1f5">
+    <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;min-height:600px;margin:0 auto;background-color:#ffffff">
+      <tbody>
+        <!-- Logo -->
+        <tr><td style="vertical-align:top;padding:10px 0 0 0">
+          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tbody><tr><td style="padding:10px 0 10px 0;vertical-align:top">
+              <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tbody><tr><td style="padding:0px 20px">
+                  <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+                    <tbody><tr><td align="center">
+                      <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:205px">
+                        <tbody><tr><td style="width:100%;padding:20px 0">
+                          <img src="${LOGO_URL}" width="205" height="52" style="display:block;width:100%;height:auto;max-width:100%" alt="Streetview Media">
+                        </td></tr></tbody>
+                      </table>
+                    </td></tr></tbody>
+                  </table>
+                </td></tr></tbody>
+              </table>
+            </td></tr></tbody>
+          </table>
+        </td></tr>
+
+        <!-- Tagline -->
+        <tr><td style="font-size:0;height:8px" height="8">&nbsp;</td></tr>
+        <tr><td dir="ltr" style="color:#171d2b;font-size:13px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
+          TU MARCA EN EL CAMINO
+        </td></tr>
+        <tr><td style="font-size:0;height:8px" height="8">&nbsp;</td></tr>
+
+        <!-- Header Banner -->
+        <tr><td>
+          <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+            <tbody><tr><td align="center">
+              <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px">
+                <tbody><tr><td style="width:100%;padding:0">
+                  <img src="${HEADER_BANNER_URL}" width="600" height="76" style="display:block;width:100%;height:auto;max-width:100%" alt="">
+                </td></tr></tbody>
+              </table>
+            </td></tr></tbody>
+          </table>
+        </td></tr>
+
+        <!-- Heading -->
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+        <tr><td dir="ltr" style="color:#171d2b;font-size:34px;font-family:Georgia, serif;line-height:1;text-align:center;padding:0px 20px">
+          Gracias por confiar<br>en nosotros
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Greeting -->
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
+          Estimado/a ${data.clienteNombre},
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Message body -->
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;white-space:pre-wrap;text-align:center;padding:0px 20px">
+          ${data.message}
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Sign off -->
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
+          Atentamente,
+        </td></tr>
+        <tr><td style="font-size:0;height:8px" height="8">&nbsp;</td></tr>
+        <tr><td dir="ltr" style="color:#085e3a;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
+          Equipo Streetview Media PR
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Divider -->
+        <tr><td style="padding:0px 20px">
+          <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+            <tbody><tr><td align="center">
+              <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px">
+                <tbody><tr><td height="1px" style="height:1px;border-radius:999px;line-height:1px;font-size:0;background-color:#bfc3c8">&nbsp;</td></tr></tbody>
+              </table>
+            </td></tr></tbody>
+          </table>
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Tagline bottom -->
+        <tr><td dir="ltr" style="color:#171d2b;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
+          LA nueva red de publicidad en Puerto Rico.
+        </td></tr>
+        <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+
+        <!-- Footer -->
+        <tr><td style="vertical-align:top">
+          <table border="0" cellpadding="0" cellspacing="0" align="center" style="width:100%;max-width:100%;background-color:#0c291d">
+            <tbody><tr><td style="text-align:center;padding:24px 20px">
+              <table border="0" cellpadding="0" cellspacing="0" style="width:100%;max-width:547px;margin:0 auto">
+                <tbody><tr><td style="vertical-align:top">
+                  <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
+                    <tbody>
+                      <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+                      <tr><td dir="ltr" style="color:#ffffff;font-size:14px;font-family:Verdana, Geneva, sans-serif;line-height:1.4;text-align:left">
+                        <a href="tel:7877085115" style="color:#ffffff;text-decoration:none">(787)708-5115</a>
+                      </td></tr>
+                      <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+                      <tr><td dir="ltr" style="font-size:14px;font-family:Verdana, Geneva, sans-serif;line-height:1.4;text-align:left;color:#ffffff">
+                        130 Ave. Winston Churchill<br>
+                        PMB 167<br>
+                        San Juan, PR 00926<br>
+                        <span style="font-size:13px;color:#bfc3c8">www.streetviewmediapr.com</span>
+                      </td></tr>
+                      <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
+                      <tr><td dir="ltr" style="color:#bfc3c8;font-size:13px;font-family:Verdana, Geneva, sans-serif;line-height:1.4;text-align:left">
+                        &copy;Streetviewmedia PR 2026
+                      </td></tr>
+                    </tbody>
+                  </table>
+                </td></tr></tbody>
+              </table>
+            </td></tr></tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </td></tr></tbody>
+</table>
+</body></html>
   `;
 
   // Outlook/Microsoft 365 requires From to exactly match the authenticated SMTP_USER
