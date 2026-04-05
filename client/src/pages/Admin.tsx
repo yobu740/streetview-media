@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Building2, Home, Palmtree, ShoppingCart, GraduationCap, Landmark, Pill, ShoppingBag, Building, Theater, Utensils, Fuel, UtensilsCrossed } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -1470,20 +1470,20 @@ export default function Admin() {
                       </div>
                       <div className="space-y-1 max-h-56 overflow-y-auto">
                         {[
-                          { value: "Hospitales", label: "🏥 Hospitales" },
-                          { value: "Residenciales", label: "🏘️ Residenciales" },
-                          { value: "Complejo Turístico", label: "🌴 Complejo Turístico" },
-                          { value: "Supermercados", label: "🛒 Supermercados" },
-                          { value: "Universidades", label: "🎓 Universidades" },
-                          { value: "Bancos y Cooperativas", label: "🏦 Bancos y Cooperativas" },
-                          { value: "Farmacias", label: "💊 Farmacias" },
-                          { value: "Centros Comerciales y Retail", label: "🛍️ Centros Comerciales" },
-                          { value: "Edificios Gubernamentales", label: "🏛️ Edificios Gubernamentales" },
-                          { value: "Entretenimiento y Parques", label: "🎭 Entretenimiento y Parques" },
-                          { value: "Cadenas de Comida Rápida", label: "🍔 Cadenas de Comida Rápida" },
-                          { value: "Restaurantes y Cafés", label: "🍽️ Restaurantes y Cafés" },
-                          { value: "Gasolineras", label: "⛽ Gasolineras" },
-                        ].map(({ value, label }) => (
+                          { value: "Hospitales", icon: <Building2 className="w-4 h-4 text-rose-500" /> },
+                          { value: "Residenciales", icon: <Home className="w-4 h-4 text-sky-500" /> },
+                          { value: "Complejo Turístico", icon: <Palmtree className="w-4 h-4 text-emerald-500" /> },
+                          { value: "Supermercados", icon: <ShoppingCart className="w-4 h-4 text-orange-500" /> },
+                          { value: "Universidades", icon: <GraduationCap className="w-4 h-4 text-violet-500" /> },
+                          { value: "Bancos y Cooperativas", icon: <Landmark className="w-4 h-4 text-blue-500" /> },
+                          { value: "Farmacias", icon: <Pill className="w-4 h-4 text-pink-500" /> },
+                          { value: "Centros Comerciales y Retail", icon: <ShoppingBag className="w-4 h-4 text-amber-500" /> },
+                          { value: "Edificios Gubernamentales", icon: <Building className="w-4 h-4 text-slate-500" /> },
+                          { value: "Entretenimiento y Parques", icon: <Theater className="w-4 h-4 text-purple-500" /> },
+                          { value: "Cadenas de Comida Rápida", icon: <UtensilsCrossed className="w-4 h-4 text-red-500" /> },
+                          { value: "Restaurantes y Cafés", icon: <Utensils className="w-4 h-4 text-yellow-600" /> },
+                          { value: "Gasolineras", icon: <Fuel className="w-4 h-4 text-gray-500" /> },
+                        ].map(({ value, icon }) => (
                           <label
                             key={value}
                             className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer text-sm"
@@ -1498,7 +1498,8 @@ export default function Admin() {
                                 handleFilterChange();
                               }}
                             />
-                            {label}
+                            {icon}
+                            {value}
                           </label>
                         ))}
                       </div>

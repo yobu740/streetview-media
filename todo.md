@@ -1362,3 +1362,6 @@
 ## Fix Email - Saltos de línea y tagline
 - [x] Convertir saltos de línea del mensaje en <br> para que se vean en HTML
 - [x] Corregir "LA nueva red" a "La nueva red" en el footer del email
+
+## Reemplazar emojis con iconos Lucide
+- [x] Reemplazar emojis de Puntos Estratégicos por iconos Lucide en Admin.tsx
