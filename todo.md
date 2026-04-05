@@ -1365,3 +1365,19 @@
 
 ## Reemplazar emojis con iconos Lucide
 - [x] Reemplazar emojis de Puntos Estratégicos por iconos Lucide en Admin.tsx
+
+## DocuSeal E-Signature Integration
+- [ ] Investigar API de DocuSeal para crear submissions desde PDF
+- [ ] Backend: procedimiento tRPC para enviar contrato a DocuSeal para firma
+- [ ] Frontend: botón "Enviar para Firma" en Clientes.tsx
+- [ ] Webhook: actualizar estado del contrato a "Firmado" cuando DocuSeal confirme
+
+## Integración DocuSeal - Firma Electrónica
+- [x] Migración de base de datos: campos docusealSubmissionId, docusealSigningUrl, firmaUrl en tabla contratos
+- [x] Backend tRPC: endpoint contratos.sendForSigning para enviar a DocuSeal
+- [x] Backend tRPC: endpoint contratos.checkSigningStatus para verificar estado
+- [x] Webhook DocuSeal: /api/docuseal/webhook registrado en servidor Express
+- [x] Frontend: Botón Enviar para Firma en ContratoCard en Clientes.tsx
+- [x] Frontend: Diálogo de firma con campos nombre/email del firmante
+- [x] Frontend: Generación y subida de documento HTML del contrato
+- [x] Frontend: Indicador visual cuando contrato está Enviado/Firmado

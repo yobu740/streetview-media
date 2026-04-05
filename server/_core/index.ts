@@ -61,6 +61,38 @@ async function startServer() {
     }
   });
 
+  // DocuSeal webhook endpoint - receives signature completion events
+  app.post("/api/docuseal/webhook", async (req: any, res: any) => {
+    try {
+      const event = req.body;
+      console.log('[DocuSeal Webhook] Event received:', event?.event_type, 'submission:', event?.data?.id);
+
+      if (event?.event_type === 'submission.completed') {
+        const submissionId = event?.data?.id;
+        const signedDocUrl = event?.data?.documents?.[0]?.url ?? null;
+
+        if (submissionId) {
+          const { getDb } = await import('../db');
+          const { contratos } = await import('../../drizzle/schema');
+          const { eq } = await import('drizzle-orm');
+          const database = await getDb();
+          if (database) {
+            await database.update(contratos).set({
+              estado: 'Firmado',
+              firmaUrl: signedDocUrl,
+            }).where(eq(contratos.docusealSubmissionId, submissionId));
+            console.log('[DocuSeal Webhook] Contrato marked as Firmado for submission:', submissionId);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (err) {
+      console.error('[DocuSeal Webhook] Error:', err);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API

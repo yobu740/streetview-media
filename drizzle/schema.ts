@@ -326,6 +326,9 @@ export const contratos = mysqlTable("contratos", {
   poDocumentUrl: text("po_document_url"), // S3 URL to uploaded PO document
   numMeses: int("num_meses").default(1), // Number of months (multiplier for line items except production)
   estado: mysqlEnum("estado", ["Borrador", "Enviado", "Firmado", "Cancelado"]).default("Borrador").notNull(),
+  docusealSubmissionId: int("docuseal_submission_id"), // DocuSeal submission ID for e-signature
+  docusealSigningUrl: text("docuseal_signing_url"), // Direct signing URL for the submitter
+  firmaUrl: text("firma_url"), // S3 URL to signed PDF from DocuSeal
   createdBy: int("created_by"), // FK to users
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),

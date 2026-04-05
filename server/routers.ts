@@ -2571,6 +2571,117 @@ export const appRouter = router({
           ));
         return results;
       }),
+
+    // Send contract for e-signature via DocuSeal
+    sendForSigning: adminProcedure
+      .input(z.object({
+        contratoId: z.number(),
+        signerEmail: z.string().email(),
+        signerName: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const { ENV } = await import('./_core/env');
+        const { getDb } = await import('./db');
+        const { contratos } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+
+        if (!ENV.docusealApiKey) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DocuSeal API key not configured' });
+        }
+
+        const database = await getDb();
+        if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB unavailable' });
+
+        // Fetch the contrato to get the PDF URL
+        const [contrato] = await database.select().from(contratos).where(eq(contratos.id, input.contratoId));
+        if (!contrato) throw new TRPCError({ code: 'NOT_FOUND', message: 'Contrato no encontrado' });
+        if (!contrato.pdfUrl) throw new TRPCError({ code: 'BAD_REQUEST', message: 'El contrato no tiene PDF generado. Genera el PDF primero.' });
+
+        // Create DocuSeal submission from PDF URL
+        const docusealPayload = {
+          name: `Contrato ${contrato.numeroContrato}`,
+          send_email: true,
+          documents: [{
+            name: `Contrato_${contrato.numeroContrato}`,
+            url: contrato.pdfUrl,
+          }],
+          submitters: [{
+            role: 'Firmante',
+            email: input.signerEmail,
+            name: input.signerName,
+          }],
+        };
+
+        const response = await fetch('https://api.docuseal.com/submissions/pdf', {
+          method: 'POST',
+          headers: {
+            'X-Auth-Token': ENV.docusealApiKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(docusealPayload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[DocuSeal] Error creating submission:', errorText);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: `DocuSeal error: ${errorText}` });
+        }
+
+        const result = await response.json() as any[];
+        // DocuSeal returns an array of submitters
+        const submitter = Array.isArray(result) ? result[0] : result;
+        const submissionId = submitter?.submission_id;
+        const signingUrl = submitter?.slug ? `https://docuseal.com/s/${submitter.slug}` : null;
+
+        // Update contrato with DocuSeal submission info and change estado to Enviado
+        await database.update(contratos).set({
+          docusealSubmissionId: submissionId,
+          docusealSigningUrl: signingUrl,
+          estado: 'Enviado',
+        }).where(eq(contratos.id, input.contratoId));
+
+        return { success: true, submissionId, signingUrl };
+      }),
+
+    // Check DocuSeal submission status manually
+    checkSigningStatus: adminProcedure
+      .input(z.object({ contratoId: z.number() }))
+      .query(async ({ input }) => {
+        const { ENV } = await import('./_core/env');
+        const { getDb } = await import('./db');
+        const { contratos } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+
+        const database = await getDb();
+        if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB unavailable' });
+
+        const [contrato] = await database.select().from(contratos).where(eq(contratos.id, input.contratoId));
+        if (!contrato || !contrato.docusealSubmissionId) {
+          return { status: 'not_sent', signingUrl: null };
+        }
+
+        if (!ENV.docusealApiKey) return { status: 'unknown', signingUrl: contrato.docusealSigningUrl };
+
+        const response = await fetch(`https://api.docuseal.com/submissions/${contrato.docusealSubmissionId}`, {
+          headers: { 'X-Auth-Token': ENV.docusealApiKey },
+        });
+
+        if (!response.ok) return { status: 'unknown', signingUrl: contrato.docusealSigningUrl };
+
+        const submission = await response.json() as any;
+        const status = submission.status; // 'pending' | 'completed' | 'declined' | 'expired'
+
+        // Auto-update to Firmado if completed
+        if (status === 'completed' && contrato.estado !== 'Firmado') {
+          const signedUrl = submission.documents?.[0]?.url ?? null;
+          await database.update(contratos).set({
+            estado: 'Firmado',
+            firmaUrl: signedUrl,
+          }).where(eq(contratos.id, input.contratoId));
+        }
+
+        return { status, signingUrl: contrato.docusealSigningUrl };
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

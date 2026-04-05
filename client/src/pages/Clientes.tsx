@@ -35,6 +35,10 @@ import {
   Bell,
   Upload,
   Download,
+  Send,
+  PenLine,
+  ExternalLink,
+  CheckCircle2,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useState, useEffect } from "react";
@@ -95,6 +99,9 @@ type Contrato = {
   numMeses: number | null;
   poDocumentUrl: string | null;
   estado: "Borrador" | "Enviado" | "Firmado" | "Cancelado";
+  docusealSubmissionId: number | null;
+  docusealSigningUrl: string | null;
+  firmaUrl: string | null;
   createdAt: Date;
   items?: ContratoItem[];
   exhibitA?: ExhibitARow[];
@@ -557,6 +564,10 @@ export default function Clientes() {
   const [duplicatingContrato, setDuplicatingContrato] = useState<Contrato | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   const [urlHandled, setUrlHandled] = useState(false);
+  const [signingContrato, setSigningContrato] = useState<Contrato | null>(null);
+  const [signerEmail, setSignerEmail] = useState("");
+  const [signerName, setSignerName] = useState("");
+  const [generatingSignPdf, setGeneratingSignPdf] = useState(false);
 
   // Auto-open modals based on URL params (from Calendar shortcuts)
   useEffect(() => {
@@ -606,6 +617,19 @@ export default function Clientes() {
     onError: (e) => toast.error(e.message),
   });
   const saveExhibitA = trpc.contratos.saveExhibitA.useMutation();
+  const sendForSigning = trpc.contratos.sendForSigning.useMutation({
+    onSuccess: (data) => {
+      if (selectedCliente) utils.contratos.list.invalidate({ clienteId: selectedCliente.id });
+      toast.success("Contrato enviado para firma electrónica");
+      setSigningContrato(null);
+      setSignerEmail("");
+      setSignerName("");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+  const savePdfUrl = trpc.contratos.savePdfUrl.useMutation({
+    onSuccess: () => { if (selectedCliente) utils.contratos.list.invalidate({ clienteId: selectedCliente.id }); },
+  });
 
   const filtered = clientes.filter((c) =>
     c.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -653,6 +677,38 @@ export default function Clientes() {
     setDuplicatingContrato(contrato);
     setEditingContrato(null);
     setShowContratoForm(true);
+  };
+
+  // Generate PDF from contract HTML and upload to server, returning the public URL
+  const handleGenerateAndUploadPdf = async (contrato: Contrato): Promise<string | null> => {
+    if (!selectedCliente) return null;
+    setGeneratingSignPdf(true);
+    try {
+      const [fullContrato, exhibitRows] = await Promise.all([
+        utils.contratos.getById.fetch({ id: contrato.id }),
+        utils.contratos.getExhibitA.fetch({ contratoId: contrato.id }),
+      ]);
+      const contratoWithItems: Contrato = { ...contrato, items: (fullContrato?.items || []) as ContratoItem[] };
+      const html = generateContractHTML(contratoWithItems, selectedCliente, exhibitRows as ExhibitARow[]);
+
+      // Use print-to-PDF via a hidden iframe approach:
+      // Create a Blob from the HTML and upload it
+      const htmlBlob = new Blob([html], { type: "text/html" });
+      const formData = new FormData();
+      formData.append("file", htmlBlob, `contrato-${contrato.numeroContrato}.html`);
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      // Save the URL to the contract
+      await savePdfUrl.mutateAsync({ id: contrato.id, pdfUrl: data.url });
+      return data.url;
+    } catch (err) {
+      console.error("[PDF Upload] Error:", err);
+      toast.error("Error al generar el PDF del contrato");
+      return null;
+    } finally {
+      setGeneratingSignPdf(false);
+    }
   };
 
   return (
@@ -795,6 +851,11 @@ export default function Clientes() {
                       onPrint={() => handlePrintContract(c as Contrato)}
                       onPreview={() => handlePreviewContract(c as Contrato)}
                       onDuplicate={() => handleDuplicate(c as Contrato)}
+                      onSendForSigning={() => {
+                        setSigningContrato(c as Contrato);
+                        setSignerEmail(selectedCliente?.email || "");
+                        setSignerName(selectedCliente?.contactoPrincipal || selectedCliente?.nombre || "");
+                      }}
                     />
                   ))}
                 </div>
@@ -848,6 +909,106 @@ export default function Clientes() {
         />
       )}
 
+      {/* Send for Signature Dialog */}
+      {signingContrato && (
+        <Dialog open={!!signingContrato} onOpenChange={(open) => { if (!open && !sendForSigning.isPending && !generatingSignPdf) { setSigningContrato(null); setSignerEmail(""); setSignerName(""); } }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <PenLine size={18} className="text-[#1a4d3c]" />
+                Enviar para Firma Electrónica
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                <p className="font-semibold">{signingContrato.numeroContrato}</p>
+                <p className="text-xs text-blue-600 mt-1">Se enviará un email al firmante con un enlace para firmar el contrato electrónicamente vía DocuSeal.</p>
+              </div>
+              {signingContrato.pdfUrl ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800 flex items-center gap-2">
+                  <CheckCircle2 size={14} />
+                  <span>Documento listo para firma</span>
+                  <a href={signingContrato.pdfUrl} target="_blank" rel="noreferrer" className="text-green-600 underline text-xs ml-auto flex items-center gap-1">
+                    <ExternalLink size={10} /> Ver
+                  </a>
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                  <p className="font-semibold mb-2">⚠️ Sin documento generado</p>
+                  <p className="text-xs mb-3">El contrato necesita un documento para que el cliente pueda firmarlo.</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full border-amber-400 text-amber-800 hover:bg-amber-100"
+                    disabled={generatingSignPdf}
+                    onClick={async () => {
+                      const url = await handleGenerateAndUploadPdf(signingContrato);
+                      if (url) {
+                        setSigningContrato(prev => prev ? { ...prev, pdfUrl: url } : null);
+                        toast.success("Documento generado correctamente");
+                      }
+                    }}
+                  >
+                    {generatingSignPdf ? (
+                      <><Loader2 size={12} className="mr-1 animate-spin" /> Generando...</>
+                    ) : (
+                      <><FileText size={12} className="mr-1" /> Generar Documento del Contrato</>
+                    )}
+                  </Button>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="signerName">Nombre del Firmante</Label>
+                <Input
+                  id="signerName"
+                  value={signerName}
+                  onChange={(e) => setSignerName(e.target.value)}
+                  placeholder="Nombre completo del firmante"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signerEmail">Email del Firmante</Label>
+                <Input
+                  id="signerEmail"
+                  type="email"
+                  value={signerEmail}
+                  onChange={(e) => setSignerEmail(e.target.value)}
+                  placeholder="email@empresa.com"
+                />
+              </div>
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="outline" disabled={sendForSigning.isPending || generatingSignPdf} onClick={() => { setSigningContrato(null); setSignerEmail(""); setSignerName(""); }}>
+                Cancelar
+              </Button>
+              <Button
+                className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
+                disabled={!signerEmail || !signerName || sendForSigning.isPending || generatingSignPdf || !signingContrato.pdfUrl}
+                onClick={async () => {
+                  if (!signingContrato) return;
+                  let pdfUrl = signingContrato.pdfUrl;
+                  if (!pdfUrl) {
+                    pdfUrl = await handleGenerateAndUploadPdf(signingContrato);
+                    if (!pdfUrl) return;
+                  }
+                  sendForSigning.mutate({
+                    contratoId: signingContrato.id,
+                    signerEmail,
+                    signerName,
+                  });
+                }}
+              >
+                {sendForSigning.isPending ? (
+                  <><Loader2 size={14} className="mr-1 animate-spin" /> Enviando...</>
+                ) : (
+                  <><Send size={14} className="mr-1" /> Enviar para Firma</>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* PDF Preview Modal */}
       {previewHtml && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
@@ -882,18 +1043,21 @@ export default function Clientes() {
 
 // ─── Contrato Card ─────────────────────────────────────────────────────────────
 
-function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplicate }: {
+function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplicate, onSendForSigning }: {
   contrato: Contrato;
   onEdit: () => void;
   onDelete: () => void;
   onPrint: () => void;
   onPreview: () => void;
   onDuplicate: () => void;
+  onSendForSigning: () => void;
 }) {
   const numMeses = contrato.numMeses && contrato.numMeses > 1 ? contrato.numMeses : 1;
   const rawTotal = contrato.items ? calcRawTotal(contrato.items) : 0;
   const computedTotal = contrato.items ? calcSubtotalWithMonths(contrato.items, numMeses) : 0;
   const displayTotal = contrato.total || contrato.subtotal || (computedTotal > 0 ? fmtMoney(computedTotal) : (rawTotal > 0 ? fmtMoney(rawTotal) : "—"));
+  const isSigned = contrato.estado === "Firmado";
+  const isSent = contrato.estado === "Enviado";
   return (
     <div className="bg-white rounded-xl border shadow-sm p-3 sm:p-4">
       <div className="flex items-start gap-3">
@@ -911,6 +1075,16 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
                 <Download size={10} /> PO
               </a>
             )}
+            {isSigned && contrato.firmaUrl && (
+              <a href={contrato.firmaUrl} target="_blank" rel="noreferrer" className="text-xs text-green-600 underline flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                <CheckCircle2 size={10} /> Firmado
+              </a>
+            )}
+            {isSent && contrato.docusealSigningUrl && (
+              <a href={contrato.docusealSigningUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline flex items-center gap-0.5" onClick={e => e.stopPropagation()}>
+                <ExternalLink size={10} /> Ver firma
+              </a>
+            )}
           </div>
           <div className="text-xs text-gray-500 mt-0.5 flex gap-3 flex-wrap">
             <span>{new Date(contrato.fecha).toLocaleDateString("es-PR")}</span>
@@ -926,6 +1100,17 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
             <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onPrint} title="Imprimir / PDF">
               <Printer size={12} className="mr-1" /> PDF
             </Button>
+            {!isSigned && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className={`h-7 px-2 text-xs ${isSent ? 'text-blue-600 hover:text-blue-700' : 'text-[#1a4d3c] hover:text-[#1a4d3c]'}`}
+                onClick={onSendForSigning}
+                title={isSent ? "Reenviar para firma" : "Enviar para firma electrónica"}
+              >
+                <PenLine size={12} className="mr-1" /> {isSent ? "Reenviar" : "Enviar para Firma"}
+              </Button>
+            )}
             <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onDuplicate} title="Duplicar contrato">
               <Copy size={12} className="mr-1" /> Duplicar
             </Button>
