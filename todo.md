@@ -1381,3 +1381,8 @@
 - [x] Frontend: Diálogo de firma con campos nombre/email del firmante
 - [x] Frontend: Generación y subida de documento HTML del contrato
 - [x] Frontend: Indicador visual cuando contrato está Enviado/Firmado
+
+## DocuSeal Fix - HTML Endpoint
+- [x] Fix DocuSeal error: switch from /submissions/pdf (requires PDF file) to /submissions/html (accepts HTML content)
+- [x] Fetch HTML content from stored pdfUrl and send inline to DocuSeal
+- [x] Inject signature-field and date-field tags at end of HTML for signer to complete

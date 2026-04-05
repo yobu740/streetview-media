@@ -2592,18 +2592,51 @@ export const appRouter = router({
         const database = await getDb();
         if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB unavailable' });
 
-        // Fetch the contrato to get the PDF URL
+        // Fetch the contrato to get the HTML/PDF URL
         const [contrato] = await database.select().from(contratos).where(eq(contratos.id, input.contratoId));
         if (!contrato) throw new TRPCError({ code: 'NOT_FOUND', message: 'Contrato no encontrado' });
-        if (!contrato.pdfUrl) throw new TRPCError({ code: 'BAD_REQUEST', message: 'El contrato no tiene PDF generado. Genera el PDF primero.' });
+        if (!contrato.pdfUrl) throw new TRPCError({ code: 'BAD_REQUEST', message: 'El contrato no tiene documento generado. Genera el documento primero.' });
 
-        // Create DocuSeal submission from PDF URL
+        // Fetch the HTML content from the stored URL
+        let contractHtml: string;
+        try {
+          const htmlRes = await fetch(contrato.pdfUrl);
+          if (!htmlRes.ok) throw new Error(`Failed to fetch contract HTML: ${htmlRes.status}`);
+          contractHtml = await htmlRes.text();
+        } catch (fetchErr) {
+          console.error('[DocuSeal] Error fetching contract HTML:', fetchErr);
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'No se pudo obtener el documento del contrato. Regenera el documento e intenta de nuevo.' });
+        }
+
+        // Inject a signature field at the end of the HTML body before </body>
+        const signatureFieldHtml = `
+        <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #1a4d3c;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 50%; padding: 10px;">
+                <p style="font-size: 12px; margin-bottom: 5px;">Firma del Cliente / Client Signature:</p>
+                <signature-field name="Firma" role="Firmante" style="width: 250px; height: 80px; display: block;"></signature-field>
+              </td>
+              <td style="width: 50%; padding: 10px;">
+                <p style="font-size: 12px; margin-bottom: 5px;">Fecha / Date:</p>
+                <date-field name="Fecha" role="Firmante" style="width: 150px; height: 30px; display: block;"></date-field>
+              </td>
+            </tr>
+          </table>
+        </div>`;
+
+        // Insert signature block before </body> or append at end
+        const htmlWithSignature = contractHtml.includes('</body>')
+          ? contractHtml.replace('</body>', `${signatureFieldHtml}\n</body>`)
+          : contractHtml + signatureFieldHtml;
+
+        // Create DocuSeal submission using the HTML endpoint
         const docusealPayload = {
           name: `Contrato ${contrato.numeroContrato}`,
           send_email: true,
           documents: [{
             name: `Contrato_${contrato.numeroContrato}`,
-            url: contrato.pdfUrl,
+            html: htmlWithSignature,
           }],
           submitters: [{
             role: 'Firmante',
@@ -2612,7 +2645,7 @@ export const appRouter = router({
           }],
         };
 
-        const response = await fetch('https://api.docuseal.com/submissions/pdf', {
+        const response = await fetch('https://api.docuseal.com/submissions/html', {
           method: 'POST',
           headers: {
             'X-Auth-Token': ENV.docusealApiKey,
