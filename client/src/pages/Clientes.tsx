@@ -373,12 +373,31 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
     </table>
   </div>
 
-  <div class="sigs">
-    <div>
-      <div class="sig-line">AUTHORIZED SIGNATURE / DATE</div>
-    </div>
-    <div>
-      <div class="sig-line">CLIENT SIGNATURE / DATE</div>
+  <!-- Signature block Page 1 -->
+  <div style="margin-bottom:28px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;">
+      <!-- Company -->
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#555;margin-bottom:6px;">Authorized by Company</div>
+        <div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">SIGNATURE</div>
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">DATE</div>
+        </div>
+        <div style="font-size:10px;color:#333;margin-top:8px;">Name: <span style="font-weight:700;">${vendedor}</span></div>
+        <div style="font-size:10px;color:#555;">Require Puerto Rico, Inc. d/b/a Street View Media</div>
+      </div>
+      <!-- Customer -->
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#e05a00;margin-bottom:6px;">Customer Acceptance</div>
+        <div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">SIGNATURE</div>
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">DATE</div>
+        </div>
+        <div style="font-size:10px;color:#333;margin-top:8px;">Name / Title: ___________________________</div>
+        <div style="font-size:10px;color:#555;">${cliente.nombre}</div>
+      </div>
     </div>
   </div>
 
@@ -519,6 +538,33 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
       ${exhibitRowsHtml}
     </tbody>
   </table>
+
+  <!-- Customer signature — Exhibit A (Page 3) -->
+  <div style="margin-top:36px;padding-top:20px;border-top:1px solid #ddd;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#e05a00;margin-bottom:14px;">
+      Customer Acceptance — Exhibit A
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;">
+      <!-- Customer sig -->
+      <div>
+        <div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">CUSTOMER SIGNATURE</div>
+          <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">DATE</div>
+        </div>
+        <div style="font-size:10px;color:#333;margin-top:8px;">Name / Title: ___________________________</div>
+        <div style="font-size:10px;font-weight:700;color:#1a1a1a;margin-top:2px;">${cliente.nombre}</div>
+      </div>
+      <!-- Reference info -->
+      <div style="font-size:10px;color:#555;line-height:1.8;padding-top:4px;">
+        <div><span style="font-weight:700;color:#1a1a1a;">Contract #:</span> ${contrato.numeroContrato}</div>
+        ${contrato.numeroPO ? `<div><span style="font-weight:700;color:#1a1a1a;">PO #:</span> ${contrato.numeroPO}</div>` : ""}
+        <div><span style="font-weight:700;color:#1a1a1a;">Date:</span> ${fmtDate(contrato.fecha)}</div>
+        <div><span style="font-weight:700;color:#1a1a1a;">Total:</span> ${totalStr}</div>
+        <div><span style="font-weight:700;color:#1a1a1a;">Sales Rep:</span> ${vendedor}</div>
+      </div>
+    </div>
+  </div>
 
   <div class="bottom-stripe" style="margin-top:24px;"></div>
 </div>

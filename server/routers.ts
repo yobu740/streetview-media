@@ -2608,27 +2608,56 @@ export const appRouter = router({
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'No se pudo obtener el documento del contrato. Regenera el documento e intenta de nuevo.' });
         }
 
-        // Inject a signature field at the end of the HTML body before </body>
-        const signatureFieldHtml = `
-        <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #1a4d3c;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="width: 50%; padding: 10px;">
-                <p style="font-size: 12px; margin-bottom: 5px;">Firma del Cliente / Client Signature:</p>
-                <signature-field name="Firma" role="Firmante" style="width: 250px; height: 80px; display: block;"></signature-field>
-              </td>
-              <td style="width: 50%; padding: 10px;">
-                <p style="font-size: 12px; margin-bottom: 5px;">Fecha / Date:</p>
-                <date-field name="Fecha" role="Firmante" style="width: 150px; height: 30px; display: block;"></date-field>
-              </td>
-            </tr>
-          </table>
-        </div>`;
+        // ── Inject DocuSeal signature fields at the existing signature lines ──
+        //
+        // The contract HTML has three pages with signature areas:
+        //   Page 1: "Authorized by Company" (vendedor) + "Customer Acceptance" (cliente)
+        //   Page 2: COMPANY "By:" line + CUSTOMER "By:" line  (legal terms page)
+        //   Page 3: "Customer Acceptance — Exhibit A" (cliente only)
+        //
+        // Strategy: replace the empty <div> spacers that act as signature lines
+        // with DocuSeal field tags. We use unique surrounding text as anchors.
 
-        // Insert signature block before </body> or append at end
-        const htmlWithSignature = contractHtml.includes('</body>')
-          ? contractHtml.replace('</body>', `${signatureFieldHtml}\n</body>`)
-          : contractHtml + signatureFieldHtml;
+        let htmlWithSignature = contractHtml;
+
+        // ── PAGE 1 ── Company signature line (height:48px border-bottom)
+        // Anchor: the label "Authorized by Company" appears just before it.
+        // Replace the first occurrence of the 48px-tall empty spacer div.
+        htmlWithSignature = htmlWithSignature.replace(
+          /(<div[^>]*font-size:10px[^>]*>Authorized by Company<\/div>\s*)<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
+          `$1<signature-field name="Firma Vendedor" role="Vendedor" style="width:220px;height:48px;display:block;"></signature-field>`
+        );
+
+        // ── PAGE 1 ── Customer signature line
+        // Anchor: the label "Customer Acceptance" (orange) appears just before it.
+        htmlWithSignature = htmlWithSignature.replace(
+          /(<div[^>]*color:#e05a00[^>]*>Customer Acceptance<\/div>\s*)<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
+          `$1<signature-field name="Firma Cliente" role="Firmante" style="width:220px;height:48px;display:block;"></signature-field>`
+        );
+
+        // ── PAGE 2 ── Company "By:" line  (legal-sig-line class)
+        // The legal-sig-line for COMPANY comes first inside .legal-sig-grid
+        // Anchor: the text "Require Puerto Rico, Inc. d/b/a Street View Media" appears just before it.
+        htmlWithSignature = htmlWithSignature.replace(
+          /(<div[^>]*>Require Puerto Rico, Inc\. d\/b\/a Street View Media<\/div>\s*)<div class="legal-sig-line">By:[^<]*<\/div>/,
+          `$1<div style="display:flex;align-items:center;gap:8px;">By: <signature-field name="Firma Vendedor P2" role="Vendedor" style="width:180px;height:36px;display:inline-block;"></signature-field> Date: <date-field name="Fecha Vendedor" role="Vendedor" style="width:90px;height:28px;display:inline-block;"></date-field></div>`
+        );
+
+        // ── PAGE 2 ── Customer "By:" line
+        // Anchor: "CUSTOMER:" heading + customer name div appears just before the legal-sig-line.
+        // This section is inside .legal-sig-grid and comes AFTER the COMPANY block.
+        // Match the pattern: CUSTOMER: heading -> customer name -> legal-sig-line
+        htmlWithSignature = htmlWithSignature.replace(
+          /(<div[^>]*>CUSTOMER:<\/div>[\s\S]*?<div[^>]*color:#555[^>]*>[\s\S]*?<\/div>\s*)<div class="legal-sig-line">By:[^<]*<\/div>/,
+          `$1<div style="display:flex;align-items:center;gap:8px;">By: <signature-field name="Firma Cliente P2" role="Firmante" style="width:180px;height:36px;display:inline-block;"></signature-field> Date: <date-field name="Fecha Cliente P2" role="Firmante" style="width:90px;height:28px;display:inline-block;"></date-field></div>`
+        );
+
+        // ── PAGE 3 ── Customer Acceptance — Exhibit A
+        // Anchor: the "height:44px;border-bottom:2px solid #1a1a1a" spacer inside the Exhibit A section.
+        htmlWithSignature = htmlWithSignature.replace(
+          /(<div[^>]*Customer Acceptance[^<]*— Exhibit A[^<]*<\/div>[\s\S]*?)<div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
+          `$1<signature-field name="Firma Exhibit A" role="Firmante" style="width:220px;height:44px;display:block;"></signature-field>`
+        );
 
         // Create DocuSeal submission using the HTML endpoint
         const docusealPayload = {

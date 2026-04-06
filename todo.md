@@ -1386,3 +1386,5 @@
 - [x] Fix DocuSeal error: switch from /submissions/pdf (requires PDF file) to /submissions/html (accepts HTML content)
 - [x] Fetch HTML content from stored pdfUrl and send inline to DocuSeal
 - [x] Inject signature-field and date-field tags at end of HTML for signer to complete
+- [x] Replace Clientes.tsx with user-updated version (new generateContractHTML)
+- [x] Place DocuSeal signature fields at existing signature lines in HTML (Page 1: vendedor + cliente, Page 2: legal COMPANY + CUSTOMER, Page 3: Exhibit A cliente only)
