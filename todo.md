@@ -1388,3 +1388,11 @@
 - [x] Inject signature-field and date-field tags at end of HTML for signer to complete
 - [x] Replace Clientes.tsx with user-updated version (new generateContractHTML)
 - [x] Place DocuSeal signature fields at existing signature lines in HTML (Page 1: vendedor + cliente, Page 2: legal COMPANY + CUSTOMER, Page 3: Exhibit A cliente only)
+
+## DocuSeal - Mejoras de Firma (Fase 2)
+- [x] Agregar campos de fecha en Página 1 (vendedor y cliente) en la inyección de DocuSeal
+- [x] Agregar campos de nombre pre-llenado en texto en todas las páginas
+- [x] Corregir inyección de firma en Página 3 (Exhibit A) - regex actualizado
+- [x] Agregar segundo submitter (representante de la compañía) con nombre/email editable, pre-llenado con Carmen Esteve
+- [x] Opción A: Webhook DocuSeal descarga PDF firmado, sube a S3 y reemplaza pdfUrl automáticamente
+- [x] Opción B: Botón manual "PDF Firmado" en el contrato (visible cuando estado es Enviado o Firmado)

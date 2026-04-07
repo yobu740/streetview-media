@@ -69,17 +69,41 @@ async function startServer() {
 
       if (event?.event_type === 'submission.completed') {
         const submissionId = event?.data?.id;
+        // DocuSeal provides the signed PDF URL in documents[0].url
         const signedDocUrl = event?.data?.documents?.[0]?.url ?? null;
 
         if (submissionId) {
           const { getDb } = await import('../db');
           const { contratos } = await import('../../drizzle/schema');
           const { eq } = await import('drizzle-orm');
+          const { storagePut } = await import('../storage');
           const database = await getDb();
+
           if (database) {
+            let savedPdfUrl = signedDocUrl; // fallback: keep DocuSeal URL
+
+            // Option A: Download the signed PDF from DocuSeal and re-upload to our S3
+            // This replaces the original contract document with the fully signed version
+            if (signedDocUrl) {
+              try {
+                const pdfRes = await fetch(signedDocUrl);
+                if (pdfRes.ok) {
+                  const pdfBuffer = Buffer.from(await pdfRes.arrayBuffer());
+                  const fileKey = `contratos/signed/${submissionId}-${Date.now()}.pdf`;
+                  const { url } = await storagePut(fileKey, pdfBuffer, 'application/pdf');
+                  savedPdfUrl = url;
+                  console.log('[DocuSeal Webhook] Signed PDF uploaded to S3:', savedPdfUrl);
+                }
+              } catch (uploadErr) {
+                console.error('[DocuSeal Webhook] Failed to upload signed PDF to S3, keeping DocuSeal URL:', uploadErr);
+                // savedPdfUrl remains as signedDocUrl (fallback)
+              }
+            }
+
             await database.update(contratos).set({
               estado: 'Firmado',
-              firmaUrl: signedDocUrl,
+              firmaUrl: savedPdfUrl,   // link to signed PDF (shown as "Ver PDF Firmado")
+              pdfUrl: savedPdfUrl,     // replace the contract document with the signed version
             }).where(eq(contratos.docusealSubmissionId, submissionId));
             console.log('[DocuSeal Webhook] Contrato marked as Firmado for submission:', submissionId);
           }

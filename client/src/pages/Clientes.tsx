@@ -613,7 +613,10 @@ export default function Clientes() {
   const [signingContrato, setSigningContrato] = useState<Contrato | null>(null);
   const [signerEmail, setSignerEmail] = useState("");
   const [signerName, setSignerName] = useState("");
+  const [companySignerEmail, setCompanySignerEmail] = useState("carmen.esteve@streetviewmedia.com");
+  const [companySignerName, setCompanySignerName] = useState("Carmen Esteve");
   const [generatingSignPdf, setGeneratingSignPdf] = useState(false);
+  const [uploadSignedPdfContrato, setUploadSignedPdfContrato] = useState<Contrato | null>(null);
 
   // Auto-open modals based on URL params (from Calendar shortcuts)
   useEffect(() => {
@@ -670,11 +673,20 @@ export default function Clientes() {
       setSigningContrato(null);
       setSignerEmail("");
       setSignerName("");
+      // Keep company signer defaults for next time
     },
     onError: (e) => toast.error(e.message),
   });
   const savePdfUrl = trpc.contratos.savePdfUrl.useMutation({
     onSuccess: () => { if (selectedCliente) utils.contratos.list.invalidate({ clienteId: selectedCliente.id }); },
+  });
+  const saveSignedPdf = trpc.contratos.saveSignedPdf.useMutation({
+    onSuccess: () => {
+      if (selectedCliente) utils.contratos.list.invalidate({ clienteId: selectedCliente.id });
+      toast.success("PDF firmado guardado correctamente");
+      setUploadSignedPdfContrato(null);
+    },
+    onError: (e) => toast.error(e.message),
   });
 
   const filtered = clientes.filter((c) =>
@@ -902,6 +914,7 @@ export default function Clientes() {
                         setSignerEmail(selectedCliente?.email || "");
                         setSignerName(selectedCliente?.contactoPrincipal || selectedCliente?.nombre || "");
                       }}
+                      onUploadSignedPdf={() => setUploadSignedPdfContrato(c as Contrato)}
                     />
                   ))}
                 </div>
@@ -958,7 +971,7 @@ export default function Clientes() {
       {/* Send for Signature Dialog */}
       {signingContrato && (
         <Dialog open={!!signingContrato} onOpenChange={(open) => { if (!open && !sendForSigning.isPending && !generatingSignPdf) { setSigningContrato(null); setSignerEmail(""); setSignerName(""); } }}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <PenLine size={18} className="text-[#1a4d3c]" />
@@ -968,8 +981,10 @@ export default function Clientes() {
             <div className="space-y-4 py-2">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
                 <p className="font-semibold">{signingContrato.numeroContrato}</p>
-                <p className="text-xs text-blue-600 mt-1">Se enviará un email al firmante con un enlace para firmar el contrato electrónicamente vía DocuSeal.</p>
+                <p className="text-xs text-blue-600 mt-1">Se enviará un email a ambos firmantes con un enlace para firmar el contrato electrónicamente vía DocuSeal.</p>
               </div>
+
+              {/* Document status */}
               {signingContrato.pdfUrl ? (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800 flex items-center gap-2">
                   <CheckCircle2 size={14} />
@@ -981,7 +996,7 @@ export default function Clientes() {
               ) : (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
                   <p className="font-semibold mb-2">⚠️ Sin documento generado</p>
-                  <p className="text-xs mb-3">El contrato necesita un documento para que el cliente pueda firmarlo.</p>
+                  <p className="text-xs mb-3">El contrato necesita un documento para que los firmantes puedan firmarlo.</p>
                   <Button
                     size="sm"
                     variant="outline"
@@ -1003,33 +1018,71 @@ export default function Clientes() {
                   </Button>
                 </div>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="signerName">Nombre del Firmante</Label>
-                <Input
-                  id="signerName"
-                  value={signerName}
-                  onChange={(e) => setSignerName(e.target.value)}
-                  placeholder="Nombre completo del firmante"
-                />
+
+              {/* Customer signer */}
+              <div className="border rounded-lg p-3 space-y-3">
+                <p className="text-xs font-semibold text-[#e05a00] uppercase tracking-wide">Firmante — Cliente</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="signerName" className="text-xs">Nombre</Label>
+                    <Input
+                      id="signerName"
+                      value={signerName}
+                      onChange={(e) => setSignerName(e.target.value)}
+                      placeholder="Nombre completo"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="signerEmail" className="text-xs">Email</Label>
+                    <Input
+                      id="signerEmail"
+                      type="email"
+                      value={signerEmail}
+                      onChange={(e) => setSignerEmail(e.target.value)}
+                      placeholder="email@empresa.com"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="signerEmail">Email del Firmante</Label>
-                <Input
-                  id="signerEmail"
-                  type="email"
-                  value={signerEmail}
-                  onChange={(e) => setSignerEmail(e.target.value)}
-                  placeholder="email@empresa.com"
-                />
+
+              {/* Company signer */}
+              <div className="border rounded-lg p-3 space-y-3">
+                <p className="text-xs font-semibold text-[#1a4d3c] uppercase tracking-wide">Firmante — Representante de la Compañía</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="companySignerName" className="text-xs">Nombre</Label>
+                    <Input
+                      id="companySignerName"
+                      value={companySignerName}
+                      onChange={(e) => setCompanySignerName(e.target.value)}
+                      placeholder="Carmen Esteve"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="companySignerEmail" className="text-xs">Email</Label>
+                    <Input
+                      id="companySignerEmail"
+                      type="email"
+                      value={companySignerEmail}
+                      onChange={(e) => setCompanySignerEmail(e.target.value)}
+                      placeholder="carmen.esteve@streetviewmedia.com"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
+
             <DialogFooter className="gap-2">
               <Button variant="outline" disabled={sendForSigning.isPending || generatingSignPdf} onClick={() => { setSigningContrato(null); setSignerEmail(""); setSignerName(""); }}>
                 Cancelar
               </Button>
               <Button
                 className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
-                disabled={!signerEmail || !signerName || sendForSigning.isPending || generatingSignPdf || !signingContrato.pdfUrl}
+                disabled={!signerEmail || !signerName || !companySignerEmail || !companySignerName || sendForSigning.isPending || generatingSignPdf || !signingContrato.pdfUrl}
                 onClick={async () => {
                   if (!signingContrato) return;
                   let pdfUrl = signingContrato.pdfUrl;
@@ -1041,6 +1094,8 @@ export default function Clientes() {
                     contratoId: signingContrato.id,
                     signerEmail,
                     signerName,
+                    companySignerEmail,
+                    companySignerName,
                   });
                 }}
               >
@@ -1049,6 +1104,71 @@ export default function Clientes() {
                 ) : (
                   <><Send size={14} className="mr-1" /> Enviar para Firma</>
                 )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Upload Signed PDF Dialog (Option B - manual fallback) */}
+      {uploadSignedPdfContrato && (
+        <Dialog open={!!uploadSignedPdfContrato} onOpenChange={(open) => { if (!open && !saveSignedPdf.isPending) setUploadSignedPdfContrato(null); }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Upload size={18} className="text-purple-600" />
+                Subir PDF Firmado
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-sm text-purple-800">
+                <p className="font-semibold">{uploadSignedPdfContrato.numeroContrato}</p>
+                <p className="text-xs text-purple-600 mt-1">Sube el PDF firmado recibido por email de DocuSeal. Esto reemplazará el documento actual del contrato y marcará el estado como "Firmado".</p>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm">Seleccionar PDF firmado</Label>
+                <div className="border-2 border-dashed border-purple-200 rounded-lg p-6 text-center">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    id="signed-pdf-upload"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !uploadSignedPdfContrato) return;
+                      try {
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+                        if (!res.ok) throw new Error("Upload failed");
+                        const data = await res.json();
+                        saveSignedPdf.mutate({ contratoId: uploadSignedPdfContrato.id, signedPdfUrl: data.url });
+                      } catch {
+                        toast.error("Error al subir el PDF firmado");
+                      }
+                    }}
+                    disabled={saveSignedPdf.isPending}
+                  />
+                  <label htmlFor="signed-pdf-upload" className="cursor-pointer">
+                    {saveSignedPdf.isPending ? (
+                      <div className="flex flex-col items-center gap-2 text-purple-600">
+                        <Loader2 size={24} className="animate-spin" />
+                        <span className="text-sm">Subiendo...</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-purple-500 hover:text-purple-700">
+                        <Upload size={24} />
+                        <span className="text-sm font-medium">Haz clic para seleccionar el PDF</span>
+                        <span className="text-xs text-gray-400">Solo archivos .pdf</span>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" disabled={saveSignedPdf.isPending} onClick={() => setUploadSignedPdfContrato(null)}>
+                Cancelar
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1089,7 +1209,7 @@ export default function Clientes() {
 
 // ─── Contrato Card ─────────────────────────────────────────────────────────────
 
-function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplicate, onSendForSigning }: {
+function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplicate, onSendForSigning, onUploadSignedPdf }: {
   contrato: Contrato;
   onEdit: () => void;
   onDelete: () => void;
@@ -1097,6 +1217,7 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
   onPreview: () => void;
   onDuplicate: () => void;
   onSendForSigning: () => void;
+  onUploadSignedPdf: () => void;
 }) {
   const numMeses = contrato.numMeses && contrato.numMeses > 1 ? contrato.numMeses : 1;
   const rawTotal = contrato.items ? calcRawTotal(contrato.items) : 0;
@@ -1155,6 +1276,17 @@ function ContratoCard({ contrato, onEdit, onDelete, onPrint, onPreview, onDuplic
                 title={isSent ? "Reenviar para firma" : "Enviar para firma electrónica"}
               >
                 <PenLine size={12} className="mr-1" /> {isSent ? "Reenviar" : "Enviar para Firma"}
+              </Button>
+            )}
+            {(isSent || isSigned) && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-xs text-purple-600 hover:text-purple-700"
+                onClick={onUploadSignedPdf}
+                title="Subir PDF firmado manualmente"
+              >
+                <Upload size={12} className="mr-1" /> PDF Firmado
               </Button>
             )}
             <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={onDuplicate} title="Duplicar contrato">
