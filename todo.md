@@ -1396,3 +1396,6 @@
 - [x] Agregar segundo submitter (representante de la compañía) con nombre/email editable, pre-llenado con Carmen Esteve
 - [x] Opción A: Webhook DocuSeal descarga PDF firmado, sube a S3 y reemplaza pdfUrl automáticamente
 - [x] Opción B: Botón manual "PDF Firmado" en el contrato (visible cuando estado es Enviado o Firmado)
+
+## DocuSeal Fix - Firma Exhibit A Página 3
+- [x] Corregir inyección de campo signature en Página 3 (Exhibit A) - regex actualizado para manejar variaciones de whitespace y comillas

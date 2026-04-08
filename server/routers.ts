@@ -2664,11 +2664,12 @@ export const appRouter = router({
         );
 
         // ── PAGE 3 ── Customer Acceptance — Exhibit A
-        // The signature area is: height:44px spacer div -> CUSTOMER SIGNATURE / DATE labels
-        // Replace the 44px spacer with signature + date fields side by side
+        // Anchor: the text "Customer Acceptance — Exhibit A" appears in the HTML.
+        // After that anchor, find the height:44px signature spacer div and replace it.
+        // We use a regex with \s* to handle any whitespace/indentation in the stored HTML.
         htmlWithSignature = htmlWithSignature.replace(
-          /(<div style="margin-top:36px[^>]*>[\s\S]*?Customer Acceptance — Exhibit A[\s\S]*?<\/div>\s*<div style="display:grid;grid-template-columns:1fr 1fr[^>]*>\s*<div>\s*)<div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>(\s*<div style="display:grid;grid-template-columns:1fr 1fr[^>]*>\s*<div[^>]*>CUSTOMER SIGNATURE<\/div>)/,
-          `$1<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;"><signature-field name="Firma Exhibit A" role="Firmante" style="height:44px;display:block;"></signature-field><date-field name="Fecha Exhibit A" role="Firmante" style="height:44px;display:block;"></date-field></div>$2`
+          /(Customer Acceptance \u2014 Exhibit A[\s\S]*?)<div[^>]*height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px[^>]*><\/div>/,
+          `$1<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;"><signature-field name="Firma Exhibit A" role="Firmante" style="height:44px;display:block;"></signature-field><date-field name="Fecha Exhibit A" role="Firmante" style="height:44px;display:block;"></date-field></div>`
         );
 
         // ── PAGE 3 ── Pre-fill "Name / Title" line for customer in Exhibit A
