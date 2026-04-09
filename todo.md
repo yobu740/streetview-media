@@ -1399,3 +1399,8 @@
 
 ## DocuSeal Fix - Firma Exhibit A Página 3
 - [x] Corregir inyección de campo signature en Página 3 (Exhibit A) - regex actualizado para manejar variaciones de whitespace y comillas
+
+## DocuSeal Webhook - Debug y Notificación
+- [x] Diagnosticar por qué el webhook no actualiza el estado del contrato a Firmado - mejorado manejo de submission.completed y form.completed
+- [x] Agregar logs detallados al webhook para ver el payload completo de DocuSeal
+- [x] Agregar notificación interna al owner cuando un contrato es firmado (incluye número, cliente, vendedor, monto y link al PDF)

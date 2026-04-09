@@ -65,25 +65,59 @@ async function startServer() {
   app.post("/api/docuseal/webhook", async (req: any, res: any) => {
     try {
       const event = req.body;
-      console.log('[DocuSeal Webhook] Event received:', event?.event_type, 'submission:', event?.data?.id);
+      // Log the FULL payload so we can debug what DocuSeal is sending
+      console.log('[DocuSeal Webhook] Full event payload:', JSON.stringify(event, null, 2));
 
-      if (event?.event_type === 'submission.completed') {
-        const submissionId = event?.data?.id;
-        // DocuSeal provides the signed PDF URL in documents[0].url
-        const signedDocUrl = event?.data?.documents?.[0]?.url ?? null;
+      const eventType = event?.event_type;
+      // DocuSeal sends 'submission.completed' when ALL signers have signed
+      // It may also send 'form.completed' for individual signer completions
+      const isCompleted = eventType === 'submission.completed';
+      const isFormCompleted = eventType === 'form.completed';
+
+      console.log('[DocuSeal Webhook] Event type:', eventType, '| isCompleted:', isCompleted, '| isFormCompleted:', isFormCompleted);
+
+      if (isCompleted || isFormCompleted) {
+        // submission.completed: event.data.id is the submission ID
+        // form.completed: event.data.submission.id is the submission ID
+        const submissionId: number | undefined =
+          isCompleted
+            ? event?.data?.id
+            : event?.data?.submission?.id ?? event?.data?.id;
+
+        // Signed PDF URL — DocuSeal puts it in documents[0].url or submission.documents[0].url
+        const signedDocUrl: string | null =
+          event?.data?.documents?.[0]?.url ??
+          event?.data?.submission?.documents?.[0]?.url ??
+          null;
+
+        console.log('[DocuSeal Webhook] submissionId:', submissionId, '| signedDocUrl:', signedDocUrl);
 
         if (submissionId) {
           const { getDb } = await import('../db');
           const { contratos } = await import('../../drizzle/schema');
           const { eq } = await import('drizzle-orm');
           const { storagePut } = await import('../storage');
+          const { notifyOwner } = await import('./notification');
           const database = await getDb();
 
           if (database) {
-            let savedPdfUrl = signedDocUrl; // fallback: keep DocuSeal URL
+            // Find the contrato by docusealSubmissionId
+            const [contrato] = await database
+              .select()
+              .from(contratos)
+              .where(eq(contratos.docusealSubmissionId, submissionId));
 
-            // Option A: Download the signed PDF from DocuSeal and re-upload to our S3
-            // This replaces the original contract document with the fully signed version
+            if (!contrato) {
+              console.warn('[DocuSeal Webhook] No contrato found for submissionId:', submissionId);
+              // Still respond 200 so DocuSeal doesn't retry
+              return res.json({ received: true, warning: 'No contrato found for this submission' });
+            }
+
+            console.log('[DocuSeal Webhook] Found contrato:', contrato.numeroContrato, 'current estado:', contrato.estado);
+
+            let savedPdfUrl: string | null = signedDocUrl;
+
+            // Download the signed PDF from DocuSeal and re-upload to our S3
             if (signedDocUrl) {
               try {
                 const pdfRes = await fetch(signedDocUrl);
@@ -93,20 +127,40 @@ async function startServer() {
                   const { url } = await storagePut(fileKey, pdfBuffer, 'application/pdf');
                   savedPdfUrl = url;
                   console.log('[DocuSeal Webhook] Signed PDF uploaded to S3:', savedPdfUrl);
+                } else {
+                  console.warn('[DocuSeal Webhook] Failed to fetch signed PDF, status:', pdfRes.status);
                 }
               } catch (uploadErr) {
-                console.error('[DocuSeal Webhook] Failed to upload signed PDF to S3, keeping DocuSeal URL:', uploadErr);
-                // savedPdfUrl remains as signedDocUrl (fallback)
+                console.error('[DocuSeal Webhook] Failed to upload signed PDF to S3:', uploadErr);
               }
             }
 
+            // Update contrato to Firmado
             await database.update(contratos).set({
               estado: 'Firmado',
-              firmaUrl: savedPdfUrl,   // link to signed PDF (shown as "Ver PDF Firmado")
-              pdfUrl: savedPdfUrl,     // replace the contract document with the signed version
+              firmaUrl: savedPdfUrl,
+              pdfUrl: savedPdfUrl ?? contrato.pdfUrl, // keep original if no signed PDF
             }).where(eq(contratos.docusealSubmissionId, submissionId));
-            console.log('[DocuSeal Webhook] Contrato marked as Firmado for submission:', submissionId);
+
+            console.log('[DocuSeal Webhook] Contrato', contrato.numeroContrato, 'marked as Firmado');
+
+            // Send internal notification to owner
+            try {
+              await notifyOwner({
+                title: `✅ Contrato Firmado: ${contrato.numeroContrato}`,
+                content: `El contrato **${contrato.numeroContrato}** ha sido firmado por todas las partes.\n\n` +
+                  `**Cliente:** ${contrato.customerId || '—'}\n` +
+                  `**Vendedor:** ${contrato.vendedor || '—'}\n` +
+                  `**Monto Total:** ${contrato.total ? `$${contrato.total}` : '—'}\n\n` +
+                  `${savedPdfUrl ? `[Ver PDF Firmado](${savedPdfUrl})` : 'PDF firmado no disponible aún.'}`,
+              });
+              console.log('[DocuSeal Webhook] Owner notification sent for contrato:', contrato.numeroContrato);
+            } catch (notifyErr) {
+              console.error('[DocuSeal Webhook] Failed to send owner notification:', notifyErr);
+            }
           }
+        } else {
+          console.warn('[DocuSeal Webhook] Could not extract submissionId from event payload');
         }
       }
 
