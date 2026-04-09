@@ -894,6 +894,59 @@ export const appRouter = router({
         const pdfUrl = await regenerateInvoicePDF(input.facturaId);
         return { pdfUrl };
       }),
+
+    // Link existing anuncios to an old factura that lacks anuncioIdsJson
+    // Searches by client name and a date range (the billing month of the invoice)
+    linkAnuncios: adminProcedure
+      .input(z.object({
+        facturaId: z.number(),
+        anuncioIds: z.array(z.number()),
+      }))
+      .mutation(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { facturas } = await import("../drizzle/schema");
+        const { eq } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        await db
+          .update(facturas)
+          .set({ anuncioIdsJson: JSON.stringify(input.anuncioIds) })
+          .where(eq(facturas.id as any, input.facturaId));
+
+        return { success: true, count: input.anuncioIds.length };
+      }),
+
+    // Search anuncios by client name to help link old invoices
+    searchAnunciosByCliente: adminProcedure
+      .input(z.object({ cliente: z.string() }))
+      .query(async ({ input }) => {
+        const { getDb } = await import("./db");
+        const { anuncios, paradas } = await import("../drizzle/schema");
+        const { eq, like, desc } = await import("drizzle-orm");
+        const db = await getDb();
+        if (!db) return [];
+
+        const results = await db
+          .select({
+            id: anuncios.id,
+            paradaId: anuncios.paradaId,
+            cliente: anuncios.cliente,
+            tipo: anuncios.tipo,
+            fechaInicio: anuncios.fechaInicio,
+            fechaFin: anuncios.fechaFin,
+            costoPorUnidad: anuncios.costoPorUnidad,
+            cobertizoId: paradas.cobertizoId,
+            localizacion: paradas.localizacion,
+          })
+          .from(anuncios)
+          .leftJoin(paradas, eq(anuncios.paradaId, paradas.id))
+          .where(like(anuncios.cliente, `%${input.cliente}%`))
+          .orderBy(desc(anuncios.fechaInicio))
+          .limit(200);
+
+        return results;
+      }),
   }),
 
   // Contact form router

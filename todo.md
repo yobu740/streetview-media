@@ -1417,3 +1417,9 @@
 ## Facturas - Corrección Formato PDF (Modelo HTML)
 - [x] Reescribir invoice-generator.ts para coincidir con modelo HTML: columnas correctas, Interior/Exterior, Fijo/Bonificación completo, periodo de facturación por línea, columna Total, periodo de contrato en header, footer completo con info legal y bancaria
 - [x] Corregir visibilidad del botón regenerar en Facturas.tsx (visible para todas, deshabilitado si no tiene anuncioIdsJson)
+
+## Facturas - Corrección Lógica de Descuentos y Regeneración de Facturas Antiguas
+- [x] Corregir lógica de descuento: todos los anuncios valen $350 estándar; descuento = max(0, 350 - costo); Bonificación = descuento de $350 completo
+- [x] Agregar procedimiento backend para vincular facturas antiguas con sus anuncios (backfill anuncioIdsJson)
+- [x] Agregar botón UI en Facturas.tsx para vincular/regenerar facturas antiguas (botón 🔗 naranja en facturas sin anuncioIdsJson)
+- [x] Periodo de Facturación: mostrar primer y último día del mes del anuncio (ej: 01/04/2026 - 30/04/2026)

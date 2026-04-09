@@ -428,9 +428,15 @@ async function buildInvoiceData(
     const orientacion = parada?.orientacion || "";
     const caja = cajaLabel(orientacion);
 
-    // Discount: if tipo is Bonificación, discount = cost (full discount); otherwise 0
-    const descuento = anuncio.tipo === "Bonificación" ? cost : 0;
-    const total = cost - descuento;
+    // Standard price is $350 per unit.
+    // Fijo: discount = max(0, 350 - actual_cost)  → total = actual_cost
+    // Bonificación: discount = $350 (full price, ad is free) → total = 0
+    const STANDARD_PRICE = 350;
+    const descuento =
+      anuncio.tipo === "Bonificación"
+        ? STANDARD_PRICE
+        : Math.max(0, STANDARD_PRICE - cost);
+    const total = anuncio.tipo === "Bonificación" ? 0 : cost;
 
     const fechaInicio = new Date(anuncio.fechaInicio);
     const fechaFin = new Date(anuncio.fechaFin);
@@ -438,12 +444,18 @@ async function buildInvoiceData(
     if (!minFechaInicio || fechaInicio < minFechaInicio) minFechaInicio = fechaInicio;
     if (!maxFechaFin || fechaFin > maxFechaFin) maxFechaFin = fechaFin;
 
+    // Billing period = first and last day of the billing month (from fechaInicio)
+    const billingYear = fechaInicio.getUTCFullYear();
+    const billingMonth = fechaInicio.getUTCMonth(); // 0-indexed
+    const firstDayOfMonth = new Date(Date.UTC(billingYear, billingMonth, 1));
+    const lastDayOfMonth = new Date(Date.UTC(billingYear, billingMonth + 1, 0)); // day 0 of next month = last day of current month
+
     items.push({
       paradaInfo,
       orientacion,
       caja,
-      periodoInicio: fmtDate(fechaInicio),
-      periodoFin: fmtDate(fechaFin),
+      periodoInicio: fmtDate(firstDayOfMonth),
+      periodoFin: fmtDate(lastDayOfMonth),
       tipo: anuncio.tipo,
       costo: cost,
       descuento,
