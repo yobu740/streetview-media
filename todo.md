@@ -1413,3 +1413,7 @@
 - [x] Reemplazar client/src/pages/Facturas.tsx con botón regenerar
 - [x] Mover procedimiento regenerate al router facturas (estaba en invoices)
 - [x] Restaurar companySignerEmail/companySignerName en sendForSigning y saveSignedPdf en contratos router
+
+## Facturas - Corrección Formato PDF (Modelo HTML)
+- [x] Reescribir invoice-generator.ts para coincidir con modelo HTML: columnas correctas, Interior/Exterior, Fijo/Bonificación completo, periodo de facturación por línea, columna Total, periodo de contrato en header, footer completo con info legal y bancaria
+- [x] Corregir visibilidad del botón regenerar en Facturas.tsx (visible para todas, deshabilitado si no tiene anuncioIdsJson)

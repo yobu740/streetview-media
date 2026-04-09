@@ -301,17 +301,16 @@ export default function Facturas() {
                           >
                             <Download className="h-4 w-4" />
                           </Button>
-                          {(factura as any).anuncioIdsJson && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleRegenerate(factura.id, factura.numeroFactura)}
-                              title="Regenerar PDF con nuevo formato"
-                              disabled={regeneratingId === factura.id}
-                            >
-                              <RefreshCw className={`h-4 w-4 ${regeneratingId === factura.id ? "animate-spin" : ""}`} />
-                            </Button>
-                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRegenerate(factura.id, factura.numeroFactura)}
+                            title={(factura as any).anuncioIdsJson ? "Regenerar PDF con nuevo formato" : "Sin anuncios guardados — no se puede regenerar"}
+                            disabled={regeneratingId === factura.id || !(factura as any).anuncioIdsJson}
+                            className={(factura as any).anuncioIdsJson ? "" : "opacity-40 cursor-not-allowed"}
+                          >
+                            <RefreshCw className={`h-4 w-4 ${regeneratingId === factura.id ? "animate-spin" : ""}`} />
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

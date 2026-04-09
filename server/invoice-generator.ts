@@ -2,21 +2,500 @@ import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
-import PDFDocument from "pdfkit";
 
-const STANDARD_PRICE = 350; // Standard price per unit for discount calculation
+const LOGO_URL =
+  "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Format a Date or timestamp as DD/MM/YYYY */
+function fmtDate(d: Date | string | null | undefined): string {
+  if (!d) return "";
+  const dt = new Date(d);
+  const dd = String(dt.getUTCDate()).padStart(2, "0");
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const yyyy = dt.getUTCFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+/** Format a number as $X,XXX.XX */
+function fmtMoney(n: number): string {
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/** Map raw orientacion code to display label */
+function orientacionLabel(raw: string): string {
+  const map: Record<string, string> = {
+    I: "Interior",
+    O: "Exterior",
+    P: "Posterior",
+  };
+  return map[raw?.toUpperCase()] ?? raw ?? "";
+}
+
+/** Map orientacion code to Caja number */
+function cajaLabel(raw: string): string {
+  const map: Record<string, string> = { I: "1", O: "2", P: "P" };
+  return map[raw?.toUpperCase()] ?? raw ?? "";
+}
+
+/** Map tipo enum to full display label */
+function tipoLabel(raw: string): string {
+  const map: Record<string, string> = {
+    Fijo: "Fijo",
+    "Bonificación": "Bonificación",
+    Holder: "Holder",
+  };
+  return map[raw] ?? raw ?? "";
+}
+
+// ─── Data Types ───────────────────────────────────────────────────────────────
 
 interface InvoiceItem {
-  paradaId: number;
-  paradaInfo: string;         // cobertizo - localizacion
-  orientacion: string;        // I / O / P
-  caja: string;               // 1 (I) / 2 (O)
-  periodoInicio: string;      // DD/MM/YY
-  periodoFin: string;         // DD/MM/YY
-  tipo: string;               // F / B / H
+  paradaInfo: string;
+  orientacion: string;   // raw code: I / O / P
+  caja: string;
+  periodoInicio: string; // DD/MM/YYYY
+  periodoFin: string;
+  tipo: string;          // raw: Fijo / Bonificación / Holder
   costo: number;
-  descuento: number;          // max(0, STANDARD_PRICE - costo)
+  descuento: number;
+  total: number;
 }
+
+interface InvoiceData {
+  invoiceNumber: string;
+  invoiceDate: string;
+  clientName: string;
+  invoiceTitle: string;       // e.g. "CLARO PR — Marzo 2026"
+  periodoContrato: string;    // e.g. "01/03/2026 - 31/03/2026"
+  salespersonName: string;
+  items: InvoiceItem[];
+  subtotalAnuncios: number;
+  totalDescuentos: number;
+  productionCost: number;
+  otherServicesDescription: string;
+  otherServicesCost: number;
+  finalTotal: number;
+}
+
+// ─── HTML Generator ───────────────────────────────────────────────────────────
+
+function buildInvoiceHTML(data: InvoiceData): string {
+  const {
+    invoiceNumber, invoiceDate, clientName, invoiceTitle,
+    periodoContrato, salespersonName, items,
+    subtotalAnuncios, totalDescuentos, productionCost,
+    otherServicesDescription, otherServicesCost, finalTotal,
+  } = data;
+
+  const rowsHTML = items.map((item, i) => {
+    const isBonif = item.tipo === "Bonificación";
+    const tipoClass = isBonif ? 'class="bonif-tipo"' : "";
+    const descHTML =
+      item.descuento > 0
+        ? `<td class="col-desc descuento-val">-${fmtMoney(item.descuento)}</td>`
+        : `<td class="col-desc descuento-none">—</td>`;
+
+    return `
+      <tr${i % 2 === 1 ? ' style="background:#f5f5f5"' : ""}>
+        <td class="col-parada">${item.paradaInfo}</td>
+        <td class="col-orient">${orientacionLabel(item.orientacion)}</td>
+        <td class="col-caja">${item.caja}</td>
+        <td class="col-periodo">${item.periodoInicio} - ${item.periodoFin}</td>
+        <td class="col-tipo" ${tipoClass}>${tipoLabel(item.tipo)}</td>
+        <td class="col-costo">${fmtMoney(item.costo)}</td>
+        ${descHTML}
+        <td class="col-total total-cell">${fmtMoney(item.total)}</td>
+      </tr>`;
+  }).join("\n");
+
+  const totalsHTML = `
+    <tr>
+      <td class="lbl">Subtotal (Anuncios)</td>
+      <td class="amt">${fmtMoney(subtotalAnuncios)}</td>
+    </tr>
+    ${totalDescuentos > 0 ? `
+    <tr>
+      <td class="desc-lbl">Descuentos aplicados</td>
+      <td class="desc-amt">-${fmtMoney(totalDescuentos)}</td>
+    </tr>` : ""}
+    ${productionCost > 0 ? `
+    <tr>
+      <td class="lbl">Costo de Producción</td>
+      <td class="amt">${fmtMoney(productionCost)}</td>
+    </tr>` : ""}
+    ${otherServicesCost > 0 ? `
+    <tr>
+      <td class="lbl">${otherServicesDescription || "Otros Servicios"}</td>
+      <td class="amt">${fmtMoney(otherServicesCost)}</td>
+    </tr>` : ""}
+    <tr class="totals-divider">
+      <td class="grand-lbl">TOTAL</td>
+      <td class="grand-amt">${fmtMoney(finalTotal)}</td>
+    </tr>`;
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factura ${invoiceNumber} — Streetview Media</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #e5e7eb; font-family: Arial, Helvetica, sans-serif; padding: 32px; }
+  .page {
+    width: 816px;
+    min-height: 1056px;
+    background: white;
+    margin: 0 auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: #1a4d3c;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    padding: 0 50px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .header img { height: 48px; }
+  .header-right {
+    position: absolute;
+    right: 50px;
+    top: 14px;
+    text-align: right;
+    color: white;
+    font-size: 9px;
+    line-height: 1.75;
+  }
+  .header-right .label { font-size: 14px; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
+
+  /* ── Address + client ── */
+  .address {
+    padding: 10px 50px 0;
+    font-size: 9px;
+    color: #666;
+    line-height: 1.6;
+  }
+  .billed-to {
+    padding: 14px 50px 8px;
+  }
+  .billed-label { font-size: 11px; font-weight: 700; color: #1a4d3c; margin-bottom: 3px; }
+  .billed-name  { font-size: 10px; color: #555; }
+
+  /* ── Table ── */
+  .invoice-table {
+    width: calc(100% - 100px);
+    margin: 0 50px;
+    border-collapse: collapse;
+  }
+  .invoice-table thead tr { background: #1a4d3c; }
+  .invoice-table thead th {
+    color: white;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 8px 5px;
+    text-align: left;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .invoice-table thead th.right { text-align: right; }
+  .invoice-table tbody td {
+    font-size: 8.5px;
+    color: #333;
+    padding: 6px 5px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  .right { text-align: right; }
+
+  /* col widths */
+  .col-parada  { width: 20%; }
+  .col-orient  { width: 11%; }
+  .col-caja    { width: 5%;  text-align: center; }
+  .col-periodo { width: 20%; }
+  .col-tipo    { width: 11%; }
+  .col-costo   { width: 9%;  text-align: right; }
+  .col-desc    { width: 9%;  text-align: right; }
+  .col-total   { width: 10%; text-align: right; font-weight: 700; }
+
+  .descuento-val  { color: #e05a00; font-weight: 600; }
+  .descuento-none { color: #bbb; }
+  .total-cell     { color: #1a4d3c; font-weight: 700; }
+  .bonif-tipo     { color: #e05a00; font-style: italic; }
+
+  /* ── Totals ── */
+  .totals-wrap {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 50px 0;
+  }
+  .totals-table { width: 270px; border-collapse: collapse; font-size: 10px; }
+  .totals-table td { padding: 5px 8px; }
+  .totals-table .lbl { color: #555; }
+  .totals-table .amt { text-align: right; font-weight: 600; }
+  .totals-table .desc-lbl { color: #e05a00; }
+  .totals-table .desc-amt { color: #e05a00; text-align: right; font-weight: 600; }
+  .totals-divider td { border-top: 2px solid #1a4d3c; padding-top: 10px; }
+  .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #1a4d3c; }
+  .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #1a4d3c; text-align: right; }
+
+  /* ── Footer ── */
+  .footer {
+    margin: auto 50px 0;
+    border-top: 2px solid #1a4d3c;
+    padding-top: 14px;
+    font-size: 8px;
+    color: #555;
+    line-height: 1.7;
+  }
+  .footer-legal {
+    margin-bottom: 14px;
+    font-style: italic;
+    color: #666;
+  }
+  .footer-contacts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .footer-block-title {
+    font-weight: 700;
+    font-size: 8px;
+    color: #1a4d3c;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+  .footer-copy {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 7.5px;
+    color: #aaa;
+    padding-bottom: 16px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <img src="${LOGO_URL}" alt="Streetview Media" onerror="this.style.display='none'">
+    <div class="header-right">
+      <div class="label">FACTURA</div>
+      <div>No. ${invoiceNumber}</div>
+      <div>Fecha: ${invoiceDate}</div>
+      <div>${invoiceTitle}</div>
+      ${periodoContrato ? `<div>Periodo de Contrato: ${periodoContrato}</div>` : ""}
+      <div>Vendedor: ${salespersonName || "—"}</div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="address">
+    130 Ave. Winston Churchill &nbsp;|&nbsp; PMB 167 &nbsp;|&nbsp; San Juan, PR 00926
+  </div>
+
+  <!-- Billed to -->
+  <div class="billed-to">
+    <div class="billed-label">FACTURADO A:</div>
+    <div class="billed-name">${clientName.toUpperCase()}</div>
+  </div>
+
+  <!-- Invoice Table -->
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th class="col-parada">Parada</th>
+        <th class="col-orient">Orientación</th>
+        <th class="col-caja">Caja</th>
+        <th class="col-periodo">Periodo de Facturación</th>
+        <th class="col-tipo">Tipo</th>
+        <th class="col-costo right">Costo</th>
+        <th class="col-desc right">Descuento</th>
+        <th class="col-total right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHTML}
+    </tbody>
+  </table>
+
+  <!-- Totals -->
+  <div class="totals-wrap">
+    <table class="totals-table">
+      <tbody>
+        ${totalsHTML}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p class="footer-legal">
+      El cliente tiene (20) días calendarios, contados a partir del envío de la factura, para presentar cualquier objeción a la misma y solicitar alguna investigación. El cliente deberá efectuar el pago de aquellos cargos y/o parte de la factura que no sean objetados, si alguno, dentro del término establecido por Streetview Media.
+    </p>
+
+    <div class="footer-contacts">
+      <div>
+        <div class="footer-block-title">Contacto Comercial (Ventas)</div>
+        Sra. Carmen Esteve<br>
+        cesteve@streetviewmediapr.com<br>
+        Tel. (787) 708-5115
+      </div>
+      <div>
+        <div class="footer-block-title">Dirección Postal para Pagos</div>
+        Street View Media<br>
+        130 Ave. Winston Churchill, PMB 167<br>
+        San Juan, PR 00926
+      </div>
+      <div>
+        <div class="footer-block-title">Información Bancaria</div>
+        Banco: Banco Popular de Puerto Rico<br>
+        No. de Cuenta: 118035940<br>
+        ABA / Routing: 021502011
+      </div>
+    </div>
+
+    <div class="footer-copy">
+      Require Puerto Rico, Inc. d/b/a Street View Media &nbsp;|&nbsp; www.streetviewmediapr.com
+    </div>
+  </div>
+
+</div>
+</body>
+</html>`;
+}
+
+// ─── Core Invoice Builder ─────────────────────────────────────────────────────
+
+async function buildInvoiceData(
+  anuncioIds: number[],
+  opts: {
+    title?: string;
+    productionCost?: number;
+    otherServicesDescription?: string;
+    otherServicesCost?: number;
+    salespersonName?: string;
+    clienteNombre?: string;
+    invoiceNumber?: string;
+  }
+): Promise<{ data: InvoiceData; anuncioCount: number }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const { inArray } = await import("drizzle-orm");
+  const clientAnuncios = await db
+    .select()
+    .from(anuncios)
+    .where(inArray(anuncios.id, anuncioIds));
+
+  const items: InvoiceItem[] = [];
+  let subtotalAnuncios = 0;
+  let totalDescuentos = 0;
+
+  // Determine billing period from the anuncios themselves (first/last dates)
+  let minFechaInicio: Date | null = null;
+  let maxFechaFin: Date | null = null;
+
+  for (const anuncio of clientAnuncios) {
+    const cost = parseFloat(anuncio.costoPorUnidad || "0");
+
+    const paradaRows = await db
+      .select()
+      .from(paradas)
+      .where(eq(paradas.id, anuncio.paradaId))
+      .limit(1);
+
+    const parada = paradaRows[0];
+    const paradaInfo = parada
+      ? `${parada.cobertizoId} - ${parada.localizacion}`
+      : `Parada #${anuncio.paradaId}`;
+
+    const orientacion = parada?.orientacion || "";
+    const caja = cajaLabel(orientacion);
+
+    // Discount: if tipo is Bonificación, discount = cost (full discount); otherwise 0
+    const descuento = anuncio.tipo === "Bonificación" ? cost : 0;
+    const total = cost - descuento;
+
+    const fechaInicio = new Date(anuncio.fechaInicio);
+    const fechaFin = new Date(anuncio.fechaFin);
+
+    if (!minFechaInicio || fechaInicio < minFechaInicio) minFechaInicio = fechaInicio;
+    if (!maxFechaFin || fechaFin > maxFechaFin) maxFechaFin = fechaFin;
+
+    items.push({
+      paradaInfo,
+      orientacion,
+      caja,
+      periodoInicio: fmtDate(fechaInicio),
+      periodoFin: fmtDate(fechaFin),
+      tipo: anuncio.tipo,
+      costo: cost,
+      descuento,
+      total,
+    });
+
+    subtotalAnuncios += cost;
+    totalDescuentos += descuento;
+  }
+
+  const clientName = opts.clienteNombre || clientAnuncios[0]?.cliente || "Cliente";
+  const productionCost = opts.productionCost ?? 0;
+  const otherServicesCost = opts.otherServicesCost ?? 0;
+  const finalTotal = subtotalAnuncios - totalDescuentos + productionCost + otherServicesCost;
+
+  // Periodo de contrato: from min fechaInicio to max fechaFin of the anuncios
+  const periodoContrato =
+    minFechaInicio && maxFechaFin
+      ? `${fmtDate(minFechaInicio)} - ${fmtDate(maxFechaFin)}`
+      : "";
+
+  // Invoice title: "CLIENT — Month YYYY" using the billing month of the first anuncio
+  const billingMonth = minFechaInicio
+    ? minFechaInicio.toLocaleDateString("es-PR", { month: "long", year: "numeric", timeZone: "UTC" })
+    : new Date().toLocaleDateString("es-PR", { month: "long", year: "numeric" });
+  const capitalizedMonth = billingMonth.charAt(0).toUpperCase() + billingMonth.slice(1);
+  const invoiceTitle = opts.title || `${clientName} — ${capitalizedMonth}`;
+
+  const invoiceDate = new Date().toLocaleDateString("es-PR", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+
+  const data: InvoiceData = {
+    invoiceNumber: opts.invoiceNumber || "INV-????",
+    invoiceDate,
+    clientName,
+    invoiceTitle,
+    periodoContrato,
+    salespersonName: opts.salespersonName || "",
+    items,
+    subtotalAnuncios,
+    totalDescuentos,
+    productionCost,
+    otherServicesDescription: opts.otherServicesDescription || "",
+    otherServicesCost,
+    finalTotal,
+  };
+
+  return { data, anuncioCount: items.length };
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function generateInvoiceFromAnuncios(
   anuncioIds: number[],
@@ -33,79 +512,6 @@ export async function generateInvoiceFromAnuncios(
 
   console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
 
-  const { inArray } = await import("drizzle-orm");
-  const clientAnuncios = await db
-    .select()
-    .from(anuncios)
-    .where(inArray(anuncios.id, anuncioIds));
-
-  console.log("[Invoice] Found", clientAnuncios.length, "anuncios");
-
-  const items: InvoiceItem[] = [];
-  let subtotalAnuncios = 0;
-
-  for (const anuncio of clientAnuncios) {
-    const cost = parseFloat(anuncio.costoPorUnidad || "0");
-
-    const paradaRows = await db
-      .select()
-      .from(paradas)
-      .where(eq(paradas.id, anuncio.paradaId))
-      .limit(1);
-
-    const parada = paradaRows[0];
-    const paradaInfo = parada
-      ? `${parada.cobertizoId} - ${parada.localizacion}`
-      : `Parada #${anuncio.paradaId}`;
-
-    // Orientación comes from the parada record
-    const orientacion = parada?.orientacion || "";
-
-    // Caja: I → "1", O → "2", others as-is
-    const cajaMap: Record<string, string> = { I: "1", O: "2", P: "P" };
-    const caja = cajaMap[orientacion.toUpperCase()] ?? orientacion;
-
-    // Tipo abbreviation: Fijo → F, Bonificación → B, Holder → H
-    const tipoMap: Record<string, string> = {
-      Fijo: "F",
-      "Bonificación": "B",
-      Holder: "H",
-    };
-    const tipoAbrev = tipoMap[anuncio.tipo] ?? anuncio.tipo ?? "";
-
-    // Format dates as DD/MM/YY
-    const fmt = (d: Date | string) => {
-      const dt = new Date(d);
-      const dd = String(dt.getUTCDate()).padStart(2, "0");
-      const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
-      const yy = String(dt.getUTCFullYear()).slice(-2);
-      return `${dd}/${mm}/${yy}`;
-    };
-
-    const descuento = cost < STANDARD_PRICE ? STANDARD_PRICE - cost : 0;
-
-    items.push({
-      paradaId: anuncio.paradaId,
-      paradaInfo,
-      orientacion,
-      caja,
-      periodoInicio: fmt(anuncio.fechaInicio),
-      periodoFin: fmt(anuncio.fechaFin),
-      tipo: tipoAbrev,
-      costo: cost,
-      descuento,
-    });
-
-    subtotalAnuncios += cost;
-  }
-
-  const clientName = clienteNombre || clientAnuncios[0]?.cliente || "Cliente";
-  const invoiceTitle = title || `Factura - ${new Date().toLocaleDateString("es-PR")}`;
-
-  let finalTotal = subtotalAnuncios;
-  if (productionCost) finalTotal += productionCost;
-  if (otherServicesCost) finalTotal += otherServicesCost;
-
   // Generate sequential invoice number
   const { facturas } = await import("../drizzle/schema");
   const lastInvoice = await db
@@ -119,314 +525,85 @@ export async function generateInvoiceFromAnuncios(
     const match = lastInvoice[0].numeroFactura.match(/INV-(\d+)/);
     if (match) nextNumber = parseInt(match[1]) + 1;
   }
-
   const invoiceNumber = `INV-${nextNumber}`;
 
-  const pdfBuffer = await createPDFBuffer({
-    clientName,
-    invoiceTitle,
-    description,
-    items,
-    subtotalAnuncios,
+  const { data, anuncioCount } = await buildInvoiceData(anuncioIds, {
+    title,
     productionCost,
     otherServicesDescription,
     otherServicesCost,
     salespersonName,
-    finalTotal,
+    clienteNombre,
     invoiceNumber,
   });
 
+  const html = buildInvoiceHTML(data);
+
   const timestamp = Date.now();
-  const fileName = `facturas/${invoiceNumber}-${clientName.replace(/\s+/g, "-")}-${timestamp}.pdf`;
-  const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
+  const safeName = data.clientName.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9\-]/g, "");
+  const fileName = `facturas/${invoiceNumber}-${safeName}-${timestamp}.html`;
+  const { url } = await storagePut(fileName, Buffer.from(html, "utf-8"), "text/html; charset=utf-8");
 
   await db.insert(facturas).values({
     numeroFactura: invoiceNumber,
-    cliente: clientName,
-    titulo: invoiceTitle,
+    cliente: data.clientName,
+    titulo: data.invoiceTitle,
     descripcion: description || null,
-    subtotal: subtotalAnuncios.toString(),
+    subtotal: data.subtotalAnuncios.toString(),
     costoProduccion: productionCost ? productionCost.toString() : null,
     otrosServiciosDescripcion: otherServicesDescription || null,
     otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
-    total: finalTotal.toString(),
+    total: data.finalTotal.toString(),
     vendedor: salespersonName || null,
     pdfUrl: url,
-    cantidadAnuncios: items.length,
+    cantidadAnuncios: anuncioCount,
     anuncioIdsJson: JSON.stringify(anuncioIds),
     createdBy: 1,
   });
 
+  console.log("[Invoice] Generated:", invoiceNumber, "→", url);
   return url;
 }
 
-// Regenerate PDF for an existing factura using stored anuncio IDs
 export async function regenerateInvoicePDF(facturaId: number): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const { facturas } = await import("../drizzle/schema");
-  const rows = await db.select().from(facturas).where(eq(facturas.id as any, facturaId)).limit(1);
+  const rows = await db
+    .select()
+    .from(facturas)
+    .where(eq(facturas.id as any, facturaId))
+    .limit(1);
   const factura = rows[0];
   if (!factura) throw new Error("Factura no encontrada");
-  if (!factura.anuncioIdsJson) throw new Error("Esta factura no tiene anuncios guardados para regenerar");
+  if (!factura.anuncioIdsJson)
+    throw new Error("Esta factura no tiene anuncios guardados para regenerar");
 
   const anuncioIds: number[] = JSON.parse(factura.anuncioIdsJson);
-  const { inArray } = await import("drizzle-orm");
-  const clientAnuncios = await db.select().from(anuncios).where(inArray(anuncios.id, anuncioIds));
 
-  const items: InvoiceItem[] = [];
-  let subtotalAnuncios = 0;
-
-  for (const anuncio of clientAnuncios) {
-    const cost = parseFloat(anuncio.costoPorUnidad || "0");
-
-    const paradaRows = await db.select().from(paradas).where(eq(paradas.id, anuncio.paradaId)).limit(1);
-    const parada = paradaRows[0];
-    const paradaInfo = parada
-      ? `${parada.cobertizoId} - ${parada.localizacion}`
-      : `Parada #${anuncio.paradaId}`;
-
-    const orientacion = parada?.orientacion || "";
-    const cajaMap: Record<string, string> = { I: "1", O: "2", P: "P" };
-    const caja = cajaMap[orientacion.toUpperCase()] ?? orientacion;
-
-    const tipoMap: Record<string, string> = { Fijo: "F", "Bonificación": "B", Holder: "H" };
-    const tipoAbrev = tipoMap[anuncio.tipo] ?? anuncio.tipo ?? "";
-
-    const fmt = (d: Date | string) => {
-      const dt = new Date(d);
-      const dd = String(dt.getUTCDate()).padStart(2, "0");
-      const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
-      const yy = String(dt.getUTCFullYear()).slice(-2);
-      return `${dd}/${mm}/${yy}`;
-    };
-
-    items.push({
-      paradaId: anuncio.paradaId,
-      paradaInfo,
-      orientacion,
-      caja,
-      periodoInicio: fmt(anuncio.fechaInicio),
-      periodoFin: fmt(anuncio.fechaFin),
-      tipo: tipoAbrev,
-      costo: cost,
-      descuento: cost < STANDARD_PRICE ? STANDARD_PRICE - cost : 0,
-    });
-
-    subtotalAnuncios += cost;
-  }
-
-  const pdfBuffer = await createPDFBuffer({
-    clientName: factura.cliente,
-    invoiceTitle: factura.titulo,
-    description: factura.descripcion ?? undefined,
-    items,
-    subtotalAnuncios,
+  const { data } = await buildInvoiceData(anuncioIds, {
+    title: factura.titulo,
     productionCost: factura.costoProduccion ? parseFloat(factura.costoProduccion) : undefined,
     otherServicesDescription: factura.otrosServiciosDescripcion ?? undefined,
     otherServicesCost: factura.otrosServiciosCosto ? parseFloat(factura.otrosServiciosCosto) : undefined,
     salespersonName: factura.vendedor ?? undefined,
-    finalTotal: parseFloat(factura.total),
+    clienteNombre: factura.cliente,
     invoiceNumber: factura.numeroFactura,
   });
 
+  const html = buildInvoiceHTML(data);
+
   const timestamp = Date.now();
-  const fileName = `facturas/${factura.numeroFactura}-${factura.cliente.replace(/\s+/g, "-")}-${timestamp}.pdf`;
-  const { url } = await storagePut(fileName, pdfBuffer, "application/pdf");
+  const safeName = factura.cliente.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9\-]/g, "");
+  const fileName = `facturas/${factura.numeroFactura}-${safeName}-${timestamp}.html`;
+  const { url } = await storagePut(fileName, Buffer.from(html, "utf-8"), "text/html; charset=utf-8");
 
-  // Update pdfUrl in DB
-  await db.update(facturas).set({ pdfUrl: url }).where(eq(facturas.id as any, facturaId));
+  await db
+    .update(facturas)
+    .set({ pdfUrl: url })
+    .where(eq(facturas.id as any, facturaId));
 
+  console.log("[Invoice] Regenerated:", factura.numeroFactura, "→", url);
   return url;
-}
-
-// ─── PDF Layout ──────────────────────────────────────────────────────────────
-
-interface PDFOptions {
-  clientName: string;
-  invoiceTitle: string;
-  description?: string;
-  items: InvoiceItem[];
-  subtotalAnuncios: number;
-  productionCost?: number;
-  otherServicesDescription?: string;
-  otherServicesCost?: number;
-  salespersonName?: string;
-  finalTotal: number;
-  invoiceNumber: string;
-}
-
-// Column definitions for the invoice table
-const COLS = [
-  { key: "paradaInfo",    label: "Parada",    x: 60,  w: 118 },
-  { key: "orientacion",   label: "Or.",        x: 182, w: 26  },
-  { key: "caja",          label: "Caja",       x: 211, w: 28  },
-  { key: "periodo",       label: "Periodo",    x: 242, w: 115 },
-  { key: "tipo",          label: "F/B",        x: 360, w: 26  },
-  { key: "costo",         label: "Costo",      x: 389, w: 68  },
-  { key: "descuento",     label: "Desc.",      x: 460, w: 65  },
-] as const;
-
-async function createPDFBuffer(opts: PDFOptions): Promise<Buffer> {
-  const {
-    clientName, invoiceTitle, description, items,
-    subtotalAnuncios, productionCost, otherServicesDescription,
-    otherServicesCost, salespersonName, finalTotal, invoiceNumber,
-  } = opts;
-
-  return new Promise(async (resolve, reject) => {
-    const doc = new PDFDocument({ size: "LETTER", margin: 50 });
-    const chunks: Buffer[] = [];
-    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
-
-    const pageWidth = doc.page.width;
-
-    // ── Green header bar ────────────────────────────────────────────────────
-    doc.rect(0, 0, pageWidth, 110).fill("#1a4d3c");
-
-    const logoUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
-    try {
-      const response = await fetch(logoUrl);
-      if (!response.ok) throw new Error(`Logo fetch failed: ${response.statusText}`);
-      const logoBuffer = Buffer.from(await response.arrayBuffer());
-      const logoH = 48;
-      const logoW = Math.round(logoH * (900 / 231));
-      doc.image(logoBuffer, 50, 31, { width: logoW, height: logoH });
-    } catch {
-      doc.fontSize(24).fillColor("#ffffff").text("STREETVIEW MEDIA", 50, 40);
-    }
-
-    // Address
-    doc.fontSize(9).fillColor("#666666")
-      .text("130 Ave. Winston Churchill", 50, 120)
-      .text("PMB 167", 50, 131)
-      .text("San Juan, PR 00926", 50, 142);
-
-    // Invoice info (right side of header)
-    doc.fontSize(14).fillColor("#ffffff")
-      .text("FACTURA", 0, 20, { align: "right", width: pageWidth - 50 });
-
-    let headerY = 42;
-    doc.fontSize(9).fillColor("#ffffff")
-      .text(`No. ${invoiceNumber}`, 0, headerY, { align: "right", width: pageWidth - 50 });
-    headerY += 13;
-    doc.text(`Fecha: ${new Date().toLocaleDateString("es-PR")}`, 0, headerY, { align: "right", width: pageWidth - 50 });
-    headerY += 13;
-    doc.text(invoiceTitle, 0, headerY, { align: "right", width: pageWidth - 50 });
-    headerY += 13;
-    if (salespersonName) {
-      doc.text(`Vendedor: ${salespersonName}`, 0, headerY, { align: "right", width: pageWidth - 50 });
-      headerY += 13;
-    }
-    if (description) {
-      doc.text(description, 0, headerY, { align: "right", width: pageWidth - 50 });
-    }
-
-    // Client info
-    doc.fontSize(12).fillColor("#1a4d3c").text("FACTURADO A:", 50, 165);
-    doc.fontSize(10).fillColor("#666666").text(clientName, 50, 182);
-
-    // ── Table header ────────────────────────────────────────────────────────
-    const tableTop = 220;
-    doc.rect(50, tableTop, 512, 25).fill("#1a4d3c");
-
-    doc.fontSize(8).fillColor("#ffffff");
-    COLS.forEach(col => {
-      doc.text(col.label, col.x, tableTop + 9, { width: col.w });
-    });
-
-    // ── Table rows ───────────────────────────────────────────────────────────
-    let y = tableTop + 35;
-    const ROW_H = 22;
-
-    const fmtMoney = (n: number) =>
-      `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-    items.forEach((item, index) => {
-      if (y > 680) {
-        doc.addPage();
-        // Reprint table header on new page
-        y = 50;
-        doc.rect(50, y, 512, 20).fill("#1a4d3c");
-        doc.fontSize(8).fillColor("#ffffff");
-        COLS.forEach(col => doc.text(col.label, col.x, y + 6, { width: col.w }));
-        y += 28;
-      }
-
-      if (index % 2 === 0) {
-        doc.rect(50, y - 4, 512, ROW_H).fill("#f5f5f5");
-      }
-
-      const periodo = `${item.periodoInicio} - ${item.periodoFin}`;
-
-      doc.fillColor("#333333").fontSize(8);
-      doc.text(item.paradaInfo, COLS[0].x, y, { width: COLS[0].w, ellipsis: true });
-      doc.text(item.orientacion, COLS[1].x, y, { width: COLS[1].w });
-      doc.text(item.caja, COLS[2].x, y, { width: COLS[2].w });
-      doc.text(periodo, COLS[3].x, y, { width: COLS[3].w });
-      doc.text(item.tipo, COLS[4].x, y, { width: COLS[4].w });
-
-      // Cost in green if standard, orange if discounted
-      const costoColor = item.descuento > 0 ? "#1a4d3c" : "#333333";
-      doc.fillColor(costoColor).text(fmtMoney(item.costo), COLS[5].x, y, { width: COLS[5].w });
-
-      // Discount column — show amount if > 0, dash if none
-      if (item.descuento > 0) {
-        doc.fillColor("#e05a00").text(`-${fmtMoney(item.descuento)}`, COLS[6].x, y, { width: COLS[6].w });
-      } else {
-        doc.fillColor("#aaaaaa").text("—", COLS[6].x, y, { width: COLS[6].w });
-      }
-      doc.fillColor("#333333");
-
-      y += ROW_H;
-    });
-
-    // ── Totals ───────────────────────────────────────────────────────────────
-    y += 20;
-    doc.moveTo(50, y).lineTo(562, y).stroke("#cccccc");
-    y += 15;
-
-    const totalDescuentos = items.reduce((s, i) => s + i.descuento, 0);
-
-    // Anuncios subtotal
-    doc.fontSize(10).fillColor("#333333")
-      .text("Subtotal (Anuncios)", 50, y)
-      .text(fmtMoney(subtotalAnuncios), 480, y, { align: "right" });
-    y += 22;
-
-    // Discounts summary (if any)
-    if (totalDescuentos > 0) {
-      doc.fontSize(9).fillColor("#e05a00")
-        .text(`Descuentos aplicados`, 50, y)
-        .text(`-${fmtMoney(totalDescuentos)}`, 480, y, { align: "right" });
-      y += 20;
-    }
-
-    if (productionCost) {
-      doc.fontSize(10).fillColor("#333333")
-        .text("Costo de Producción", 50, y)
-        .text(fmtMoney(productionCost), 480, y, { align: "right" });
-      y += 22;
-    }
-
-    if (otherServicesCost) {
-      doc.fontSize(10).fillColor("#333333")
-        .text(otherServicesDescription || "Otros Servicios", 50, y)
-        .text(fmtMoney(otherServicesCost), 480, y, { align: "right" });
-      y += 22;
-    }
-
-    // Total
-    doc.moveTo(50, y).lineTo(562, y).stroke("#1a4d3c");
-    y += 12;
-    doc.fontSize(13).fillColor("#1a4d3c")
-      .text("TOTAL", 50, y);
-    doc.fontSize(15)
-      .text(fmtMoney(finalTotal), 480, y, { align: "right" });
-
-    doc.end();
-  });
 }
