@@ -458,26 +458,13 @@ export default function Anuncios() {
       },
       {
         onSuccess: (data: any) => {
-          // Download PDF using fetch to avoid popup blockers
-          fetch(data.pdfUrl)
-            .then(response => response.blob())
-            .then(blob => {
-              const url = window.URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `Factura-${Date.now()}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              window.URL.revokeObjectURL(url);
-            })
-            .catch(err => {
-              console.error('Download failed:', err);
-              // Fallback: open in new tab
-              window.open(data.pdfUrl, '_blank');
-            });
+          // Open the invoice HTML in a new tab — use the browser's
+          // built-in "Print → Save as PDF" button inside the invoice
+          // to get a real PDF. Downloading the HTML blob as .pdf produces
+          // a corrupt file because it is not a PDF binary.
+          window.open(data.pdfUrl, '_blank');
           
-          toast.success("Factura generada exitosamente");
+          toast.success("Factura generada. Se abrió en una nueva pestaña — usa el botón \"Imprimir / Guardar como PDF\" para descargarla.");
           setIsInvoiceDialogOpen(false);
           setInvoiceTitle("");
           setInvoiceDescription("");

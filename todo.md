@@ -1442,3 +1442,7 @@
 - [x] Header factura: reducir margin-top del nombre del vendedor (muy separado del grupo de texto)
 - [x] Modal generar factura: agregar campo para seleccionar periodo de facturación (mes/año) en lugar de usar siempre la fecha del anuncio
 - [x] PDF impreso sin header verde: agregar -webkit-print-color-adjust: exact y print-color-adjust: exact al CSS de impresión
+
+## Correcciones de Facturas - Sesión Abril 2026 (parte 4)
+
+- [x] Descarga de factura: el HTML de S3 se descarga como .pdf corrupto — cambiar para abrir en nueva pestaña donde el usuario usa el botón "Imprimir / Guardar como PDF"

@@ -321,23 +321,10 @@ export default function Facturacion() {
       {
         onSuccess: (data: any) => {
           setIsGeneratingReport(false);
-          fetch(data.pdfUrl)
-            .then(r => r.blob())
-            .then(blob => {
-              const url = window.URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = `Reporte-Facturacion-${new Date().toISOString().split("T")[0]}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              window.URL.revokeObjectURL(url);
-              toast.success("Reporte PDF generado correctamente");
-            })
-            .catch(() => {
-              window.open(data.pdfUrl, "_blank");
-              toast.success("Reporte PDF generado correctamente");
-            });
+          // Open the report HTML in a new tab — use the browser's
+          // "Print → Save as PDF" button inside the report to get a real PDF.
+          window.open(data.pdfUrl, "_blank");
+          toast.success("Reporte generado. Se abrió en una nueva pestaña — usa el botón \"Imprimir / Guardar como PDF\" para descargarlo.");
         },
         onError: (error: any) => {
           setIsGeneratingReport(false);
