@@ -240,8 +240,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .totals-table td { padding: 5px 8px; }
   .totals-table .lbl { color: #555; }
   .totals-table .amt { text-align: right; font-weight: 600; }
-  .totals-table .desc-lbl { color: #888; font-style: italic; }
-  .totals-table .desc-amt { color: #888; text-align: right; font-weight: 400; font-style: italic; }
+  .totals-table .desc-lbl { color: #888; font-style: italic; font-size: 9px; }
+  .totals-table .desc-amt { color: #888; text-align: right; font-weight: 400; font-style: italic; font-size: 9px; }
   .totals-divider td { border-top: 2px solid #1a4d3c; padding-top: 10px; }
   .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #1a4d3c; }
   .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #1a4d3c; text-align: right; }
@@ -282,9 +282,29 @@ function buildInvoiceHTML(data: InvoiceData): string {
     padding-bottom: 16px;
   }
 
+  /* ── Print Button ── */
+  .print-btn-wrap {
+    text-align: center;
+    padding: 20px 0 10px;
+  }
+  .print-btn {
+    background: #1a4d3c;
+    color: white;
+    border: none;
+    padding: 10px 28px;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .print-btn:hover { background: #0f3a2a; }
+
   @media print {
     body { background: white; padding: 0; }
     .page { box-shadow: none; }
+    .print-btn-wrap { display: none; }
   }
 </style>
 </head>
@@ -376,6 +396,12 @@ function buildInvoiceHTML(data: InvoiceData): string {
   </div>
 
 </div>
+
+<!-- Print / Save as PDF button (hidden when printing) -->
+<div class="print-btn-wrap">
+  <button class="print-btn" onclick="window.print()">&#128438;&nbsp; Imprimir / Guardar como PDF</button>
+</div>
+
 </body>
 </html>`;
 }
@@ -429,9 +455,10 @@ async function buildInvoiceData(
     const caja = cajaLabel(orientacion);
 
     // Standard price is $350 per unit.
-    // Fijo: discount = max(0, 350 - actual_cost)  → total = actual_cost
-    // Bonificación: discount = $350 (full price, ad is free) → total = 0
+    // Costo column always shows $350 (list price).
+    // Total column shows the real contract price (what is actually charged).
     const STANDARD_PRICE = 350;
+    const displayCosto = STANDARD_PRICE; // Always $350 in Costo column
     const descuento =
       anuncio.tipo === "Bonificación"
         ? STANDARD_PRICE
@@ -457,12 +484,12 @@ async function buildInvoiceData(
       periodoInicio: fmtDate(firstDayOfMonth),
       periodoFin: fmtDate(lastDayOfMonth),
       tipo: anuncio.tipo,
-      costo: cost,
+      costo: displayCosto, // Always $350 in the Costo column
       descuento,
       total,
     });
 
-    subtotalAnuncios += cost;
+    subtotalAnuncios += total; // Subtotal = sum of real charged amounts (Total column)
     totalDescuentos += descuento;
   }
 

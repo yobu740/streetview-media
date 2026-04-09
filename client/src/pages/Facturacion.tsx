@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X, Mail } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X, Mail, RefreshCw, Link2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import {
@@ -70,10 +70,62 @@ export default function Facturacion() {
   const [showArchived, setShowArchived] = useState(false);
 
   const deleteFactura = trpc.facturas.delete.useMutation();
+  const regenerateFactura = trpc.facturas.regenerate.useMutation();
+  const linkAnuncios = trpc.facturas.linkAnuncios.useMutation();
+  const { data: allAnuncios } = trpc.paradas.list.useQuery();
   const archiveFactura = trpc.invoices.archive.useMutation();
   const unarchiveFactura = trpc.invoices.unarchive.useMutation();
   const generateReport = trpc.invoices.generateReport.useMutation();
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  // Regenerate state
+  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
+
+  // Link anuncios dialog
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkFactura, setLinkFactura] = useState<any>(null);
+  const [linkSearch, setLinkSearch] = useState("");
+  const [selectedAnuncioIds, setSelectedAnuncioIds] = useState<number[]>([]);
+
+  const handleOpenLinkDialog = (factura: any) => {
+    setLinkFactura(factura);
+    setLinkSearch(factura.cliente || "");
+    setSelectedAnuncioIds([]);
+    setIsLinkDialogOpen(true);
+  };
+
+  const handleLinkAnuncios = async () => {
+    if (!linkFactura || selectedAnuncioIds.length === 0) {
+      toast.error("Seleccione al menos un anuncio");
+      return;
+    }
+    try {
+      await linkAnuncios.mutateAsync({ facturaId: linkFactura.id, anuncioIds: selectedAnuncioIds });
+      toast.success(`${selectedAnuncioIds.length} anuncio(s) vinculado(s). Ahora puede regenerar la factura.`);
+      setIsLinkDialogOpen(false);
+      utils.invoices.list.invalidate();
+    } catch (err: any) {
+      toast.error(err.message || "Error al vincular anuncios");
+    }
+  };
+
+  const handleRegenerate = async (factura: any) => {
+    if (!factura.anuncioIdsJson) {
+      toast.error("Esta factura no tiene anuncios vinculados. Use el botón 🔗 primero.");
+      return;
+    }
+    setRegeneratingId(factura.id);
+    try {
+      const result = await regenerateFactura.mutateAsync({ facturaId: factura.id });
+      toast.success("Factura regenerada correctamente");
+      utils.invoices.list.invalidate();
+      if (result.pdfUrl) window.open(result.pdfUrl, "_blank");
+    } catch (err: any) {
+      toast.error(err.message || "Error al regenerar factura");
+    } finally {
+      setRegeneratingId(null);
+    }
+  };
 
   // Email invoice dialog
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
@@ -604,6 +656,30 @@ export default function Facturacion() {
                                 <Mail size={14} className="mr-1" />Enviar
                               </Button>
                             )}
+                            {/* Regenerate / Link buttons */}
+                            {!factura.anuncioIdsJson ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-amber-400 text-amber-700 hover:bg-amber-50"
+                                title="Vincular anuncios para poder regenerar"
+                                onClick={() => handleOpenLinkDialog(factura)}
+                              >
+                                <Link2 size={14} className="mr-1" />Vincular
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-[#1a4d3c] text-[#1a4d3c] hover:bg-green-50"
+                                title="Regenerar PDF con el formato actualizado"
+                                disabled={regeneratingId === factura.id}
+                                onClick={() => handleRegenerate(factura)}
+                              >
+                                <RefreshCw size={14} className={`mr-1 ${regeneratingId === factura.id ? 'animate-spin' : ''}`} />
+                                {regeneratingId === factura.id ? "..." : "Regen."}
+                              </Button>
+                            )}
                             {factura.estadoPago !== "Pagada" && (
                               <>
                                 <Button
@@ -890,6 +966,69 @@ export default function Facturacion() {
                 <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>Cancelar</Button>
                 <Button className="bg-[#1a4d3c] hover:bg-[#0f3a2a]" onClick={handleExportReport}>
                   <Download size={16} className="mr-2" />Exportar CSV
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* ── Link Anuncios Dialog ─────────────────────────────────────── */}
+          <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Link2 size={18} className="text-amber-600" />
+                  Vincular Anuncios a Factura
+                </DialogTitle>
+                <DialogDescription>
+                  {linkFactura && `Factura ${linkFactura.numeroFactura} — ${linkFactura.cliente}`}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <Input
+                    placeholder="Buscar por cliente o producto..."
+                    value={linkSearch}
+                    onChange={e => setLinkSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Seleccione los anuncios que corresponden a esta factura. Se guardarán para poder regenerar el PDF.</p>
+                <div className="max-h-64 overflow-y-auto border rounded-md divide-y">
+                  {(allAnuncios || []).filter((a: any) => {
+                    const term = linkSearch.toLowerCase();
+                    return !term || a.cliente?.toLowerCase().includes(term) || a.producto?.toLowerCase().includes(term);
+                  }).map((a: any) => (
+                    <label key={a.id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedAnuncioIds.includes(a.id)}
+                        onChange={e => {
+                          if (e.target.checked) setSelectedAnuncioIds(prev => [...prev, a.id]);
+                          else setSelectedAnuncioIds(prev => prev.filter(id => id !== a.id));
+                        }}
+                      />
+                      <span className="text-sm">
+                        <span className="font-medium">{a.cliente}</span>
+                        <span className="text-gray-500"> — {a.producto} — ${a.costo}</span>
+                        <span className="text-xs text-gray-400 ml-2">(ID: {a.id})</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {selectedAnuncioIds.length > 0 && (
+                  <p className="text-sm text-green-700 font-medium">{selectedAnuncioIds.length} anuncio(s) seleccionado(s)</p>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>Cancelar</Button>
+                <Button
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                  onClick={handleLinkAnuncios}
+                  disabled={selectedAnuncioIds.length === 0 || linkAnuncios.isPending}
+                >
+                  <Link2 size={14} className="mr-2" />
+                  {linkAnuncios.isPending ? "Vinculando..." : `Vincular ${selectedAnuncioIds.length} anuncio(s)`}
                 </Button>
               </DialogFooter>
             </DialogContent>

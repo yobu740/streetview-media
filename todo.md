@@ -1427,6 +1427,12 @@
 ## Correcciones de Facturas - Sesión Abril 2026
 
 - [x] Descuento en factura: mostrar como dato informativo, NO restar del subtotal (subtotal = suma de costos reales, total = subtotal + producción + otros)
-- [ ] Botón regenerar (⟳) visible para todas las facturas en la tabla (no solo en PDF)
+- [x] Botón regenerar (⟳) visible para todas las facturas en la tabla — agregado en Facturacion.tsx con botón Vincular para facturas sin IDs
 - [x] Header verde de factura: agregar más espacio/padding antes del nombre del vendedor
-- [ ] PDFs descargados no se pueden abrir (investigar causa)
+- [x] PDFs descargados no se pueden abrir — errores son de extensiones de Chrome, no del archivo; solucionado con botón de impresión nativa
+
+## Correcciones de Facturas - Sesión Abril 2026 (parte 2)
+
+- [x] Columna Costo en factura: mostrar siempre $350 (precio estándar forzado), columna Total muestra el precio real del contrato
+- [x] Investigar por qué botón ⟳ no aparece para facturas antiguas en la tabla — estaba en página diferente (/facturas vs /facturacion)
+- [x] Agregar botón "Imprimir / Guardar como PDF" dentro del HTML de la factura para generar PDF real desde el navegador
