@@ -1423,3 +1423,10 @@
 - [x] Agregar procedimiento backend para vincular facturas antiguas con sus anuncios (backfill anuncioIdsJson)
 - [x] Agregar botón UI en Facturas.tsx para vincular/regenerar facturas antiguas (botón 🔗 naranja en facturas sin anuncioIdsJson)
 - [x] Periodo de Facturación: mostrar primer y último día del mes del anuncio (ej: 01/04/2026 - 30/04/2026)
+
+## Correcciones de Facturas - Sesión Abril 2026
+
+- [x] Descuento en factura: mostrar como dato informativo, NO restar del subtotal (subtotal = suma de costos reales, total = subtotal + producción + otros)
+- [ ] Botón regenerar (⟳) visible para todas las facturas en la tabla (no solo en PDF)
+- [x] Header verde de factura: agregar más espacio/padding antes del nombre del vendedor
+- [ ] PDFs descargados no se pueden abrir (investigar causa)

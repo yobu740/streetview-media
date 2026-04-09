@@ -117,8 +117,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
     </tr>
     ${totalDescuentos > 0 ? `
     <tr>
-      <td class="desc-lbl">Descuentos aplicados</td>
-      <td class="desc-amt">-${fmtMoney(totalDescuentos)}</td>
+      <td class="desc-lbl">Descuentos / Bonificaciones</td>
+      <td class="desc-amt">${fmtMoney(totalDescuentos)}</td>
     </tr>` : ""}
     ${productionCost > 0 ? `
     <tr>
@@ -240,8 +240,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .totals-table td { padding: 5px 8px; }
   .totals-table .lbl { color: #555; }
   .totals-table .amt { text-align: right; font-weight: 600; }
-  .totals-table .desc-lbl { color: #e05a00; }
-  .totals-table .desc-amt { color: #e05a00; text-align: right; font-weight: 600; }
+  .totals-table .desc-lbl { color: #888; font-style: italic; }
+  .totals-table .desc-amt { color: #888; text-align: right; font-weight: 400; font-style: italic; }
   .totals-divider td { border-top: 2px solid #1a4d3c; padding-top: 10px; }
   .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #1a4d3c; }
   .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #1a4d3c; text-align: right; }
@@ -300,7 +300,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
       <div>Fecha: ${invoiceDate}</div>
       <div>${invoiceTitle}</div>
       ${periodoContrato ? `<div>Periodo de Contrato: ${periodoContrato}</div>` : ""}
-      <div>Vendedor: ${salespersonName || "—"}</div>
+      <div style="margin-top:6px">Vendedor: ${salespersonName || "—"}</div>
     </div>
   </div>
 
@@ -469,7 +469,8 @@ async function buildInvoiceData(
   const clientName = opts.clienteNombre || clientAnuncios[0]?.cliente || "Cliente";
   const productionCost = opts.productionCost ?? 0;
   const otherServicesCost = opts.otherServicesCost ?? 0;
-  const finalTotal = subtotalAnuncios - totalDescuentos + productionCost + otherServicesCost;
+  // Descuentos son informativos — el total NO los resta del subtotal
+  const finalTotal = subtotalAnuncios + productionCost + otherServicesCost;
 
   // Periodo de contrato: from min fechaInicio to max fechaFin of the anuncios
   const periodoContrato =
