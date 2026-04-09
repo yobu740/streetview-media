@@ -18,17 +18,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Download, Trash2, Search, FileText, FileSpreadsheet } from "lucide-react";
+import { Download, Trash2, Search, FileText, FileSpreadsheet, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 export default function Facturas() {
   const [clienteFilter, setClienteFilter] = useState("");
-  
+  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
+
   const { data: facturas, isLoading, refetch } = trpc.facturas.list.useQuery({
     cliente: clienteFilter || undefined,
   });
-  
+
   const deleteMutation = trpc.facturas.delete.useMutation({
     onSuccess: () => {
       toast.success("Factura eliminada exitosamente");
@@ -38,6 +39,24 @@ export default function Facturas() {
       toast.error(`Error al eliminar: ${error.message}`);
     },
   });
+
+  const regenerateMutation = trpc.facturas.regenerate.useMutation({
+    onSuccess: (data) => {
+      toast.success("PDF regenerado correctamente");
+      refetch();
+      window.open(data.pdfUrl, "_blank");
+    },
+    onError: (error) => {
+      toast.error(`Error al regenerar: ${error.message}`);
+    },
+    onSettled: () => setRegeneratingId(null),
+  });
+
+  const handleRegenerate = (id: number, numeroFactura: string) => {
+    if (!confirm(`¿Regenerar PDF de la factura ${numeroFactura}?\nEl enlace anterior seguirá siendo accesible.`)) return;
+    setRegeneratingId(id);
+    regenerateMutation.mutate({ facturaId: id });
+  };
 
   const handleDelete = (id: number, numeroFactura: string) => {
     if (confirm(`¿Eliminar factura ${numeroFactura}?`)) {
@@ -278,10 +297,21 @@ export default function Facturas() {
                             onClick={() =>
                               handleDownload(factura.pdfUrl, factura.numeroFactura)
                             }
-                            title="Descargar PDF"
+                            title="Ver / Descargar PDF"
                           >
                             <Download className="h-4 w-4" />
                           </Button>
+                          {(factura as any).anuncioIdsJson && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRegenerate(factura.id, factura.numeroFactura)}
+                              title="Regenerar PDF con nuevo formato"
+                              disabled={regeneratingId === factura.id}
+                            >
+                              <RefreshCw className={`h-4 w-4 ${regeneratingId === factura.id ? "animate-spin" : ""}`} />
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"

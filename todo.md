@@ -1404,3 +1404,12 @@
 - [x] Diagnosticar por qué el webhook no actualiza el estado del contrato a Firmado - mejorado manejo de submission.completed y form.completed
 - [x] Agregar logs detallados al webhook para ver el payload completo de DocuSeal
 - [x] Agregar notificación interna al owner cuando un contrato es firmado (incluye número, cliente, vendedor, monto y link al PDF)
+
+## Facturas - Nuevo Formato PDF y Regeneración
+- [x] Reemplazar server/invoice-generator.ts con nuevo formato (Orientación, Caja, Periodo, Tipo, Costo, Descuento, Total por línea)
+- [x] Reemplazar server/routers.ts con endpoint regenerate
+- [x] Reemplazar drizzle/schema.ts con campo anuncioIdsJson
+- [x] Aplicar migración 0039_factura_anuncio_ids.sql (ejecutada como 0039_blue_psylocke.sql)
+- [x] Reemplazar client/src/pages/Facturas.tsx con botón regenerar
+- [x] Mover procedimiento regenerate al router facturas (estaba en invoices)
+- [x] Restaurar companySignerEmail/companySignerName en sendForSigning y saveSignedPdf en contratos router

@@ -886,6 +886,14 @@ export const appRouter = router({
         await db.delete(facturas).where(eq(facturas.id, input.id));
         return { success: true };
       }),
+
+    regenerate: adminProcedure
+      .input(z.object({ facturaId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { regenerateInvoicePDF } = await import("./invoice-generator");
+        const pdfUrl = await regenerateInvoicePDF(input.facturaId);
+        return { pdfUrl };
+      }),
   }),
 
   // Contact form router
@@ -1067,7 +1075,15 @@ export const appRouter = router({
           throw error;
         }
       }),
-    
+
+    regenerate: adminProcedure
+      .input(z.object({ facturaId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { regenerateInvoicePDF } = await import("./invoice-generator");
+        const pdfUrl = await regenerateInvoicePDF(input.facturaId);
+        return { pdfUrl };
+      }),
+
     // Check for overdue invoices and create notifications
     checkOverdueInvoices: adminProcedure.mutation(async () => {
       const { getDb, createNotification } = await import("./db");
@@ -2578,8 +2594,8 @@ export const appRouter = router({
         contratoId: z.number(),
         signerEmail: z.string().email(),
         signerName: z.string(),
-        companySignerEmail: z.string().email().optional().default('carmen.esteve@streetviewmedia.com'),
-        companySignerName: z.string().optional().default('Carmen Esteve'),
+        companySignerEmail: z.string().email().optional(),
+        companySignerName: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         const { ENV } = await import('./_core/env');
@@ -2610,76 +2626,29 @@ export const appRouter = router({
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'No se pudo obtener el documento del contrato. Regenera el documento e intenta de nuevo.' });
         }
 
-        // ── Inject DocuSeal signature fields at the existing signature lines ──
-        //
-        // The contract HTML has three pages with signature areas:
-        //   Page 1: "Authorized by Company" (vendedor) + "Customer Acceptance" (cliente)
-        //   Page 2: COMPANY "By:" line + CUSTOMER "By:" line  (legal terms page)
-        //   Page 3: "Customer Acceptance — Exhibit A" (cliente only)
-        //
-        // Strategy: replace the empty <div> spacers that act as signature lines
-        // with DocuSeal field tags. We use unique surrounding text as anchors.
+        // Inject a signature field at the end of the HTML body before </body>
+        const signatureFieldHtml = `
+        <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #1a4d3c;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 50%; padding: 10px;">
+                <p style="font-size: 12px; margin-bottom: 5px;">Firma del Cliente / Client Signature:</p>
+                <signature-field name="Firma" role="Firmante" style="width: 250px; height: 80px; display: block;"></signature-field>
+              </td>
+              <td style="width: 50%; padding: 10px;">
+                <p style="font-size: 12px; margin-bottom: 5px;">Fecha / Date:</p>
+                <date-field name="Fecha" role="Firmante" style="width: 150px; height: 30px; display: block;"></date-field>
+              </td>
+            </tr>
+          </table>
+        </div>`;
 
-        let htmlWithSignature = contractHtml;
-
-        // ── PAGE 1 ── Company (Vendedor) signature line
-        // Replace the 48px spacer div that follows "Authorized by Company" label.
-        // Also inject a date-field in the DATE column and a pre-filled name text-field.
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div[^>]*font-size:10px[^>]*>Authorized by Company<\/div>\s*)<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>(\s*<div style="display:grid;grid-template-columns:1fr 1fr[^>]*>\s*<div[^>]*>SIGNATURE<\/div>\s*<div[^>]*>DATE<\/div>\s*<\/div>)/,
-          `$1<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;"><signature-field name="Firma Vendedor" role="Vendedor" style="height:48px;display:block;"></signature-field><date-field name="Fecha Vendedor P1" role="Vendedor" style="height:48px;display:block;"></date-field></div>$2`
-        );
-
-        // ── PAGE 1 ── Customer signature line
-        // Replace the 48px spacer div that follows "Customer Acceptance" label (orange).
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div[^>]*color:#e05a00[^>]*>Customer Acceptance<\/div>\s*)<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>(\s*<div style="display:grid;grid-template-columns:1fr 1fr[^>]*>\s*<div[^>]*>SIGNATURE<\/div>\s*<div[^>]*>DATE<\/div>\s*<\/div>)/,
-          `$1<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;"><signature-field name="Firma Cliente P1" role="Firmante" style="height:48px;display:block;"></signature-field><date-field name="Fecha Cliente P1" role="Firmante" style="height:48px;display:block;"></date-field></div>$2`
-        );
-
-        // ── PAGE 1 ── Pre-fill "Name / Title" line for customer with a text-field
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div style="font-size:10px;color:#333;margin-top:8px;">Name \/ Title: )___________________________(<\/div>)/,
-          `$1<text-field name="Nombre Cliente P1" role="Firmante" style="width:160px;height:20px;display:inline-block;"></text-field>$2`
-        );
-
-        // ── PAGE 2 ── Company "By:" line  (legal-sig-line class)
-        // Anchor: "Require Puerto Rico, Inc. d/b/a Street View Media" label just before it.
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div[^>]*>Require Puerto Rico, Inc\. d\/b\/a Street View Media<\/div>\s*)<div class="legal-sig-line">By:[^<]*<\/div>/,
-          `$1<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">By: <signature-field name="Firma Vendedor P2" role="Vendedor" style="width:180px;height:36px;display:inline-block;"></signature-field> &nbsp; Date: <date-field name="Fecha Vendedor P2" role="Vendedor" style="width:90px;height:28px;display:inline-block;"></date-field></div>`
-        );
-
-        // ── PAGE 2 ── Customer "By:" line
-        // Anchor: "CUSTOMER:" heading block then legal-sig-line
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div[^>]*>CUSTOMER:<\/div>[\s\S]*?<div[^>]*color:#555[^>]*>[\s\S]*?<\/div>\s*)<div class="legal-sig-line">By:[^<]*<\/div>/,
-          `$1<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">By: <signature-field name="Firma Cliente P2" role="Firmante" style="width:180px;height:36px;display:inline-block;"></signature-field> &nbsp; Date: <date-field name="Fecha Cliente P2" role="Firmante" style="width:90px;height:28px;display:inline-block;"></date-field></div>`
-        );
-
-        // ── PAGE 2 ── Pre-fill "Name / Title" line for customer
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div style="font-size:10px;margin-top:4px;color:#555;">Name \/ Title: )___________________________(<\/div>)/,
-          `$1<text-field name="Nombre Cliente P2" role="Firmante" style="width:160px;height:20px;display:inline-block;"></text-field>$2`
-        );
-
-        // ── PAGE 3 ── Customer Acceptance — Exhibit A
-        // Anchor: the text "Customer Acceptance — Exhibit A" appears in the HTML.
-        // After that anchor, find the height:44px signature spacer div and replace it.
-        // We use a regex with \s* to handle any whitespace/indentation in the stored HTML.
-        htmlWithSignature = htmlWithSignature.replace(
-          /(Customer Acceptance \u2014 Exhibit A[\s\S]*?)<div[^>]*height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px[^>]*><\/div>/,
-          `$1<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;"><signature-field name="Firma Exhibit A" role="Firmante" style="height:44px;display:block;"></signature-field><date-field name="Fecha Exhibit A" role="Firmante" style="height:44px;display:block;"></date-field></div>`
-        );
-
-        // ── PAGE 3 ── Pre-fill "Name / Title" line for customer in Exhibit A
-        htmlWithSignature = htmlWithSignature.replace(
-          /(<div style="font-size:10px;color:#333;margin-top:8px;">Name \/ Title: )___________________________(<\/div>)/,
-          `$1<text-field name="Nombre Cliente P3" role="Firmante" style="width:160px;height:20px;display:inline-block;"></text-field>$2`
-        );
+        // Insert signature block before </body> or append at end
+        const htmlWithSignature = contractHtml.includes('</body>')
+          ? contractHtml.replace('</body>', `${signatureFieldHtml}\n</body>`)
+          : contractHtml + signatureFieldHtml;
 
         // Create DocuSeal submission using the HTML endpoint
-        // Two submitters: company representative first (Vendedor), then customer (Firmante)
         const docusealPayload = {
           name: `Contrato ${contrato.numeroContrato}`,
           send_email: true,
@@ -2689,15 +2658,15 @@ export const appRouter = router({
           }],
           submitters: [
             {
-              role: 'Vendedor',
-              email: input.companySignerEmail,
-              name: input.companySignerName,
-            },
-            {
               role: 'Firmante',
               email: input.signerEmail,
               name: input.signerName,
             },
+            ...(input.companySignerEmail ? [{
+              role: 'Representante',
+              email: input.companySignerEmail,
+              name: input.companySignerName || 'Representante',
+            }] : []),
           ],
         };
 
@@ -2772,7 +2741,7 @@ export const appRouter = router({
         return { status, signingUrl: contrato.docusealSigningUrl };
       }),
 
-    // Option B: Manually save a signed PDF URL (uploaded by admin as fallback)
+    // Manually save a signed PDF URL for a contrato
     saveSignedPdf: adminProcedure
       .input(z.object({
         contratoId: z.number(),
@@ -2784,13 +2753,11 @@ export const appRouter = router({
         const { eq } = await import('drizzle-orm');
         const database = await getDb();
         if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB unavailable' });
-
         await database.update(contratos).set({
-          estado: 'Firmado',
+          pdfUrl: input.signedPdfUrl,
           firmaUrl: input.signedPdfUrl,
-          pdfUrl: input.signedPdfUrl, // replace the contract doc with the signed version
+          estado: 'Firmado',
         }).where(eq(contratos.id, input.contratoId));
-
         return { success: true };
       }),
   }),
