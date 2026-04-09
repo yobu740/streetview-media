@@ -1106,6 +1106,7 @@ export const appRouter = router({
         otherServicesCost: z.number().optional(),
         salespersonName: z.string().optional(),
         clienteNombre: z.string().optional(),
+        billingPeriodStart: z.string().optional(), // "YYYY-MM"
       }))
       .mutation(async ({ input }) => {
         try {
@@ -1119,7 +1120,8 @@ export const appRouter = router({
             input.otherServicesDescription,
             input.otherServicesCost,
             input.salespersonName,
-            input.clienteNombre
+            input.clienteNombre,
+            input.billingPeriodStart
           );
           console.log("[Invoice Router] Generated PDF:", pdfUrl);
           return { pdfUrl };

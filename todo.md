@@ -1436,3 +1436,9 @@
 - [x] Columna Costo en factura: mostrar siempre $350 (precio estándar forzado), columna Total muestra el precio real del contrato
 - [x] Investigar por qué botón ⟳ no aparece para facturas antiguas en la tabla — estaba en página diferente (/facturas vs /facturacion)
 - [x] Agregar botón "Imprimir / Guardar como PDF" dentro del HTML de la factura para generar PDF real desde el navegador
+
+## Correcciones de Facturas - Sesión Abril 2026 (parte 3)
+
+- [x] Header factura: reducir margin-top del nombre del vendedor (muy separado del grupo de texto)
+- [x] Modal generar factura: agregar campo para seleccionar periodo de facturación (mes/año) en lugar de usar siempre la fecha del anuncio
+- [x] PDF impreso sin header verde: agregar -webkit-print-color-adjust: exact y print-color-adjust: exact al CSS de impresión

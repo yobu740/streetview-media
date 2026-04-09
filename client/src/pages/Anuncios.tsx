@@ -125,6 +125,11 @@ export default function Anuncios() {
   const [otherServicesCost, setOtherServicesCost] = useState("");
   const [salespersonName, setSalespersonName] = useState("");
   const [selectedInvoiceClient, setSelectedInvoiceClient] = useState("");
+  // Billing period override: "YYYY-MM" — defaults to current month
+  const [billingPeriodStart, setBillingPeriodStart] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [selectedAnuncioForHistory, setSelectedAnuncioForHistory] = useState<number | null>(null);
   const [highlightAnuncioId, setHighlightAnuncioId] = useState<number | null>(null);
@@ -449,6 +454,7 @@ export default function Anuncios() {
         otherServicesCost: otherServicesCost ? parseFloat(otherServicesCost) : undefined,
         salespersonName: salespersonName || undefined,
         clienteNombre,
+        billingPeriodStart: billingPeriodStart || undefined,
       },
       {
         onSuccess: (data: any) => {
@@ -480,6 +486,9 @@ export default function Anuncios() {
           setOtherServicesCost("");
           setSalespersonName("");
           setSelectedInvoiceClient("");
+          // Reset billing period to current month
+          const now = new Date();
+          setBillingPeriodStart(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
         },
         onError: (error: any) => {
           toast.error(error.message || "Error al generar factura");
@@ -1460,6 +1469,16 @@ export default function Anuncios() {
                 onChange={(e) => setOtherServicesCost(e.target.value)}
                 placeholder="Ej: 250.00"
               />
+            </div>
+            <div>
+              <Label htmlFor="billing-period">Periodo de Facturación *</Label>
+              <Input
+                id="billing-period"
+                type="month"
+                value={billingPeriodStart}
+                onChange={(e) => setBillingPeriodStart(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">Mes que aparecerá en cada fila de la factura (ej: abril 2026)</p>
             </div>
             <div>
               <Label htmlFor="salesperson-name">Nombre del Vendedor (opcional)</Label>

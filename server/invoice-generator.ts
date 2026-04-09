@@ -77,6 +77,7 @@ interface InvoiceData {
   otherServicesDescription: string;
   otherServicesCost: number;
   finalTotal: number;
+  billingPeriodOverride?: string; // e.g. "2026-04" to override the period shown in each row
 }
 
 // ─── HTML Generator ───────────────────────────────────────────────────────────
@@ -305,7 +306,13 @@ function buildInvoiceHTML(data: InvoiceData): string {
     body { background: white; padding: 0; }
     .page { box-shadow: none; }
     .print-btn-wrap { display: none; }
+    .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: #1a4d3c !important; }
+    .invoice-table thead tr { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: #1a4d3c !important; }
+    .invoice-table thead th { color: white !important; }
+    .header-right { color: white !important; }
   }
+  /* Force background colors in print globally */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 </style>
 </head>
 <body>
@@ -320,7 +327,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
       <div>Fecha: ${invoiceDate}</div>
       <div>${invoiceTitle}</div>
       ${periodoContrato ? `<div>Periodo de Contrato: ${periodoContrato}</div>` : ""}
-      <div style="margin-top:6px">Vendedor: ${salespersonName || "—"}</div>
+      <div>Vendedor: ${salespersonName || "—"}</div>
     </div>
   </div>
 
@@ -418,6 +425,7 @@ async function buildInvoiceData(
     salespersonName?: string;
     clienteNombre?: string;
     invoiceNumber?: string;
+    billingPeriodStart?: string; // "YYYY-MM" — overrides the period shown in each row
   }
 ): Promise<{ data: InvoiceData; anuncioCount: number }> {
   const db = await getDb();
@@ -471,11 +479,19 @@ async function buildInvoiceData(
     if (!minFechaInicio || fechaInicio < minFechaInicio) minFechaInicio = fechaInicio;
     if (!maxFechaFin || fechaFin > maxFechaFin) maxFechaFin = fechaFin;
 
-    // Billing period = first and last day of the billing month (from fechaInicio)
-    const billingYear = fechaInicio.getUTCFullYear();
-    const billingMonth = fechaInicio.getUTCMonth(); // 0-indexed
-    const firstDayOfMonth = new Date(Date.UTC(billingYear, billingMonth, 1));
-    const lastDayOfMonth = new Date(Date.UTC(billingYear, billingMonth + 1, 0)); // day 0 of next month = last day of current month
+    // Billing period: use override if provided ("YYYY-MM"), otherwise derive from fechaInicio
+    let firstDayOfMonth: Date;
+    let lastDayOfMonth: Date;
+    if (opts.billingPeriodStart) {
+      const [bYear, bMonth] = opts.billingPeriodStart.split("-").map(Number);
+      firstDayOfMonth = new Date(Date.UTC(bYear, bMonth - 1, 1));
+      lastDayOfMonth = new Date(Date.UTC(bYear, bMonth, 0));
+    } else {
+      const billingYear = fechaInicio.getUTCFullYear();
+      const billingMonth = fechaInicio.getUTCMonth(); // 0-indexed
+      firstDayOfMonth = new Date(Date.UTC(billingYear, billingMonth, 1));
+      lastDayOfMonth = new Date(Date.UTC(billingYear, billingMonth + 1, 0));
+    }
 
     items.push({
       paradaInfo,
@@ -505,11 +521,18 @@ async function buildInvoiceData(
       ? `${fmtDate(minFechaInicio)} - ${fmtDate(maxFechaFin)}`
       : "";
 
-  // Invoice title: "CLIENT — Month YYYY" using the billing month of the first anuncio
-  const billingMonth = minFechaInicio
-    ? minFechaInicio.toLocaleDateString("es-PR", { month: "long", year: "numeric", timeZone: "UTC" })
-    : new Date().toLocaleDateString("es-PR", { month: "long", year: "numeric" });
-  const capitalizedMonth = billingMonth.charAt(0).toUpperCase() + billingMonth.slice(1);
+  // Invoice title: "CLIENT — Month YYYY" — use billingPeriodStart override if provided
+  let billingMonthStr: string;
+  if (opts.billingPeriodStart) {
+    const [bYear, bMonth] = opts.billingPeriodStart.split("-").map(Number);
+    const refDate = new Date(Date.UTC(bYear, bMonth - 1, 1));
+    billingMonthStr = refDate.toLocaleDateString("es-PR", { month: "long", year: "numeric", timeZone: "UTC" });
+  } else {
+    billingMonthStr = minFechaInicio
+      ? minFechaInicio.toLocaleDateString("es-PR", { month: "long", year: "numeric", timeZone: "UTC" })
+      : new Date().toLocaleDateString("es-PR", { month: "long", year: "numeric" });
+  }
+  const capitalizedMonth = billingMonthStr.charAt(0).toUpperCase() + billingMonthStr.slice(1);
   const invoiceTitle = opts.title || `${clientName} — ${capitalizedMonth}`;
 
   const invoiceDate = new Date().toLocaleDateString("es-PR", {
@@ -545,7 +568,8 @@ export async function generateInvoiceFromAnuncios(
   otherServicesDescription?: string,
   otherServicesCost?: number,
   salespersonName?: string,
-  clienteNombre?: string
+  clienteNombre?: string,
+  billingPeriodStart?: string // "YYYY-MM"
 ): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -575,6 +599,7 @@ export async function generateInvoiceFromAnuncios(
     salespersonName,
     clienteNombre,
     invoiceNumber,
+    billingPeriodStart,
   });
 
   const html = buildInvoiceHTML(data);
