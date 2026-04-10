@@ -3,6 +3,34 @@ import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
 
+// ─── PDF Generation via Puppeteer ─────────────────────────────────────────────
+
+/** Render HTML to a PDF buffer using headless Chromium */
+async function htmlToPdfBuffer(html: string): Promise<Buffer> {
+  const puppeteer = await import("puppeteer");
+  const browser = await puppeteer.default.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+    ],
+  });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({
+      format: "Letter",
+      printBackground: true,
+      margin: { top: "0", right: "0", bottom: "0", left: "0" },
+    });
+    return Buffer.from(pdfBuffer);
+  } finally {
+    await browser.close();
+  }
+}
+
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
@@ -348,7 +376,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
       <tr>
         <th class="col-parada">Parada</th>
         <th class="col-orient">Orientación</th>
-        <th class="col-caja">Caja</th>
+        <th class="col-caja">Caras</th>
         <th class="col-periodo">Periodo de Facturación</th>
         <th class="col-tipo">Tipo</th>
         <th class="col-costo right">Costo</th>
@@ -462,15 +490,25 @@ async function buildInvoiceData(
     const orientacion = parada?.orientacion || "";
     const caja = cajaLabel(orientacion);
 
-    // Standard price is $350 per unit.
-    // Costo column always shows $350 (list price).
-    // Total column shows the real contract price (what is actually charged).
-    const STANDARD_PRICE = 350;
-    const displayCosto = STANDARD_PRICE; // Always $350 in Costo column
+    // Dynamic standard price logic:
+    // - If cost <= $350: Costo = $350, Descuento = $350 - cost
+    // - If cost > $350: Costo = next multiple of $50 above cost,
+    //   Descuento = rounded Costo - cost
+    // Total always = real contract price (cost), except Bonificación = $0
+    const BASE_PRICE = 350;
+    let displayCosto: number;
+    if (anuncio.tipo === "Bonificación") {
+      displayCosto = BASE_PRICE;
+    } else if (cost <= BASE_PRICE) {
+      displayCosto = BASE_PRICE;
+    } else {
+      // Round up to next multiple of $50
+      displayCosto = Math.ceil(cost / 50) * 50;
+    }
     const descuento =
       anuncio.tipo === "Bonificación"
-        ? STANDARD_PRICE
-        : Math.max(0, STANDARD_PRICE - cost);
+        ? displayCosto
+        : Math.max(0, displayCosto - cost);
     const total = anuncio.tipo === "Bonificación" ? 0 : cost;
 
     const fechaInicio = new Date(anuncio.fechaInicio);
@@ -606,8 +644,24 @@ export async function generateInvoiceFromAnuncios(
 
   const timestamp = Date.now();
   const safeName = data.clientName.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9\-]/g, "");
-  const fileName = `facturas/${invoiceNumber}-${safeName}-${timestamp}.html`;
-  const { url } = await storagePut(fileName, Buffer.from(html, "utf-8"), "text/html; charset=utf-8");
+
+  // Generate real PDF binary via Puppeteer
+  let pdfBuffer: Buffer;
+  let fileName: string;
+  let contentType: string;
+  try {
+    pdfBuffer = await htmlToPdfBuffer(html);
+    fileName = `facturas/${invoiceNumber}-${safeName}-${timestamp}.pdf`;
+    contentType = "application/pdf";
+    console.log("[Invoice] PDF generated via Puppeteer, size:", pdfBuffer.length);
+  } catch (pdfErr) {
+    console.warn("[Invoice] Puppeteer failed, falling back to HTML:", pdfErr);
+    pdfBuffer = Buffer.from(html, "utf-8");
+    fileName = `facturas/${invoiceNumber}-${safeName}-${timestamp}.html`;
+    contentType = "text/html; charset=utf-8";
+  }
+
+  const { url } = await storagePut(fileName, pdfBuffer, contentType);
 
   await db.insert(facturas).values({
     numeroFactura: invoiceNumber,
@@ -661,8 +715,24 @@ export async function regenerateInvoicePDF(facturaId: number): Promise<string> {
 
   const timestamp = Date.now();
   const safeName = factura.cliente.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9\-]/g, "");
-  const fileName = `facturas/${factura.numeroFactura}-${safeName}-${timestamp}.html`;
-  const { url } = await storagePut(fileName, Buffer.from(html, "utf-8"), "text/html; charset=utf-8");
+
+  // Generate real PDF binary via Puppeteer
+  let pdfBuffer: Buffer;
+  let fileName: string;
+  let contentType: string;
+  try {
+    pdfBuffer = await htmlToPdfBuffer(html);
+    fileName = `facturas/${factura.numeroFactura}-${safeName}-${timestamp}.pdf`;
+    contentType = "application/pdf";
+    console.log("[Invoice] Regenerated PDF via Puppeteer, size:", pdfBuffer.length);
+  } catch (pdfErr) {
+    console.warn("[Invoice] Puppeteer failed, falling back to HTML:", pdfErr);
+    pdfBuffer = Buffer.from(html, "utf-8");
+    fileName = `facturas/${factura.numeroFactura}-${safeName}-${timestamp}.html`;
+    contentType = "text/html; charset=utf-8";
+  }
+
+  const { url } = await storagePut(fileName, pdfBuffer, contentType);
 
   await db
     .update(facturas)

@@ -1446,3 +1446,9 @@
 ## Correcciones de Facturas - Sesión Abril 2026 (parte 4)
 
 - [x] Descarga de factura: el HTML de S3 se descarga como .pdf corrupto — cambiar para abrir en nueva pestaña donde el usuario usa el botón "Imprimir / Guardar como PDF"
+
+## Correcciones de Facturas - Sesión Abril 2026 (parte 5)
+
+- [x] Precio estándar dinámico: si costo real > $350, redondear Costo al siguiente múltiplo de $50 (ej: $387.50 → Costo=$400, Descuento=$12.50, Total=$387.50)
+- [x] Cambiar "Caja" por "Caras" en la factura generada
+- [x] Generar PDF binario real con Puppeteer en el servidor para descarga directa
