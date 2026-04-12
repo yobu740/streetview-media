@@ -1520,3 +1520,10 @@
 - [x] Ajustar font-size de factura: tabla headers 9px, cuerpo 9.5px, footer 9px, dirección 10px
 - [x] Expandir altura del header verde de la factura (120px → 150px)
 - [x] Factura multi-página: agregar margen superior en páginas 2+ (@page margin 40px top, @page :first margin 0)
+- [ ] Crear proposal-generator.ts con HTML del PDF de propuesta/estimado
+- [ ] Agregar endpoint tRPC cotizaciones.generatePdf en routers.ts
+- [ ] Conectar botón "Generar PDF de Propuesta" en VendedorCalculadora.tsx
+- [x] Crear proposal-generator.ts con generador HTML del PDF de propuesta/estimado
+- [x] Agregar endpoint tRPC cotizaciones.generatePdf (vendedorProcedure, sube a S3)
+- [x] Conectar botón "Generar PDF de Propuesta" en VendedorCalculadora.tsx con la mutación tRPC
+- [x] Agregar campo de descuento en el panel derecho de la Calculadora (naranja, actualiza TOTAL)

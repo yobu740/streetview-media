@@ -5,7 +5,8 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { useState, useMemo } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, X, ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, X, ChevronUp, ChevronDown, FileText, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Parada = {
   id: number;
@@ -50,6 +51,19 @@ export default function VendedorCalculadora() {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [meses, setMeses] = useState(1);
+
+  // Discount
+  const [descuento, setDescuento] = useState(0);
+
+  const generatePdfMutation = trpc.cotizaciones.generatePdf.useMutation({
+    onSuccess: (data) => {
+      window.open(data.url, "_blank");
+      toast.success(`Cotización ${data.cotizacionNumber} generada exitosamente.`);
+    },
+    onError: (err) => {
+      toast.error(`Error al generar PDF: ${err.message}`);
+    },
+  });
 
   const { data: allParadas = [], isLoading } = trpc.paradas.list.useQuery();
 
@@ -118,7 +132,8 @@ export default function VendedorCalculadora() {
     (sum, p) => sum + (prices[p.id] ?? DEFAULT_PRICE),
     0
   );
-  const totalGeneral = subtotalMes * meses;
+  const subtotalTotal = subtotalMes * meses;
+  const totalGeneral = Math.max(0, subtotalTotal - descuento);
 
   const count = selectedIds.size;
 
@@ -473,6 +488,25 @@ export default function VendedorCalculadora() {
                 </span>
               </div>
               <hr className="border-slate-100 my-2" />
+              {/* Discount field */}
+              <div className="flex items-center justify-between mt-2 mb-1">
+                <span className="text-xs text-slate-500">Descuento ($)</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-slate-400">$</span>
+                  <input
+                    type="number"
+                    value={descuento === 0 ? "" : descuento}
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value);
+                      setDescuento(isNaN(v) ? 0 : Math.max(0, v));
+                    }}
+                    placeholder="0"
+                    className="w-24 text-right border border-slate-200 rounded-md px-2 py-1 text-sm font-bold text-[#ff6b35] outline-none focus:ring-2 focus:ring-[#ff6b35]/20"
+                    min={0}
+                  />
+                </div>
+              </div>
+              <hr className="border-slate-100 my-2" />
               <div className="flex justify-between items-baseline">
                 <span className="text-sm font-bold text-slate-900">TOTAL</span>
                 <span className="text-2xl font-extrabold text-[#1a4d3c]">
@@ -485,10 +519,34 @@ export default function VendedorCalculadora() {
             <div className="px-4 pb-4 pt-2 bg-white border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
               <button
                 type="button"
-                disabled={count === 0}
-                className="w-full py-2.5 rounded-lg bg-[#1a4d3c] text-white text-[13.5px] font-bold transition-all hover:bg-[#0f3a2a] disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={count === 0 || generatePdfMutation.isPending}
+                onClick={() => {
+                  generatePdfMutation.mutate({
+                    empresa,
+                    contacto,
+                    email,
+                    fechaInicio,
+                    fechaFin,
+                    meses,
+                    descuento,
+                    paradas: selectedParadas.map((p) => ({
+                      cobertizoId: p.cobertizoId,
+                      localizacion: p.localizacion,
+                      direccion: p.direccion,
+                      orientacion: p.orientacion,
+                      tipoFormato: p.tipoFormato,
+                      ruta: p.ruta ?? null,
+                      precioMes: prices[p.id] ?? DEFAULT_PRICE,
+                    })),
+                  });
+                }}
+                className="w-full py-2.5 rounded-lg bg-[#1a4d3c] text-white text-[13.5px] font-bold transition-all hover:bg-[#0f3a2a] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Generar PDF de Propuesta
+                {generatePdfMutation.isPending ? (
+                  <><Loader2 size={14} className="animate-spin" /> Generando PDF...</>
+                ) : (
+                  <><FileText size={14} /> Generar PDF de Propuesta</>
+                )}
               </button>
               <button
                 type="button"

@@ -2931,5 +2931,47 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ─── Cotizaciones (Proposal PDF generator) ───────────────────────────────
+  cotizaciones: router({
+    generatePdf: vendedorProcedure
+      .input(z.object({
+        empresa: z.string(),
+        contacto: z.string(),
+        email: z.string(),
+        fechaInicio: z.string(),
+        fechaFin: z.string(),
+        meses: z.number().int().min(1).max(24),
+        descuento: z.number().min(0),
+        paradas: z.array(z.object({
+          cobertizoId: z.string(),
+          localizacion: z.string(),
+          direccion: z.string(),
+          orientacion: z.string(),
+          tipoFormato: z.string(),
+          ruta: z.string().nullable().optional(),
+          precioMes: z.number(),
+        })),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { generateProposalPdf } = await import('./proposal-generator');
+        const { storagePut } = await import('./storage');
+
+        // Generate sequential cotizacion number based on timestamp
+        const cotizacionNumber = `COT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
+
+        const { buffer, filename } = await generateProposalPdf({
+          ...input,
+          vendedorName: ctx.user.name ?? '',
+          cotizacionNumber,
+        });
+
+        // Upload to S3 and return URL
+        const fileKey = `cotizaciones/${ctx.user.id}/${cotizacionNumber}-${Date.now()}.pdf`;
+        const { url } = await storagePut(fileKey, buffer, 'application/pdf');
+
+        return { url, filename, cotizacionNumber };
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;
