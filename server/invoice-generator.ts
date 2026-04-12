@@ -539,9 +539,10 @@ async function buildInvoiceData(
       // Keep the real day-of-month from the contract's fechaInicio
       const contractDay = fechaInicio.getUTCDate();
       periodStart = new Date(Date.UTC(bYear, bMonth - 1, contractDay));
-      // End date: same day next month (or same duration as original contract)
-      const contractDurationMs = fechaFin.getTime() - fechaInicio.getTime();
-      periodEnd = new Date(periodStart.getTime() + contractDurationMs);
+      // End date: same day of the NEXT month (Option C: 1 billing month)
+      // e.g. day=17, month=March 2026 → 17/03/2026 - 17/04/2026
+      const nextMonth = bMonth; // bMonth is 1-based, so bMonth = next month index in UTC
+      periodEnd = new Date(Date.UTC(bYear, nextMonth, contractDay));
     } else {
       periodStart = fechaInicio;
       periodEnd = fechaFin;

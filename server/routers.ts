@@ -2807,17 +2807,17 @@ export const appRouter = router({
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: `DocuSeal error: ${errorText}` });
         }
 
-        const result = await response.json() as any[];
-        // DocuSeal returns an array of submitters — log full response for debugging
+        const result = await response.json() as any;
+        // DocuSeal returns: { id: <submission_id>, name: "...", submitters: [{id, slug, role, ...}] }
         console.log('[DocuSeal] Full API response:', JSON.stringify(result, null, 2));
-        // DocuSeal returns an array of submitters, each has submission_id
-        const submitter = Array.isArray(result) ? result[0] : result;
-        // submission_id can be at top level or nested inside submission object
+        // The submission ID is at result.id (top-level), NOT result.submission_id
         const submissionId: number | undefined =
-          submitter?.submission_id ??
-          submitter?.submission?.id ??
-          (Array.isArray(result) ? result.find((r: any) => r.submission_id)?.submission_id : undefined);
-        const signingUrl = submitter?.slug ? `https://docuseal.com/s/${submitter.slug}` : null;
+          result?.id ??
+          result?.submission_id ??
+          (Array.isArray(result) ? result[0]?.submission_id : undefined);
+        // The signing URL comes from the first submitter's slug
+        const firstSubmitter = Array.isArray(result?.submitters) ? result.submitters[0] : (Array.isArray(result) ? result[0] : null);
+        const signingUrl = firstSubmitter?.slug ? `https://docuseal.com/s/${firstSubmitter.slug}` : null;
         console.log('[DocuSeal] Extracted submissionId:', submissionId, '| signingUrl:', signingUrl);
 
         // Update contrato with DocuSeal submission info and change estado to Enviado

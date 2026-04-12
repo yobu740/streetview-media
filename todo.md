@@ -1490,3 +1490,7 @@
 - [x] Contrato: restaurar campo de nombre escrito (text field) en las firmas
 - [x] Contrato: alinear firma y fecha en la misma fila (lado a lado, no una debajo de la otra)
 - [x] Contrato: webhook de DocuSeal no actualiza estado de firmado en el sistema (diagnosticar y corregir — logging detallado agregado, submissionId extraction mejorado)
+
+## Bugs Críticos - Abril 2026
+- [x] Bug: periodo de facturación incorrecto al regenerar (01/03/2026 - 28/12/2026 en lugar de fechas correctas con días del contrato)
+- [x] Bug: webhook de DocuSeal no actualiza estado del contrato a "Firmado" después de que ambas partes firman — corregido: result.id en lugar de result.submission_id; submissionId de 2026-70-copia actualizado manualmente a 6881415
