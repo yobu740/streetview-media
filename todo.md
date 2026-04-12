@@ -1452,3 +1452,22 @@
 - [x] Precio estándar dinámico: si costo real > $350, redondear Costo al siguiente múltiplo de $50 (ej: $387.50 → Costo=$400, Descuento=$12.50, Total=$387.50)
 - [x] Cambiar "Caja" por "Caras" en la factura generada
 - [x] Generar PDF binario real con Puppeteer en el servidor para descarga directa
+
+## Correcciones - Sesión Abril 2026 (parte 6)
+
+- [ ] Email HTML: cambiar "La nueva Red de publicidad en Puerto Rico" → "La nueva red de publicidad exterior en Puerto Rico"
+- [ ] Email HTML: cambiar fondo del header a blanco (con logo verde) para compatibilidad con dark mode en clientes de email
+- [ ] Modal Vincular: no encuentra anuncios para facturas antiguas — investigar y corregir la búsqueda por cliente
+
+## Panel Principal - Reportes y Selección (Sesión Abril 2026)
+
+- [ ] Panel principal: agregar checkboxes por fila para seleccionar paradas individuales
+- [ ] Panel principal: botón "Seleccionar todo" / deseleccionar para las filas visibles
+- [ ] Panel principal: exportar a Excel las paradas según los filtros activos (o las seleccionadas)
+- [ ] Panel principal: exportar a PDF las paradas según los filtros activos (o las seleccionadas)
+- [ ] Panel principal: reporte incluye columnas visibles: ID, Localización, Cobertizo, Orientación, Estado, Condición, Cliente activo, Costo
+
+## Mejoras de Layout de Factura - Abril 2026
+- [x] Agregar columna Producto en la tabla de la factura generada
+- [x] Agregar margen superior en páginas 2+ para que la tabla no quede pegada al borde
+- [x] Agregar número de página en el pie de cada hoja cuando hay más de una página

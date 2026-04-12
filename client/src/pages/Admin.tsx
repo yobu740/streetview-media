@@ -927,6 +927,95 @@ export default function Admin() {
   const ocupadasCount = filteredParadas.filter(p => getParadaStatus(p).status === "Ocupado").length;
   const noDisponiblesCount = (paradas || []).filter(p => getParadaStatus(p).status === "No Disponible").length;
 
+  /** Print a PDF report for the currently selected paradas (or all filtered if none selected) */
+  const handlePrintSelected = (paradasToPrint?: typeof sortedFilteredParadas) => {
+    const list = paradasToPrint ?? (
+      selectedParadas.length > 0
+        ? sortedFilteredParadas.filter(p => selectedParadas.includes(p.id))
+        : sortedFilteredParadas
+    );
+    const totalDisp = list.filter(p => getParadaStatus(p).status === 'Disponible').length;
+    const totalOcup = list.filter(p => getParadaStatus(p).status === 'Ocupado').length;
+    const rows = list.map((parada) => {
+      const { status, anuncio } = getParadaStatus(parada);
+      const displayStatus = status === 'No Disponible' ? 'No Operativa' : status;
+      let condicion = '';
+      if (parada.removida) condicion = 'Removida';
+      else if (parada.enConstruccion) condicion = 'En Construcción' + (parada.fechaDisponibilidad ? ` (${new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')})` : '');
+      else if (parada.displayPublicidad === 'No') condicion = 'Sin Display';
+      else { const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia; condicion = isLista ? 'Lista' : 'Pendiente'; }
+      return `<tr>
+        <td>${parada.cobertizoId}</td>
+        <td>${parada.flowCat || '—'}</td>
+        <td>${parada.localizacion || '—'}</td>
+        <td>${parada.ruta || '—'}</td>
+        <td>${parada.direccion}</td>
+        <td>${parada.tipoFormato === 'Digital' ? 'B' : 'F'}</td>
+        <td>${displayStatus}</td>
+        <td>${condicion}</td>
+        <td>${anuncio?.cliente || '—'}</td>
+        <td>${anuncio ? ((anuncio as any).costoPorUnidad ? `$${parseFloat((anuncio as any).costoPorUnidad).toFixed(2)}` : '—') : '—'}</td>
+      </tr>`;
+    }).join('');
+    const printWindow = window.open('', '', 'width=900,height=700');
+    if (!printWindow) return;
+    printWindow.document.write(`<!DOCTYPE html><html><head>
+      <title>Reporte de Paradas - Streetview Media</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a1a; background: #fff; }
+        .print-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 14px; background: #fff; }
+        .print-header img { height: 52px; display: block; }
+        .print-header-right { text-align: right; }
+        .doc-accent { display: inline-block; width: 32px; height: 3px; background: #ff6b35; margin-bottom: 4px; }
+        .doc-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; color: #1a4d3c; }
+        .doc-meta { font-size: 10px; color: #666; margin-top: 3px; }
+        .print-divider { height: 6px; background: #1a4d3c; width: 100%; }
+        .print-subbar { background: #f3f4f6; padding: 6px 28px; font-size: 10px; color: #555; display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; }
+        .print-subbar strong { color: #1a4d3c; }
+        .stats { display: flex; gap: 16px; padding: 12px 28px; border-bottom: 1px solid #e5e7eb; }
+        .stat-card { border: 1.5px solid #1a4d3c; padding: 8px 14px; border-radius: 4px; font-size: 11px; }
+        .stat-card strong { color: #1a4d3c; }
+        .print-body { padding: 12px 28px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1a4d3c !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white; padding: 6px 8px; text-align: left; font-size: 10px; }
+        td { padding: 5px 8px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+        tr:nth-child(even) { background: #f9fafb; }
+        .print-footer { margin-top: 20px; padding: 10px 28px; border-top: 2px solid #1a4d3c; font-size: 9px; color: #888; display: flex; justify-content: space-between; }
+        @media print { .print-header, .print-divider, .print-subbar, th { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+      </style></head><body>
+      <div class="print-header">
+        <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png" alt="Streetview Media" />
+        <div class="print-header-right">
+          <div class="doc-accent"></div>
+          <div class="doc-title">REPORTE DE PARADAS</div>
+          <div class="doc-meta">${new Date().toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        </div>
+      </div>
+      <div class="print-divider"></div>
+      <div class="print-subbar">
+        <span><strong>${list.length}</strong> parada${list.length !== 1 ? 's' : ''}${selectedParadas.length > 0 ? ' (selección manual)' : ' (filtro activo)'}</span>
+        <span>Disponibles: ${totalDisp} &nbsp;·&nbsp; Ocupadas: ${totalOcup}</span>
+      </div>
+      <div class="print-body">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Cliente</th><th>Costo</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      </div>
+      <div class="print-footer">
+        <span>streetviewmediapr.com</span>
+        <span>Documento de uso interno · Generado el ${new Date().toLocaleString('es-PR')}</span>
+      </div>
+      <script>window.onload = () => { window.print(); }<\/script>
+      </body></html>`);
+    printWindow.document.close();
+    printWindow.print();
+    logActivity.mutate({ action: `Imprió reporte de ${list.length} paradas`, entityType: 'report' });
+  };
+
 
   return (
     <div className="flex min-h-screen bg-[#f5f5f5]">
@@ -2751,24 +2840,43 @@ export default function Admin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Floating "Crear Reserva" button when paradas are selected */}
+      {/* Floating action bar when paradas are selected */}
       {selectedParadas.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#1a4d3c] text-white px-5 py-3 rounded-full shadow-2xl border-2 border-white/20 animate-in slide-in-from-bottom-4">
-          <span className="text-sm font-medium">
-            {selectedParadas.length} parada{selectedParadas.length !== 1 ? 's' : ''} seleccionada{selectedParadas.length !== 1 ? 's' : ''}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#1a4d3c] text-white px-4 py-3 rounded-full shadow-2xl border-2 border-white/20 animate-in slide-in-from-bottom-4">
+          <span className="text-sm font-medium whitespace-nowrap">
+            {selectedParadas.length} parada{selectedParadas.length !== 1 ? 's' : ''}
           </span>
           <div className="w-px h-4 bg-white/30" />
           <Button
             size="sm"
-            className="bg-[#ff6b35] hover:bg-[#e65a25] text-white border-0 h-8 px-4 font-semibold"
+            className="bg-[#ff6b35] hover:bg-[#e65a25] text-white border-0 h-8 px-3 font-semibold"
             onClick={() => {
               const ids = selectedParadas.join(',');
               setLocation(`/anuncios?preselect=${ids}`);
             }}
           >
             <Megaphone className="w-3.5 h-3.5 mr-1.5" />
-            Crear Reserva
+            Reserva
           </Button>
+          <Button
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0 h-8 px-3 font-semibold"
+            onClick={handleExportToExcel}
+            title="Exportar seleccionadas a Excel"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
+            Excel
+          </Button>
+          <Button
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white border-0 h-8 px-3 font-semibold"
+            onClick={() => handlePrintSelected()}
+            title="Imprimir / guardar PDF de seleccionadas"
+          >
+            <Printer className="w-3.5 h-3.5 mr-1.5" />
+            PDF
+          </Button>
+          <div className="w-px h-4 bg-white/30" />
           <Button
             size="sm"
             variant="ghost"

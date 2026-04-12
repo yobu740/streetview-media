@@ -72,7 +72,6 @@ export default function Facturacion() {
   const deleteFactura = trpc.facturas.delete.useMutation();
   const regenerateFactura = trpc.facturas.regenerate.useMutation();
   const linkAnuncios = trpc.facturas.linkAnuncios.useMutation();
-  const { data: allAnuncios } = trpc.paradas.list.useQuery();
   const archiveFactura = trpc.invoices.archive.useMutation();
   const unarchiveFactura = trpc.invoices.unarchive.useMutation();
   const generateReport = trpc.invoices.generateReport.useMutation();
@@ -86,6 +85,12 @@ export default function Facturacion() {
   const [linkFactura, setLinkFactura] = useState<any>(null);
   const [linkSearch, setLinkSearch] = useState("");
   const [selectedAnuncioIds, setSelectedAnuncioIds] = useState<number[]>([]);
+
+  // Search anuncios by client name for the Vincular modal
+  const { data: searchedAnuncios, isLoading: searchingAnuncios } = trpc.facturas.searchAnunciosByCliente.useQuery(
+    { cliente: linkSearch },
+    { enabled: isLinkDialogOpen && linkSearch.length >= 2 }
+  );
 
   const handleOpenLinkDialog = (factura: any) => {
     setLinkFactura(factura);
@@ -982,10 +987,16 @@ export default function Facturacion() {
                 </div>
                 <p className="text-xs text-gray-500">Seleccione los anuncios que corresponden a esta factura. Se guardarán para poder regenerar el PDF.</p>
                 <div className="max-h-64 overflow-y-auto border rounded-md divide-y">
-                  {(allAnuncios || []).filter((a: any) => {
-                    const term = linkSearch.toLowerCase();
-                    return !term || a.cliente?.toLowerCase().includes(term) || a.producto?.toLowerCase().includes(term);
-                  }).map((a: any) => (
+                  {searchingAnuncios && (
+                    <div className="px-3 py-4 text-sm text-gray-500 text-center">Buscando anuncios...</div>
+                  )}
+                  {!searchingAnuncios && linkSearch.length < 2 && (
+                    <div className="px-3 py-4 text-sm text-gray-400 text-center">Escriba al menos 2 caracteres para buscar</div>
+                  )}
+                  {!searchingAnuncios && linkSearch.length >= 2 && (searchedAnuncios || []).length === 0 && (
+                    <div className="px-3 py-4 text-sm text-gray-400 text-center">No se encontraron anuncios para "{linkSearch}"</div>
+                  )}
+                  {(searchedAnuncios || []).map((a: any) => (
                     <label key={a.id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer">
                       <input
                         type="checkbox"
@@ -995,10 +1006,15 @@ export default function Facturacion() {
                           else setSelectedAnuncioIds(prev => prev.filter(id => id !== a.id));
                         }}
                       />
-                      <span className="text-sm">
+                      <span className="text-sm flex-1">
                         <span className="font-medium">{a.cliente}</span>
-                        <span className="text-gray-500"> — {a.producto} — ${a.costo}</span>
-                        <span className="text-xs text-gray-400 ml-2">(ID: {a.id})</span>
+                        <span className="text-gray-500"> — {a.producto || a.tipo}</span>
+                        {a.cobertizoId && <span className="text-gray-400"> · Parada {a.cobertizoId}</span>}
+                        {a.costoPorUnidad && <span className="text-gray-500"> · ${parseFloat(a.costoPorUnidad).toFixed(2)}</span>}
+                        <span className="text-xs text-gray-400 ml-2">
+                          {a.fechaInicio ? new Date(a.fechaInicio).toLocaleDateString('es-PR') : ''}
+                          {a.fechaFin ? ` – ${new Date(a.fechaFin).toLocaleDateString('es-PR')}` : ''}
+                        </span>
                       </span>
                     </label>
                   ))}

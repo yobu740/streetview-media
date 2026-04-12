@@ -83,6 +83,7 @@ interface InvoiceItem {
   paradaInfo: string;
   orientacion: string;   // raw code: I / O / P
   caja: string;
+  producto: string;      // product/campaign name
   periodoInicio: string; // DD/MM/YYYY
   periodoFin: string;
   tipo: string;          // raw: Fijo / Bonificación / Holder
@@ -131,6 +132,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
         <td class="col-parada">${item.paradaInfo}</td>
         <td class="col-orient">${orientacionLabel(item.orientacion)}</td>
         <td class="col-caja">${item.caja}</td>
+        <td class="col-producto">${item.producto || '—'}</td>
         <td class="col-periodo">${item.periodoInicio} - ${item.periodoFin}</td>
         <td class="col-tipo" ${tipoClass}>${tipoLabel(item.tipo)}</td>
         <td class="col-costo">${fmtMoney(item.costo)}</td>
@@ -244,15 +246,16 @@ function buildInvoiceHTML(data: InvoiceData): string {
   }
   .right { text-align: right; }
 
-  /* col widths */
-  .col-parada  { width: 20%; }
-  .col-orient  { width: 11%; }
-  .col-caja    { width: 5%;  text-align: center; }
-  .col-periodo { width: 20%; }
-  .col-tipo    { width: 11%; }
-  .col-costo   { width: 9%;  text-align: right; }
-  .col-desc    { width: 9%;  text-align: right; }
-  .col-total   { width: 10%; text-align: right; font-weight: 700; }
+  /* col widths — 9 columns total */
+  .col-parada   { width: 17%; }
+  .col-orient   { width: 9%;  }
+  .col-caja     { width: 4%;  text-align: center; }
+  .col-producto { width: 16%; }
+  .col-periodo  { width: 17%; }
+  .col-tipo     { width: 9%;  }
+  .col-costo    { width: 8%;  text-align: right; }
+  .col-desc     { width: 8%;  text-align: right; }
+  .col-total    { width: 9%;  text-align: right; font-weight: 700; }
 
   .descuento-val  { color: #e05a00; font-weight: 600; }
   .descuento-none { color: #bbb; }
@@ -331,6 +334,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .print-btn:hover { background: #0f3a2a; }
 
   @media print {
+    @page { margin: 18mm 12mm 18mm 12mm; }
+    @page :first { margin-top: 0; }
     body { background: white; padding: 0; }
     .page { box-shadow: none; }
     .print-btn-wrap { display: none; }
@@ -338,6 +343,13 @@ function buildInvoiceHTML(data: InvoiceData): string {
     .invoice-table thead tr { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: #1a4d3c !important; }
     .invoice-table thead th { color: white !important; }
     .header-right { color: white !important; }
+    /* Repeat table header on every page */
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    /* Page number counter in footer */
+    .footer-copy::after {
+      content: ' — Página ' counter(page) ' de ' counter(pages);
+    }
   }
   /* Force background colors in print globally */
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -377,6 +389,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
         <th class="col-parada">Parada</th>
         <th class="col-orient">Orientación</th>
         <th class="col-caja">Caras</th>
+        <th class="col-producto">Producto</th>
         <th class="col-periodo">Periodo de Facturación</th>
         <th class="col-tipo">Tipo</th>
         <th class="col-costo right">Costo</th>
@@ -535,6 +548,7 @@ async function buildInvoiceData(
       paradaInfo,
       orientacion,
       caja,
+      producto: anuncio.producto || "",
       periodoInicio: fmtDate(firstDayOfMonth),
       periodoFin: fmtDate(lastDayOfMonth),
       tipo: anuncio.tipo,

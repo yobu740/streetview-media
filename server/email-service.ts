@@ -94,10 +94,10 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   <tbody><tr><td style="background-color:#f0f1f5">
     <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;min-height:600px;margin:0 auto;background-color:#ffffff">
       <tbody>
-        <!-- Logo -->
-        <tr><td style="vertical-align:top;padding:10px 0 0 0">
-          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
-            <tbody><tr><td style="padding:10px 0 10px 0;vertical-align:top">
+        <!-- Logo (white background for dark-mode email clients) -->
+        <tr><td style="vertical-align:top;padding:10px 0 0 0;background-color:#ffffff !important">
+          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff">
+            <tbody><tr><td style="padding:10px 0 10px 0;vertical-align:top;background-color:#ffffff">
               <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
                 <tbody><tr><td style="padding:0px 20px">
                   <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
@@ -162,7 +162,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
 
         <!-- Tagline bottom -->
         <tr><td dir="ltr" style="color:#171d2b;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          La nueva red de publicidad en Puerto Rico.
+          La nueva red de publicidad exterior en Puerto Rico.
         </td></tr>
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 
