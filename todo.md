@@ -1503,3 +1503,4 @@
 - [x] Factura: header verde debe cubrir el ancho completo sin márgenes blancos a los lados
 - [x] Factura: dirección de Streetview debe mostrarse en líneas separadas (no inline con pipes)
 - [x] Corregir error "fetch failed" en contratos.sendForSigning: el servidor no puede hacer fetch del HTML desde CloudFront (403). Solución: el cliente genera el HTML y lo pasa directamente en la mutación.
+- [x] Corregir error "Greeting never received" al enviar facturas por email (error SMTP) — reemplazado nodemailer SMTP por Microsoft Graph API (HTTPS)
