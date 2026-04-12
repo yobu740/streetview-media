@@ -1527,3 +1527,4 @@
 - [x] Agregar endpoint tRPC cotizaciones.generatePdf (vendedorProcedure, sube a S3)
 - [x] Conectar botón "Generar PDF de Propuesta" en VendedorCalculadora.tsx con la mutación tRPC
 - [x] Agregar campo de descuento en el panel derecho de la Calculadora (naranja, actualiza TOTAL)
+- [x] Factura y propuesta: implementar Opción A de totales (Precio de Lista = total + descuentos, luego descuento en naranja, luego TOTAL)

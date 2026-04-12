@@ -362,15 +362,19 @@ function buildProposalHTML(data: ProposalData): string {
   <div class="totals-section">
     <table class="totals-table">
       <tbody>
+        ${descuento > 0 ? `
         <tr>
-          <td class="lbl">Subtotal (${paradas.length} parada${paradas.length !== 1 ? "s" : ""} × ${meses} mes${meses !== 1 ? "es" : ""})</td>
+          <td class="lbl">Precio de Lista (${paradas.length} parada${paradas.length !== 1 ? "s" : ""} × ${meses} mes${meses !== 1 ? "es" : ""})</td>
           <td class="amt">${fmtMoney(subtotalTotal)}</td>
         </tr>
-        ${descuento > 0 ? `
         <tr>
           <td class="desc-lbl">Descuentos / Bonificaciones</td>
           <td class="desc-amt">-${fmtMoney(descuento)}</td>
-        </tr>` : ""}
+        </tr>` : `
+        <tr>
+          <td class="lbl">Subtotal (${paradas.length} parada${paradas.length !== 1 ? "s" : ""} × ${meses} mes${meses !== 1 ? "es" : ""})</td>
+          <td class="amt">${fmtMoney(subtotalTotal)}</td>
+        </tr>`}
         <tr class="grand-row">
           <td class="grand-lbl">TOTAL</td>
           <td class="grand-amt">${fmtMoney(finalTotal)}</td>

@@ -141,16 +141,26 @@ function buildInvoiceHTML(data: InvoiceData): string {
       </tr>`;
   }).join("\n");
 
+  // Option A: when there are discounts, show "Precio de Lista" = finalTotal + discounts
+  // so the client sees clearly how much they are saving
+  const precioLista = totalDescuentos > 0
+    ? finalTotal + totalDescuentos
+    : subtotalAnuncios + productionCost + otherServicesCost;
+
   const totalsHTML = `
+    ${totalDescuentos > 0 ? `
+    <tr>
+      <td class="lbl">Precio de Lista</td>
+      <td class="amt">${fmtMoney(precioLista)}</td>
+    </tr>
+    <tr>
+      <td class="desc-lbl">Descuentos / Bonificaciones</td>
+      <td class="desc-amt">-${fmtMoney(totalDescuentos)}</td>
+    </tr>` : `
     <tr>
       <td class="lbl">Subtotal (Anuncios)</td>
       <td class="amt">${fmtMoney(subtotalAnuncios)}</td>
-    </tr>
-    ${totalDescuentos > 0 ? `
-    <tr>
-      <td class="desc-lbl">Descuentos / Bonificaciones</td>
-      <td class="desc-amt">${fmtMoney(totalDescuentos)}</td>
-    </tr>` : ""}
+    </tr>`}
     ${productionCost > 0 ? `
     <tr>
       <td class="lbl">Costo de Producción</td>
