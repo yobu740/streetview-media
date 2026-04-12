@@ -1678,12 +1678,23 @@ export default function Admin() {
                         <TableHead className="w-12">
                           <input
                             type="checkbox"
-                            checked={selectedParadas.length === paginatedParadas.length && paginatedParadas.length > 0}
+                            checked={paginatedParadas.length > 0 && paginatedParadas.every(p => selectedParadas.includes(p.id))}
+                            ref={el => {
+                              if (el) {
+                                const someSelected = paginatedParadas.some(p => selectedParadas.includes(p.id));
+                                const allSelected = paginatedParadas.every(p => selectedParadas.includes(p.id));
+                                el.indeterminate = someSelected && !allSelected;
+                              }
+                            }}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedParadas(paginatedParadas.map(p => p.id));
+                                // Add current page items to existing selection
+                                const newIds = paginatedParadas.map(p => p.id).filter(id => !selectedParadas.includes(id));
+                                setSelectedParadas(prev => [...prev, ...newIds]);
                               } else {
-                                setSelectedParadas([]);
+                                // Remove only current page items from selection
+                                const pageIds = new Set(paginatedParadas.map(p => p.id));
+                                setSelectedParadas(prev => prev.filter(id => !pageIds.has(id)));
                               }
                             }}
                             className="cursor-pointer"

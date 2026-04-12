@@ -698,7 +698,7 @@ export async function generateInvoiceFromAnuncios(
   return url;
 }
 
-export async function regenerateInvoicePDF(facturaId: number): Promise<string> {
+export async function regenerateInvoicePDF(facturaId: number, billingPeriodStart?: string): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -723,6 +723,7 @@ export async function regenerateInvoicePDF(facturaId: number): Promise<string> {
     salespersonName: factura.vendedor ?? undefined,
     clienteNombre: factura.cliente,
     invoiceNumber: factura.numeroFactura,
+    billingPeriodStart, // "YYYY-MM" if provided by user, otherwise uses anuncio fechaInicio
   });
 
   const html = buildInvoiceHTML(data);

@@ -1471,3 +1471,7 @@
 - [x] Agregar columna Producto en la tabla de la factura generada
 - [x] Agregar margen superior en páginas 2+ para que la tabla no quede pegada al borde
 - [x] Agregar número de página en el pie de cada hoja cuando hay más de una página
+
+## Correcciones - Abril 2026 (sesión 3)
+- [x] Regenerar factura: agregar selector de periodo (mes/año) en el modal de regenerar para facturas antiguas
+- [x] Panel principal: selecciones de paradas deben persistir al cambiar de página (no deseleccionarse al paginar)

@@ -80,6 +80,14 @@ export default function Facturacion() {
   // Regenerate state
   const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
 
+  // Regenerate confirm dialog
+  const [isRegenDialogOpen, setIsRegenDialogOpen] = useState(false);
+  const [regenFactura, setRegenFactura] = useState<any>(null);
+  const [regenPeriod, setRegenPeriod] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+
   // Link anuncios dialog
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [linkFactura, setLinkFactura] = useState<any>(null);
@@ -114,14 +122,29 @@ export default function Facturacion() {
     }
   };
 
-  const handleRegenerate = async (factura: any) => {
+  const handleOpenRegenDialog = (factura: any) => {
     if (!factura.anuncioIdsJson) {
       toast.error("Esta factura no tiene anuncios vinculados. Use el botón 🔗 primero.");
       return;
     }
-    setRegeneratingId(factura.id);
+    // Pre-fill period from the invoice's own fecha (if available) or current month
+    if (factura.fechaEmision) {
+      const d = new Date(factura.fechaEmision);
+      setRegenPeriod(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+    }
+    setRegenFactura(factura);
+    setIsRegenDialogOpen(true);
+  };
+
+  const handleRegenerate = async () => {
+    if (!regenFactura) return;
+    setRegeneratingId(regenFactura.id);
+    setIsRegenDialogOpen(false);
     try {
-      const result = await regenerateFactura.mutateAsync({ facturaId: factura.id });
+      const result = await regenerateFactura.mutateAsync({
+        facturaId: regenFactura.id,
+        billingPeriodStart: regenPeriod,
+      });
       toast.success("Factura regenerada correctamente");
       utils.invoices.list.invalidate();
       if (result.pdfUrl) window.open(result.pdfUrl, "_blank");
@@ -666,7 +689,7 @@ export default function Facturacion() {
                                 className="border-[#1a4d3c] text-[#1a4d3c] hover:bg-green-50"
                                 title="Regenerar PDF con el formato actualizado"
                                 disabled={regeneratingId === factura.id}
-                                onClick={() => handleRegenerate(factura)}
+                                onClick={() => handleOpenRegenDialog(factura)}
                               >
                                 <RefreshCw size={14} className={`mr-1 ${regeneratingId === factura.id ? 'animate-spin' : ''}`} />
                                 {regeneratingId === factura.id ? "..." : "Regen."}
@@ -1032,6 +1055,44 @@ export default function Facturacion() {
                 >
                   <Link2 size={14} className="mr-2" />
                   {linkAnuncios.isPending ? "Vinculando..." : `Vincular ${selectedAnuncioIds.length} anuncio(s)`}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* ── Regenerar Confirm Dialog ─────────────────────────────── */}
+          <Dialog open={isRegenDialogOpen} onOpenChange={setIsRegenDialogOpen}>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <RefreshCw size={18} className="text-[#1a4d3c]" />
+                  Regenerar Factura
+                </DialogTitle>
+                <DialogDescription>
+                  {regenFactura && `${regenFactura.numeroFactura} — ${regenFactura.cliente}`}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-1">
+                  <Label htmlFor="regen-period">Periodo de Facturación</Label>
+                  <Input
+                    id="regen-period"
+                    type="month"
+                    value={regenPeriod}
+                    onChange={e => setRegenPeriod(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500">Seleccione el mes que aparecerá en cada fila de la factura.</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsRegenDialogOpen(false)}>Cancelar</Button>
+                <Button
+                  className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
+                  onClick={handleRegenerate}
+                  disabled={!regenPeriod}
+                >
+                  <RefreshCw size={14} className="mr-2" />
+                  Regenerar PDF
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -888,10 +888,13 @@ export const appRouter = router({
       }),
 
     regenerate: adminProcedure
-      .input(z.object({ facturaId: z.number() }))
+      .input(z.object({
+        facturaId: z.number(),
+        billingPeriodStart: z.string().optional(), // "YYYY-MM"
+      }))
       .mutation(async ({ input }) => {
         const { regenerateInvoicePDF } = await import("./invoice-generator");
-        const pdfUrl = await regenerateInvoicePDF(input.facturaId);
+        const pdfUrl = await regenerateInvoicePDF(input.facturaId, input.billingPeriodStart);
         return { pdfUrl };
       }),
 
@@ -1132,10 +1135,13 @@ export const appRouter = router({
       }),
 
     regenerate: adminProcedure
-      .input(z.object({ facturaId: z.number() }))
+      .input(z.object({
+        facturaId: z.number(),
+        billingPeriodStart: z.string().optional(), // "YYYY-MM"
+      }))
       .mutation(async ({ input }) => {
         const { regenerateInvoicePDF } = await import("./invoice-generator");
-        const pdfUrl = await regenerateInvoicePDF(input.facturaId);
+        const pdfUrl = await regenerateInvoicePDF(input.facturaId, input.billingPeriodStart);
         return { pdfUrl };
       }),
 
