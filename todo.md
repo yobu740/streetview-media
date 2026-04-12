@@ -1504,3 +1504,4 @@
 - [x] Factura: dirección de Streetview debe mostrarse en líneas separadas (no inline con pipes)
 - [x] Corregir error "fetch failed" en contratos.sendForSigning: el servidor no puede hacer fetch del HTML desde CloudFront (403). Solución: el cliente genera el HTML y lo pasa directamente en la mutación.
 - [x] Corregir error "Greeting never received" al enviar facturas por email (error SMTP) — reemplazado nodemailer SMTP por Microsoft Graph API (HTTPS)
+- [x] Revertir email-service.ts a nodemailer SMTP (el error SMTP solo ocurre en sandbox de desarrollo, funciona correctamente en producción)
