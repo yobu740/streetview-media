@@ -174,13 +174,12 @@ function buildInvoiceHTML(data: InvoiceData): string {
 <title>Factura ${invoiceNumber} — Streetview Media</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #e5e7eb; font-family: Arial, Helvetica, sans-serif; padding: 32px; }
+  body { background: white; font-family: Arial, Helvetica, sans-serif; padding: 0; }
   .page {
-    width: 816px;
+    width: 100%;
     min-height: 1056px;
     background: white;
-    margin: 0 auto;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    margin: 0;
     display: flex;
     flex-direction: column;
   }
@@ -194,6 +193,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
     padding: 0 50px;
     position: relative;
     flex-shrink: 0;
+    width: 100%;
   }
   .header img { height: 48px; }
   .header-right {
@@ -334,10 +334,9 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .print-btn:hover { background: #0f3a2a; }
 
   @media print {
-    @page { margin: 18mm 12mm 18mm 12mm; }
-    @page :first { margin-top: 0; }
+    @page { margin: 0; }
     body { background: white; padding: 0; }
-    .page { box-shadow: none; }
+    .page { box-shadow: none; width: 100%; }
     .print-btn-wrap { display: none; }
     .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: #1a4d3c !important; }
     .invoice-table thead tr { print-color-adjust: exact; -webkit-print-color-adjust: exact; background: #1a4d3c !important; }
@@ -373,7 +372,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
 
   <!-- Address -->
   <div class="address">
-    130 Ave. Winston Churchill &nbsp;|&nbsp; PMB 167 &nbsp;|&nbsp; San Juan, PR 00926
+    130 Ave. Winston Churchill<br>PMB 167<br>San Juan, PR 00926
   </div>
 
   <!-- Billed to -->

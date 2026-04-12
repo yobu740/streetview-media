@@ -1500,3 +1500,5 @@
 - [x] Corregir campo de nombre duplicado en página 3 del contrato (CUSTOMER side tiene dos campos "Name / Title")
 - [x] Mover color naranja de la línea TOTAL a la línea Descuentos / Bonificaciones en la factura
 - [x] Corregir duplicado de campo Nombre_Cliente en páginas 2 y 3: el reemplazo global /g reemplazaba las 3 ocurrencias de Name/Title con campos DocuSeal; ahora solo reemplaza la primera (página 1) y elimina las demás (páginas 2 y 3 ya tienen el campo inyectado en la línea de firma)
+- [x] Factura: header verde debe cubrir el ancho completo sin márgenes blancos a los lados
+- [x] Factura: dirección de Streetview debe mostrarse en líneas separadas (no inline con pipes)
