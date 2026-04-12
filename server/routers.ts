@@ -2657,6 +2657,8 @@ export const appRouter = router({
         signerName: z.string(),
         companySignerEmail: z.string().email().optional(),
         companySignerName: z.string().optional(),
+        // Client sends the HTML directly to avoid server-side fetch from CDN (which returns 403)
+        contractHtml: z.string().min(1),
       }))
       .mutation(async ({ input }) => {
         const { ENV } = await import('./_core/env');
@@ -2671,21 +2673,12 @@ export const appRouter = router({
         const database = await getDb();
         if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB unavailable' });
 
-        // Fetch the contrato to get the HTML/PDF URL
+        // Verify the contrato exists
         const [contrato] = await database.select().from(contratos).where(eq(contratos.id, input.contratoId));
         if (!contrato) throw new TRPCError({ code: 'NOT_FOUND', message: 'Contrato no encontrado' });
-        if (!contrato.pdfUrl) throw new TRPCError({ code: 'BAD_REQUEST', message: 'El contrato no tiene documento generado. Genera el documento primero.' });
 
-        // Fetch the HTML content from the stored URL
-        let contractHtml: string;
-        try {
-          const htmlRes = await fetch(contrato.pdfUrl);
-          if (!htmlRes.ok) throw new Error(`Failed to fetch contract HTML: ${htmlRes.status}`);
-          contractHtml = await htmlRes.text();
-        } catch (fetchErr) {
-          console.error('[DocuSeal] Error fetching contract HTML:', fetchErr);
-          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'No se pudo obtener el documento del contrato. Regenera el documento e intenta de nuevo.' });
-        }
+        // Use the HTML sent directly from the client (avoids CDN 403 on server-side fetch)
+        let contractHtml: string = input.contractHtml;
 
         // Replace static signature placeholders with DocuSeal interactive fields.
         // The contract HTML has 3 pages with signature areas. We target the

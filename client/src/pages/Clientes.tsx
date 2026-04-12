@@ -1080,12 +1080,20 @@ export default function Clientes() {
               </Button>
               <Button
                 className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white"
-                disabled={!signerEmail || !signerName || !companySignerEmail || !companySignerName || sendForSigning.isPending || generatingSignPdf || !signingContrato.pdfUrl}
+                disabled={!signerEmail || !signerName || !companySignerEmail || !companySignerName || sendForSigning.isPending || generatingSignPdf}
                 onClick={async () => {
-                  if (!signingContrato) return;
-                  let pdfUrl = signingContrato.pdfUrl;
-                  if (!pdfUrl) {
-                    pdfUrl = await handleGenerateAndUploadPdf(signingContrato);
+                  if (!signingContrato || !selectedCliente) return;
+                  // Generate the contract HTML fresh on the client and pass it directly
+                  // to the server mutation — avoids server-side CDN fetch (which returns 403)
+                  const [fullContrato, exhibitRows] = await Promise.all([
+                    utils.contratos.getById.fetch({ id: signingContrato.id }),
+                    utils.contratos.getExhibitA.fetch({ contratoId: signingContrato.id }),
+                  ]);
+                  const contratoWithItems: Contrato = { ...signingContrato, items: (fullContrato?.items || []) as ContratoItem[] };
+                  const contractHtml = generateContractHTML(contratoWithItems, selectedCliente, exhibitRows as ExhibitARow[]);
+                  // Also ensure pdfUrl is saved (upload if not yet done)
+                  if (!signingContrato.pdfUrl) {
+                    const pdfUrl = await handleGenerateAndUploadPdf(signingContrato);
                     if (!pdfUrl) return;
                   }
                   sendForSigning.mutate({
@@ -1094,6 +1102,7 @@ export default function Clientes() {
                     signerName,
                     companySignerEmail,
                     companySignerName,
+                    contractHtml,
                   });
                 }}
               >
