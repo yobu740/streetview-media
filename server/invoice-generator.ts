@@ -272,11 +272,11 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .totals-table td { padding: 5px 8px; }
   .totals-table .lbl { color: #555; }
   .totals-table .amt { text-align: right; font-weight: 600; }
-  .totals-table .desc-lbl { color: #888; font-style: italic; font-size: 9px; }
-  .totals-table .desc-amt { color: #888; text-align: right; font-weight: 400; font-style: italic; font-size: 9px; }
+  .totals-table .desc-lbl { color: #ff6b35; font-style: italic; font-size: 9px; font-weight: 600; }
+  .totals-table .desc-amt { color: #ff6b35; text-align: right; font-weight: 600; font-style: italic; font-size: 9px; }
   .totals-divider td { border-top: 2px solid #1a4d3c; padding-top: 10px; }
-  .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #ff6b35; }
-  .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #ff6b35; text-align: right; }
+  .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #1a4d3c; }
+  .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #1a4d3c; text-align: right; }
 
   /* ── Footer ── */
   .footer {

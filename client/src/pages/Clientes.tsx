@@ -396,7 +396,6 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
           <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">DATE</div>
         </div>
         <div style="font-size:10px;color:#333;margin-top:8px;">Name / Title: ___________________________</div>
-        <div style="font-size:10px;color:#555;">${cliente.nombre}</div>
       </div>
     </div>
   </div>
@@ -553,7 +552,6 @@ function generateContractHTML(contrato: Contrato, cliente: Cliente, exhibitA: Ex
           <div style="border-top:1px solid #999;padding-top:4px;font-size:9px;color:#555;font-weight:700;letter-spacing:0.5px;">DATE</div>
         </div>
         <div style="font-size:10px;color:#333;margin-top:8px;">Name / Title: ___________________________</div>
-        <div style="font-size:10px;font-weight:700;color:#1a1a1a;margin-top:2px;">${cliente.nombre}</div>
       </div>
       <!-- Reference info -->
       <div style="font-size:10px;color:#555;line-height:1.8;padding-top:4px;">
