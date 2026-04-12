@@ -334,7 +334,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .print-btn:hover { background: #0f3a2a; }
 
   @media print {
-    @page { margin: 0; }
+    @page { margin: 40px 0 20px 0; }
+    @page :first { margin: 0; }
     body { background: white; padding: 0; }
     .page { box-shadow: none; width: 100%; }
     .print-btn-wrap { display: none; }
@@ -345,6 +346,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
     /* Repeat table header on every page */
     thead { display: table-header-group; }
     tfoot { display: table-footer-group; }
+    /* Prevent table rows from breaking mid-row */
+    .invoice-table tbody tr { page-break-inside: avoid; }
     /* Page number counter in footer */
     .footer-copy::after {
       content: ' — Página ' counter(page) ' de ' counter(pages);

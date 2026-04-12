@@ -1519,3 +1519,4 @@
 - [x] Corregir Rules of Hooks en VendedorContratos.tsx (useMemo después de early return)
 - [x] Ajustar font-size de factura: tabla headers 9px, cuerpo 9.5px, footer 9px, dirección 10px
 - [x] Expandir altura del header verde de la factura (120px → 150px)
+- [x] Factura multi-página: agregar margen superior en páginas 2+ (@page margin 40px top, @page :first margin 0)
