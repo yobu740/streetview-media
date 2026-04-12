@@ -1517,3 +1517,4 @@
 - [x] Integrar VendedorCalculadora.tsx con ruta /vendedor/calculadora
 - [x] Actualizar App.tsx con la nueva ruta /vendedor/calculadora
 - [x] Corregir Rules of Hooks en VendedorContratos.tsx (useMemo después de early return)
+- [x] Ajustar font-size de factura: tabla headers 9px, cuerpo 9.5px, footer 9px, dirección 10px

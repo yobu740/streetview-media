@@ -202,23 +202,23 @@ function buildInvoiceHTML(data: InvoiceData): string {
     top: 14px;
     text-align: right;
     color: white;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 1.75;
   }
-  .header-right .label { font-size: 14px; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
+  .header-right .label { font-size: 15px; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
 
   /* ── Address + client ── */
   .address {
     padding: 10px 50px 0;
-    font-size: 9px;
+    font-size: 10px;
     color: #666;
     line-height: 1.6;
   }
   .billed-to {
     padding: 14px 50px 8px;
   }
-  .billed-label { font-size: 11px; font-weight: 700; color: #1a4d3c; margin-bottom: 3px; }
-  .billed-name  { font-size: 10px; color: #555; }
+  .billed-label { font-size: 12px; font-weight: 700; color: #1a4d3c; margin-bottom: 3px; }
+  .billed-name  { font-size: 11px; color: #555; }
 
   /* ── Table ── */
   .invoice-table {
@@ -229,7 +229,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .invoice-table thead tr { background: #1a4d3c; }
   .invoice-table thead th {
     color: white;
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 700;
     padding: 8px 5px;
     text-align: left;
@@ -238,7 +238,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
   }
   .invoice-table thead th.right { text-align: right; }
   .invoice-table tbody td {
-    font-size: 8.5px;
+    font-size: 9.5px;
     color: #333;
     padding: 6px 5px;
     border-bottom: 1px solid #eee;
@@ -283,7 +283,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
     margin: auto 50px 0;
     border-top: 2px solid #1a4d3c;
     padding-top: 14px;
-    font-size: 8px;
+    font-size: 9px;
     color: #555;
     line-height: 1.7;
   }
@@ -300,7 +300,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
   }
   .footer-block-title {
     font-weight: 700;
-    font-size: 8px;
+    font-size: 9px;
     color: #1a4d3c;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -309,7 +309,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .footer-copy {
     margin-top: 16px;
     text-align: center;
-    font-size: 7.5px;
+    font-size: 8.5px;
     color: #aaa;
     padding-bottom: 16px;
   }
