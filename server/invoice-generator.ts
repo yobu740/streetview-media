@@ -275,8 +275,8 @@ function buildInvoiceHTML(data: InvoiceData): string {
   .totals-table .desc-lbl { color: #888; font-style: italic; font-size: 9px; }
   .totals-table .desc-amt { color: #888; text-align: right; font-weight: 400; font-style: italic; font-size: 9px; }
   .totals-divider td { border-top: 2px solid #1a4d3c; padding-top: 10px; }
-  .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #1a4d3c; }
-  .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #1a4d3c; text-align: right; }
+  .totals-table .grand-lbl { font-size: 13px; font-weight: 700; color: #ff6b35; }
+  .totals-table .grand-amt { font-size: 15px; font-weight: 900; color: #ff6b35; text-align: right; }
 
   /* ── Footer ── */
   .footer {
@@ -530,18 +530,21 @@ async function buildInvoiceData(
     if (!minFechaInicio || fechaInicio < minFechaInicio) minFechaInicio = fechaInicio;
     if (!maxFechaFin || fechaFin > maxFechaFin) maxFechaFin = fechaFin;
 
-    // Billing period: use override if provided ("YYYY-MM"), otherwise derive from fechaInicio
-    let firstDayOfMonth: Date;
-    let lastDayOfMonth: Date;
+    // Billing period: Option C — use selected month/year but preserve real contract start/end days
+    // e.g. contract day=17, selected month=March 2026 → 17/03/2026 - 17/04/2026
+    let periodStart: Date;
+    let periodEnd: Date;
     if (opts.billingPeriodStart) {
       const [bYear, bMonth] = opts.billingPeriodStart.split("-").map(Number);
-      firstDayOfMonth = new Date(Date.UTC(bYear, bMonth - 1, 1));
-      lastDayOfMonth = new Date(Date.UTC(bYear, bMonth, 0));
+      // Keep the real day-of-month from the contract's fechaInicio
+      const contractDay = fechaInicio.getUTCDate();
+      periodStart = new Date(Date.UTC(bYear, bMonth - 1, contractDay));
+      // End date: same day next month (or same duration as original contract)
+      const contractDurationMs = fechaFin.getTime() - fechaInicio.getTime();
+      periodEnd = new Date(periodStart.getTime() + contractDurationMs);
     } else {
-      const billingYear = fechaInicio.getUTCFullYear();
-      const billingMonth = fechaInicio.getUTCMonth(); // 0-indexed
-      firstDayOfMonth = new Date(Date.UTC(billingYear, billingMonth, 1));
-      lastDayOfMonth = new Date(Date.UTC(billingYear, billingMonth + 1, 0));
+      periodStart = fechaInicio;
+      periodEnd = fechaFin;
     }
 
     items.push({
@@ -549,8 +552,8 @@ async function buildInvoiceData(
       orientacion,
       caja,
       producto: anuncio.producto || "",
-      periodoInicio: fmtDate(firstDayOfMonth),
-      periodoFin: fmtDate(lastDayOfMonth),
+      periodoInicio: fmtDate(periodStart),
+      periodoFin: fmtDate(periodEnd),
       tipo: anuncio.tipo,
       costo: displayCosto, // Always $350 in the Costo column
       descuento,
@@ -714,6 +717,8 @@ export async function regenerateInvoicePDF(facturaId: number, billingPeriodStart
     throw new Error("Esta factura no tiene anuncios guardados para regenerar");
 
   const anuncioIds: number[] = JSON.parse(factura.anuncioIdsJson);
+
+  console.log("[Invoice Regen] billingPeriodStart received:", JSON.stringify(billingPeriodStart));
 
   const { data } = await buildInvoiceData(anuncioIds, {
     title: factura.titulo,

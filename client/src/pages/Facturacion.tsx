@@ -128,9 +128,12 @@ export default function Facturacion() {
       return;
     }
     // Pre-fill period from the invoice's own fecha (if available) or current month
+    // Use UTC methods to avoid timezone shift (e.g. 2026-03-01T00:00:00Z → local Feb 28 in UTC-4)
     if (factura.fechaEmision) {
       const d = new Date(factura.fechaEmision);
-      setRegenPeriod(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+      const year = d.getUTCFullYear();
+      const month = d.getUTCMonth() + 1;
+      setRegenPeriod(`${year}-${String(month).padStart(2, '0')}`);
     }
     setRegenFactura(factura);
     setIsRegenDialogOpen(true);
@@ -141,6 +144,7 @@ export default function Facturacion() {
     setRegeneratingId(regenFactura.id);
     setIsRegenDialogOpen(false);
     try {
+      console.log("[Regen] Sending billingPeriodStart:", regenPeriod);
       const result = await regenerateFactura.mutateAsync({
         facturaId: regenFactura.id,
         billingPeriodStart: regenPeriod,

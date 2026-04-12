@@ -2687,32 +2687,79 @@ export const appRouter = router({
           throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'No se pudo obtener el documento del contrato. Regenera el documento e intenta de nuevo.' });
         }
 
-        // Inject a signature field at the end of the HTML body before </body>
-        const signatureFieldHtml = `
-        <div style="margin-top: 40px; padding: 20px; border-top: 2px solid #1a4d3c;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="width: 50%; padding: 10px;">
-                <p style="font-size: 12px; margin-bottom: 5px;">Firma del Cliente / Client Signature:</p>
-                <signature-field name="Firma" role="Firmante" style="width: 250px; height: 80px; display: block;"></signature-field>
-              </td>
-              <td style="width: 50%; padding: 10px;">
-                <p style="font-size: 12px; margin-bottom: 5px;">Fecha / Date:</p>
-                <date-field name="Fecha" role="Firmante" style="width: 150px; height: 30px; display: block;"></date-field>
-              </td>
-            </tr>
-          </table>
-        </div>`;
+        // Replace static signature placeholders with DocuSeal interactive fields.
+        // The contract HTML has 3 pages with signature areas. We target the
+        // static "height:48px border-bottom" lines that serve as signature lines
+        // and replace them with proper <signature-field> / <date-field> elements.
+        //
+        // Page 1 — Company (Representante) + Customer (Firmante)
+        // Page 2 — Company (Representante) + Customer (Firmante)  
+        // Page 3 — Customer only (Firmante)
 
-        // Insert signature block before </body> or append at end
-        const htmlWithSignature = contractHtml.includes('</body>')
-          ? contractHtml.replace('</body>', `${signatureFieldHtml}\n</body>`)
-          : contractHtml + signatureFieldHtml;
+        // Helper: build a signature cell replacement
+        const customerSigField = `<signature-field name="Firma_Cliente" role="Firmante" style="width:220px;height:60px;display:block;"></signature-field>`;
+        const customerDateField = `<date-field name="Fecha_Cliente" role="Firmante" style="width:120px;height:28px;display:block;"></date-field>`;
+        const companySigField = `<signature-field name="Firma_Empresa" role="Representante" style="width:220px;height:60px;display:block;"></signature-field>`;
+        const companyDateField = `<date-field name="Fecha_Empresa" role="Representante" style="width:120px;height:28px;display:block;"></date-field>`;
+
+        // We inject by replacing the static signature line divs.
+        // The contract has these patterns:
+        //   Company sig area: div with "Authorized by Company" label followed by height:48px border-bottom div
+        //   Customer sig area: div with "Customer Acceptance" label followed by height:48px border-bottom div
+        //   Page 2 legal sig: .legal-sig-line elements with "By:" text
+        //   Page 3 exhibit: div with "height:44px;border-bottom" for customer sig
+
+        let htmlWithSignature = contractHtml;
+
+        // Page 1 — replace the two static 48px signature line divs
+        // First occurrence = Company (Representante), second = Customer (Firmante)
+        let companyReplaced = false;
+        let customerReplaced = false;
+        htmlWithSignature = htmlWithSignature.replace(
+          /<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/g,
+          () => {
+            if (!companyReplaced) {
+              companyReplaced = true;
+              return `<div style="margin-bottom:6px;">${companySigField}${companyDateField}</div>`;
+            }
+            if (!customerReplaced) {
+              customerReplaced = true;
+              return `<div style="margin-bottom:6px;">${customerSigField}${customerDateField}</div>`;
+            }
+            return `<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"></div>`;
+          }
+        );
+
+        // Page 2 — replace .legal-sig-line "By: ... Date: __________" lines
+        // First = Company, second = Customer
+        let legalCompanyReplaced = false;
+        let legalCustomerReplaced = false;
+        htmlWithSignature = htmlWithSignature.replace(
+          /<div class="legal-sig-line">By:[^<]*Date: __________<\/div>/g,
+          () => {
+            if (!legalCompanyReplaced) {
+              legalCompanyReplaced = true;
+              return `<div class="legal-sig-line" style="display:flex;gap:16px;align-items:center;">By: ${companySigField} Date: ${companyDateField}</div>`;
+            }
+            if (!legalCustomerReplaced) {
+              legalCustomerReplaced = true;
+              return `<div class="legal-sig-line" style="display:flex;gap:16px;align-items:center;">By: ${customerSigField} Date: ${customerDateField}</div>`;
+            }
+            return `<div class="legal-sig-line">By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: __________</div>`;
+          }
+        );
+
+        // Page 3 — replace the 44px signature line for customer
+        htmlWithSignature = htmlWithSignature.replace(
+          /<div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
+          `<div style="margin-bottom:6px;">${customerSigField}${customerDateField}</div>`
+        );
 
         // Create DocuSeal submission using the HTML endpoint
         const docusealPayload = {
           name: `Contrato ${contrato.numeroContrato}`,
-          send_email: true,
+          // send_email at document level is a fallback; we set it per-submitter below
+          // so each signer gets their own email with a unique signing link.
           documents: [{
             name: `Contrato_${contrato.numeroContrato}`,
             html: htmlWithSignature,
@@ -2722,11 +2769,13 @@ export const appRouter = router({
               role: 'Firmante',
               email: input.signerEmail,
               name: input.signerName,
+              send_email: true,  // Customer receives signing link
             },
             ...(input.companySignerEmail ? [{
               role: 'Representante',
               email: input.companySignerEmail,
               name: input.companySignerName || 'Representante',
+              send_email: true,  // Company rep also receives signing link (not just a copy)
             }] : []),
           ],
         };

@@ -1475,3 +1475,13 @@
 ## Correcciones - Abril 2026 (sesión 3)
 - [x] Regenerar factura: agregar selector de periodo (mes/año) en el modal de regenerar para facturas antiguas
 - [x] Panel principal: selecciones de paradas deben persistir al cambiar de página (no deseleccionarse al paginar)
+
+## Correcciones - Abril 2026 (sesión 4)
+- [x] Periodo de facturación en Regenerar: el mes seleccionado en el modal no se aplica en el PDF (sigue saliendo 01/03/2026)
+- [x] Total en factura: cambiar color del total (debajo de descuentos/bonificaciones) a naranja
+
+## Correcciones de Contrato - Abril 2026
+- [x] Restaurar campos de firma en las 3 páginas del contrato (se perdió en último arreglo)
+- [x] Corregir flujo de envío al segundo firmante: debe recibir enlace para firmar, no solo copia
+- [x] Periodo Opción C: mes del modal ajusta año/mes pero respeta días reales del contrato (ej: día 17 + marzo → 17/03/2026 - 17/04/2026)
+- [x] Total en factura: color naranja en la línea de total final
