@@ -1514,3 +1514,5 @@
 - [x] Crear página VendedorContratos.tsx
 - [x] Verificar compilación sin errores TypeScript
 - [ ] Flujo calculadora: descuento inline + botón "Convertir a Reserva/Contrato"
+- [x] Integrar VendedorCalculadora.tsx con ruta /vendedor/calculadora
+- [x] Actualizar App.tsx con la nueva ruta /vendedor/calculadora
