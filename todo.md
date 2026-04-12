@@ -1516,3 +1516,4 @@
 - [ ] Flujo calculadora: descuento inline + botón "Convertir a Reserva/Contrato"
 - [x] Integrar VendedorCalculadora.tsx con ruta /vendedor/calculadora
 - [x] Actualizar App.tsx con la nueva ruta /vendedor/calculadora
+- [x] Corregir Rules of Hooks en VendedorContratos.tsx (useMemo después de early return)

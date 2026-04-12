@@ -57,12 +57,6 @@ export default function VendedorContratos() {
     enabled: isAuthenticated,
   });
 
-  if (authLoading) return null;
-  if (!isAuthenticated) {
-    window.location.href = getLoginUrl();
-    return null;
-  }
-
   const filtered = useMemo(() => {
     return (contratos as ContratoMine[]).filter((c) => {
       const matchFiltro =
@@ -83,6 +77,7 @@ export default function VendedorContratos() {
 
   // Stats
   const total = (contratos as ContratoMine[]).length;
+
   const firmados = (contratos as ContratoMine[]).filter((c) => c.estado === "Firmado").length;
   const enviados = (contratos as ContratoMine[]).filter((c) => c.estado === "Enviado").length;
   const borradores = (contratos as ContratoMine[]).filter((c) => c.estado === "Borrador").length;
@@ -93,6 +88,12 @@ export default function VendedorContratos() {
     const days = Math.ceil((new Date(c.fechaVencimiento).getTime() - now) / (1000 * 60 * 60 * 24));
     return days > 0 && days <= 30;
   }).length;
+
+  if (authLoading) return null;
+  if (!isAuthenticated) {
+    window.location.href = getLoginUrl();
+    return null;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
