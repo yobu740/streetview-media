@@ -2734,12 +2734,25 @@ export const appRouter = router({
           }
         );
 
-        // Replace static "Name / Title: ___" lines with interactive text-fields
-        // Page 1 Company name line (has vendedor pre-filled, no text-field needed)
-        // Page 1 Customer name line
+        // Replace static "Name / Title: ___" lines with interactive text-fields.
+        // There are 3 occurrences in the HTML:
+        //   1. Page 1 Customer Acceptance area → replace with DocuSeal text-field
+        //   2. Page 2 IN WITNESS WHEREOF Customer area → already handled by legal-sig-line injection above (which appends customerNameField to the By: line); just remove the static line
+        //   3. Page 3 Exhibit A Customer area → already handled by the 44px sig injection below; just remove the static line
+        // Strategy: replace only the FIRST occurrence with the interactive field;
+        // replace subsequent occurrences with an empty string (they are covered by sig-line injections).
+        let nameFieldCount = 0;
         htmlWithSignature = htmlWithSignature.replace(
           /Name \/ Title: ___________________________/g,
-          `Name / Title: ${customerNameField}`
+          () => {
+            nameFieldCount++;
+            if (nameFieldCount === 1) {
+              // Page 1 Customer Acceptance — inject interactive text-field
+              return `Name / Title: ${customerNameField}`;
+            }
+            // Pages 2 & 3 — remove the static placeholder (sig-line injection already added the field)
+            return '';
+          }
         );
 
         // Page 2 — replace .legal-sig-line "By: ... Date: __________" lines
@@ -2761,10 +2774,10 @@ export const appRouter = router({
           }
         );
 
-        // Page 3 — replace the 44px signature line for customer
+        // Page 3 — replace the 44px signature line for customer + add name field below
         htmlWithSignature = htmlWithSignature.replace(
           /<div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
-          `<div style="margin-bottom:6px;white-space:nowrap;">${customerSigField}${customerDateField}</div>`
+          `<div style="margin-bottom:6px;white-space:nowrap;">${customerSigField}${customerDateField}</div><div style="margin-top:4px;">Name / Title: ${customerNameField}</div>`
         );
 
         // Create DocuSeal submission using the HTML endpoint
