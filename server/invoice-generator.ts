@@ -187,7 +187,7 @@ function buildInvoiceHTML(data: InvoiceData): string {
   /* ── Header ── */
   .header {
     background: #1a4d3c;
-    height: 120px;
+    height: 150px;
     display: flex;
     align-items: center;
     padding: 0 50px;
