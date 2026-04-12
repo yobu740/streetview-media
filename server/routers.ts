@@ -2697,10 +2697,13 @@ export const appRouter = router({
         // Page 3 — Customer only (Firmante)
 
         // Helper: build a signature cell replacement
-        const customerSigField = `<signature-field name="Firma_Cliente" role="Firmante" style="width:220px;height:60px;display:block;"></signature-field>`;
-        const customerDateField = `<date-field name="Fecha_Cliente" role="Firmante" style="width:120px;height:28px;display:block;"></date-field>`;
-        const companySigField = `<signature-field name="Firma_Empresa" role="Representante" style="width:220px;height:60px;display:block;"></signature-field>`;
-        const companyDateField = `<date-field name="Fecha_Empresa" role="Representante" style="width:120px;height:28px;display:block;"></date-field>`;
+        // Each signature area: [Signature field] [Date field] side by side, then Name text field below
+        const customerSigField = `<signature-field name="Firma_Cliente" role="Firmante" style="width:200px;height:56px;display:inline-block;"></signature-field>`;
+        const customerDateField = `<date-field name="Fecha_Cliente" role="Firmante" style="width:110px;height:28px;display:inline-block;margin-left:12px;vertical-align:top;"></date-field>`;
+        const customerNameField = `<text-field name="Nombre_Cliente" role="Firmante" style="width:200px;height:24px;display:block;margin-top:4px;font-size:10px;"></text-field>`;
+        const companySigField = `<signature-field name="Firma_Empresa" role="Representante" style="width:200px;height:56px;display:inline-block;"></signature-field>`;
+        const companyDateField = `<date-field name="Fecha_Empresa" role="Representante" style="width:110px;height:28px;display:inline-block;margin-left:12px;vertical-align:top;"></date-field>`;
+        const companyNameField = `<text-field name="Nombre_Empresa" role="Representante" style="width:200px;height:24px;display:block;margin-top:4px;font-size:10px;"></text-field>`;
 
         // We inject by replacing the static signature line divs.
         // The contract has these patterns:
@@ -2713,6 +2716,7 @@ export const appRouter = router({
 
         // Page 1 — replace the two static 48px signature line divs
         // First occurrence = Company (Representante), second = Customer (Firmante)
+        // Also replace the "Name / Title: ___" line that follows each sig block with a text-field
         let companyReplaced = false;
         let customerReplaced = false;
         htmlWithSignature = htmlWithSignature.replace(
@@ -2720,14 +2724,22 @@ export const appRouter = router({
           () => {
             if (!companyReplaced) {
               companyReplaced = true;
-              return `<div style="margin-bottom:6px;">${companySigField}${companyDateField}</div>`;
+              return `<div style="margin-bottom:6px;white-space:nowrap;">${companySigField}${companyDateField}</div>`;
             }
             if (!customerReplaced) {
               customerReplaced = true;
-              return `<div style="margin-bottom:6px;">${customerSigField}${customerDateField}</div>`;
+              return `<div style="margin-bottom:6px;white-space:nowrap;">${customerSigField}${customerDateField}</div>`;
             }
             return `<div style="height:48px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"></div>`;
           }
+        );
+
+        // Replace static "Name / Title: ___" lines with interactive text-fields
+        // Page 1 Company name line (has vendedor pre-filled, no text-field needed)
+        // Page 1 Customer name line
+        htmlWithSignature = htmlWithSignature.replace(
+          /Name \/ Title: ___________________________/g,
+          `Name / Title: ${customerNameField}`
         );
 
         // Page 2 — replace .legal-sig-line "By: ... Date: __________" lines
@@ -2739,11 +2751,11 @@ export const appRouter = router({
           () => {
             if (!legalCompanyReplaced) {
               legalCompanyReplaced = true;
-              return `<div class="legal-sig-line" style="display:flex;gap:16px;align-items:center;">By: ${companySigField} Date: ${companyDateField}</div>`;
+              return `<div class="legal-sig-line" style="white-space:nowrap;">By: ${companySigField}${companyDateField}${companyNameField}</div>`;
             }
             if (!legalCustomerReplaced) {
               legalCustomerReplaced = true;
-              return `<div class="legal-sig-line" style="display:flex;gap:16px;align-items:center;">By: ${customerSigField} Date: ${customerDateField}</div>`;
+              return `<div class="legal-sig-line" style="white-space:nowrap;">By: ${customerSigField}${customerDateField}${customerNameField}</div>`;
             }
             return `<div class="legal-sig-line">By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: __________</div>`;
           }
@@ -2752,7 +2764,7 @@ export const appRouter = router({
         // Page 3 — replace the 44px signature line for customer
         htmlWithSignature = htmlWithSignature.replace(
           /<div style="height:44px;border-bottom:2px solid #1a1a1a;margin-bottom:6px;"><\/div>/,
-          `<div style="margin-bottom:6px;">${customerSigField}${customerDateField}</div>`
+          `<div style="margin-bottom:6px;white-space:nowrap;">${customerSigField}${customerDateField}</div>`
         );
 
         // Create DocuSeal submission using the HTML endpoint
@@ -2796,10 +2808,17 @@ export const appRouter = router({
         }
 
         const result = await response.json() as any[];
-        // DocuSeal returns an array of submitters
+        // DocuSeal returns an array of submitters — log full response for debugging
+        console.log('[DocuSeal] Full API response:', JSON.stringify(result, null, 2));
+        // DocuSeal returns an array of submitters, each has submission_id
         const submitter = Array.isArray(result) ? result[0] : result;
-        const submissionId = submitter?.submission_id;
+        // submission_id can be at top level or nested inside submission object
+        const submissionId: number | undefined =
+          submitter?.submission_id ??
+          submitter?.submission?.id ??
+          (Array.isArray(result) ? result.find((r: any) => r.submission_id)?.submission_id : undefined);
         const signingUrl = submitter?.slug ? `https://docuseal.com/s/${submitter.slug}` : null;
+        console.log('[DocuSeal] Extracted submissionId:', submissionId, '| signingUrl:', signingUrl);
 
         // Update contrato with DocuSeal submission info and change estado to Enviado
         await database.update(contratos).set({

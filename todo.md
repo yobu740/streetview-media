@@ -1485,3 +1485,8 @@
 - [x] Corregir flujo de envío al segundo firmante: debe recibir enlace para firmar, no solo copia
 - [x] Periodo Opción C: mes del modal ajusta año/mes pero respeta días reales del contrato (ej: día 17 + marzo → 17/03/2026 - 17/04/2026)
 - [x] Total en factura: color naranja en la línea de total final
+
+## Correcciones de Contrato - Abril 2026 (sesión 5)
+- [x] Contrato: restaurar campo de nombre escrito (text field) en las firmas
+- [x] Contrato: alinear firma y fecha en la misma fila (lado a lado, no una debajo de la otra)
+- [x] Contrato: webhook de DocuSeal no actualiza estado de firmado en el sistema (diagnosticar y corregir — logging detallado agregado, submissionId extraction mejorado)
