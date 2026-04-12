@@ -19,6 +19,8 @@ import Seguimientos from "./pages/Seguimientos";
 import Notificaciones from "./pages/Notificaciones";
 import Instalacion from "./pages/Instalacion";
 import Clientes from "./pages/Clientes";
+import VendedorDashboard from "./pages/VendedorDashboard";
+import VendedorContratos from "./pages/VendedorContratos";
 import DashboardHeader from "./components/DashboardHeader";
 import { MobileNavProvider } from "./contexts/MobileNavContext";
 
@@ -55,7 +57,9 @@ function Router() {
       <Route path={"/seguimientos"}>  <D><Seguimientos /></D>  </Route>
       <Route path={"/notificaciones"}><D><Notificaciones /></D></Route>
       <Route path={"/instalacion"}>   <D><Instalacion /></D>   </Route>
-      <Route path={"/clientes"}>      <D><Clientes /></D>      </Route>
+      <Route path={"/clientes"}>              <D><Clientes /></D>              </Route>
+      <Route path={"/vendedor"}>             <D><VendedorDashboard /></D>      </Route>
+      <Route path={"/vendedor/contratos"}>   <D><VendedorContratos /></D>      </Route>
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

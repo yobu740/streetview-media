@@ -26,6 +26,8 @@ import {
   Package,
   ChevronDown,
   Building2,
+  Calculator,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -62,35 +64,59 @@ const BillboardIcon = ({ size = 16, className = "" }: { size?: number; className
 );
 
 const navGroups = [
+  // ── Vendedor-only sections ──────────────────────────────────────────
+  {
+    label: "Mi Espacio",
+    items: [
+      { label: "Mi Dashboard",     icon: LayoutDashboard, href: "/vendedor",      vendedorOnly: true },
+      { label: "Mis Seguimientos", icon: UserCheck,       href: "/seguimientos",  vendedorOnly: true },
+      { label: "Calendario",       icon: Calendar,        href: "/calendar",      vendedorOnly: true },
+    ],
+  },
+  {
+    label: "Ventas",
+    items: [
+      { label: "Mis Contratos", icon: FileText,    href: "/vendedor/contratos",   vendedorOnly: true },
+      { label: "Calculadora",   icon: Calculator,  href: "/vendedor/calculadora", vendedorOnly: true },
+      { label: "Mis Reservas",  icon: BookOpen,    href: "/mis-reservas",         vendedorOnly: true },
+    ],
+  },
+  {
+    label: "Inventario",
+    items: [
+      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin", vendedorOnly: true },
+    ],
+  },
+  // ── Admin / user sections ────────────────────────────────────────────
   {
     label: "General",
     items: [
-      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin",    badgeKey: "pending" },
-      { label: "Calendario",      icon: Calendar,        href: "/calendar"  },
-      { label: "Métricas",        icon: BarChart3,        href: "/metrics"   },
+      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin",    badgeKey: "pending", hideFromVendedor: true },
+      { label: "Calendario",      icon: Calendar,        href: "/calendar",                      hideFromVendedor: true },
+      { label: "Métricas",        icon: BarChart3,       href: "/metrics",                       hideFromVendedor: true },
     ],
   },
   {
     label: "Operaciones",
     items: [
-      { label: "Anuncios",       icon: BillboardIcon, href: "/anuncios"    },
-      { label: "Mantenimiento",  icon: Wrench,     href: "/mantenimiento" },
-      { label: "Instalación",    icon: Package,    href: "/instalacion",  adminOnly: true },
-      { label: "Seguimientos",   icon: UserCheck,  href: "/seguimientos" },
+      { label: "Anuncios",       icon: BillboardIcon, href: "/anuncios",     hideFromVendedor: true },
+      { label: "Mantenimiento",  icon: Wrench,        href: "/mantenimiento",hideFromVendedor: true },
+      { label: "Instalación",    icon: Package,       href: "/instalacion",  adminOnly: true },
+      { label: "Seguimientos",   icon: UserCheck,     href: "/seguimientos", hideFromVendedor: true },
     ],
   },
   {
     label: "Clientes",
     items: [
-      { label: "Clientes",    icon: Building2, href: "/clientes",   adminOnly: true },
+      { label: "Clientes",    icon: Building2, href: "/clientes",    adminOnly: true },
       { label: "Facturación", icon: Receipt,   href: "/facturacion", adminOnly: true },
-      { label: "Mis Reservas",icon: FileText,  href: "/mis-reservas", userOnly: true },
+      { label: "Mis Reservas",icon: FileText,  href: "/mis-reservas", userOnly: true, hideFromVendedor: true },
     ],
   },
   {
     label: "Sistema",
     items: [
-      { label: "Notificaciones", icon: Bell, href: "/notificaciones", badgeKey: "pending" },
+      { label: "Notificaciones", icon: Bell, href: "/notificaciones", badgeKey: "pending", hideFromVendedor: true },
     ],
   },
 ];
@@ -162,8 +188,10 @@ export default function AdminSidebar({
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
         {navGroups.map((group) => {
           const visible = group.items.filter((item) => {
-            if ((item as any).userOnly  && user?.role === "admin") return false;
-            if ((item as any).adminOnly && user?.role !== "admin") return false;
+            if ((item as any).userOnly       && user?.role === "admin")    return false;
+            if ((item as any).adminOnly      && user?.role !== "admin")    return false;
+            if ((item as any).vendedorOnly   && user?.role !== "vendedor") return false;
+            if ((item as any).hideFromVendedor && user?.role === "vendedor") return false;
             return true;
           });
           if (visible.length === 0) return null;

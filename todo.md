@@ -1505,3 +1505,12 @@
 - [x] Corregir error "fetch failed" en contratos.sendForSigning: el servidor no puede hacer fetch del HTML desde CloudFront (403). Solución: el cliente genera el HTML y lo pasa directamente en la mutación.
 - [x] Corregir error "Greeting never received" al enviar facturas por email (error SMTP) — reemplazado nodemailer SMTP por Microsoft Graph API (HTTPS)
 - [x] Revertir email-service.ts a nodemailer SMTP (el error SMTP solo ocurre en sandbox de desarrollo, funciona correctamente en producción)
+
+## Módulo Vendedor - Abril 2026
+- [x] Integrar App.tsx con rutas /vendedor y /vendedor/contratos
+- [x] Integrar AdminSidebar.tsx con nav del vendedor (Mi Espacio, Ventas, Inventario)
+- [x] Integrar routers.ts con endpoint contratos.listMine
+- [x] Crear página VendedorDashboard.tsx
+- [x] Crear página VendedorContratos.tsx
+- [x] Verificar compilación sin errores TypeScript
+- [ ] Flujo calculadora: descuento inline + botón "Convertir a Reserva/Contrato"

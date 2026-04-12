@@ -2479,6 +2479,41 @@ export const appRouter = router({
         return await db.listContratos(input.clienteId);
       }),
 
+    // Vendedor: list only contracts they created
+    listMine: vendedorProcedure.query(async ({ ctx }) => {
+      const { getDb } = await import("./db");
+      const { contratos, clientes } = await import("../drizzle/schema");
+      const { eq, desc } = await import("drizzle-orm");
+      const database = await getDb();
+      if (!database) return [];
+      return await database
+        .select({
+          id: contratos.id,
+          clienteId: contratos.clienteId,
+          clienteNombre: clientes.nombre,
+          numeroContrato: contratos.numeroContrato,
+          numeroPO: contratos.numeroPO,
+          fecha: contratos.fecha,
+          customerId: contratos.customerId,
+          salesDuration: contratos.salesDuration,
+          vendedor: contratos.vendedor,
+          fechaVencimiento: contratos.fechaVencimiento,
+          subtotal: contratos.subtotal,
+          total: contratos.total,
+          numMeses: contratos.numMeses,
+          estado: contratos.estado,
+          pdfUrl: contratos.pdfUrl,
+          firmaUrl: contratos.firmaUrl,
+          docusealSigningUrl: contratos.docusealSigningUrl,
+          createdBy: contratos.createdBy,
+          createdAt: contratos.createdAt,
+        })
+        .from(contratos)
+        .leftJoin(clientes, eq(contratos.clienteId, clientes.id))
+        .where(eq(contratos.createdBy, ctx.user!.id))
+        .orderBy(desc(contratos.createdAt));
+    }),
+
     getById: adminProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
