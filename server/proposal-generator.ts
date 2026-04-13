@@ -1,24 +1,40 @@
 // ─── Proposal PDF Generator ───────────────────────────────────────────────────────────────────────────────
 // Generates a professional "Propuesta / Estimado" PDF for the vendor calculator.
+// Uses Puppeteer with bundled Chrome. System Chrome dependencies (libnspr4, libnss3, etc.)
+// are installed automatically via scripts/install-chrome.mjs (postinstall hook).
 
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
-/** Render HTML to a PDF buffer using headless Chromium.
- *  Uses @sparticuz/chromium which is self-contained and works in minimal
- *  production containers without system library dependencies.
+/** Render HTML to a PDF buffer using headless Chromium (puppeteer bundled Chrome).
+ *  System library dependencies are pre-installed via postinstall script.
  */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
-  const chromium = await import('@sparticuz/chromium');
-  const puppeteer = await import('puppeteer-core');
+  // Always use puppeteer's own bundled Chrome — ignore any PUPPETEER_EXECUTABLE_PATH
+  // env var that may point to a non-existent system path.
+  const puppeteer = await import('puppeteer');
 
-  const executablePath = await chromium.default.executablePath();
-  console.log('[PDF] Sparticuz Chrome path:', executablePath);
+  // Determine executable path: use puppeteer's bundled Chrome
+  let executablePath: string;
+  try {
+    executablePath = puppeteer.default.executablePath();
+    console.log('[PDF] Using puppeteer bundled Chrome at:', executablePath);
+  } catch (e) {
+    throw new Error(`[PDF] Could not determine Chrome path: ${e}`);
+  }
 
   const browser = await puppeteer.default.launch({
     executablePath,
     headless: true,
-    args: chromium.default.args,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+    ],
   });
   try {
     const page = await browser.newPage();

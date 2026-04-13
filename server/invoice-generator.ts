@@ -1,26 +1,38 @@
-// Delete PUPPETEER_EXECUTABLE_PATH at module load time so puppeteer always
 import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
 
-// ─── PDF Generation via @sparticuz/chromium ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ─── PDF Generation via Puppeteer bundled Chrome ─────────────────────────────
+// System Chrome library dependencies (libnspr4, libnss3, etc.) are installed
+// automatically via scripts/install-chrome.mjs (postinstall hook).
 
-/** Render HTML to a PDF buffer using headless Chromium.
- *  Uses @sparticuz/chromium which is self-contained and works in minimal
- *  production containers without system library dependencies.
- */
+/** Render HTML to a PDF buffer using headless Chromium (puppeteer bundled Chrome). */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
-  const chromium = await import('@sparticuz/chromium');
-  const puppeteer = await import('puppeteer-core');
+  // Always use puppeteer's own bundled Chrome — ignore any PUPPETEER_EXECUTABLE_PATH
+  // env var that may point to a non-existent system path.
+  const puppeteer = await import('puppeteer');
 
-  const executablePath = await chromium.default.executablePath();
-  console.log('[PDF] Sparticuz Chrome path:', executablePath);
+  let executablePath: string;
+  try {
+    executablePath = puppeteer.default.executablePath();
+    console.log('[PDF] Using puppeteer bundled Chrome at:', executablePath);
+  } catch (e) {
+    throw new Error(`[PDF] Could not determine Chrome path: ${e}`);
+  }
 
   const browser = await puppeteer.default.launch({
     executablePath,
     headless: true,
-    args: chromium.default.args,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+    ],
   });
   try {
     const page = await browser.newPage();
