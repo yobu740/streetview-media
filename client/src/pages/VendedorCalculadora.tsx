@@ -5,7 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
-import { X, ChevronUp, ChevronDown, FileText, Loader2, Search, UserCheck, Menu } from "lucide-react";
+import { X, ChevronUp, ChevronDown, FileText, Loader2, Search, UserCheck, Menu, UserPlus, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type Parada = {
@@ -121,6 +121,31 @@ export default function VendedorCalculadora() {
     },
     onError: (err) => {
       toast.error(`Error al generar PDF: ${err.message}`);
+    },
+  });
+
+  // Quick-create client modal state
+  const [showCreateCliente, setShowCreateCliente] = useState(false);
+  const [newClienteNombre, setNewClienteNombre] = useState("");
+  const [newClienteContacto, setNewClienteContacto] = useState("");
+  const [newClienteEmail, setNewClienteEmail] = useState("");
+  const [newClienteTelefono, setNewClienteTelefono] = useState("");
+
+  const utils = trpc.useUtils();
+  const vendedorCreateClienteMutation = trpc.clientes.vendedorCreate.useMutation({
+    onSuccess: (data) => {
+      setSelectedCliente({ id: data.id, nombre: data.nombre, contactoPrincipal: data.contactoPrincipal, email: data.email });
+      setClienteSearch("");
+      setShowCreateCliente(false);
+      setNewClienteNombre("");
+      setNewClienteContacto("");
+      setNewClienteEmail("");
+      setNewClienteTelefono("");
+      utils.clientes.listForSelect.invalidate();
+      toast.success(`Cliente "${data.nombre}" creado y seleccionado.`);
+    },
+    onError: (err) => {
+      toast.error(`Error al crear cliente: ${err.message}`);
     },
   });
 
@@ -408,10 +433,29 @@ export default function VendedorCalculadora() {
 
       {/* Generate buttons */}
       <div className="px-4 pb-4 pt-2 bg-white border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
+        {/* Client required warning */}
+        {count > 0 && !selectedCliente && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            <AlertCircle size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-amber-700 leading-snug">
+              Selecciona un cliente para generar el PDF o convertir a contrato.
+              {clienteSearch.trim() && (
+                <button
+                  type="button"
+                  onClick={() => { setNewClienteNombre(clienteSearch); setShowCreateCliente(true); }}
+                  className="ml-1 underline font-semibold"
+                >
+                  Crear &ldquo;{clienteSearch}&rdquo;
+                </button>
+              )}
+            </p>
+          </div>
+        )}
         <button
           type="button"
-          disabled={count === 0 || generatePdfMutation.isPending}
+          disabled={count === 0 || !selectedCliente || generatePdfMutation.isPending}
           onClick={() => {
+            if (!selectedCliente) { toast.error("Selecciona un cliente antes de generar el PDF."); return; }
             generatePdfMutation.mutate({
               empresa,
               contacto,
@@ -441,7 +485,7 @@ export default function VendedorCalculadora() {
         </button>
         <button
           type="button"
-          disabled={count === 0 || vendedorCreateMutation.isPending}
+          disabled={count === 0 || !selectedCliente || vendedorCreateMutation.isPending}
           onClick={handleConvertirAContrato}
           className="w-full py-2.5 rounded-lg bg-white border border-[#1a4d3c] text-[#1a4d3c] text-[13.5px] font-semibold transition-all hover:bg-[#1a4d3c]/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
@@ -461,6 +505,7 @@ export default function VendedorCalculadora() {
   );
 
   return (
+    <>
     <div className="flex h-screen overflow-hidden">
       <AdminSidebar />
 
@@ -563,8 +608,21 @@ export default function VendedorCalculadora() {
                           </div>
                         )}
                         {comboOpen && clienteSearch.trim() && filteredClientes.length === 0 && (
-                          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2">
-                            <p className="text-xs text-slate-400">No se encontraron clientes. Puedes continuar con texto libre.</p>
+                          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-3">
+                            <p className="text-xs text-slate-500 mb-2">No se encontró &ldquo;{clienteSearch}&rdquo; en el sistema.</p>
+                            <button
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => {
+                                setNewClienteNombre(clienteSearch);
+                                setShowCreateCliente(true);
+                                setComboOpen(false);
+                              }}
+                              className="flex items-center gap-1.5 text-xs font-semibold text-[#1a4d3c] hover:text-[#0f3a2a] transition-colors"
+                            >
+                              <UserPlus size={13} />
+                              Crear cliente &ldquo;{clienteSearch}&rdquo;
+                            </button>
                           </div>
                         )}
                       </div>
@@ -746,6 +804,102 @@ export default function VendedorCalculadora() {
           )}
         </div>
       </div>
-    </div>
+
+      {/* Quick-create client modal */}
+      {showCreateCliente && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                <UserPlus size={16} className="text-[#1a4d3c]" />
+                Crear nuevo cliente
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCreateCliente(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="px-5 py-4 flex flex-col gap-3">
+              <div>
+                <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Nombre / Empresa *</label>
+                <input
+                  type="text"
+                  value={newClienteNombre}
+                  onChange={(e) => setNewClienteNombre(e.target.value)}
+                  placeholder="Ej: Acme Corp"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Contacto principal</label>
+                <input
+                  type="text"
+                  value={newClienteContacto}
+                  onChange={(e) => setNewClienteContacto(e.target.value)}
+                  placeholder="Ej: Juan Pérez"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newClienteEmail}
+                    onChange={(e) => setNewClienteEmail(e.target.value)}
+                    placeholder="correo@ejemplo.com"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Teléfono</label>
+                  <input
+                    type="tel"
+                    value={newClienteTelefono}
+                    onChange={(e) => setNewClienteTelefono(e.target.value)}
+                    placeholder="787-000-0000"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-4 border-t border-slate-100 flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setShowCreateCliente(false)}
+                className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={!newClienteNombre.trim() || vendedorCreateClienteMutation.isPending}
+                onClick={() => {
+                  if (!newClienteNombre.trim()) return;
+                  vendedorCreateClienteMutation.mutate({
+                    nombre: newClienteNombre.trim(),
+                    contactoPrincipal: newClienteContacto.trim() || undefined,
+                    email: newClienteEmail.trim() || undefined,
+                    telefono: newClienteTelefono.trim() || undefined,
+                  });
+                }}
+                className="px-4 py-2 text-sm font-semibold bg-[#1a4d3c] text-white rounded-lg hover:bg-[#0f3a2a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {vendedorCreateClienteMutation.isPending ? (
+                  <><Loader2 size={13} className="animate-spin" /> Creando...</>
+                ) : (
+                  <><UserPlus size={13} /> Crear y seleccionar</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>  {/* end root div */}
+    </>
   );
 }

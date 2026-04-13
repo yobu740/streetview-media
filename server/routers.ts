@@ -2480,6 +2480,32 @@ export const appRouter = router({
         await db.deleteCliente(input.id);
         return { success: true };
       }),
+
+    // Vendedor-accessible quick-create for new clients (minimal fields required)
+    vendedorCreate: vendedorProcedure
+      .input(z.object({
+        nombre: z.string().min(1),
+        esAgencia: z.number().default(0),
+        contactoPrincipal: z.string().optional().nullable(),
+        email: z.string().email().optional().nullable().or(z.literal('')),
+        telefono: z.string().optional().nullable(),
+        notas: z.string().optional().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createCliente({
+          nombre: input.nombre,
+          esAgencia: input.esAgencia,
+          contactoPrincipal: input.contactoPrincipal ?? null,
+          email: input.email || null,
+          telefono: input.telefono ?? null,
+          notas: input.notas ?? null,
+          direccion: null,
+          ciudad: null,
+          estado: null,
+          codigoPostal: null,
+        });
+        return { id, nombre: input.nombre, contactoPrincipal: input.contactoPrincipal ?? null, email: input.email || null };
+      }),
   }),
 
   // ─── Contratos router ─────────────────────────────────────────────────────────

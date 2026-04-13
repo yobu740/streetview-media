@@ -88,7 +88,9 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   if (!pdfResponse.ok) throw new Error('No se pudo descargar el PDF de la factura');
   const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer());
 
-  const LOGO_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png';
+  // White-background version of the logo — required for Outlook dark mode compatibility
+  // (Outlook ignores CSS background-color on image containers; only a non-transparent PNG works)
+  const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/email-logo-white-bg_8d4b02f4.png';
   const HEADER_BANNER_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/email-header-banner_8a34749d.jpg';
 
   const emailHtml = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -170,7 +172,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
 
         <!-- Tagline bottom -->
         <tr><td dir="ltr" style="color:#171d2b;font-size:16px;font-family:Verdana, Geneva, sans-serif;text-align:center;padding:0px 20px">
-          La nueva red de publicidad exterior en Puerto Rico.
+          La nueva red de publicidad externa en Puerto Rico.
         </td></tr>
         <tr><td style="font-size:0;height:16px" height="16">&nbsp;</td></tr>
 

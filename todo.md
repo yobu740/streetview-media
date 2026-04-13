@@ -1541,3 +1541,6 @@
 - [ ] Mis Reservas: integrar con sidebar del dashboard y layout correcto (sin header público)
 - [ ] Protección de rutas: vendedores no pueden acceder a /facturacion, /admin, /clientes, /anuncios, /instalacion, /mantenimiento por URL directa
 - [x] Fix: Error "Dynamic require of fs is not supported" al generar PDF de propuesta
+- [x] Calculadora: hacer campo cliente obligatorio — bloquear PDF y Convertir a Contrato si no hay cliente seleccionado; si el cliente no existe, mostrar opción de crearlo rápidamente con modal inline
+- [x] Email template: corregir logo oscuro en Outlook (reemplazar PNG transparente por PNG con fondo blanco incorporado)
+- [x] Email template: cambiar "La nueva red de publicidad exterior en Puerto Rico" por "La nueva red de publicidad externa en Puerto Rico" en el footer
