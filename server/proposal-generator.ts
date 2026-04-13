@@ -1,26 +1,21 @@
 // ─── Proposal PDF Generator ───────────────────────────────────────────────────────────────────────────────
 // Generates a professional "Propuesta / Estimado" PDF for the vendor calculator.
-import { existsSync } from 'fs';
 
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
 /** Render HTML to a PDF buffer using headless Chromium.
- *  Uses process.env.PUPPETEER_EXECUTABLE_PATH if set AND the file exists,
- *  otherwise falls back to puppeteer.executablePath() (the auto-downloaded Chrome).
+ *  Always uses puppeteer's own bundled Chrome — ignores PUPPETEER_EXECUTABLE_PATH
+ *  to avoid path-not-found errors in production containers.
  */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   const puppeteer = await import('puppeteer');
 
-  // Determine executable path: env var only if the file actually exists
-  const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  const puppeteerPath = puppeteer.default.executablePath();
-  const executablePath = (envPath && existsSync(envPath))
-    ? envPath
-    : puppeteerPath;
-
+  // Force puppeteer to use its bundled Chrome regardless of any
+  // PUPPETEER_EXECUTABLE_PATH environment variable that may be set.
+  delete process.env.PUPPETEER_EXECUTABLE_PATH;
+  const executablePath = puppeteer.default.executablePath();
   console.log('[PDF] Chrome path:', executablePath);
-  console.log('[PDF] Chrome exists:', existsSync(executablePath));
 
   const browser = await puppeteer.default.launch({
     executablePath,

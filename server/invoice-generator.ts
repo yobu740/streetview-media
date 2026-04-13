@@ -2,25 +2,21 @@ import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
-import { existsSync } from 'fs';
 
-// ─── PDF Generation via Puppeteer ───────────────────────────────────────────────────────────────────────────────
+// ─── PDF Generation via Puppeteer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 /** Render HTML to a PDF buffer using headless Chromium.
- *  Uses process.env.PUPPETEER_EXECUTABLE_PATH if set AND the file exists,
- *  otherwise falls back to puppeteer.executablePath() (the auto-downloaded Chrome).
+ *  Always uses puppeteer's own bundled Chrome — ignores PUPPETEER_EXECUTABLE_PATH
+ *  to avoid path-not-found errors in production containers.
  */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   const puppeteer = await import('puppeteer');
 
-  const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  const puppeteerPath = puppeteer.default.executablePath();
-  const executablePath = (envPath && existsSync(envPath))
-    ? envPath
-    : puppeteerPath;
-
+  // Force puppeteer to use its bundled Chrome regardless of any
+  // PUPPETEER_EXECUTABLE_PATH environment variable that may be set.
+  delete process.env.PUPPETEER_EXECUTABLE_PATH;
+  const executablePath = puppeteer.default.executablePath();
   console.log('[PDF] Chrome path:', executablePath);
-  console.log('[PDF] Chrome exists:', existsSync(executablePath));
 
   const browser = await puppeteer.default.launch({
     executablePath,
