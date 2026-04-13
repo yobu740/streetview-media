@@ -102,25 +102,25 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
   <tbody><tr><td style="background-color:#f0f1f5">
     <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;min-height:600px;margin:0 auto;background-color:#ffffff">
       <tbody>
-        <!-- Logo (white background for dark-mode email clients) -->
-        <tr><td style="vertical-align:top;padding:10px 0 0 0;background-color:#ffffff !important">
-          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff">
-            <tbody><tr><td style="padding:10px 0 10px 0;vertical-align:top;background-color:#ffffff">
-              <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tbody><tr><td style="padding:0px 20px">
-                  <table cellpadding="0" cellspacing="0" border="0" style="width:100%">
-                    <tbody><tr><td align="center">
-                      <table cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:205px">
-                        <tbody><tr><td style="width:100%;padding:20px 0">
-                          <img src="${LOGO_URL}" width="205" height="52" style="display:block;width:100%;height:auto;max-width:100%" alt="Streetview Media">
-                        </td></tr></tbody>
-                      </table>
-                    </td></tr></tbody>
-                  </table>
-                </td></tr></tbody>
-              </table>
-            </td></tr></tbody>
-          </table>
+        <!-- Logo: white background locked for ALL dark-mode clients including Outlook mobile -->
+        <!--[if mso]>
+        <tr><td bgcolor="#ffffff" style="background-color:#ffffff !important;padding:20px 0">
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <tr><td bgcolor="#ffffff" style="background-color:#ffffff !important;padding:20px 0">
+        <!--<![endif]-->
+          <!--[if mso]>
+          <table align="center" width="205" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
+          <tr><td bgcolor="#ffffff" align="center" style="background-color:#ffffff !important">
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="background-color:#ffffff !important;max-width:205px">
+          <tr><td bgcolor="#ffffff" align="center" style="background-color:#ffffff !important">
+          <!--<![endif]-->
+            <img src="${LOGO_URL}" width="205" height="52"
+              style="display:block;width:205px;height:auto;max-width:205px;background-color:#ffffff"
+              alt="Streetview Media">
+          </td></tr></table>
         </td></tr>
 
         <!-- Tagline -->
