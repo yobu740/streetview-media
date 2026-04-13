@@ -1,18 +1,44 @@
 // ─── Proposal PDF Generator ───────────────────────────────────────────────────────────────────────────────
 // Generates a professional "Propuesta / Estimado" PDF for the vendor calculator.
-import { execFileSync } from 'child_process';
+import { execSync } from 'child_process';
+import { existsSync } from 'fs';
 
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
+/** Ensure Chrome is available for Puppeteer, downloading it if necessary.
+ *  This handles the case where the production container has no system Chrome.
+ */
+async function ensureChrome(): Promise<void> {
+  const { default: puppeteer } = await import('puppeteer');
+  try {
+    const ep = puppeteer.executablePath();
+    if (ep && existsSync(ep)) return; // already available
+  } catch { /* executablePath may throw if not configured */ }
+
+  // Try to download Chrome via puppeteer's install script
+  console.log('[PDF] Chrome not found, attempting to download via Puppeteer...');
+  try {
+    execSync('node node_modules/puppeteer/install.mjs', {
+      stdio: 'inherit',
+      env: { ...process.env, PUPPETEER_SKIP_DOWNLOAD: '', PUPPETEER_EXECUTABLE_PATH: '' },
+    });
+    console.log('[PDF] Chrome downloaded successfully.');
+  } catch (err) {
+    console.error('[PDF] Chrome download failed:', err);
+    throw new Error('Chrome is not available and could not be downloaded. PDF generation is unavailable.');
+  }
+}
+
 /** Resolve the best available Chrome/Chromium executable.
- *  Priority: env override → system chromium-browser → puppeteer bundled Chrome.
- *  Uses ESM-compatible static import of child_process (no dynamic require).
+ *  Priority: env override (if file exists) → system chromium-browser → let puppeteer decide.
  */
 function getChromePath(): string | undefined {
-  // 1. Explicit env override (set via PUPPETEER_EXECUTABLE_PATH secret in production)
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
-  // 2. System chromium-browser (available on Ubuntu 22.04 servers, both sandbox and production)
+  // 1. Explicit env override — only use if the file actually exists
+  const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
+  if (envPath && existsSync(envPath)) return envPath;
+
+  // 2. System chromium-browser (available on Ubuntu 22.04 servers)
   const candidates = [
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
@@ -20,17 +46,16 @@ function getChromePath(): string | undefined {
     '/usr/bin/google-chrome-stable',
   ];
   for (const c of candidates) {
-    try {
-      execFileSync('test', ['-f', c], { stdio: 'ignore' });
-      return c;
-    } catch { /* not found, try next */ }
+    if (existsSync(c)) return c;
   }
-  // 3. Fall back to puppeteer's bundled Chrome (last resort, may fail in production)
+
+  // 3. Let puppeteer use its own configured/downloaded path
   return undefined;
 }
 
 /** Render HTML to a PDF buffer using headless Chromium */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
+  await ensureChrome();
   const puppeteer = await import("puppeteer");
   const executablePath = getChromePath();
   const browser = await puppeteer.default.launch({
