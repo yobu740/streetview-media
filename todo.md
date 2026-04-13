@@ -1562,3 +1562,4 @@
 ## Fixes Recientes
 - [x] Fix cotizaciones.listAll: cambiar de adminProcedure a protectedProcedure (vendedores recibían 403 en Seguimiento)
 - [x] PDF propuesta: cambiar color de "PROPUESTA" de naranja a blanco
+- [x] Calculadora: quitar filtro activa para mostrar las mismas 573 paradas disponibles que el panel principal

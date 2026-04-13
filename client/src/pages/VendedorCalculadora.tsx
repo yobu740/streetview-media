@@ -170,7 +170,7 @@ export default function VendedorCalculadora() {
   // Filter paradas
   const paradas = useMemo(() => {
     return (allParadas as Parada[]).filter((p) => {
-      if (!p.activa || p.removida || p.enConstruccion) return false;
+      if (p.removida || p.enConstruccion) return false;
       if (oriFilter && p.orientacion !== oriFilter) return false;
       if (formatoFilter && p.tipoFormato !== formatoFilter) return false;
       if (tagFilter) {
