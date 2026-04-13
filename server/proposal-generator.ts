@@ -1,6 +1,10 @@
 // ─── Proposal PDF Generator ───────────────────────────────────────────────────────────────────────────────
 // Generates a professional "Propuesta / Estimado" PDF for the vendor calculator.
 
+// Delete PUPPETEER_EXECUTABLE_PATH at module load time so puppeteer always
+// uses its own bundled Chrome, ignoring any system path set in the environment.
+delete process.env.PUPPETEER_EXECUTABLE_PATH;
+
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 

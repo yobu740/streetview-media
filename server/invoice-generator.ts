@@ -1,3 +1,7 @@
+// Delete PUPPETEER_EXECUTABLE_PATH at module load time so puppeteer always
+// uses its own bundled Chrome, ignoring any system path set in the environment.
+delete process.env.PUPPETEER_EXECUTABLE_PATH;
+
 import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
