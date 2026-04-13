@@ -177,7 +177,7 @@ function buildProposalHTML(data: ProposalData): string {
     font-weight: 900;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #ff6b35;
+    color: #ffffff;
     font-family: 'Montserrat', Arial, sans-serif;
   }
   .header-right div { font-size: 10px; margin-top: 2px; opacity: 0.9; }

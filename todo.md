@@ -1558,3 +1558,7 @@
 - [x] Fix Puppeteer: delete process.env.PUPPETEER_EXECUTABLE_PATH antes de executablePath() para forzar Chrome bundled en producción
 - [x] PDF Cotización: agregar márgenes laterales y tipografía Montserrat para "PROPUESTA"
 - [x] Fix Puppeteer producción: reemplazar puppeteer bundled Chrome por @sparticuz/chromium + puppeteer-core (self-contained, sin dependencias del sistema)
+
+## Fixes Recientes
+- [x] Fix cotizaciones.listAll: cambiar de adminProcedure a protectedProcedure (vendedores recibían 403 en Seguimiento)
+- [x] PDF propuesta: cambiar color de "PROPUESTA" de naranja a blanco

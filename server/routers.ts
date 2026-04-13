@@ -3026,15 +3026,22 @@ export const appRouter = router({
         .orderBy(desc(cotizaciones.createdAt))
         .limit(100);
     }),
-    // Admin: list all cotizaciones
-    listAll: adminProcedure.query(async () => {
+    // List all cotizaciones: admins see all, vendedores see their own
+    listAll: protectedProcedure.query(async ({ ctx }) => {
       const { cotizaciones } = await import('../drizzle/schema');
-      const { desc } = await import('drizzle-orm');
+      const { desc, eq } = await import('drizzle-orm');
       const db = await getDb();
       if (!db) return [];
+      if (ctx.user.role === 'admin') {
+        return db.select().from(cotizaciones)
+          .orderBy(desc(cotizaciones.createdAt))
+          .limit(500);
+      }
+      // Vendedores only see their own
       return db.select().from(cotizaciones)
+        .where(eq(cotizaciones.vendedorId, ctx.user.id))
         .orderBy(desc(cotizaciones.createdAt))
-        .limit(500);
+        .limit(200);
     }),
     generatePdf: vendedorProcedure
       .input(z.object({
