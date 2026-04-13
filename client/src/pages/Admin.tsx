@@ -143,6 +143,7 @@ export default function Admin() {
   const [printFilterTipo, setPrintFilterTipo] = useState<"all" | "Fija" | "Bonificación">("all");
   const [printFilterRuta, setPrintFilterRuta] = useState("");
   const [printFilterFlowcat, setPrintFilterFlowcat] = useState<string | null>(null);
+  const [printFilterTags, setPrintFilterTags] = useState<string[]>([]);
   const [printDateFrom, setPrintDateFrom] = useState("");
   const [printDateTo, setPrintDateTo] = useState("");
   
@@ -588,6 +589,15 @@ export default function Admin() {
       
       // Flowcat filter for print
       const matchesFlowcat = !printFilterFlowcat || p.flowCat === printFilterFlowcat;
+
+      // Category (tags) filter for print
+      const matchesPrintTags = printFilterTags.length === 0 || (() => {
+        if (!p.tags) return false;
+        try {
+          const paradaTags: string[] = JSON.parse(p.tags);
+          return printFilterTags.some(t => paradaTags.includes(t));
+        } catch { return false; }
+      })();
       
       // Date range filter - check if parada is available in the date range
       let matchesDateRange = true;
@@ -608,7 +618,7 @@ export default function Admin() {
         }
       }
       
-      return matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesDateRange;
+      return matchesStatus && matchesTipo && matchesRuta && matchesFlowcat && matchesPrintTags && matchesDateRange;
     }) || [];
   };
 
@@ -898,7 +908,7 @@ export default function Admin() {
         </div>
         <div class="print-divider"></div>
         <div class="print-subbar">
-          <span><strong>${printParadas.length}</strong> parada${printParadas.length !== 1 ? 's' : ''}</span>
+          <span><strong>${printParadas.length}</strong> parada${printParadas.length !== 1 ? 's' : ''}${printFilterTags.length > 0 ? ` &mdash; Categoría: ${printFilterTags.join(', ')}` : ''}</span>
           <span>Disponibles: ${totalDisp} &nbsp;·&nbsp; Ocupadas: ${totalOcup}</span>
         </div>
         <div class="print-body">
@@ -2661,6 +2671,57 @@ export default function Admin() {
                 </p>
               )}
             </div>
+            <div>
+              <Label className="flex items-center gap-1">
+                Filtrar por Categoría
+                {printFilterTags.length > 0 && (
+                  <span className="ml-1 text-xs bg-[#ff6b35] text-white px-1.5 py-0.5 rounded-full">
+                    {printFilterTags.length}
+                  </span>
+                )}
+              </Label>
+              <div className="border rounded-md p-2 space-y-1 max-h-44 overflow-y-auto mt-1">
+                {[
+                  "Hospitales",
+                  "Residenciales",
+                  "Complejo Turístico",
+                  "Supermercados",
+                  "Universidades",
+                  "Bancos y Cooperativas",
+                  "Farmacias",
+                  "Centros Comerciales y Retail",
+                  "Edificios Gubernamentales",
+                  "Entretenimiento y Parques",
+                  "Cadenas de Comida Rápida",
+                  "Restaurantes y Cafés",
+                  "Gasolineras",
+                ].map((tag) => (
+                  <label
+                    key={tag}
+                    className="flex items-center gap-2 px-2 py-1 rounded hover:bg-muted cursor-pointer text-sm"
+                  >
+                    <Checkbox
+                      checked={printFilterTags.includes(tag)}
+                      onCheckedChange={(checked) => {
+                        setPrintFilterTags(checked
+                          ? [...printFilterTags, tag]
+                          : printFilterTags.filter(t => t !== tag)
+                        );
+                      }}
+                    />
+                    {tag}
+                  </label>
+                ))}
+              </div>
+              {printFilterTags.length > 0 && (
+                <button
+                  className="text-xs text-gray-400 hover:text-gray-600 mt-1"
+                  onClick={() => setPrintFilterTags([])}
+                >
+                  Limpiar categorías
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="printDateFrom">Disponible Desde</Label>
@@ -2688,6 +2749,9 @@ export default function Admin() {
                 El reporte incluirá <strong>{getSortedPrintParadas().length}</strong> paradas según los filtros seleccionados.
                 {printFilterFlowcat && (
                   <span className="ml-1 text-[#1a4d3c] font-medium">(Flowcat {printFilterFlowcat} — ordenado por cobertizo)</span>
+                )}
+                {printFilterTags.length > 0 && (
+                  <span className="ml-1 text-[#ff6b35] font-medium">({printFilterTags.join(', ')})</span>
                 )}
               </p>
             </div>
