@@ -2406,6 +2406,17 @@ export const appRouter = router({
       return await db.listClientes();
     }),
 
+    // Lightweight list for combobox/select — accessible to all authenticated users
+    listForSelect: protectedProcedure.query(async () => {
+      const all = await db.listClientes();
+      return all.map((c) => ({
+        id: c.id,
+        nombre: c.nombre,
+        contactoPrincipal: c.contactoPrincipal ?? null,
+        email: c.email ?? null,
+      }));
+    }),
+
     getById: adminProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {

@@ -3,9 +3,9 @@ import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, X, ChevronUp, ChevronDown, FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, X, ChevronUp, ChevronDown, FileText, Loader2, Search, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 
 type Parada = {
@@ -33,10 +33,47 @@ const DEFAULT_PRICE = 350;
 export default function VendedorCalculadora() {
   const { loading: authLoading, isAuthenticated } = useAuth();
 
-  // Client info
-  const [empresa, setEmpresa] = useState("");
-  const [contacto, setContacto] = useState("");
-  const [email, setEmail] = useState("");
+  // Client selector state
+  const [clienteSearch, setClienteSearch] = useState("");
+  const [selectedCliente, setSelectedCliente] = useState<{
+    id: number;
+    nombre: string;
+    contactoPrincipal: string | null;
+    email: string | null;
+  } | null>(null);
+  const [comboOpen, setComboOpen] = useState(false);
+  const comboRef = useRef<HTMLDivElement>(null);
+
+  // Derived fields for PDF generation
+  const empresa = selectedCliente?.nombre ?? clienteSearch;
+  const contacto = selectedCliente?.contactoPrincipal ?? "";
+  const email = selectedCliente?.email ?? "";
+
+  const { data: clientesData = [] } = trpc.clientes.listForSelect.useQuery();
+
+  const filteredClientes = useMemo(() => {
+    if (!clienteSearch.trim()) return clientesData.slice(0, 8);
+    const q = clienteSearch.toLowerCase();
+    return clientesData
+      .filter(
+        (c) =>
+          c.nombre.toLowerCase().includes(q) ||
+          (c.contactoPrincipal ?? "").toLowerCase().includes(q) ||
+          (c.email ?? "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [clientesData, clienteSearch]);
+
+  // Close combo on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (comboRef.current && !comboRef.current.contains(e.target as Node)) {
+        setComboOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -175,45 +212,121 @@ export default function VendedorCalculadora() {
         <div className="flex-1 grid overflow-hidden" style={{ gridTemplateColumns: "1fr 360px" }}>
           {/* ── Left panel: parada selector ── */}
           <div className="flex flex-col overflow-hidden border-r border-slate-200 bg-white">
-            {/* Client info bar */}
+            {/* Client selector bar */}
             <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex-shrink-0">
-              <div className="flex gap-3">
-                <div className="flex flex-col gap-1 flex-1">
+              <div className="flex gap-3 items-end">
+                {/* Client combobox */}
+                <div className="flex flex-col gap-1 flex-1" ref={comboRef}>
                   <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">
-                    Empresa
+                    Cliente
                   </label>
-                  <input
-                    type="text"
-                    value={empresa}
-                    onChange={(e) => setEmpresa(e.target.value)}
-                    placeholder="Nombre del cliente"
-                    className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                  />
+                  <div className="relative">
+                    {selectedCliente ? (
+                      <div className="flex items-center gap-2 border border-[#1a4d3c] rounded-lg px-3 py-1.5 bg-[#1a4d3c]/5">
+                        <UserCheck size={14} className="text-[#1a4d3c] flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 truncate">{selectedCliente.nombre}</p>
+                          {selectedCliente.contactoPrincipal && (
+                            <p className="text-[11px] text-slate-500 truncate">{selectedCliente.contactoPrincipal}</p>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedCliente(null); setClienteSearch(""); }}
+                          className="text-slate-400 hover:text-red-500 transition-colors flex-shrink-0"
+                          aria-label="Cambiar cliente"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={clienteSearch}
+                          onChange={(e) => { setClienteSearch(e.target.value); setComboOpen(true); }}
+                          onFocus={() => setComboOpen(true)}
+                          placeholder="Buscar cliente registrado..."
+                          className="w-full border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                        />
+                        {comboOpen && filteredClientes.length > 0 && (
+                          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
+                            {filteredClientes.map((c) => (
+                              <button
+                                key={c.id}
+                                type="button"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => {
+                                  setSelectedCliente(c);
+                                  setClienteSearch("");
+                                  setComboOpen(false);
+                                }}
+                                className="w-full text-left px-3 py-2 hover:bg-[#1a4d3c]/5 transition-colors border-b border-slate-50 last:border-0"
+                              >
+                                <p className="text-sm font-semibold text-slate-800">{c.nombre}</p>
+                                {(c.contactoPrincipal || c.email) && (
+                                  <p className="text-[11px] text-slate-400 truncate">
+                                    {[c.contactoPrincipal, c.email].filter(Boolean).join(" · ")}
+                                  </p>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {comboOpen && clienteSearch.trim() && filteredClientes.length === 0 && (
+                          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2">
+                            <p className="text-xs text-slate-400">No se encontraron clientes. Puedes continuar con texto libre.</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-1 flex-1">
-                  <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">
-                    Contacto
-                  </label>
-                  <input
-                    type="text"
-                    value={contacto}
-                    onChange={(e) => setContacto(e.target.value)}
-                    placeholder="Nombre del contacto"
-                    className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                  />
-                </div>
-                <div className="flex flex-col gap-1 w-48">
-                  <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email@cliente.com"
-                    className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                  />
-                </div>
+
+                {/* Read-only contact + email pills when client is selected */}
+                {selectedCliente && (
+                  <div className="flex gap-3 flex-1">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Contacto</label>
+                      <div className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 bg-white truncate">
+                        {selectedCliente.contactoPrincipal || <span className="text-slate-300">—</span>}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 w-48">
+                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Email</label>
+                      <div className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 bg-white truncate">
+                        {selectedCliente.email || <span className="text-slate-300">—</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Free-text fallback when no client selected */}
+                {!selectedCliente && clienteSearch.trim() && (
+                  <div className="flex gap-3 flex-1">
+                    <div className="flex flex-col gap-1 flex-1">
+                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Contacto</label>
+                      <input
+                        type="text"
+                        value={contacto}
+                        readOnly
+                        placeholder="—"
+                        className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-400 bg-slate-50 outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 w-48">
+                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Email</label>
+                      <input
+                        type="text"
+                        value={email}
+                        readOnly
+                        placeholder="—"
+                        className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-400 bg-slate-50 outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
