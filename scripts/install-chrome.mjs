@@ -1,26 +1,25 @@
 /**
  * Ensures a Chrome browser is available for Puppeteer.
  * Runs as a postinstall script so production containers get Chrome automatically.
- * Skips download if PUPPETEER_EXECUTABLE_PATH points to an existing binary.
+ * Only downloads if puppeteer.executablePath() doesn't point to an existing binary.
  */
 import { existsSync } from 'fs';
-import { execFileSync } from 'child_process';
-import { createRequire } from 'module';
+import { execSync } from 'child_process';
+import puppeteer from 'puppeteer';
 
-const require = createRequire(import.meta.url);
-
-// If an explicit path is set and exists, nothing to do
-const explicitPath = process.env.PUPPETEER_EXECUTABLE_PATH;
-if (explicitPath) {
-  if (existsSync(explicitPath)) {
-    console.log(`[install-chrome] Using existing Chrome at: ${explicitPath}`);
+// Check if puppeteer already has a valid Chrome
+try {
+  const ep = puppeteer.executablePath();
+  if (ep && existsSync(ep)) {
+    console.log(`[install-chrome] Chrome already available at: ${ep}`);
     process.exit(0);
-  } else {
-    console.log(`[install-chrome] PUPPETEER_EXECUTABLE_PATH set to ${explicitPath} but file not found — will download Chrome.`);
   }
+  console.log(`[install-chrome] puppeteer.executablePath() = ${ep} — file not found.`);
+} catch (e) {
+  console.log(`[install-chrome] executablePath() threw: ${e.message}`);
 }
 
-// Check if system chromium is available
+// Check system Chrome candidates
 const systemCandidates = [
   '/usr/bin/chromium-browser',
   '/usr/bin/chromium',
@@ -35,21 +34,20 @@ for (const c of systemCandidates) {
 }
 
 // Download Chrome using puppeteer's built-in mechanism
-console.log('[install-chrome] No system Chrome found. Downloading via Puppeteer...');
+console.log('[install-chrome] No Chrome found. Downloading via Puppeteer...');
 try {
-  // Use puppeteer's own install script
-  const { execSync } = require('child_process');
   execSync('node node_modules/puppeteer/install.mjs', {
     stdio: 'inherit',
     env: {
       ...process.env,
-      PUPPETEER_SKIP_DOWNLOAD: '', // ensure download is NOT skipped
+      PUPPETEER_SKIP_DOWNLOAD: '',       // ensure download is NOT skipped
+      PUPPETEER_EXECUTABLE_PATH: '',     // clear override so puppeteer downloads its own
     },
   });
-  console.log('[install-chrome] Chrome downloaded successfully.');
+  const ep = puppeteer.executablePath();
+  console.log(`[install-chrome] Chrome downloaded. Path: ${ep}, exists: ${existsSync(ep)}`);
 } catch (err) {
   console.error('[install-chrome] Failed to download Chrome:', err.message);
-  console.error('[install-chrome] PDF generation may not work. Set PUPPETEER_EXECUTABLE_PATH to a valid Chrome binary.');
-  // Don't exit with error — let the app start anyway
+  // Don't fail the install — let the app start and show a clear error on PDF generation
   process.exit(0);
 }

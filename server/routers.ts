@@ -3015,6 +3015,27 @@ export const appRouter = router({
 
   // ─── Cotizaciones (Proposal PDF generator) ───────────────────────────────
   cotizaciones: router({
+    // List cotizaciones for the current vendor
+    list: vendedorProcedure.query(async ({ ctx }) => {
+      const { cotizaciones } = await import('../drizzle/schema');
+      const { desc, eq } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) return [];
+      return db.select().from(cotizaciones)
+        .where(eq(cotizaciones.vendedorId, ctx.user.id))
+        .orderBy(desc(cotizaciones.createdAt))
+        .limit(100);
+    }),
+    // Admin: list all cotizaciones
+    listAll: adminProcedure.query(async () => {
+      const { cotizaciones } = await import('../drizzle/schema');
+      const { desc } = await import('drizzle-orm');
+      const db = await getDb();
+      if (!db) return [];
+      return db.select().from(cotizaciones)
+        .orderBy(desc(cotizaciones.createdAt))
+        .limit(500);
+    }),
     generatePdf: vendedorProcedure
       .input(z.object({
         empresa: z.string(),
@@ -3037,6 +3058,9 @@ export const appRouter = router({
       .mutation(async ({ input, ctx }) => {
         const { generateProposalPdf } = await import('./proposal-generator');
         const { storagePut } = await import('./storage');
+        const { cotizaciones } = await import('../drizzle/schema');
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
 
         // Generate sequential cotizacion number based on timestamp
         const cotizacionNumber = `COT-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`;
@@ -3050,6 +3074,30 @@ export const appRouter = router({
         // Upload to S3 and return URL
         const fileKey = `cotizaciones/${ctx.user.id}/${cotizacionNumber}-${Date.now()}.pdf`;
         const { url } = await storagePut(fileKey, buffer, 'application/pdf');
+
+        // Calculate totals (in cents to avoid float issues)
+        const totalMensual = Math.round(
+          input.paradas.reduce((sum, p) => sum + p.precioMes, 0) * (1 - input.descuento / 100)
+        );
+        const totalCampana = totalMensual * input.meses;
+
+        // Save cotizacion record to database
+        await db.insert(cotizaciones).values({
+          cotizacionNumber,
+          empresa: input.empresa,
+          contacto: input.contacto,
+          email: input.email || null,
+          vendedorId: ctx.user.id,
+          vendedorName: ctx.user.name ?? '',
+          fechaInicio: input.fechaInicio,
+          fechaFin: input.fechaFin,
+          meses: input.meses,
+          descuento: input.descuento,
+          totalMensual,
+          totalCampana,
+          paradasCount: input.paradas.length,
+          pdfUrl: url,
+        });
 
         return { url, filename, cotizacionNumber };
       }),

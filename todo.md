@@ -1546,3 +1546,11 @@
 - [x] Email template: cambiar "La nueva red de publicidad exterior en Puerto Rico" por "La nueva red de publicidad externa en Puerto Rico" en el footer
 - [x] Fix definitivo: corregir Puppeteer en producción usando static import de child_process + PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 - [x] Fix Puppeteer producción: usar existsSync para verificar rutas, ensureChrome() descarga automáticamente si no hay Chrome, postinstall script en package.json
+- [ ] Fix definitivo Puppeteer producción: eliminar PUPPETEER_EXECUTABLE_PATH del env, usar Chrome descargado automáticamente por Puppeteer
+- [ ] Seguimiento: agregar listado de propuestas generadas (PDF) con fecha, cliente, vendedor y enlace de descarga
+
+## Puppeteer y Propuestas - Fase Actual
+
+- [x] Fix Puppeteer producción: postinstall script + ESM imports + puppeteer.executablePath() fallback dinámico
+- [x] Seguimientos: agregar sección de Propuestas Generadas con historial de cotizaciones PDF
+- [x] Schema: agregar tabla cotizaciones para registrar propuestas generadas

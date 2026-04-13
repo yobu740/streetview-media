@@ -281,6 +281,13 @@
       "when": 1775709677782,
       "tag": "0039_blue_psylocke",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "5",
+      "when": 1776103301364,
+      "tag": "0040_shocking_lightspeed",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,7 @@ import { trpc } from "@/lib/trpc";
 import { formatDateDisplay } from "@/lib/dateUtils";
 import {
   Loader2, Phone, Mail, Calendar, MessageSquare, CheckCircle, XCircle, Clock,
-  Plus, UserPlus, Trash2, Archive, UserCheck, Pencil, ArchiveRestore
+  Plus, UserPlus, Trash2, Archive, UserCheck, Pencil, ArchiveRestore, FileText, Download, ExternalLink
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -65,6 +65,7 @@ export default function Seguimientos() {
   const [assignVendorId, setAssignVendorId] = useState("");
 
   // Queries
+  const { data: cotizaciones, isLoading: isLoadingCotizaciones } = trpc.cotizaciones.listAll.useQuery(undefined, { enabled: isAuthenticated });
   const { data: seguimientos, isLoading } = trpc.seguimientos.listAll.useQuery(undefined, { enabled: isAuthenticated });
   const { data: archivedSeguimientos, isLoading: isLoadingArchived } = trpc.seguimientos.archived.useQuery(undefined, { enabled: isAuthenticated && showArchived });
   const { data: pending } = trpc.seguimientos.pending.useQuery(undefined, { enabled: isAuthenticated });
@@ -494,6 +495,111 @@ export default function Seguimientos() {
                       <UserPlus className="h-4 w-4 mr-2" /> Añadir primer cliente
                     </Button>
                   )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* ─── Propuestas Generadas ─── */}
+          <Card className="border-2 border-[#1a4d3c] mt-8">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <CardTitle className="text-2xl text-[#1a4d3c] flex items-center gap-2">
+                    <FileText className="h-6 w-6" />
+                    Propuestas Generadas
+                  </CardTitle>
+                  <CardDescription>Historial de cotizaciones PDF generadas por los vendedores</CardDescription>
+                </div>
+                <div className="text-sm text-[#2a2a2a]/60">
+                  {cotizaciones?.length || 0} propuestas en total
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoadingCotizaciones ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-[#1a4d3c]" />
+                </div>
+              ) : cotizaciones && cotizaciones.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>N° Cotización</TableHead>
+                        <TableHead>Empresa / Cliente</TableHead>
+                        <TableHead>Contacto</TableHead>
+                        <TableHead>Vendedor</TableHead>
+                        <TableHead>Período</TableHead>
+                        <TableHead>Paradas</TableHead>
+                        <TableHead>Total Campaña</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead className="text-right">PDF</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cotizaciones.map((cot) => (
+                        <TableRow key={cot.id} className="hover:bg-[#f5f5f5]">
+                          <TableCell>
+                            <span className="font-mono text-xs bg-[#1a4d3c]/10 text-[#1a4d3c] px-2 py-1 rounded">
+                              {cot.cotizacionNumber}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-semibold">{cot.empresa}</div>
+                            {cot.email && (
+                              <div className="text-xs text-[#2a2a2a]/60 flex items-center gap-1">
+                                <Mail className="h-3 w-3" />{cot.email}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm">{cot.contacto}</TableCell>
+                          <TableCell className="text-sm text-[#2a2a2a]/70">{cot.vendedorName || `ID ${cot.vendedorId}`}</TableCell>
+                          <TableCell className="text-sm">
+                            {cot.fechaInicio && cot.fechaFin ? (
+                              <div className="text-xs">
+                                <div>{formatDateDisplay(cot.fechaInicio)}</div>
+                                <div className="text-[#2a2a2a]/50">→ {formatDateDisplay(cot.fechaFin)}</div>
+                              </div>
+                            ) : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-300">
+                              {cot.paradasCount} paradas
+                            </span>
+                          </TableCell>
+                          <TableCell className="font-semibold text-[#1a4d3c]">
+                            ${((cot.totalCampana || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell className="text-sm text-[#2a2a2a]/70">
+                            {new Date(cot.createdAt).toLocaleDateString('es-PR')}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {cot.pdfUrl ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <a href={cot.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                    <Button size="sm" variant="outline" className="h-8 w-8 p-0 text-[#1a4d3c] hover:bg-[#1a4d3c]/10">
+                                      <ExternalLink className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </a>
+                                </TooltipTrigger>
+                                <TooltipContent>Ver PDF</TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <span className="text-xs text-[#2a2a2a]/40">N/A</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-[#2a2a2a]/60">
+                  <FileText className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                  <p className="text-lg">No hay propuestas generadas aún</p>
+                  <p className="text-sm mt-2">Las propuestas aparecerán aquí cuando los vendedores generen PDFs desde la Calculadora</p>
                 </div>
               )}
             </CardContent>

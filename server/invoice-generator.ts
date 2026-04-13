@@ -2,73 +2,43 @@ import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
-import { execSync } from 'child_process';
 import { existsSync } from 'fs';
 
 // ─── PDF Generation via Puppeteer ───────────────────────────────────────────────────────────────────────────────
 
-/** Ensure Chrome is available for Puppeteer, downloading it if necessary. */
-async function ensureChrome(): Promise<void> {
-  const { default: puppeteer } = await import('puppeteer');
-  try {
-    const ep = puppeteer.executablePath();
-    if (ep && existsSync(ep)) return;
-  } catch { /* executablePath may throw if not configured */ }
-
-  console.log('[PDF] Chrome not found, attempting to download via Puppeteer...');
-  try {
-    execSync('node node_modules/puppeteer/install.mjs', {
-      stdio: 'inherit',
-      env: { ...process.env, PUPPETEER_SKIP_DOWNLOAD: '', PUPPETEER_EXECUTABLE_PATH: '' },
-    });
-    console.log('[PDF] Chrome downloaded successfully.');
-  } catch (err) {
-    console.error('[PDF] Chrome download failed:', err);
-    throw new Error('Chrome is not available and could not be downloaded. PDF generation is unavailable.');
-  }
-}
-
-/** Resolve the best available Chrome/Chromium executable.
- *  Priority: env override (if file exists) → system chromium-browser → let puppeteer decide.
+/** Render HTML to a PDF buffer using headless Chromium.
+ *  Uses process.env.PUPPETEER_EXECUTABLE_PATH if set AND the file exists,
+ *  otherwise falls back to puppeteer.executablePath() (the auto-downloaded Chrome).
  */
-function getChromePath(): string | undefined {
-  const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  if (envPath && existsSync(envPath)) return envPath;
-
-  const candidates = [
-    '/usr/bin/chromium-browser',
-    '/usr/bin/chromium',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-  ];
-  for (const c of candidates) {
-    if (existsSync(c)) return c;
-  }
-  return undefined;
-}
-
-/** Render HTML to a PDF buffer using headless Chromium */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
-  await ensureChrome();
-  const puppeteer = await import("puppeteer");
-  const executablePath = getChromePath();
+  const puppeteer = await import('puppeteer');
+
+  const envPath = process.env.PUPPETEER_EXECUTABLE_PATH;
+  const puppeteerPath = puppeteer.default.executablePath();
+  const executablePath = (envPath && existsSync(envPath))
+    ? envPath
+    : puppeteerPath;
+
+  console.log('[PDF] Chrome path:', executablePath);
+  console.log('[PDF] Chrome exists:', existsSync(executablePath));
+
   const browser = await puppeteer.default.launch({
+    executablePath,
     headless: true,
-    ...(executablePath ? { executablePath } : {}),
     args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
     ],
   });
   try {
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
     const pdfBuffer = await page.pdf({
-      format: "Letter",
+      format: 'Letter',
       printBackground: true,
-      margin: { top: "0", right: "0", bottom: "0", left: "0" },
+      margin: { top: '0', right: '0', bottom: '0', left: '0' },
     });
     return Buffer.from(pdfBuffer);
   } finally {
