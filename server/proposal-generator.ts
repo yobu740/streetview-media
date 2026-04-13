@@ -10,21 +10,43 @@ const LOGO_URL =
  *  System library dependencies are pre-installed via postinstall script.
  */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
-  // Always use puppeteer's own bundled Chrome — ignore any PUPPETEER_EXECUTABLE_PATH
-  // env var that may point to a non-existent system path.
   const puppeteer = await import('puppeteer');
+  const { existsSync } = await import('fs');
+  const { execSync } = await import('child_process');
 
-  // Force puppeteer to use its bundled Chrome — delete PUPPETEER_EXECUTABLE_PATH
-  // if it points to a non-existent or broken binary (e.g. /tmp/chromium or /usr/bin/chromium-browser).
-  delete process.env.PUPPETEER_EXECUTABLE_PATH;
+  // Find puppeteer's bundled Chrome binary by searching the cache on disk.
+  // This bypasses PUPPETEER_EXECUTABLE_PATH entirely — that env var is unreliable
+  // (may point to /usr/bin/chromium-browser or /tmp/chromium, neither of which exist).
+  let executablePath: string | undefined;
 
-  // Determine executable path: use puppeteer's bundled Chrome
-  let executablePath: string;
-  try {
-    executablePath = puppeteer.default.executablePath();
-    console.log('[PDF] Using puppeteer bundled Chrome at:', executablePath);
-  } catch (e) {
-    throw new Error(`[PDF] Could not determine Chrome path: ${e}`);
+  const cacheDirs = [
+    process.env.PUPPETEER_CACHE_DIR,
+    '/root/.cache/puppeteer',
+    process.env.HOME ? `${process.env.HOME}/.cache/puppeteer` : null,
+    '/home/node/.cache/puppeteer',
+    '/app/.cache/puppeteer',
+  ].filter(Boolean) as string[];
+
+  for (const dir of cacheDirs) {
+    if (!existsSync(dir)) continue;
+    try {
+      const found = execSync(
+        `find "${dir}" -maxdepth 6 -name 'chrome' -type f 2>/dev/null | head -1`,
+        { encoding: 'utf8', timeout: 5000 }
+      ).trim();
+      if (found && existsSync(found)) {
+        executablePath = found;
+        console.log('[PDF] Found bundled Chrome at:', executablePath);
+        break;
+      }
+    } catch { /* keep searching */ }
+  }
+
+  if (!executablePath) {
+    throw new Error(
+      '[PDF] Bundled Chrome not found in puppeteer cache. ' +
+      'Searched: ' + cacheDirs.join(', ')
+    );
   }
 
   const browser = await puppeteer.default.launch({
