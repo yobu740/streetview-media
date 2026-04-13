@@ -9,4 +9,6 @@ export const ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   docusealApiKey: process.env.DOCUSEAL ?? "",
   publicUrl: process.env.PUBLIC_URL ?? "",
+  smtpSalesUser: process.env.SMTP_SALES_USER ?? "",
+  smtpSalesPass: process.env.SMTP_SALES_PASS ?? "",
 };

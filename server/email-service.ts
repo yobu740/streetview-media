@@ -8,14 +8,22 @@ interface ContactFormData {
 }
 
 export async function sendContactEmail(data: ContactFormData): Promise<void> {
-  // Create transporter using SMTP (you'll need to configure this with actual SMTP credentials)
+  // Use dedicated sales SMTP credentials so contact form emails come from sales@
+  // and do not mix with facturacion@ invoicing emails
+  const salesUser = process.env.SMTP_SALES_USER || process.env.SMTP_USER;
+  const salesPass = process.env.SMTP_SALES_PASS || process.env.SMTP_PASS;
+
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    host: process.env.SMTP_HOST || 'smtp-mail.outlook.com',
     port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: salesUser,
+      pass: salesPass,
+    },
+    tls: {
+      rejectUnauthorized: false,
+      ciphers: 'SSLv3',
     },
   });
 
@@ -34,11 +42,11 @@ export async function sendContactEmail(data: ContactFormData): Promise<void> {
   `;
 
   const mailOptions = {
-    from: `"Streetview Media" <${process.env.SMTP_USER}>`, // Use authenticated email as sender
+    from: `"Streetview Media" <${salesUser}>`,
     to: 'sales@streetviewmediapr.com',
     subject: `Nuevo mensaje de contacto de ${data.nombre}`,
     html: emailHtml,
-    replyTo: data.email, // User's email for replies
+    replyTo: data.email,
   };
 
   try {
