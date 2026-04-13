@@ -1544,3 +1544,4 @@
 - [x] Calculadora: hacer campo cliente obligatorio — bloquear PDF y Convertir a Contrato si no hay cliente seleccionado; si el cliente no existe, mostrar opción de crearlo rápidamente con modal inline
 - [x] Email template: corregir logo oscuro en Outlook (reemplazar PNG transparente por PNG con fondo blanco incorporado)
 - [x] Email template: cambiar "La nueva red de publicidad exterior en Puerto Rico" por "La nueva red de publicidad externa en Puerto Rico" en el footer
+- [x] Fix definitivo: corregir Puppeteer en producción usando static import de child_process + PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser

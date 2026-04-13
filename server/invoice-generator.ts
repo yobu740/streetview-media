@@ -2,28 +2,31 @@ import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
+import { execFileSync } from 'child_process';
 
-// ─── PDF Generation via Puppeteer ─────────────────────────────────────────────
+// ─── PDF Generation via Puppeteer ───────────────────────────────────────────────────────────────────────────────
 
-/** Resolve the best available Chrome/Chromium executable */
+/** Resolve the best available Chrome/Chromium executable.
+ *  Priority: env override → system chromium-browser → puppeteer bundled Chrome.
+ *  Uses ESM-compatible static import of child_process (no dynamic require).
+ */
 function getChromePath(): string | undefined {
+  // 1. Explicit env override (set via PUPPETEER_EXECUTABLE_PATH secret in production)
   if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
-  // Use execFileSync to avoid dynamic require('fs') which is not supported in ESM bundles
+  // 2. System chromium-browser (available on Ubuntu 22.04 servers, both sandbox and production)
   const candidates = [
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
     '/usr/bin/google-chrome',
     '/usr/bin/google-chrome-stable',
   ];
-  try {
-    const { execFileSync } = require('child_process') as typeof import('child_process');
-    for (const c of candidates) {
-      try {
-        execFileSync('test', ['-f', c], { stdio: 'ignore' });
-        return c;
-      } catch { /* not found, try next */ }
-    }
-  } catch { /* child_process not available */ }
+  for (const c of candidates) {
+    try {
+      execFileSync('test', ['-f', c], { stdio: 'ignore' });
+      return c;
+    } catch { /* not found, try next */ }
+  }
+  // 3. Fall back to puppeteer's bundled Chrome (last resort, may fail in production)
   return undefined;
 }
 

@@ -1,31 +1,31 @@
-// ─── Proposal PDF Generator ───────────────────────────────────────────────────
+// ─── Proposal PDF Generator ───────────────────────────────────────────────────────────────────────────────
 // Generates a professional "Propuesta / Estimado" PDF for the vendor calculator.
+import { execFileSync } from 'child_process';
 
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
-/** Resolve the best available Chrome/Chromium executable */
+/** Resolve the best available Chrome/Chromium executable.
+ *  Priority: env override → system chromium-browser → puppeteer bundled Chrome.
+ *  Uses ESM-compatible static import of child_process (no dynamic require).
+ */
 function getChromePath(): string | undefined {
-  // 1. Explicit env override (set in production secrets)
+  // 1. Explicit env override (set via PUPPETEER_EXECUTABLE_PATH secret in production)
   if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
-  // 2. System chromium-browser (available on Ubuntu 22.04 servers)
-  // Use execFileSync to avoid dynamic require('fs') which is not supported in ESM bundles
+  // 2. System chromium-browser (available on Ubuntu 22.04 servers, both sandbox and production)
   const candidates = [
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
     '/usr/bin/google-chrome',
     '/usr/bin/google-chrome-stable',
   ];
-  try {
-    const { execFileSync } = require('child_process') as typeof import('child_process');
-    for (const c of candidates) {
-      try {
-        execFileSync('test', ['-f', c], { stdio: 'ignore' });
-        return c;
-      } catch { /* not found, try next */ }
-    }
-  } catch { /* child_process not available */ }
-  // 3. Fall back to puppeteer's bundled Chrome (works in dev sandbox)
+  for (const c of candidates) {
+    try {
+      execFileSync('test', ['-f', c], { stdio: 'ignore' });
+      return c;
+    } catch { /* not found, try next */ }
+  }
+  // 3. Fall back to puppeteer's bundled Chrome (last resort, may fail in production)
   return undefined;
 }
 
