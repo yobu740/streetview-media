@@ -9,16 +9,22 @@ function getChromePath(): string | undefined {
   // 1. Explicit env override (set in production secrets)
   if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
   // 2. System chromium-browser (available on Ubuntu 22.04 servers)
-  const fs = require('fs') as typeof import('fs');
+  // Use execFileSync to avoid dynamic require('fs') which is not supported in ESM bundles
   const candidates = [
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
     '/usr/bin/google-chrome',
     '/usr/bin/google-chrome-stable',
   ];
-  for (const c of candidates) {
-    try { if (fs.existsSync(c)) return c; } catch { /* ignore */ }
-  }
+  try {
+    const { execFileSync } = require('child_process') as typeof import('child_process');
+    for (const c of candidates) {
+      try {
+        execFileSync('test', ['-f', c], { stdio: 'ignore' });
+        return c;
+      } catch { /* not found, try next */ }
+    }
+  } catch { /* child_process not available */ }
   // 3. Fall back to puppeteer's bundled Chrome (works in dev sandbox)
   return undefined;
 }

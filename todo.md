@@ -1540,3 +1540,4 @@
 - [ ] Calculadora: arreglar responsiveness móvil
 - [ ] Mis Reservas: integrar con sidebar del dashboard y layout correcto (sin header público)
 - [ ] Protección de rutas: vendedores no pueden acceder a /facturacion, /admin, /clientes, /anuncios, /instalacion, /mantenimiento por URL directa
+- [x] Fix: Error "Dynamic require of fs is not supported" al generar PDF de propuesta
