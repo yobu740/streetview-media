@@ -1531,3 +1531,4 @@
 - [x] Corregir formulario de contacto: mensajes deben llegar a sales@streetviewmediapr.com — usa SMTP_SALES_USER/SMTP_SALES_PASS dedicados
 - [x] Email factura: corregir fondo blanco del logo en Outlook mobile dark mode (MSO conditionals + bgcolor en cada elemento)
 - [x] Calculadora: reemplazar campos de texto libre por combobox de búsqueda de clientes registrados (con fallback de texto libre)
+- [x] Reportes Excel y PDF del panel principal: agregar columna de Categoría (punto estratégico / tags)

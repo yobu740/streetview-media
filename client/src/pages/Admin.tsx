@@ -765,6 +765,7 @@ export default function Admin() {
           'Fecha Inicio': anuncio ? formatDateDisplay(anuncio.fechaInicio) : '',
           'Fecha Fin': anuncio ? formatDateDisplay(anuncio.fechaFin) : '',
           'Tipo Anuncio': anuncio ? anuncio.tipo : '',
+          'Categoría': (() => { try { return parada.tags ? JSON.parse(parada.tags).join(', ') : ''; } catch { return ''; } })(),
           'Coordenadas': parada.coordenadasLat && parada.coordenadasLng ? `${parada.coordenadasLat}, ${parada.coordenadasLng}` : '',
         };
       });
@@ -789,6 +790,7 @@ export default function Admin() {
         { wch: 12 },  // Fecha Inicio
         { wch: 12 },  // Fecha Fin
         { wch: 15 },  // Tipo Anuncio
+        { wch: 30 },  // Categoría
         { wch: 25 },  // Coordenadas
       ];
       ws['!cols'] = colWidths;
@@ -843,6 +845,7 @@ export default function Admin() {
           const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia;
           condicion = isLista ? 'Lista' : 'Pendiente';
         }
+        const tagsStr = (() => { try { return parada.tags ? JSON.parse(parada.tags).join(', ') : '—'; } catch { return '—'; } })();
         return `<tr>
           <td>${parada.cobertizoId}</td>
           <td>${parada.flowCat || '—'}</td>
@@ -852,6 +855,7 @@ export default function Admin() {
           <td>${parada.tipoFormato === 'Digital' ? 'B' : 'F'}</td>
           <td>${displayStatus}</td>
           <td>${condicion}</td>
+          <td>${tagsStr}</td>
           <td>${anuncio?.cliente || '—'}</td>
         </tr>`;
       }).join('');
@@ -900,7 +904,7 @@ export default function Admin() {
         <div class="print-body">
         <table>
           <thead><tr>
-            <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Cliente</th>
+            <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Categoría</th><th>Cliente</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -944,6 +948,7 @@ export default function Admin() {
       else if (parada.enConstruccion) condicion = 'En Construcción' + (parada.fechaDisponibilidad ? ` (${new Date(parada.fechaDisponibilidad).toLocaleDateString('es-PR')})` : '');
       else if (parada.displayPublicidad === 'No') condicion = 'Sin Display';
       else { const isLista = parada.condicionPintada && parada.condicionArreglada && parada.condicionLimpia; condicion = isLista ? 'Lista' : 'Pendiente'; }
+      const tagsStr2 = (() => { try { return parada.tags ? JSON.parse(parada.tags).join(', ') : '—'; } catch { return '—'; } })();
       return `<tr>
         <td>${parada.cobertizoId}</td>
         <td>${parada.flowCat || '—'}</td>
@@ -953,6 +958,7 @@ export default function Admin() {
         <td>${parada.tipoFormato === 'Digital' ? 'B' : 'F'}</td>
         <td>${displayStatus}</td>
         <td>${condicion}</td>
+        <td>${tagsStr2}</td>
         <td>${anuncio?.cliente || '—'}</td>
         <td>${anuncio ? ((anuncio as any).costoPorUnidad ? `$${parseFloat((anuncio as any).costoPorUnidad).toFixed(2)}` : '—') : '—'}</td>
       </tr>`;
@@ -1000,7 +1006,7 @@ export default function Admin() {
       <div class="print-body">
       <table>
         <thead><tr>
-          <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Cliente</th><th>Costo</th>
+          <th>ID</th><th>Flowcat</th><th>Localización</th><th>Ruta</th><th>Dirección</th><th>Tipo</th><th>Estado</th><th>Condición</th><th>Categoría</th><th>Cliente</th><th>Costo</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
