@@ -121,10 +121,13 @@ function buildProposalHTML(data: ProposalData): string {
 <head>
 <meta charset="UTF-8">
 <title>Propuesta ${cotizacionNumber} — Streetview Media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: white; font-family: Arial, Helvetica, sans-serif; font-size: 9.5px; color: #222; }
-  .page { width: 100%; min-height: 1056px; display: flex; flex-direction: column; }
+  .page { width: 100%; min-height: 1056px; display: flex; flex-direction: column; padding: 0 40px; }
 
   /* Header */
   .header {
@@ -134,6 +137,7 @@ function buildProposalHTML(data: ProposalData): string {
     align-items: center;
     padding: 0 50px;
     justify-content: space-between;
+    margin: 0 -40px;
   }
   .header img { height: 52px; object-fit: contain; }
   .header-right { text-align: right; color: white; }
@@ -143,6 +147,7 @@ function buildProposalHTML(data: ProposalData): string {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #ff6b35;
+    font-family: 'Montserrat', Arial, sans-serif;
   }
   .header-right div { font-size: 10px; margin-top: 2px; opacity: 0.9; }
 
@@ -153,6 +158,7 @@ function buildProposalHTML(data: ProposalData): string {
     font-size: 9px;
     color: #555;
     border-bottom: 1px solid #e0e0e0;
+    margin: 0 -40px;
   }
 
   /* Client info */
@@ -271,13 +277,15 @@ function buildProposalHTML(data: ProposalData): string {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    margin-left: -40px;
+    margin-right: -40px;
   }
   .footer-left { font-size: 8.5px; color: #666; }
   .footer-left .ft-company { font-weight: 700; color: #1a4d3c; font-size: 10px; margin-bottom: 2px; }
   .footer-right { text-align: right; font-size: 8.5px; color: #999; }
 
   @media print {
-    @page { margin: 40px 0 20px 0; }
+    @page { margin: 40px 40px 20px 40px; }
     @page :first { margin: 0; }
     body { background: white; }
     .page { box-shadow: none; width: 100%; }

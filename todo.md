@@ -1556,3 +1556,4 @@
 - [x] Schema: agregar tabla cotizaciones para registrar propuestas generadas
 - [x] Crear facturas TEST INV-1001, INV-1002, INV-1014, INV-1021 en $0 para propósito de auditoría
 - [x] Fix Puppeteer: delete process.env.PUPPETEER_EXECUTABLE_PATH antes de executablePath() para forzar Chrome bundled en producción
+- [x] PDF Cotización: agregar márgenes laterales y tipografía Montserrat para "PROPUESTA"
