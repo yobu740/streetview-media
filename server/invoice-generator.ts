@@ -1,36 +1,26 @@
 // Delete PUPPETEER_EXECUTABLE_PATH at module load time so puppeteer always
-// uses its own bundled Chrome, ignoring any system path set in the environment.
-delete process.env.PUPPETEER_EXECUTABLE_PATH;
-
 import { getDb } from "./db";
 import { anuncios, paradas } from "../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 import { storagePut } from "./storage";
 
-// ─── PDF Generation via Puppeteer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ─── PDF Generation via @sparticuz/chromium ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 /** Render HTML to a PDF buffer using headless Chromium.
- *  Always uses puppeteer's own bundled Chrome — ignores PUPPETEER_EXECUTABLE_PATH
- *  to avoid path-not-found errors in production containers.
+ *  Uses @sparticuz/chromium which is self-contained and works in minimal
+ *  production containers without system library dependencies.
  */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
-  const puppeteer = await import('puppeteer');
+  const chromium = await import('@sparticuz/chromium');
+  const puppeteer = await import('puppeteer-core');
 
-  // Force puppeteer to use its bundled Chrome regardless of any
-  // PUPPETEER_EXECUTABLE_PATH environment variable that may be set.
-  delete process.env.PUPPETEER_EXECUTABLE_PATH;
-  const executablePath = puppeteer.default.executablePath();
-  console.log('[PDF] Chrome path:', executablePath);
+  const executablePath = await chromium.default.executablePath();
+  console.log('[PDF] Sparticuz Chrome path:', executablePath);
 
   const browser = await puppeteer.default.launch({
     executablePath,
     headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-    ],
+    args: chromium.default.args,
   });
   try {
     const page = await browser.newPage();
