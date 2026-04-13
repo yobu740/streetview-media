@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Link } from "wouter";
-import { ArrowLeft, X, ChevronUp, ChevronDown, FileText, Loader2, Search, UserCheck } from "lucide-react";
+import { useLocation } from "wouter";
+import { X, ChevronUp, ChevronDown, FileText, Loader2, Search, UserCheck, Menu } from "lucide-react";
 import { toast } from "sonner";
 
 type Parada = {
@@ -19,6 +19,7 @@ type Parada = {
   activa: number;
   removida: number;
   enConstruccion: number;
+  tags: string | null;
 };
 
 const ORI_LABEL: Record<string, string> = { I: "Interior", O: "Exterior", P: "Pilón" };
@@ -28,10 +29,30 @@ const ORI_STYLE: Record<string, string> = {
   P: "bg-slate-100 text-slate-600",
 };
 
+const STRATEGIC_TAGS = [
+  "Hospitales",
+  "Residenciales",
+  "Complejo Turístico",
+  "Supermercados",
+  "Universidades",
+  "Bancos y Cooperativas",
+  "Farmacias",
+  "Centros Comerciales y Retail",
+  "Edificios Gubernamentales",
+  "Entretenimiento y Parques",
+  "Cadenas de Comida Rápida",
+  "Restaurantes y Cafés",
+  "Gasolineras",
+];
+
 const DEFAULT_PRICE = 350;
 
 export default function VendedorCalculadora() {
-  const { loading: authLoading, isAuthenticated } = useAuth();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+
+  // Mobile panel state
+  const [showSummary, setShowSummary] = useState(false);
 
   // Client selector state
   const [clienteSearch, setClienteSearch] = useState("");
@@ -79,6 +100,7 @@ export default function VendedorCalculadora() {
   const [search, setSearch] = useState("");
   const [oriFilter, setOriFilter] = useState<"" | "I" | "O" | "P">("");
   const [formatoFilter, setFormatoFilter] = useState<"" | "Fija" | "Digital">("");
+  const [tagFilter, setTagFilter] = useState<string>("");
 
   // Selection & pricing
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -102,6 +124,16 @@ export default function VendedorCalculadora() {
     },
   });
 
+  const vendedorCreateMutation = trpc.contratos.vendedorCreate.useMutation({
+    onSuccess: (data) => {
+      toast.success("Contrato creado como Borrador. Redirigiendo...");
+      navigate("/vendedor/contratos");
+    },
+    onError: (err) => {
+      toast.error(`Error al crear contrato: ${err.message}`);
+    },
+  });
+
   const { data: allParadas = [], isLoading } = trpc.paradas.list.useQuery();
 
   if (authLoading) return null;
@@ -116,6 +148,15 @@ export default function VendedorCalculadora() {
       if (!p.activa || p.removida || p.enConstruccion) return false;
       if (oriFilter && p.orientacion !== oriFilter) return false;
       if (formatoFilter && p.tipoFormato !== formatoFilter) return false;
+      if (tagFilter) {
+        if (!p.tags) return false;
+        try {
+          const paradaTags: string[] = JSON.parse(p.tags);
+          if (!paradaTags.includes(tagFilter)) return false;
+        } catch {
+          return false;
+        }
+      }
       if (search) {
         const q = search.toLowerCase();
         if (
@@ -127,7 +168,7 @@ export default function VendedorCalculadora() {
       }
       return true;
     });
-  }, [allParadas, oriFilter, formatoFilter, search]);
+  }, [allParadas, oriFilter, formatoFilter, tagFilter, search]);
 
   const selectedParadas = useMemo(
     () => (allParadas as Parada[]).filter((p) => selectedIds.has(p.id)),
@@ -174,6 +215,251 @@ export default function VendedorCalculadora() {
 
   const count = selectedIds.size;
 
+  function handleConvertirAContrato() {
+    if (count === 0) return;
+    // Generate contract number
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    const numeroContrato = `SV-${year}${month}-${rand}`;
+
+    const items = selectedParadas.map((p) => ({
+      cantidad: 1,
+      concepto: `Parada #${p.cobertizoId} - ${p.localizacion} (${ORI_LABEL[p.orientacion] ?? p.orientacion}, ${p.tipoFormato})`,
+      precioPorUnidad: String(prices[p.id] ?? DEFAULT_PRICE),
+      total: String((prices[p.id] ?? DEFAULT_PRICE) * meses),
+      isProduccion: 0,
+    }));
+
+    vendedorCreateMutation.mutate({
+      clienteId: selectedCliente?.id ?? null,
+      clienteNombre: empresa || undefined,
+      numeroContrato,
+      fecha: new Date(),
+      fechaVencimiento: fechaFin ? new Date(fechaFin) : null,
+      subtotal: String(subtotalTotal),
+      total: String(totalGeneral),
+      numMeses: meses,
+      notas: `Propuesta generada desde Calculadora. Cliente: ${empresa}. Período: ${fechaInicio || "—"} → ${fechaFin || "—"}.`,
+      items,
+    });
+  }
+
+  // Summary panel (shared between desktop right panel and mobile drawer)
+  const SummaryPanel = () => (
+    <div className="flex flex-col bg-slate-50 h-full overflow-hidden">
+      {/* Header */}
+      <div className="px-4 py-3.5 border-b border-slate-200 bg-white flex-shrink-0 flex items-center justify-between">
+        <div>
+          <p className="text-[13.5px] font-bold text-slate-900">Resumen de Propuesta</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {count === 0
+              ? "Selecciona paradas en el panel izquierdo"
+              : `${count} parada${count !== 1 ? "s" : ""} · ${meses} mes${meses !== 1 ? "es" : ""}`}
+          </p>
+        </div>
+        {/* Close button for mobile */}
+        <button
+          type="button"
+          onClick={() => setShowSummary(false)}
+          className="lg:hidden text-slate-400 hover:text-slate-600"
+          aria-label="Cerrar resumen"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      {/* Selected items */}
+      <div className="flex-1 overflow-y-auto px-3.5 py-2.5">
+        {selectedParadas.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-36 text-slate-400 text-center gap-2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-40">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <p className="text-sm">Ninguna parada seleccionada</p>
+          </div>
+        ) : (
+          selectedParadas.map((p) => (
+            <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-3 mb-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-800 truncate">
+                    #{p.cobertizoId} · {p.localizacion}
+                  </p>
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                    {ORI_LABEL[p.orientacion] ?? p.orientacion} · {p.tipoFormato}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeParada(p.id)}
+                  className="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5"
+                  aria-label="Remover"
+                >
+                  <X size={15} />
+                </button>
+              </div>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-[11.5px] text-slate-500">Precio/mes</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-slate-400">$</span>
+                  <input
+                    type="number"
+                    value={prices[p.id] ?? DEFAULT_PRICE}
+                    onChange={(e) => setPrice(p.id, e.target.value)}
+                    className="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                    min={0}
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Period selector */}
+      <div className="px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
+        <p className="text-xs font-bold text-slate-800 mb-2">Periodo de Contrato</p>
+        <div className="flex gap-2 items-center">
+          <input
+            type="date"
+            value={fechaInicio}
+            onChange={(e) => setFechaInicio(e.target.value)}
+            className="flex-1 border border-slate-200 rounded-md px-2 py-1.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+          />
+          <span className="text-xs text-slate-400">→</span>
+          <input
+            type="date"
+            value={fechaFin}
+            onChange={(e) => setFechaFin(e.target.value)}
+            className="flex-1 border border-slate-200 rounded-md px-2 py-1.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+          />
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-slate-500">Meses</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMeses((m) => Math.max(1, m - 1))}
+              className="w-6 h-6 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:border-[#1a4d3c] hover:text-[#1a4d3c] transition-colors"
+              aria-label="Menos meses"
+            >
+              <ChevronDown size={13} />
+            </button>
+            <span className="text-sm font-bold text-slate-900 w-5 text-center">{meses}</span>
+            <button
+              type="button"
+              onClick={() => setMeses((m) => Math.min(24, m + 1))}
+              className="w-6 h-6 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:border-[#1a4d3c] hover:text-[#1a4d3c] transition-colors"
+              aria-label="Más meses"
+            >
+              <ChevronUp size={13} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Totals */}
+      <div className="px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
+        <div className="flex justify-between items-center mb-1.5">
+          <span className="text-xs text-slate-500">
+            {count} parada{count !== 1 ? "s" : ""} × {meses} mes{meses !== 1 ? "es" : ""}
+          </span>
+          <span className="text-sm font-semibold text-slate-800">
+            ${subtotalTotal.toLocaleString("en-US", { minimumFractionDigits: 0 })}
+          </span>
+        </div>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs text-slate-500">Subtotal/mes</span>
+          <span className="text-sm font-semibold text-slate-800">
+            ${subtotalMes.toLocaleString("en-US", { minimumFractionDigits: 0 })}
+          </span>
+        </div>
+        <hr className="border-slate-100 my-2" />
+        <div className="flex items-center justify-between mt-2 mb-1">
+          <span className="text-xs text-slate-500">Descuento ($)</span>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-slate-400">$</span>
+            <input
+              type="number"
+              value={descuento === 0 ? "" : descuento}
+              onChange={(e) => {
+                const v = parseFloat(e.target.value);
+                setDescuento(isNaN(v) ? 0 : Math.max(0, v));
+              }}
+              placeholder="0"
+              className="w-24 text-right border border-slate-200 rounded-md px-2 py-1 text-sm font-bold text-[#ff6b35] outline-none focus:ring-2 focus:ring-[#ff6b35]/20"
+              min={0}
+            />
+          </div>
+        </div>
+        <hr className="border-slate-100 my-2" />
+        <div className="flex justify-between items-baseline">
+          <span className="text-sm font-bold text-slate-900">TOTAL</span>
+          <span className="text-2xl font-extrabold text-[#1a4d3c]">
+            ${totalGeneral.toLocaleString("en-US", { minimumFractionDigits: 0 })}
+          </span>
+        </div>
+      </div>
+
+      {/* Generate buttons */}
+      <div className="px-4 pb-4 pt-2 bg-white border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
+        <button
+          type="button"
+          disabled={count === 0 || generatePdfMutation.isPending}
+          onClick={() => {
+            generatePdfMutation.mutate({
+              empresa,
+              contacto,
+              email,
+              fechaInicio,
+              fechaFin,
+              meses,
+              descuento,
+              paradas: selectedParadas.map((p) => ({
+                cobertizoId: p.cobertizoId,
+                localizacion: p.localizacion,
+                direccion: p.direccion,
+                orientacion: p.orientacion,
+                tipoFormato: p.tipoFormato,
+                ruta: p.ruta ?? null,
+                precioMes: prices[p.id] ?? DEFAULT_PRICE,
+              })),
+            });
+          }}
+          className="w-full py-2.5 rounded-lg bg-[#1a4d3c] text-white text-[13.5px] font-bold transition-all hover:bg-[#0f3a2a] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {generatePdfMutation.isPending ? (
+            <><Loader2 size={14} className="animate-spin" /> Generando PDF...</>
+          ) : (
+            <><FileText size={14} /> Generar PDF de Propuesta</>
+          )}
+        </button>
+        <button
+          type="button"
+          disabled={count === 0 || vendedorCreateMutation.isPending}
+          onClick={handleConvertirAContrato}
+          className="w-full py-2.5 rounded-lg bg-white border border-[#1a4d3c] text-[#1a4d3c] text-[13.5px] font-semibold transition-all hover:bg-[#1a4d3c]/5 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {vendedorCreateMutation.isPending ? (
+            <><Loader2 size={14} className="animate-spin" /> Creando contrato...</>
+          ) : (
+            "Convertir a Contrato"
+          )}
+        </button>
+        {count === 0 && (
+          <p className="text-[10.5px] text-slate-400 text-center">
+            Selecciona al menos una parada para continuar
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AdminSidebar />
@@ -181,42 +467,44 @@ export default function VendedorCalculadora() {
       {/* Page wrapper */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <div className="bg-white border-b border-slate-200 px-6 h-14 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <Link href="/vendedor">
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#1a4d3c] transition-colors"
-              >
-                <ArrowLeft size={14} /> Mi Dashboard
-              </button>
-            </Link>
-            <span className="text-slate-200 text-lg">|</span>
-            <span className="text-[15px] font-bold text-slate-900">
+        <div className="bg-white border-b border-slate-200 px-4 lg:px-6 h-14 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="text-[15px] font-bold text-slate-900 truncate">
               Calculadora de Propuesta
             </span>
             {count > 0 && (
-              <span className="text-[11px] font-bold bg-[#1a4d3c]/10 text-[#1a4d3c] px-2.5 py-0.5 rounded-full">
-                {count} parada{count !== 1 ? "s" : ""} seleccionada{count !== 1 ? "s" : ""}
+              <span className="hidden sm:inline text-[11px] font-bold bg-[#1a4d3c]/10 text-[#1a4d3c] px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                {count} parada{count !== 1 ? "s" : ""}
               </span>
             )}
           </div>
-          {count > 0 && (
-            <Button size="sm" variant="outline" onClick={clearAll} className="text-xs">
-              Limpiar selección
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {count > 0 && (
+              <Button size="sm" variant="outline" onClick={clearAll} className="text-xs hidden sm:flex">
+                Limpiar selección
+              </Button>
+            )}
+            {/* Mobile: toggle summary panel */}
+            <button
+              type="button"
+              onClick={() => setShowSummary(!showSummary)}
+              className="lg:hidden flex items-center gap-1.5 text-sm font-semibold text-[#1a4d3c] bg-[#1a4d3c]/10 px-3 py-1.5 rounded-lg"
+            >
+              <Menu size={14} />
+              Resumen {count > 0 && <span className="bg-[#1a4d3c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{count}</span>}
+            </button>
+          </div>
         </div>
 
-        {/* Main layout */}
-        <div className="flex-1 grid overflow-hidden" style={{ gridTemplateColumns: "1fr 360px" }}>
+        {/* Main layout — desktop: side by side; mobile: stacked with drawer */}
+        <div className="flex-1 flex overflow-hidden relative">
           {/* ── Left panel: parada selector ── */}
-          <div className="flex flex-col overflow-hidden border-r border-slate-200 bg-white">
+          <div className={`flex flex-col overflow-hidden border-r border-slate-200 bg-white transition-all ${showSummary ? "hidden" : "flex-1"} lg:flex lg:flex-1`}>
             {/* Client selector bar */}
-            <div className="px-5 py-3 border-b border-slate-100 bg-slate-50 flex-shrink-0">
-              <div className="flex gap-3 items-end">
+            <div className="px-4 lg:px-5 py-3 border-b border-slate-100 bg-slate-50 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                 {/* Client combobox */}
-                <div className="flex flex-col gap-1 flex-1" ref={comboRef}>
+                <div className="flex flex-col gap-1 w-full sm:flex-1" ref={comboRef}>
                   <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">
                     Cliente
                   </label>
@@ -284,9 +572,9 @@ export default function VendedorCalculadora() {
                   </div>
                 </div>
 
-                {/* Read-only contact + email pills when client is selected */}
+                {/* Read-only contact + email when client is selected */}
                 {selectedCliente && (
-                  <div className="flex gap-3 flex-1">
+                  <div className="hidden sm:flex gap-3 flex-1">
                     <div className="flex flex-col gap-1 flex-1">
                       <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Contacto</label>
                       <div className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-600 bg-white truncate">
@@ -301,45 +589,20 @@ export default function VendedorCalculadora() {
                     </div>
                   </div>
                 )}
-
-                {/* Free-text fallback when no client selected */}
-                {!selectedCliente && clienteSearch.trim() && (
-                  <div className="flex gap-3 flex-1">
-                    <div className="flex flex-col gap-1 flex-1">
-                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Contacto</label>
-                      <input
-                        type="text"
-                        value={contacto}
-                        readOnly
-                        placeholder="—"
-                        className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-400 bg-slate-50 outline-none"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1 w-48">
-                      <label className="text-[10.5px] font-bold text-slate-500 uppercase tracking-wide">Email</label>
-                      <input
-                        type="text"
-                        value={email}
-                        readOnly
-                        placeholder="—"
-                        className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm text-slate-400 bg-slate-50 outline-none"
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Filters bar */}
-            <div className="px-5 py-2.5 border-b border-slate-100 flex gap-2 items-center flex-wrap flex-shrink-0">
+            <div className="px-4 lg:px-5 py-2.5 border-b border-slate-100 flex flex-wrap gap-2 items-center flex-shrink-0">
               <input
                 type="text"
                 placeholder="Buscar parada, ruta, dirección..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 min-w-[180px] border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
+                className="flex-1 min-w-[150px] border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
               />
-              {(["", "I", "O", "P"] as const).map((v) => (
+              {/* Orientation filter — hide Pilón, only Interior/Exterior */}
+              {(["", "I", "O"] as const).map((v) => (
                 <button
                   key={v}
                   type="button"
@@ -353,6 +616,18 @@ export default function VendedorCalculadora() {
                   {v === "" ? "Todos" : ORI_LABEL[v]}
                 </button>
               ))}
+              {/* Strategic point dropdown */}
+              <select
+                value={tagFilter}
+                onChange={(e) => setTagFilter(e.target.value)}
+                className="border border-slate-200 rounded-md px-2 py-1.5 text-xs bg-white text-slate-600 outline-none max-w-[180px]"
+              >
+                <option value="">Punto Estratégico: Todos</option>
+                {STRATEGIC_TAGS.map((tag) => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+              {/* Formato filter */}
               <select
                 value={formatoFilter}
                 onChange={(e) => setFormatoFilter(e.target.value as "" | "Fija" | "Digital")}
@@ -365,7 +640,7 @@ export default function VendedorCalculadora() {
             </div>
 
             {/* List header */}
-            <div className="px-5 py-1.5 border-b border-slate-100 flex justify-between text-[10.5px] font-semibold uppercase tracking-wider text-slate-400 flex-shrink-0">
+            <div className="px-4 lg:px-5 py-1.5 border-b border-slate-100 flex justify-between text-[10.5px] font-semibold uppercase tracking-wider text-slate-400 flex-shrink-0">
               <span>{isLoading ? "Cargando..." : `${paradas.length} paradas`}</span>
               <span>Precio/mes</span>
             </div>
@@ -374,11 +649,15 @@ export default function VendedorCalculadora() {
             <div className="flex-1 overflow-y-auto">
               {paradas.map((p) => {
                 const sel = selectedIds.has(p.id);
+                // Parse tags for display
+                let paradaTags: string[] = [];
+                try { if (p.tags) paradaTags = JSON.parse(p.tags); } catch {}
+
                 return (
                   <div
                     key={p.id}
                     onClick={() => toggleParada(p.id)}
-                    className={`flex items-center gap-3 px-5 py-2.5 border-b border-slate-50 cursor-pointer transition-colors select-none ${
+                    className={`flex items-center gap-3 px-4 lg:px-5 py-2.5 border-b border-slate-50 cursor-pointer transition-colors select-none ${
                       sel ? "bg-[#1a4d3c]/[0.03]" : "hover:bg-slate-50"
                     }`}
                   >
@@ -391,19 +670,8 @@ export default function VendedorCalculadora() {
                       }`}
                     >
                       {sel && (
-                        <svg
-                          width="9"
-                          height="9"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                        >
-                          <polyline
-                            points="2,6 5,9 10,3"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
+                        <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
+                          <polyline points="2,6 5,9 10,3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       )}
                     </div>
@@ -419,27 +687,25 @@ export default function VendedorCalculadora() {
                         {p.localizacion}
                       </p>
                       <p className="text-[11px] text-slate-400 truncate">{p.direccion}</p>
-                      <div className="flex gap-1 mt-1">
-                        <span
-                          className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded ${
-                            ORI_STYLE[p.orientacion] ?? "bg-slate-100 text-slate-500"
-                          }`}
-                        >
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded ${ORI_STYLE[p.orientacion] ?? "bg-slate-100 text-slate-500"}`}>
                           {ORI_LABEL[p.orientacion] ?? p.orientacion}
                         </span>
-                        <span
-                          className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded ${
-                            p.tipoFormato === "Digital"
-                              ? "bg-purple-50 text-purple-700"
-                              : "bg-amber-50 text-amber-700"
-                          }`}
-                        >
+                        <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded ${p.tipoFormato === "Digital" ? "bg-purple-50 text-purple-700" : "bg-amber-50 text-amber-700"}`}>
                           {p.tipoFormato}
                         </span>
                         {p.ruta && (
                           <span className="text-[9.5px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
                             {p.ruta}
                           </span>
+                        )}
+                        {paradaTags.slice(0, 2).map((tag) => (
+                          <span key={tag} className="text-[9.5px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700">
+                            {tag}
+                          </span>
+                        ))}
+                        {paradaTags.length > 2 && (
+                          <span className="text-[9.5px] text-slate-400">+{paradaTags.length - 2}</span>
                         )}
                       </div>
                     </div>
@@ -466,215 +732,18 @@ export default function VendedorCalculadora() {
             </div>
           </div>
 
-          {/* ── Right panel: summary ── */}
-          <div className="flex flex-col bg-slate-50 overflow-hidden border-l border-slate-200">
-            {/* Header */}
-            <div className="px-4 py-3.5 border-b border-slate-200 bg-white flex-shrink-0">
-              <p className="text-[13.5px] font-bold text-slate-900">Resumen de Propuesta</p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {count === 0
-                  ? "Selecciona paradas en el panel izquierdo"
-                  : `${count} parada${count !== 1 ? "s" : ""} · ${meses} mes${meses !== 1 ? "es" : ""}`}
-              </p>
-            </div>
-
-            {/* Selected items */}
-            <div className="flex-1 overflow-y-auto px-3.5 py-2.5">
-              {selectedParadas.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-36 text-slate-400 text-center gap-2">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    className="opacity-40"
-                  >
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                  </svg>
-                  <p className="text-sm">Ninguna parada seleccionada</p>
-                </div>
-              ) : (
-                selectedParadas.map((p) => (
-                  <div
-                    key={p.id}
-                    className="bg-white border border-slate-200 rounded-xl p-3 mb-2"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-800 truncate">
-                          #{p.cobertizoId} · {p.localizacion}
-                        </p>
-                        <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                          {ORI_LABEL[p.orientacion] ?? p.orientacion} · {p.tipoFormato}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeParada(p.id)}
-                        className="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0 mt-0.5"
-                        aria-label="Remover"
-                      >
-                        <X size={15} />
-                      </button>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-[11.5px] text-slate-500">Precio/mes</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-slate-400">$</span>
-                        <input
-                          type="number"
-                          value={prices[p.id] ?? DEFAULT_PRICE}
-                          onChange={(e) => setPrice(p.id, e.target.value)}
-                          className="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                          min={0}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Period selector */}
-            <div className="px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
-              <p className="text-xs font-bold text-slate-800 mb-2">Periodo de Contrato</p>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="date"
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
-                  className="flex-1 border border-slate-200 rounded-md px-2 py-1.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                />
-                <span className="text-xs text-slate-400">→</span>
-                <input
-                  type="date"
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
-                  className="flex-1 border border-slate-200 rounded-md px-2 py-1.5 text-xs text-slate-700 outline-none focus:ring-2 focus:ring-[#1a4d3c]/20"
-                />
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-slate-500">Meses</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setMeses((m) => Math.max(1, m - 1))}
-                    className="w-6 h-6 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:border-[#1a4d3c] hover:text-[#1a4d3c] transition-colors"
-                    aria-label="Menos meses"
-                  >
-                    <ChevronDown size={13} />
-                  </button>
-                  <span className="text-sm font-bold text-slate-900 w-5 text-center">
-                    {meses}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setMeses((m) => Math.min(24, m + 1))}
-                    className="w-6 h-6 rounded-md border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:border-[#1a4d3c] hover:text-[#1a4d3c] transition-colors"
-                    aria-label="Más meses"
-                  >
-                    <ChevronUp size={13} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Totals */}
-            <div className="px-4 py-3 border-t border-slate-200 bg-white flex-shrink-0">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-xs text-slate-500">
-                  {count} parada{count !== 1 ? "s" : ""} × {meses} mes{meses !== 1 ? "es" : ""}
-                </span>
-                <span className="text-sm font-semibold text-slate-800">
-                  ${totalGeneral.toLocaleString("en-US", { minimumFractionDigits: 0 })}
-                </span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-slate-500">Subtotal/mes</span>
-                <span className="text-sm font-semibold text-slate-800">
-                  ${subtotalMes.toLocaleString("en-US", { minimumFractionDigits: 0 })}
-                </span>
-              </div>
-              <hr className="border-slate-100 my-2" />
-              {/* Discount field */}
-              <div className="flex items-center justify-between mt-2 mb-1">
-                <span className="text-xs text-slate-500">Descuento ($)</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-slate-400">$</span>
-                  <input
-                    type="number"
-                    value={descuento === 0 ? "" : descuento}
-                    onChange={(e) => {
-                      const v = parseFloat(e.target.value);
-                      setDescuento(isNaN(v) ? 0 : Math.max(0, v));
-                    }}
-                    placeholder="0"
-                    className="w-24 text-right border border-slate-200 rounded-md px-2 py-1 text-sm font-bold text-[#ff6b35] outline-none focus:ring-2 focus:ring-[#ff6b35]/20"
-                    min={0}
-                  />
-                </div>
-              </div>
-              <hr className="border-slate-100 my-2" />
-              <div className="flex justify-between items-baseline">
-                <span className="text-sm font-bold text-slate-900">TOTAL</span>
-                <span className="text-2xl font-extrabold text-[#1a4d3c]">
-                  ${totalGeneral.toLocaleString("en-US", { minimumFractionDigits: 0 })}
-                </span>
-              </div>
-            </div>
-
-            {/* Generate buttons */}
-            <div className="px-4 pb-4 pt-2 bg-white border-t border-slate-100 flex flex-col gap-2 flex-shrink-0">
-              <button
-                type="button"
-                disabled={count === 0 || generatePdfMutation.isPending}
-                onClick={() => {
-                  generatePdfMutation.mutate({
-                    empresa,
-                    contacto,
-                    email,
-                    fechaInicio,
-                    fechaFin,
-                    meses,
-                    descuento,
-                    paradas: selectedParadas.map((p) => ({
-                      cobertizoId: p.cobertizoId,
-                      localizacion: p.localizacion,
-                      direccion: p.direccion,
-                      orientacion: p.orientacion,
-                      tipoFormato: p.tipoFormato,
-                      ruta: p.ruta ?? null,
-                      precioMes: prices[p.id] ?? DEFAULT_PRICE,
-                    })),
-                  });
-                }}
-                className="w-full py-2.5 rounded-lg bg-[#1a4d3c] text-white text-[13.5px] font-bold transition-all hover:bg-[#0f3a2a] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {generatePdfMutation.isPending ? (
-                  <><Loader2 size={14} className="animate-spin" /> Generando PDF...</>
-                ) : (
-                  <><FileText size={14} /> Generar PDF de Propuesta</>
-                )}
-              </button>
-              <button
-                type="button"
-                disabled={count === 0}
-                className="w-full py-2.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-[13.5px] font-semibold transition-all hover:border-[#1a4d3c] hover:text-[#1a4d3c] disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Convertir a Contrato
-              </button>
-              {count === 0 && (
-                <p className="text-[10.5px] text-slate-400 text-center">
-                  Selecciona al menos una parada para continuar
-                </p>
-              )}
-            </div>
+          {/* ── Right panel: summary (desktop always visible, mobile as overlay) ── */}
+          {/* Desktop */}
+          <div className="hidden lg:flex lg:flex-col lg:w-[360px] border-l border-slate-200 overflow-hidden">
+            <SummaryPanel />
           </div>
+
+          {/* Mobile overlay */}
+          {showSummary && (
+            <div className="lg:hidden absolute inset-0 z-30 flex flex-col bg-white">
+              <SummaryPanel />
+            </div>
+          )}
         </div>
       </div>
     </div>

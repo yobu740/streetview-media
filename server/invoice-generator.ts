@@ -5,11 +5,29 @@ import { storagePut } from "./storage";
 
 // ─── PDF Generation via Puppeteer ─────────────────────────────────────────────
 
+/** Resolve the best available Chrome/Chromium executable */
+function getChromePath(): string | undefined {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
+  const fs = require('fs') as typeof import('fs');
+  const candidates = [
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+  ];
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch { /* ignore */ }
+  }
+  return undefined;
+}
+
 /** Render HTML to a PDF buffer using headless Chromium */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   const puppeteer = await import("puppeteer");
+  const executablePath = getChromePath();
   const browser = await puppeteer.default.launch({
     headless: true,
+    ...(executablePath ? { executablePath } : {}),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",

@@ -23,6 +23,7 @@ import VendedorDashboard from "./pages/VendedorDashboard";
 import VendedorContratos from "./pages/VendedorContratos";
 import VendedorCalculadora from "./pages/VendedorCalculadora";
 import DashboardHeader from "./components/DashboardHeader";
+import RouteGuard from "./components/RouteGuard";
 import { MobileNavProvider } from "./contexts/MobileNavContext";
 
 /** Wrapper that scopes the modern SaaS dashboard styles.
@@ -47,21 +48,21 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
-      <Route path={"/admin"}>         <D><Admin /></D>         </Route>
-      <Route path={"/calendar"}>      <D><Calendar /></D>      </Route>
-      <Route path={"/metrics"}>       <D><Metrics /></D>       </Route>
-      <Route path={"/mis-reservas"}>  <D><MisReservas /></D>   </Route>
-      <Route path={"/anuncios"}>      <D><Anuncios /></D>      </Route>
-      <Route path={"/mantenimiento"}> <D><Mantenimiento /></D> </Route>
-      <Route path={"/facturas"}>      <D><Facturas /></D>      </Route>
-      <Route path={"/facturacion"}>   <D><Facturacion /></D>   </Route>
-      <Route path={"/seguimientos"}>  <D><Seguimientos /></D>  </Route>
-      <Route path={"/notificaciones"}><D><Notificaciones /></D></Route>
-      <Route path={"/instalacion"}>   <D><Instalacion /></D>   </Route>
-      <Route path={"/clientes"}>              <D><Clientes /></D>              </Route>
-      <Route path={"/vendedor"}>             <D><VendedorDashboard /></D>      </Route>
-      <Route path={"/vendedor/contratos"}>    <D><VendedorContratos /></D>       </Route>
-      <Route path={"/vendedor/calculadora"}> <D><VendedorCalculadora /></D>     </Route>
+      <Route path={"/admin"}>         <D><RouteGuard staffOnly><Admin /></RouteGuard></D>         </Route>
+      <Route path={"/calendar"}>      <D><RouteGuard staffOnly><Calendar /></RouteGuard></D>      </Route>
+      <Route path={"/metrics"}>       <D><RouteGuard adminOnly><Metrics /></RouteGuard></D>       </Route>
+      <Route path={"/mis-reservas"}>  <D><RouteGuard staffOnly><MisReservas /></RouteGuard></D>   </Route>
+      <Route path={"/anuncios"}>      <D><RouteGuard adminOnly><Anuncios /></RouteGuard></D>      </Route>
+      <Route path={"/mantenimiento"}> <D><RouteGuard adminOnly><Mantenimiento /></RouteGuard></D> </Route>
+      <Route path={"/facturas"}>      <D><RouteGuard adminOnly><Facturas /></RouteGuard></D>      </Route>
+      <Route path={"/facturacion"}>   <D><RouteGuard adminOnly><Facturacion /></RouteGuard></D>   </Route>
+      <Route path={"/seguimientos"}>  <D><RouteGuard staffOnly><Seguimientos /></RouteGuard></D>  </Route>
+      <Route path={"/notificaciones"}><D><RouteGuard staffOnly><Notificaciones /></RouteGuard></D></Route>
+      <Route path={"/instalacion"}>   <D><RouteGuard adminOnly><Instalacion /></RouteGuard></D>   </Route>
+      <Route path={"/clientes"}>      <D><RouteGuard adminOnly><Clientes /></RouteGuard></D>      </Route>
+      <Route path={"/vendedor"}>      <D><RouteGuard staffOnly><VendedorDashboard /></RouteGuard></D>      </Route>
+      <Route path={"/vendedor/contratos"}>    <D><RouteGuard staffOnly><VendedorContratos /></RouteGuard></D>       </Route>
+      <Route path={"/vendedor/calculadora"}> <D><RouteGuard staffOnly><VendedorCalculadora /></RouteGuard></D>     </Route>
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -2922,6 +2922,50 @@ export const appRouter = router({
         return { status, signingUrl: contrato.docusealSigningUrl };
       }),
 
+    // Vendedor-accessible contract creation (creates Borrador)
+    vendedorCreate: vendedorProcedure
+      .input(z.object({
+        clienteId: z.number().optional().nullable(),
+        clienteNombre: z.string().optional(),
+        numeroContrato: z.string().min(1),
+        fecha: z.date(),
+        fechaVencimiento: z.date().nullish(),
+        subtotal: z.string().nullish(),
+        total: z.string().nullish(),
+        numMeses: z.number().optional().nullable(),
+        notas: z.string().nullish(),
+        items: z.array(z.object({
+          cantidad: z.number().default(1),
+          concepto: z.string().min(1),
+          precioPorUnidad: z.string().nullish(),
+          total: z.string().nullish(),
+          isProduccion: z.number().optional().default(0),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { items, clienteNombre, ...contratoData } = input;
+        // If clienteId not provided, try to find or skip
+        const finalClienteId = contratoData.clienteId ?? 0;
+        const id = await db.createContrato(
+          {
+            ...contratoData,
+            clienteId: finalClienteId,
+            estado: 'Borrador' as const,
+            vendedor: ctx.user.name ?? null,
+            createdBy: ctx.user.id,
+          },
+          items.map((item, i) => ({
+            ...item,
+            contratoId: 0,
+            orden: i,
+            precioPorUnidad: item.precioPorUnidad ?? null,
+            total: item.total ?? null,
+            isProduccion: item.isProduccion ?? 0,
+          }))
+        );
+        return { id };
+      }),
+
     // Manually save a signed PDF URL for a contrato
     saveSignedPdf: adminProcedure
       .input(z.object({

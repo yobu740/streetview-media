@@ -1533,3 +1533,10 @@
 - [x] Calculadora: reemplazar campos de texto libre por combobox de búsqueda de clientes registrados (con fallback de texto libre)
 - [x] Reportes Excel y PDF del panel principal: agregar columna de Categoría (punto estratégico / tags)
 - [x] Modal de reportes: agregar selector de categorías (punto estratégico) para filtrar paradas en el reporte PDF
+- [ ] Calculadora: reemplazar filtro "Pilón" por dropdown de puntos estratégicos
+- [ ] Calculadora: eliminar botón "Mi Dashboard" innecesario
+- [ ] Corregir error de Puppeteer: librerías de Chrome faltantes (libglib-2.0.so.0)
+- [ ] Calculadora: implementar "Convertir a Contrato" con datos pre-cargados (cliente, paradas, período, total)
+- [ ] Calculadora: arreglar responsiveness móvil
+- [ ] Mis Reservas: integrar con sidebar del dashboard y layout correcto (sin header público)
+- [ ] Protección de rutas: vendedores no pueden acceder a /facturacion, /admin, /clientes, /anuncios, /instalacion, /mantenimiento por URL directa

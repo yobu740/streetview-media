@@ -1,71 +1,30 @@
-import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
+import AdminSidebar from "@/components/AdminSidebar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Menu, X, Calendar, MapPin, User, Clock, FileDown, Printer } from "lucide-react";
-import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { getLoginUrl } from "@/const";
+import { Calendar, Clock, FileDown, MapPin, Printer, User } from "lucide-react";
 import { Link } from "wouter";
 
 export default function MisReservas() {
-  // Add print styles
-  const printStyles = `
-    @media print {
-      nav, button { display: none !important; }
-      body { background: white !important; }
-      .container { max-width: 100% !important; padding: 20px !important; }
-      h1 { font-size: 24px !important; margin-bottom: 10px !important; }
-      .print\\:break-inside-avoid { break-inside: avoid; }
-    }
-  `;
-  
-  // Inject print styles
-  if (typeof document !== 'undefined') {
-    const styleElement = document.getElementById('mis-reservas-print-styles');
-    if (!styleElement) {
-      const style = document.createElement('style');
-      style.id = 'mis-reservas-print-styles';
-      style.textContent = printStyles;
-      document.head.appendChild(style);
-    }
-  }
-  const { user, loading: authLoading } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
 
-  // Get user's reservations
-  const { data: reservations, isLoading, refetch } = trpc.anuncios.myReservations.useQuery(
+  const { data: reservations, isLoading } = trpc.anuncios.myReservations.useQuery(
     undefined,
-    { enabled: !!user }
+    { enabled: isAuthenticated }
   );
 
-  if (authLoading || isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a4d3c] mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Cargando reservas...</p>
-        </div>
-      </div>
-    );
-  }
+  if (authLoading) return null;
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="p-8 max-w-md text-center">
-          <p className="text-lg mb-4">Debes iniciar sesión para ver tus reservas</p>
-          <Button asChild>
-            <Link href="/admin">Iniciar Sesión</Link>
-          </Button>
-        </Card>
-      </div>
-    );
+  if (!isAuthenticated) {
+    window.location.href = getLoginUrl();
+    return null;
   }
 
   const exportToExcel = () => {
     if (!reservations || reservations.length === 0) return;
-
-    // Create CSV content
     const headers = ["Cliente", "Parada", "Ruta", "Tipo", "Fecha Inicio", "Fecha Fin", "Estado", "Aprobación", "Creada"];
     const rows = reservations.map((r: any) => [
       r.cliente,
@@ -76,20 +35,13 @@ export default function MisReservas() {
       new Date(r.fechaFin).toLocaleDateString(),
       r.estado,
       r.approvalStatus === "approved" ? "Aprobada" : r.approvalStatus === "rejected" ? "Rechazada" : "Pendiente",
-      new Date(r.createdAt).toLocaleDateString()
+      new Date(r.createdAt).toLocaleDateString(),
     ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
-    ].join("\n");
-
-    // Create and download file
+    const csvContent = [headers.join(","), ...rows.map((row: any[]) => row.map((cell: any) => `"${cell}"`).join(","))].join("\n");
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `mis-reservas-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", `mis-reservas-${new Date().toISOString().split("T")[0]}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -98,235 +50,129 @@ export default function MisReservas() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "pending":
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">Pendiente</Badge>;
-      case "approved":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">Aprobada</Badge>;
-      case "rejected":
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">Rechazada</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+      case "pending":   return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">Pendiente</Badge>;
+      case "approved":  return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">Aprobada</Badge>;
+      case "rejected":  return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">Rechazada</Badge>;
+      default:          return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <nav className="border-b-4 border-[#1a4d3c] bg-white sticky top-0 z-50">
-        <div className="container flex items-center justify-between h-20">
-          <Link href="/">
-            <img
-              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png"
-              alt="Streetview Media"
-              className="h-12 cursor-pointer"
-            />
-          </Link>
+    <div className="flex h-screen overflow-hidden">
+      <AdminSidebar />
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-body font-medium hover:text-[#ff6b35] transition-colors">
-              Inicio
-            </Link>
-            <Link href="/calendar" className="text-body font-medium hover:text-[#ff6b35] transition-colors">
-              Calendario
-            </Link>
-            <Link href="/mis-reservas" className="text-body font-medium text-[#ff6b35]">
-              Mis Reservas
-            </Link>
-            {user.role === "admin" && (
-              <>
-                <Link href="/admin" className="text-body font-medium hover:text-[#ff6b35] transition-colors">
-                  Admin
-                </Link>
-                <Link href="/metrics" className="text-body font-medium hover:text-[#ff6b35] transition-colors">
-                  Métricas
-                </Link>
-              </>
-            )}
-            <div className="text-sm text-muted-foreground">
-              {user.name}
+      <main className="flex-1 overflow-y-auto bg-slate-50">
+        {/* Page header */}
+        <div className="bg-white border-b border-slate-200 px-7 py-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 className="text-xl font-bold text-slate-900">Mis Reservas</h1>
+              <p className="text-sm text-slate-500 mt-0.5">
+                Aquí puedes ver todas tus reservas y su estado de aprobación
+              </p>
             </div>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-[#1a4d3c] hover:text-[#ff6b35] transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t-2 border-[#1a4d3c]">
-            <div className="container py-4 flex flex-col gap-4">
-              <Link
-                href="/"
-                className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                className="bg-[#ff6b35] hover:bg-[#e65a25] text-white text-sm"
+                asChild
               >
-                Inicio
-              </Link>
-              <Link
-                href="/calendar"
-                className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Calendario
-              </Link>
-              <Link
-                href="/mis-reservas"
-                className="text-body font-medium text-lg py-2 text-[#ff6b35]"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Mis Reservas
-              </Link>
-              {user.role === "admin" && (
+                <Link href="/calendar">Nueva Reserva</Link>
+              </Button>
+              {reservations && reservations.length > 0 && (
                 <>
-                  <Link
-                    href="/admin"
-                    className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Admin
-                  </Link>
-                  <Link
-                    href="/metrics"
-                    className="text-body font-medium text-lg py-2 hover:text-[#ff6b35] transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Métricas
-                  </Link>
+                  <Button variant="outline" size="sm" onClick={exportToExcel} className="flex items-center gap-1.5">
+                    <FileDown className="w-4 h-4" />
+                    Excel
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.print()} className="flex items-center gap-1.5">
+                    <Printer className="w-4 h-4" />
+                    Imprimir
+                  </Button>
                 </>
               )}
-              <div className="text-sm text-muted-foreground py-2">
-                {user.name}
-              </div>
             </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Main Content */}
-      <div className="container py-8">
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-display text-4xl text-[#1a4d3c] mb-2">Mis Reservas</h1>
-            <p className="text-body text-muted-foreground">
-              Aquí puedes ver todas tus reservas y su estado de aprobación
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              className="bg-[#ff6b35] hover:bg-[#e65a25] text-white"
-              asChild
-            >
-              <Link href="/calendar">Nueva Reserva</Link>
-            </Button>
-            {reservations && reservations.length > 0 && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => exportToExcel()}
-                  className="flex items-center gap-2"
-                >
-                  <FileDown className="w-4 h-4" />
-                  Exportar Excel
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.print()}
-                  className="flex items-center gap-2"
-                >
-                  <Printer className="w-4 h-4" />
-                  Imprimir
-                </Button>
-              </>
-            )}
           </div>
         </div>
 
-        {!reservations || reservations.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">No tienes reservas</h3>
-            <p className="text-muted-foreground mb-6">
-              Crea tu primera reserva desde el calendario
-            </p>
-            <Button asChild>
-              <Link href="/calendar">Ir al Calendario</Link>
-            </Button>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {reservations.map((reservation: any) => (
-              <Card key={reservation.id} className="p-6 hover:shadow-lg transition-shadow print:break-inside-avoid print:shadow-none print:border">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-xl font-semibold text-[#1a4d3c]">
-                        {reservation.cliente}
-                      </h3>
-                      {getStatusBadge(reservation.approvalStatus)}
+        <div className="p-6">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1a4d3c] mx-auto mb-3" />
+                <p className="text-slate-500 text-sm">Cargando reservas...</p>
+              </div>
+            </div>
+          ) : !reservations || reservations.length === 0 ? (
+            <Card className="p-12 text-center bg-white">
+              <Calendar className="w-14 h-14 mx-auto mb-4 text-slate-300" />
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">No tienes reservas</h3>
+              <p className="text-slate-500 text-sm mb-6">Crea tu primera reserva desde el calendario</p>
+              <Button asChild className="bg-[#1a4d3c] hover:bg-[#0f3a2a]">
+                <Link href="/calendar">Ir al Calendario</Link>
+              </Button>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {reservations.map((reservation: any) => (
+                <Card key={reservation.id} className="p-5 bg-white hover:shadow-md transition-shadow print:break-inside-avoid">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <h3 className="text-base font-semibold text-[#1a4d3c] truncate">
+                          {reservation.cliente}
+                        </h3>
+                        {getStatusBadge(reservation.approvalStatus)}
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-2 text-sm text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">
+                            Parada #{reservation.paradaId}
+                            {reservation.parada && ` — ${reservation.parada.ruta}`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                          <span>
+                            {new Date(reservation.fechaInicio).toLocaleDateString()} — {new Date(reservation.fechaFin).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 flex-shrink-0" />
+                          <span>Tipo: {reservation.tipo}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 flex-shrink-0" />
+                          <span>Creada: {new Date(reservation.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+
+                      {reservation.approvedAt && (
+                        <p className="mt-2 text-xs text-slate-400">
+                          {reservation.approvalStatus === "approved" ? "Aprobada" : "Rechazada"} el{" "}
+                          {new Date(reservation.approvedAt).toLocaleDateString()}
+                        </p>
+                      )}
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="w-4 h-4" />
-                        <span>
-                          Parada #{reservation.paradaId}
-                          {reservation.parada && ` - ${reservation.parada.ruta}`}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {new Date(reservation.fechaInicio).toLocaleDateString()} - {new Date(reservation.fechaFin).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <User className="w-4 h-4" />
-                        <span>Tipo: {reservation.tipo}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Clock className="w-4 h-4" />
-                        <span>
-                          Creada: {new Date(reservation.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    {reservation.approvedAt && (
-                      <div className="mt-3 text-sm text-muted-foreground">
-                        {reservation.approvalStatus === "approved" ? "Aprobada" : "Rechazada"} el{" "}
-                        {new Date(reservation.approvedAt).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-2">
                     <Badge
                       variant="outline"
                       className={
                         reservation.estado === "Programado"
-                          ? "bg-blue-50 text-blue-700 border-blue-300"
-                          : "bg-gray-50 text-gray-700 border-gray-300"
+                          ? "bg-blue-50 text-blue-700 border-blue-300 self-start"
+                          : "bg-slate-50 text-slate-600 border-slate-200 self-start"
                       }
                     >
                       {reservation.estado}
                     </Badge>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

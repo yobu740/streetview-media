@@ -4,11 +4,32 @@
 const LOGO_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663148968393/NB4DzLv3DwSWij5HcQ7rQi/streetview-logo-white_ee80e299.png";
 
+/** Resolve the best available Chrome/Chromium executable */
+function getChromePath(): string | undefined {
+  // 1. Explicit env override (set in production secrets)
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) return process.env.PUPPETEER_EXECUTABLE_PATH;
+  // 2. System chromium-browser (available on Ubuntu 22.04 servers)
+  const fs = require('fs') as typeof import('fs');
+  const candidates = [
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+  ];
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch { /* ignore */ }
+  }
+  // 3. Fall back to puppeteer's bundled Chrome (works in dev sandbox)
+  return undefined;
+}
+
 /** Render HTML to a PDF buffer using headless Chromium */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   const puppeteer = await import("puppeteer");
+  const executablePath = getChromePath();
   const browser = await puppeteer.default.launch({
     headless: true,
+    ...(executablePath ? { executablePath } : {}),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
