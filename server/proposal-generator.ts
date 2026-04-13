@@ -14,6 +14,10 @@ async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   // env var that may point to a non-existent system path.
   const puppeteer = await import('puppeteer');
 
+  // Force puppeteer to use its bundled Chrome — delete PUPPETEER_EXECUTABLE_PATH
+  // if it points to a non-existent or broken binary (e.g. /tmp/chromium or /usr/bin/chromium-browser).
+  delete process.env.PUPPETEER_EXECUTABLE_PATH;
+
   // Determine executable path: use puppeteer's bundled Chrome
   let executablePath: string;
   try {
