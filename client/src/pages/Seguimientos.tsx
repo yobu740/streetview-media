@@ -569,7 +569,7 @@ export default function Seguimientos() {
                             </span>
                           </TableCell>
                           <TableCell className="font-semibold text-[#1a4d3c]">
-                            ${((cot.totalCampana || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            ${(cot.totalCampana || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                           </TableCell>
                           <TableCell className="text-sm text-[#2a2a2a]/70">
                             {new Date(cot.createdAt).toLocaleDateString('es-PR')}

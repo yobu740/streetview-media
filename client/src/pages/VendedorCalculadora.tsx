@@ -20,6 +20,8 @@ type Parada = {
   removida: number;
   enConstruccion: number;
   tags: string | null;
+  anuncioEstado: string | null;
+  isHolder: boolean;
 };
 
 const ORI_LABEL: Record<string, string> = { I: "Interior", O: "Exterior", P: "Pilón" };
@@ -171,6 +173,8 @@ export default function VendedorCalculadora() {
   const paradas = useMemo(() => {
     return (allParadas as Parada[]).filter((p) => {
       if (p.removida || p.enConstruccion) return false;
+      // Exclude paradas with active/scheduled non-holder ads (occupied)
+      if (!p.isHolder && (p.anuncioEstado === 'Activo' || p.anuncioEstado === 'Programado')) return false;
       if (oriFilter && p.orientacion !== oriFilter) return false;
       if (formatoFilter && p.tipoFormato !== formatoFilter) return false;
       if (tagFilter) {

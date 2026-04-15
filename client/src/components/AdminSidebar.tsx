@@ -84,14 +84,14 @@ const navGroups = [
   {
     label: "Inventario",
     items: [
-      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin", vendedorOnly: true },
+      { label: "Paradas", icon: LayoutDashboard, href: "/admin", vendedorOnly: true },
     ],
   },
   // ── Admin / user sections ────────────────────────────────────────────
   {
     label: "General",
     items: [
-      { label: "Panel Principal", icon: LayoutDashboard, href: "/admin",    badgeKey: "pending", hideFromVendedor: true },
+      { label: "Paradas", icon: LayoutDashboard, href: "/admin",    badgeKey: "pending", hideFromVendedor: true },
       { label: "Calendario",      icon: Calendar,        href: "/calendar",                      hideFromVendedor: true },
       { label: "Métricas",        icon: BarChart3,       href: "/metrics",                       hideFromVendedor: true },
     ],

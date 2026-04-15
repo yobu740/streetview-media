@@ -1249,8 +1249,8 @@ export default function Admin() {
       <div className="container py-12">
         <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-display text-3xl md:text-4xl text-[#1a4d3c] mb-2">Panel Administrativo</h1>
-            <p className="text-body text-base md:text-lg text-gray-600">Gestión de paradas y anuncios</p>
+            <h1 className="text-display text-3xl md:text-4xl text-[#1a4d3c] mb-2">Inventario de paradas</h1>
+            <p className="text-body text-base md:text-lg text-gray-600">Gestión administrativa de paradas y anuncios</p>
           </div>
           {user?.role === 'admin' && (
             <Button 

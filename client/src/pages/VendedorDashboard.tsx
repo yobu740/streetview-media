@@ -194,7 +194,7 @@ export default function VendedorDashboard() {
                     <QuickAction
                       icon={<Calendar size={18} />}
                       label="Ver Calendario"
-                      desc="Mis eventos del mes"
+                      desc="Ver disponibilidad de fechas y hacer reservas"
                       color="blue"
                     />
                   </Link>
@@ -202,7 +202,7 @@ export default function VendedorDashboard() {
                     <QuickAction
                       icon={<Map size={18} />}
                       label="Paradas Libres"
-                      desc="Ver disponibilidad en mapa"
+                      desc="Ver disponibilidad de caras"
                       color="purple"
                     />
                   </Link>
@@ -289,10 +289,10 @@ function StatCard({
   color: string;
 }) {
   const borderMap: Record<string, string> = {
-    green: "border-l-[#1a4d3c]",
-    blue: "border-l-blue-500",
-    red: "border-l-red-500",
-    purple: "border-l-purple-500",
+    green: "border-l-[#1b4d3c]",
+    blue: "border-l-[#053951]",
+    red: "border-l-[#fc6c3d]",
+    purple: "border-l-[#36b288]",
   };
   return (
     <div
@@ -321,10 +321,10 @@ function QuickAction({
   color: string;
 }) {
   const colorMap: Record<string, string> = {
-    green: "bg-[#1a4d3c]/10 text-[#1a4d3c]",
-    orange: "bg-orange-100 text-orange-600",
-    blue: "bg-blue-100 text-blue-600",
-    purple: "bg-purple-100 text-purple-600",
+    green: "bg-[#1b4d3c]/10 text-[#1b4d3c]",
+    orange: "bg-[#fc6c3d]/10 text-[#fc6c3d]",
+    blue: "bg-[#053951]/10 text-[#053951]",
+    purple: "bg-[#36b288]/10 text-[#36b288]",
   };
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:border-slate-200 hover:bg-slate-50 cursor-pointer transition-all">
