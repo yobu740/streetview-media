@@ -23,9 +23,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X, Mail, RefreshCw, Link2 } from "lucide-react";
+import { FileText, Check, Calendar, Search, Download, Trash2, FileDown, PlusCircle, CreditCard, Banknote, X, Mail, RefreshCw, Link2, PackageOpen } from "lucide-react";
 import { Link } from "wouter";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+import JSZip from "jszip";
 import {
   Select,
   SelectContent,
@@ -79,6 +80,10 @@ export default function Facturacion() {
 
   // Regenerate state
   const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
+
+  // Bulk selection state
+  const [selectedBulkIds, setSelectedBulkIds] = useState<Set<number>>(new Set());
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
   // Regenerate confirm dialog
   const [isRegenDialogOpen, setIsRegenDialogOpen] = useState(false);
@@ -444,6 +449,54 @@ export default function Facturacion() {
     return filtered;
   }, [facturas, searchTerm, dateFilterStart, dateFilterEnd, showArchived]);
 
+  // ── Bulk selection callbacks (need filteredFacturas) ──────────────────────
+  const toggleBulkSelect = useCallback((id: number) => {
+    setSelectedBulkIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (!filteredFacturas) return;
+    const allIds = filteredFacturas.filter((f: any) => f.pdfUrl).map((f: any) => f.id);
+    setSelectedBulkIds(prev => prev.size === allIds.length ? new Set() : new Set(allIds));
+  }, [filteredFacturas]);
+
+  const handleBulkDownloadZip = useCallback(async () => {
+    if (!filteredFacturas || selectedBulkIds.size === 0) return;
+    const selected = filteredFacturas.filter((f: any) => selectedBulkIds.has(f.id) && f.pdfUrl);
+    if (selected.length === 0) { toast.error('Las facturas seleccionadas no tienen PDF'); return; }
+    setIsDownloadingZip(true);
+    try {
+      const zip = new JSZip();
+      await Promise.all(selected.map(async (f: any) => {
+        try {
+          const res = await fetch(f.pdfUrl);
+          const blob = await res.blob();
+          const filename = `${f.numeroFactura || `factura-${f.id}`}-${f.cliente?.replace(/[^a-z0-9]/gi, '_') || 'cliente'}.pdf`;
+          zip.file(filename, blob);
+        } catch {
+          console.warn(`No se pudo descargar PDF de factura ${f.id}`);
+        }
+      }));
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `facturas-${new Date().toISOString().split('T')[0]}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`${selected.length} factura(s) descargadas en ZIP`);
+      setSelectedBulkIds(new Set());
+    } catch (err) {
+      toast.error('Error al generar el ZIP');
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  }, [filteredFacturas, selectedBulkIds]);
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   const getStatusBadge = (estado: string) => {
     switch (estado) {
@@ -490,6 +543,16 @@ export default function Facturacion() {
                 <p className="text-body text-gray-600">Gestión de facturas y pagos</p>
               </div>
               <div className="flex flex-wrap gap-2">
+                {selectedBulkIds.size > 0 && (
+                  <Button
+                    onClick={handleBulkDownloadZip}
+                    disabled={isDownloadingZip}
+                    className="bg-[#053951] hover:bg-[#042a3d] text-white"
+                  >
+                    <PackageOpen size={16} className="mr-2" />
+                    {isDownloadingZip ? `Generando ZIP...` : `Descargar ZIP (${selectedBulkIds.size})`}
+                  </Button>
+                )}
                 <Button
                   onClick={handleExportReportPDF}
                   disabled={isGeneratingReport || !filteredFacturas || filteredFacturas.length === 0}
@@ -628,6 +691,15 @@ export default function Facturacion() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 cursor-pointer accent-[#1b4d3c]"
+                        checked={filteredFacturas.filter((f: any) => f.pdfUrl).length > 0 && selectedBulkIds.size === filteredFacturas.filter((f: any) => f.pdfUrl).length}
+                        onChange={toggleSelectAll}
+                        title="Seleccionar todas"
+                      />
+                    </TableHead>
                     <TableHead>No. Factura</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Fecha</TableHead>
@@ -652,7 +724,17 @@ export default function Facturacion() {
                       ? "text-blue-600"
                       : "text-orange-600";
                     return (
-                      <TableRow key={factura.id} className={isParcial ? "bg-blue-50/40" : ""}>
+                      <TableRow key={factura.id} className={`${isParcial ? 'bg-blue-50/40' : ''} ${selectedBulkIds.has(factura.id) ? 'bg-[#1b4d3c]/5 ring-1 ring-inset ring-[#1b4d3c]/20' : ''}`}>
+                        <TableCell className="w-10">
+                          {factura.pdfUrl && (
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4 cursor-pointer accent-[#1b4d3c]"
+                              checked={selectedBulkIds.has(factura.id)}
+                              onChange={() => toggleBulkSelect(factura.id)}
+                            />
+                          )}
+                        </TableCell>
                         <TableCell className="font-medium">{factura.numeroFactura}</TableCell>
                         <TableCell>{factura.cliente}</TableCell>
                         <TableCell>{formatDateDisplay(factura.createdAt)}</TableCell>

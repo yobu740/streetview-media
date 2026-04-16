@@ -1563,3 +1563,5 @@
 - [x] Fix cotizaciones.listAll: cambiar de adminProcedure a protectedProcedure (vendedores recibían 403 en Seguimiento)
 - [x] PDF propuesta: cambiar color de "PROPUESTA" de naranja a blanco
 - [x] Calculadora: quitar filtro activa para mostrar las mismas 573 paradas disponibles que el panel principal
+- [x] Calculadora: corregir conteo — agregar filtro displayPublicidad='No' para excluir paradas Sin Display (igual que panel principal)
+- [x] Facturación: descarga bulk de facturas PDF en ZIP con checkboxes
