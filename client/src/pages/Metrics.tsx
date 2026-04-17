@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function Metrics() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -107,6 +109,114 @@ export default function Metrics() {
     link.href = URL.createObjectURL(blob);
     link.download = `reporte-ventas-${report.label.replace(' ', '-')}.csv`;
     link.click();
+  };
+
+  const exportSalesReportToPDF = (report: typeof generatedReports[0]) => {
+    const totals = report.rows.reduce(
+      (acc, r) => ({
+        paradasActivas: acc.paradasActivas + r.paradasActivas,
+        totalFacturado: acc.totalFacturado + r.totalFacturado,
+        pagoParadas: acc.pagoParadas + r.pagoParadas,
+      }),
+      { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 }
+    );
+
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const margin = 15;
+
+    // ── Header bar ──────────────────────────────────────────────────────────
+    doc.setFillColor(26, 77, 60); // #1a4d3c
+    doc.rect(0, 0, pageW, 28, 'F');
+
+    // Company name
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.text('STREETVIEW MEDIA', margin, 12);
+
+    // Report title
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Reporte de Ventas por Mes', margin, 19);
+
+    // Month label (right-aligned)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text(report.label.toUpperCase(), pageW - margin, 16, { align: 'right' });
+
+    // ── Meta line ───────────────────────────────────────────────────────────
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generado: ${new Date().toLocaleString('es-PR')}`, margin, 34);
+    doc.text(`Total de productos: ${report.rows.length}`, pageW - margin, 34, { align: 'right' });
+
+    // ── Summary chips ───────────────────────────────────────────────────────
+    const chipY = 40;
+    const chipData = [
+      { label: 'Paradas Activas', value: String(totals.paradasActivas), color: [26, 77, 60] as [number,number,number] },
+      { label: 'Total Facturado', value: `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [22, 101, 52] as [number,number,number] },
+      { label: 'Pago Paradas', value: `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [194, 65, 12] as [number,number,number] },
+    ];
+    const chipW = (pageW - margin * 2 - 8) / 3;
+    chipData.forEach((chip, i) => {
+      const x = margin + i * (chipW + 4);
+      doc.setFillColor(...chip.color);
+      doc.roundedRect(x, chipY, chipW, 14, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.text(chip.value, x + chipW / 2, chipY + 6, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.text(chip.label, x + chipW / 2, chipY + 11, { align: 'center' });
+    });
+
+    // ── Table ───────────────────────────────────────────────────────────────
+    const tableRows = report.rows.map((r, idx) => [
+      idx + 1,
+      r.producto,
+      r.paradasActivas,
+      `$${r.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+      `$${r.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+    ]);
+
+    autoTable(doc, {
+      startY: chipY + 20,
+      margin: { left: margin, right: margin },
+      head: [['#', 'Producto', 'Paradas', 'Total Facturado', 'Pago Paradas']],
+      body: tableRows,
+      foot: [['', 'TOTAL', totals.paradasActivas,
+        `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+        `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+      ]],
+      showFoot: 'lastPage',
+      headStyles: { fillColor: [26, 77, 60], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+      footStyles: { fillColor: [240, 240, 240], textColor: [26, 77, 60], fontStyle: 'bold', fontSize: 9 },
+      bodyStyles: { fontSize: 8.5, textColor: [40, 40, 40] },
+      alternateRowStyles: { fillColor: [248, 250, 248] },
+      columnStyles: {
+        0: { cellWidth: 8, halign: 'center' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 22, halign: 'center' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
+      },
+      didDrawPage: (data) => {
+        // Footer on every page
+        const pageH = doc.internal.pageSize.getHeight();
+        doc.setFontSize(7);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Streetview Media • streetviewmediapr.com', margin, pageH - 8);
+        doc.text(
+          `Página ${(doc.internal as any).getCurrentPageInfo().pageNumber}`,
+          pageW - margin, pageH - 8, { align: 'right' }
+        );
+      },
+    });
+
+    doc.save(`reporte-ventas-${report.label.replace(/\s+/g, '-').toLowerCase()}.pdf`);
   };
 
   if (authLoading) {
@@ -710,6 +820,15 @@ export default function Metrics() {
                           >
                             <FileDown className="w-3.5 h-3.5" />
                             CSV
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => { e.stopPropagation(); exportSalesReportToPDF(report); }}
+                            className="flex items-center gap-1 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <FileDown className="w-3.5 h-3.5" />
+                            PDF
                           </Button>
                           {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
                         </div>
