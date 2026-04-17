@@ -3,7 +3,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Loader2, TrendingUp, Users, DollarSign, MapPin, Menu, FileDown, Printer, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, TrendingUp, Users, DollarSign, MapPin, Menu, FileDown, Printer, Calendar as CalendarIcon, BarChart3, ChevronDown, ChevronUp } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -19,6 +19,18 @@ export default function Metrics() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selectedClient, setSelectedClient] = useState<string>("all");
+
+  // Monthly Sales Report state
+  const now2 = new Date();
+  const [reportYear, setReportYear] = useState<number>(now2.getFullYear());
+  const [reportMonth, setReportMonth] = useState<number>(now2.getMonth() + 1);
+  const [reportEnabled, setReportEnabled] = useState(false);
+  const [generatedReports, setGeneratedReports] = useState<Array<{
+    year: number; month: number; label: string;
+    rows: Array<{ producto: string; cliente: string; paradasActivas: number; totalFacturado: number; pagoParadas: number; anuncioCount: number }>;
+    generatedAt: string;
+  }>>([]);
+  const [expandedReports, setExpandedReports] = useState<Set<string>>(new Set());
 
   // Add print styles
   const printStyles = `
@@ -47,6 +59,57 @@ export default function Metrics() {
   const { data: paradas } = trpc.paradas.list.useQuery();
   const { data: anuncios } = trpc.anuncios.list.useQuery();
   const { data: topClientsData } = trpc.anuncios.topClients.useQuery();
+
+  // Monthly sales report query (only fires when reportEnabled is true)
+  const { data: salesReportData, isFetching: salesReportLoading, refetch: refetchSalesReport } =
+    trpc.anuncios.monthlySalesReport.useQuery(
+      { year: reportYear, month: reportMonth },
+      { enabled: false }
+    );
+
+  const MONTH_NAMES = [
+    'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+  ];
+
+  const handleGenerateReport = async () => {
+    const result = await refetchSalesReport();
+    if (result.data) {
+      const label = `${MONTH_NAMES[reportMonth - 1]} ${reportYear}`;
+      const key = `${reportYear}-${reportMonth}`;
+      setGeneratedReports(prev => {
+        // Replace if same month/year already exists, otherwise prepend
+        const filtered = prev.filter(r => !(r.year === reportYear && r.month === reportMonth));
+        return [{ year: reportYear, month: reportMonth, label, rows: result.data!, generatedAt: new Date().toLocaleTimeString('es-PR') }, ...filtered];
+      });
+      setExpandedReports(prev => new Set([...prev, key]));
+    }
+  };
+
+  const exportSalesReportToCSV = (report: typeof generatedReports[0]) => {
+    const headers = ['Cliente', 'Producto', 'Paradas Activas', 'Total Facturado', 'Pago Paradas', 'Diferencia'];
+    const rows = report.rows.map(r => [
+      r.cliente,
+      r.producto,
+      r.paradasActivas,
+      r.totalFacturado.toFixed(2),
+      r.pagoParadas.toFixed(2),
+      (r.totalFacturado - r.pagoParadas).toFixed(2),
+    ]);
+    // Totals row
+    const totals = report.rows.reduce((acc, r) => ({
+      paradasActivas: acc.paradasActivas + r.paradasActivas,
+      totalFacturado: acc.totalFacturado + r.totalFacturado,
+      pagoParadas: acc.pagoParadas + r.pagoParadas,
+    }), { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 });
+    rows.push(['TOTAL', '', totals.paradasActivas, totals.totalFacturado.toFixed(2), totals.pagoParadas.toFixed(2), (totals.totalFacturado - totals.pagoParadas).toFixed(2)]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `reporte-ventas-${report.label.replace(' ', '-')}.csv`;
+    link.click();
+  };
 
   if (authLoading) {
     return (
@@ -525,6 +588,197 @@ export default function Metrics() {
                 <div className="mt-4 text-sm text-gray-600">
                   Mostrando {filteredReservations.length} reserva(s)
                 </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Monthly Sales Report */}
+        <Card className="mt-8">
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#1a4d3c]" />
+                  Reporte de Ventas por Mes
+                </CardTitle>
+                <CardDescription>
+                  Productos activos, paradas físicas únicas (sin Holders), total facturado y pago de paradas ($25 c/u)
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Month / Year selector + Generate button */}
+            <div className="flex flex-wrap items-end gap-3 mb-6">
+              <div>
+                <Label htmlFor="reportMonth">Mes</Label>
+                <Select
+                  value={String(reportMonth)}
+                  onValueChange={(v) => setReportMonth(Number(v))}
+                >
+                  <SelectTrigger id="reportMonth" className="w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MONTH_NAMES.map((name, idx) => (
+                      <SelectItem key={idx + 1} value={String(idx + 1)}>{name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="reportYear">Año</Label>
+                <Select
+                  value={String(reportYear)}
+                  onValueChange={(v) => setReportYear(Number(v))}
+                >
+                  <SelectTrigger id="reportYear" className="w-28">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[2024, 2025, 2026, 2027].map(y => (
+                      <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={handleGenerateReport}
+                disabled={salesReportLoading}
+                className="bg-[#1a4d3c] hover:bg-[#0f3a2a] text-white flex items-center gap-2"
+              >
+                {salesReportLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <BarChart3 className="w-4 h-4" />
+                )}
+                Generar Reporte
+              </Button>
+            </div>
+
+            {/* List of generated reports */}
+            {generatedReports.length === 0 ? (
+              <div className="text-center py-10 text-gray-400 border-2 border-dashed rounded-lg">
+                <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">Selecciona un mes y haz clic en <strong>Generar Reporte</strong> para ver los datos.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {generatedReports.map((report) => {
+                  const key = `${report.year}-${report.month}`;
+                  const isExpanded = expandedReports.has(key);
+                  const totals = report.rows.reduce(
+                    (acc, r) => ({
+                      paradasActivas: acc.paradasActivas + r.paradasActivas,
+                      totalFacturado: acc.totalFacturado + r.totalFacturado,
+                      pagoParadas: acc.pagoParadas + r.pagoParadas,
+                    }),
+                    { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 }
+                  );
+
+                  return (
+                    <div key={key} className="border rounded-lg overflow-hidden">
+                      {/* Report header */}
+                      <div
+                        className="flex items-center justify-between px-4 py-3 bg-[#1a4d3c]/5 cursor-pointer hover:bg-[#1a4d3c]/10 transition-colors"
+                        onClick={() => setExpandedReports(prev => {
+                          const next = new Set(prev);
+                          if (next.has(key)) next.delete(key); else next.add(key);
+                          return next;
+                        })}
+                      >
+                        <div className="flex items-center gap-3">
+                          <BarChart3 className="w-4 h-4 text-[#1a4d3c]" />
+                          <span className="font-semibold text-[#1a4d3c]">{report.label}</span>
+                          <span className="text-xs text-gray-500">Generado a las {report.generatedAt}</span>
+                          <Badge variant="outline" className="text-xs">{report.rows.length} productos</Badge>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {/* Summary chips */}
+                          <span className="hidden md:flex items-center gap-1 text-sm font-medium text-gray-700">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {totals.paradasActivas} paradas
+                          </span>
+                          <span className="hidden md:flex items-center gap-1 text-sm font-medium text-green-700">
+                            <DollarSign className="w-3.5 h-3.5" />
+                            ${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => { e.stopPropagation(); exportSalesReportToCSV(report); }}
+                            className="flex items-center gap-1 text-xs"
+                          >
+                            <FileDown className="w-3.5 h-3.5" />
+                            CSV
+                          </Button>
+                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+                        </div>
+                      </div>
+
+                      {/* Report table */}
+                      {isExpanded && (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-gray-50">
+                                <TableHead className="font-semibold">Cliente</TableHead>
+                                <TableHead className="font-semibold">Producto</TableHead>
+                                <TableHead className="font-semibold text-center">Paradas Activas</TableHead>
+                                <TableHead className="font-semibold text-right">Total Facturado</TableHead>
+                                <TableHead className="font-semibold text-right">Pago Paradas</TableHead>
+                                <TableHead className="font-semibold text-right">Diferencia</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {report.rows.map((row, idx) => (
+                                <TableRow key={idx} className="hover:bg-gray-50">
+                                  <TableCell className="font-medium">{row.cliente}</TableCell>
+                                  <TableCell>{row.producto}</TableCell>
+                                  <TableCell className="text-center">
+                                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#1a4d3c]/10 text-[#1a4d3c] font-bold text-sm">
+                                      {row.paradasActivas}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-right font-mono">
+                                    ${row.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                  </TableCell>
+                                  <TableCell className="text-right font-mono text-orange-600">
+                                    ${row.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                  </TableCell>
+                                  <TableCell className={`text-right font-mono font-semibold ${
+                                    row.totalFacturado - row.pagoParadas >= 0 ? 'text-green-700' : 'text-red-600'
+                                  }`}>
+                                    ${(row.totalFacturado - row.pagoParadas).toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                            {/* Totals footer */}
+                            <tfoot>
+                              <tr className="border-t-2 border-[#1a4d3c] bg-[#1a4d3c]/5 font-bold">
+                                <td className="px-4 py-3 text-[#1a4d3c]" colSpan={2}>TOTAL</td>
+                                <td className="px-4 py-3 text-center text-[#1a4d3c]">{totals.paradasActivas}</td>
+                                <td className="px-4 py-3 text-right font-mono text-[#1a4d3c]">
+                                  ${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td className="px-4 py-3 text-right font-mono text-orange-700">
+                                  ${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                </td>
+                                <td className={`px-4 py-3 text-right font-mono ${
+                                  totals.totalFacturado - totals.pagoParadas >= 0 ? 'text-green-700' : 'text-red-600'
+                                }`}>
+                                  ${(totals.totalFacturado - totals.pagoParadas).toLocaleString('es-PR', { minimumFractionDigits: 2 })}
+                                </td>
+                              </tr>
+                            </tfoot>
+                          </Table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>

@@ -539,6 +539,98 @@ export const appRouter = router({
         const { getAnuncioHistory } = await import("./db");
         return await getAnuncioHistory(input.anuncioId);
       }),
+
+    /**
+     * Monthly Sales Report
+     * Returns per-product: unique physical stops active during the month,
+     * total billed (sum of costoPorUnidad for Fijo type), and pago paradas (stops × $25).
+     * Excludes Holder and Bonificación ads.
+     * Deduplicates by cobertizoId: Inbound + Outbound of the same physical stop = 1.
+     */
+    monthlySalesReport: protectedProcedure
+      .input(z.object({
+        year: z.number().int().min(2020).max(2040),
+        month: z.number().int().min(1).max(12),
+      }))
+      .query(async ({ input }) => {
+        const { anuncios: anunciosTable, paradas: paradasTable } = await import('../drizzle/schema');
+        const { and, lte, gte: gteOp, ne, eq: eqOp } = await import('drizzle-orm');
+        const dbConn = await getDb();
+        if (!dbConn) return [];
+
+        // First and last moment of the requested month (UTC)
+        const monthStart = new Date(Date.UTC(input.year, input.month - 1, 1, 0, 0, 0));
+        const monthEnd   = new Date(Date.UTC(input.year, input.month, 0, 23, 59, 59));
+
+        // Fetch all non-Holder, non-Bonificación anuncios that overlap the month
+        const rows = await dbConn
+          .select({
+            id: anunciosTable.id,
+            paradaId: anunciosTable.paradaId,
+            producto: anunciosTable.producto,
+            cliente: anunciosTable.cliente,
+            tipo: anunciosTable.tipo,
+            costoPorUnidad: anunciosTable.costoPorUnidad,
+            estado: anunciosTable.estado,
+            cobertizoId: paradasTable.cobertizoId,
+          })
+          .from(anunciosTable)
+          .innerJoin(paradasTable, eqOp(anunciosTable.paradaId, paradasTable.id))
+          .where(
+            and(
+              ne(anunciosTable.tipo, 'Holder'),
+              ne(anunciosTable.tipo, 'Bonificación'),
+              ne(anunciosTable.estado, 'Inactivo'),
+              ne(anunciosTable.estado, 'Finalizado'),
+              lte(anunciosTable.fechaInicio, monthEnd),
+              gteOp(anunciosTable.fechaFin, monthStart),
+            )
+          );
+
+        // Group by cliente + producto
+        const productMap = new Map<string, {
+          producto: string;
+          cliente: string;
+          cobertizoIds: Set<string>;
+          totalFacturado: number;
+          anuncioCount: number;
+        }>();
+
+        for (const row of rows) {
+          const key = `${row.cliente}|||${row.producto}`;
+          if (!productMap.has(key)) {
+            productMap.set(key, {
+              producto: row.producto,
+              cliente: row.cliente,
+              cobertizoIds: new Set(),
+              totalFacturado: 0,
+              anuncioCount: 0,
+            });
+          }
+          const entry = productMap.get(key)!;
+          // Deduplicate by cobertizoId (physical stop — I+O of same stop = 1)
+          entry.cobertizoIds.add(row.cobertizoId);
+          // Sum cost only for Fijo type
+          if (row.tipo === 'Fijo') {
+            entry.totalFacturado += parseFloat(row.costoPorUnidad ?? '0') || 0;
+          }
+          entry.anuncioCount += 1;
+        }
+
+        return Array.from(productMap.values())
+          .map(e => ({
+            producto: e.producto,
+            cliente: e.cliente,
+            paradasActivas: e.cobertizoIds.size,
+            totalFacturado: e.totalFacturado,
+            pagoParadas: e.cobertizoIds.size * 25,
+            anuncioCount: e.anuncioCount,
+          }))
+          .sort((a, b) => {
+            const c = a.cliente.localeCompare(b.cliente);
+            return c !== 0 ? c : a.producto.localeCompare(b.producto);
+          });
+      }),
   }),
 
   // Notifications router

@@ -1584,3 +1584,13 @@
 - [x] Marcar la cotización como "convertida" (campo cotizacionId en contrato + convertedToContratoId en cotizacion) para evitar doble conversión
 - [x] Agregar campos cotizacionId en contratos y convertedToContratoId en cotizaciones al schema + migración DB
 - [x] Botón CalendarPlus cambia a color ámbar cuando la propuesta ya fue convertida (tooltip muestra número de contrato)
+
+## Reporte Mensual de Ventas (Métricas)
+- [x] Backend: procedimiento `anuncios.monthlySalesReport(year, month)` que calcula por producto: paradas físicas únicas activas (sin contar caras duplicadas ni holders), total facturado (suma costo anuncios fijos), pago paradas (paradas × $25)
+- [x] Frontend: botón "Generar Reporte de Ventas" en Métricas con selector de mes/año
+- [x] Frontend: tabla del reporte con columnas Cliente, Producto, Paradas Activas, Total Facturado, Pago Paradas, Diferencia
+- [x] Excluir anuncios tipo Holder y Bonificación del reporte
+- [x] Deduplicar paradas físicas (Inbound + Outbound de la misma parada = 1, parada con 2 displays = 1)
+- [x] Mostrar historial de reportes generados debajo del botón (colapsables)
+- [x] Exportar reporte a CSV
+- [x] Tests unitarios para la lógica de deduplicación y cálculo (7 tests pasando)
