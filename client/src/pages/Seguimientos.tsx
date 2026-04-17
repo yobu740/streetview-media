@@ -18,6 +18,7 @@ import {
   ThumbsUp, ThumbsDown, CalendarPlus
 } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
@@ -70,9 +71,13 @@ export default function Seguimientos() {
   const [approvalComment, setApprovalComment] = useState("");
   const [deleteConfirmCot, setDeleteConfirmCot] = useState<any>(null);
   const [reservaDialog, setReservaDialog] = useState<any>(null);
+  const [reservaClienteId, setReservaClienteId] = useState<string>("");
+  const [reservaNotas, setReservaNotas] = useState<string>("");
+  const [, navigate] = useLocation();
 
   // Queries
   const { data: cotizaciones, isLoading: isLoadingCotizaciones, refetch: refetchCotizaciones } = trpc.cotizaciones.listAll.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: clientesData = [] } = trpc.clientes.listForSelect.useQuery(undefined, { enabled: isAuthenticated });
   const { data: seguimientos, isLoading } = trpc.seguimientos.listAll.useQuery(undefined, { enabled: isAuthenticated });
   const { data: archivedSeguimientos, isLoading: isLoadingArchived } = trpc.seguimientos.archived.useQuery(undefined, { enabled: isAuthenticated && showArchived });
   const { data: pending } = trpc.seguimientos.pending.useQuery(undefined, { enabled: isAuthenticated });
@@ -100,6 +105,17 @@ export default function Seguimientos() {
   });
   const deleteCotizacion = trpc.cotizaciones.delete.useMutation({
     onSuccess: () => { refetchCotizaciones(); toast.success('Propuesta eliminada'); setDeleteConfirmCot(null); },
+    onError: (e) => toast.error(e.message),
+  });
+  const createReserva = trpc.cotizaciones.createReservaFromCotizacion.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Contrato borrador creado: ${data.numeroContrato}`);
+      refetchCotizaciones();
+      setReservaDialog(null);
+      setReservaClienteId("");
+      setReservaNotas("");
+      navigate('/vendedor/contratos');
+    },
     onError: (e) => toast.error(e.message),
   });
   const utils = trpc.useUtils();
@@ -648,12 +664,24 @@ export default function Seguimientos() {
                                 {estado === 'Aprobada' && (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-[#053951] hover:bg-[#053951]/10 border-[#053951]/30"
-                                        onClick={() => setReservaDialog(cot)}>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className={`h-7 w-7 p-0 border ${
+                                          (cot as any).convertedToContratoId
+                                            ? 'text-amber-600 border-amber-300 hover:bg-amber-50'
+                                            : 'text-[#053951] border-[#053951]/30 hover:bg-[#053951]/10'
+                                        }`}
+                                        onClick={() => { setReservaClienteId(""); setReservaNotas(""); setReservaDialog(cot); }}
+                                      >
                                         <CalendarPlus className="h-3 w-3" />
                                       </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Crear Reserva</TooltipContent>
+                                    <TooltipContent>
+                                      {(cot as any).convertedToContratoId
+                                        ? `Ya convertida (Contrato #${(cot as any).convertedToContratoId})`
+                                        : 'Crear Contrato desde Propuesta'}
+                                    </TooltipContent>
                                   </Tooltip>
                                 )}
                                 {/* Delete if not Aprobada */}
@@ -1024,49 +1052,132 @@ export default function Seguimientos() {
       </Dialog>
 
       {/* ─── Crear Reserva Dialog ─── */}
-      <Dialog open={!!reservaDialog} onOpenChange={(open) => { if (!open) setReservaDialog(null); }}>
-        <DialogContent className="max-w-lg">
+      <Dialog open={!!reservaDialog} onOpenChange={(open) => { if (!open) { setReservaDialog(null); setReservaClienteId(""); setReservaNotas(""); } }}>
+        <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle className="text-[#053951]">📅 Crear Reserva desde Propuesta</DialogTitle>
+            <DialogTitle className="text-[#053951]">📋 Crear Contrato desde Propuesta</DialogTitle>
             <DialogDescription>
-              La propuesta <strong>{reservaDialog?.cotizacionNumber}</strong> ha sido aprobada. Ve al área de Reservas para crear la reserva con los datos pre-llenados.
+              Propuesta <strong>{reservaDialog?.cotizacionNumber}</strong> — Se creará un contrato en estado <em>Borrador</em> con todos los datos pre-llenados.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="bg-[#053951]/5 rounded-lg p-4 space-y-2 text-sm">
+          <div className="space-y-4 py-2">
+            {/* Summary card */}
+            <div className="bg-[#053951]/5 rounded-lg p-4 space-y-2 text-sm border border-[#053951]/10">
               <div className="flex justify-between">
-                <span className="text-[#2a2a2a]/60">Cliente:</span>
+                <span className="text-[#2a2a2a]/60">Empresa:</span>
                 <span className="font-semibold">{reservaDialog?.empresa}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#2a2a2a]/60">Contacto:</span>
-                <span>{reservaDialog?.contacto}</span>
+                <span>{reservaDialog?.contacto}{reservaDialog?.email ? ` · ${reservaDialog.email}` : ''}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#2a2a2a]/60">Período:</span>
                 <span>{reservaDialog?.fechaInicio && reservaDialog?.fechaFin ? `${formatDateDisplay(reservaDialog.fechaInicio)} → ${formatDateDisplay(reservaDialog.fechaFin)}` : '-'}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Duración:</span>
+                <span>{reservaDialog?.meses ?? '-'} meses</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-[#2a2a2a]/60">Paradas:</span>
                 <span className="font-semibold text-blue-700">{reservaDialog?.paradasCount} paradas</span>
               </div>
+              {(reservaDialog?.descuento ?? 0) > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-[#2a2a2a]/60">Descuento:</span>
+                  <span className="text-orange-600">{reservaDialog?.descuento}%</span>
+                </div>
+              )}
+              <div className="flex justify-between border-t border-[#053951]/10 pt-2 mt-1">
+                <span className="text-[#2a2a2a]/60">Total Mensual:</span>
+                <span className="font-semibold">${((reservaDialog?.totalMensual || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+              </div>
               <div className="flex justify-between">
                 <span className="text-[#2a2a2a]/60">Total Campaña:</span>
-                <span className="font-bold text-[#1a4d3c]">${(reservaDialog?.totalCampana || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                <span className="font-bold text-[#1a4d3c] text-base">${((reservaDialog?.totalCampana || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
-            <p className="text-xs text-[#2a2a2a]/60">
-              💡 Ve al área de <strong>Reservas</strong> y usa el botón "Nueva Reserva" — los datos del cliente y fechas ya están guardados en la propuesta aprobada para referencia.
-            </p>
+
+            {/* Paradas list */}
+            {reservaDialog?.paradasData && (() => {
+              try {
+                const ps = JSON.parse(reservaDialog.paradasData) as Array<{ cobertizoId: string; localizacion: string; direccion: string; orientacion: string; tipoFormato: string; precioMes: number }>;
+                if (ps.length === 0) return null;
+                return (
+                  <div>
+                    <Label className="text-xs font-semibold text-[#2a2a2a]/70 uppercase tracking-wide">Paradas incluidas</Label>
+                    <div className="mt-1 max-h-36 overflow-y-auto rounded border border-[#053951]/10 divide-y divide-[#053951]/5">
+                      {ps.map((p, i) => (
+                        <div key={i} className="flex items-center justify-between px-3 py-1.5 text-xs">
+                          <span className="font-mono text-[#1a4d3c] font-semibold mr-2">#{p.cobertizoId}</span>
+                          <span className="flex-1 text-[#2a2a2a]/70 truncate">{p.localizacion}</span>
+                          <span className="ml-2 text-[#2a2a2a]/50">{p.tipoFormato}</span>
+                          <span className="ml-3 font-semibold text-[#1a4d3c]">${p.precioMes.toLocaleString('en-US')}/mes</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              } catch { return null; }
+            })()}
+
+            {/* Cliente selector */}
+            <div className="space-y-1.5">
+              <Label htmlFor="reserva-cliente" className="text-sm font-medium">
+                Vincular a Cliente existente <span className="text-[#2a2a2a]/40 font-normal">(opcional)</span>
+              </Label>
+              <Select value={reservaClienteId} onValueChange={setReservaClienteId}>
+                <SelectTrigger id="reserva-cliente" className="text-sm">
+                  <SelectValue placeholder="Seleccionar cliente del catálogo..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">— Sin vincular —</SelectItem>
+                  {(clientesData as Array<{ id: number; nombre: string; contactoPrincipal: string | null; email: string | null }>).map((c) => (
+                    <SelectItem key={c.id} value={String(c.id)}>{c.nombre}{c.contactoPrincipal ? ` (${c.contactoPrincipal})` : ''}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-[#2a2a2a]/50">Si el cliente no existe aún en el catálogo, puedes crearlo después desde la sección Clientes.</p>
+            </div>
+
+            {/* Notas adicionales */}
+            <div className="space-y-1.5">
+              <Label htmlFor="reserva-notas" className="text-sm font-medium">Notas adicionales <span className="text-[#2a2a2a]/40 font-normal">(opcional)</span></Label>
+              <Textarea
+                id="reserva-notas"
+                placeholder="Ej: Confirmar arte antes del 15 de mayo..."
+                value={reservaNotas}
+                onChange={(e) => setReservaNotas(e.target.value)}
+                rows={2}
+                className="text-sm"
+              />
+            </div>
+
+            {/* Already converted warning */}
+            {(reservaDialog as any)?.convertedToContratoId && (
+              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                <span>⚠️</span>
+                <span>Esta propuesta ya fue convertida al contrato <strong>#{(reservaDialog as any).convertedToContratoId}</strong>. Crear otro contrato generará un duplicado.</span>
+              </div>
+            )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setReservaDialog(null)}>Cerrar</Button>
+            <Button variant="outline" onClick={() => { setReservaDialog(null); setReservaClienteId(""); setReservaNotas(""); }}>Cancelar</Button>
             <Button
               className="bg-[#053951] hover:bg-[#053951]/80 text-white"
-              onClick={() => { setReservaDialog(null); window.location.href = '/reservas'; }}
+              disabled={createReserva.isPending}
+              onClick={() => {
+                if (!reservaDialog) return;
+                createReserva.mutate({
+                  cotizacionId: reservaDialog.id,
+                  clienteId: reservaClienteId && reservaClienteId !== 'none' ? parseInt(reservaClienteId) : null,
+                  notas: reservaNotas || undefined,
+                });
+              }}
             >
-              <CalendarPlus className="h-4 w-4 mr-2" />
-              Ir a Reservas
+              {createReserva.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CalendarPlus className="h-4 w-4 mr-2" />}
+              Crear Contrato Borrador
             </Button>
           </DialogFooter>
         </DialogContent>

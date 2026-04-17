@@ -1576,3 +1576,11 @@
 - [x] Fix error 500 al generar factura (createdBy hardcodeado a 1 — ahora usa el ID del usuario autenticado)
 - [x] Fix error al enviar factura con múltiples emails de facturación (normalizar emails separados por coma/punto y coma)
 - [x] Agregar punto estratégico "Comunidad Dominicana" al sistema de tags y asignar a 337 paradas (Av. Ponce de León, Hato Rey Norte, Santurce, Río Piedras)
+
+## Flujo Crear Reserva desde Propuesta Aprobada
+- [x] Agregar procedimiento `cotizaciones.createReservaFromCotizacion` en routers.ts (protectedProcedure) que crea el contrato + exhibit A desde los datos de la cotización
+- [x] Reemplazar el modal "Ir a Reservas" en Seguimientos.tsx con un modal funcional que pre-llene todos los datos y cree la reserva directamente
+- [x] Mostrar lista de paradas de la propuesta en el modal de confirmación
+- [x] Marcar la cotización como "convertida" (campo cotizacionId en contrato + convertedToContratoId en cotizacion) para evitar doble conversión
+- [x] Agregar campos cotizacionId en contratos y convertedToContratoId en cotizaciones al schema + migración DB
+- [x] Botón CalendarPlus cambia a color ámbar cuando la propuesta ya fue convertida (tooltip muestra número de contrato)

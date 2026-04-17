@@ -330,11 +330,11 @@ export const contratos = mysqlTable("contratos", {
   docusealSubmissionId: int("docuseal_submission_id"), // DocuSeal submission ID for e-signature
   docusealSigningUrl: text("docuseal_signing_url"), // Direct signing URL for the submitter
   firmaUrl: text("firma_url"), // S3 URL to signed PDF from DocuSeal
+  cotizacionId: int("cotizacion_id"), // FK to cotizaciones - if created from a proposal
   createdBy: int("created_by"), // FK to users
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
-
 export type Contrato = typeof contratos.$inferSelect;
 export type InsertContrato = typeof contratos.$inferInsert;
 
@@ -397,6 +397,7 @@ export const cotizaciones = mysqlTable("cotizaciones", {
   adminComment: text("admin_comment"),                               // Admin comment on approval/rejection
   approvedAt: timestamp("approved_at"),                              // When admin approved/rejected
   approvedBy: int("approved_by"),                                    // Admin user ID
+  convertedToContratoId: int("converted_to_contrato_id"),              // FK to contratos - if converted to a contract
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 export type Cotizacion = typeof cotizaciones.$inferSelect;

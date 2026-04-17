@@ -3165,6 +3165,119 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Create a contrato (reserva) from an approved cotizacion
+    createReservaFromCotizacion: protectedProcedure
+      .input(z.object({
+        cotizacionId: z.number().int(),
+        // Optional overrides — if not provided, data comes from the cotizacion
+        clienteId: z.number().int().optional().nullable(),
+        clienteNombre: z.string().optional(), // fallback if no clienteId
+        notas: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { cotizaciones, contratos: contratosTable, contratoItems: contratoItemsTable, contratoExhibitA: exhibitATable } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const database = await getDb();
+        if (!database) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+
+        // Fetch the cotizacion
+        const [cot] = await database.select().from(cotizaciones).where(eq(cotizaciones.id, input.cotizacionId)).limit(1);
+        if (!cot) throw new TRPCError({ code: 'NOT_FOUND', message: 'Propuesta no encontrada' });
+        if (cot.estado !== 'Aprobada') throw new TRPCError({ code: 'BAD_REQUEST', message: 'Solo se pueden convertir propuestas aprobadas' });
+        // Only the vendor who created it or an admin can convert
+        if (ctx.user.role !== 'admin' && cot.vendedorId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'No tienes permiso para convertir esta propuesta' });
+        }
+        // Prevent double conversion
+        if (cot.convertedToContratoId) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: `Esta propuesta ya fue convertida al contrato #${cot.convertedToContratoId}` });
+        }
+
+        // Parse paradasData
+        let paradasArr: Array<{ cobertizoId: string; localizacion: string; direccion: string; orientacion: string; tipoFormato: string; ruta?: string | null; precioMes: number }> = [];
+        try {
+          if (cot.paradasData) paradasArr = JSON.parse(cot.paradasData);
+        } catch {}
+
+        // Build contrato number: SV-YYYYMM-RAND
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const rand = Math.floor(Math.random() * 9000) + 1000;
+        const numeroContrato = `SV-${year}${month}-${rand}`;
+
+        // Determine clienteId: use provided or 0 (unknown)
+        const finalClienteId = input.clienteId ?? 0;
+
+        // Build salesDuration string from cotizacion dates
+        const salesDuration = cot.fechaInicio && cot.fechaFin
+          ? `${cot.fechaInicio} - ${cot.fechaFin}`
+          : undefined;
+
+        // Build line items from paradas
+        const ORI_LABEL: Record<string, string> = { I: 'Inbound', O: 'Outbound', P: 'Peatonal' };
+        const items = paradasArr.map((p, i) => ({
+          contratoId: 0,
+          cantidad: 1,
+          concepto: `Parada #${p.cobertizoId} - ${p.localizacion} (${ORI_LABEL[p.orientacion] ?? p.orientacion}, ${p.tipoFormato})`,
+          precioPorUnidad: String(p.precioMes),
+          total: String(p.precioMes * (cot.meses ?? 1)),
+          isProduccion: 0,
+          orden: i,
+        }));
+
+        // Calculate totals
+        const totalMensual = paradasArr.reduce((s, p) => s + p.precioMes, 0) * (1 - (cot.descuento ?? 0) / 100);
+        const totalCampana = totalMensual * (cot.meses ?? 1);
+
+        // Create the contrato
+        const contratoResult = await database.insert(contratosTable).values({
+          clienteId: finalClienteId,
+          numeroContrato,
+          fecha: now,
+          fechaVencimiento: cot.fechaFin ? new Date(cot.fechaFin) : null,
+          customerId: cot.empresa,
+          salesDuration: salesDuration ?? null,
+          vendedor: cot.vendedorName ?? ctx.user.name ?? null,
+          subtotal: String(totalMensual.toFixed(2)),
+          total: String(totalCampana.toFixed(2)),
+          numMeses: cot.meses ?? 1,
+          notas: input.notas ?? `Generado desde propuesta ${cot.cotizacionNumber}. Cliente: ${cot.empresa}. Contacto: ${cot.contacto}.`,
+          estado: 'Borrador',
+          cotizacionId: cot.id,
+          createdBy: ctx.user.id,
+        });
+        const contratoId = contratoResult[0].insertId as number;
+
+        // Insert line items
+        if (items.length > 0) {
+          await database.insert(contratoItemsTable).values(items.map(item => ({ ...item, contratoId })));
+        }
+
+        // Insert Exhibit A rows
+        if (paradasArr.length > 0) {
+          await database.insert(exhibitATable).values(
+            paradasArr.map((p, i) => ({
+              contratoId,
+              localizacion: p.localizacion,
+              cobertizo: p.cobertizoId,
+              direccion: p.direccion,
+              iop: p.orientacion ?? '',
+              producto: cot.empresa,
+              fb: p.tipoFormato === 'Digital' ? 'D' : 'F',
+              orden: i,
+            }))
+          );
+        }
+
+        // Mark cotizacion as converted
+        await database.update(cotizaciones)
+          .set({ convertedToContratoId: contratoId })
+          .where(eq(cotizaciones.id, cot.id));
+
+        return { contratoId, numeroContrato };
+      }),
+
     // Delete a cotizacion (admin or the vendor who created it, only if Pendiente)
     delete: protectedProcedure
       .input(z.object({ id: z.number().int() }))
