@@ -10,7 +10,8 @@ import { storagePut } from "./storage";
 /** Render HTML to a PDF buffer using headless Chromium (puppeteer bundled Chrome). */
 async function htmlToPdfBuffer(html: string): Promise<Buffer> {
   // Always use puppeteer's own bundled Chrome — ignore any PUPPETEER_EXECUTABLE_PATH
-  // env var that may point to a non-existent system path.
+  // env var that may point to a non-existent system path (e.g. /usr/bin/chromium-browser).
+  delete process.env.PUPPETEER_EXECUTABLE_PATH;
   const puppeteer = await import('puppeteer');
 
   let executablePath: string;
@@ -662,20 +663,22 @@ export async function generateInvoiceFromAnuncios(
 
   console.log("[Invoice] Generating invoice for anuncioIds:", anuncioIds);
 
-  // Generate sequential invoice number
+  // Generate sequential invoice number - find the MAX numeric suffix to avoid duplicates
   const { facturas } = await import("../drizzle/schema");
-  const lastInvoice = await db
+  const allNumbers = await db
     .select({ numeroFactura: facturas.numeroFactura })
-    .from(facturas)
-    .orderBy(sql`${facturas.id} DESC`)
-    .limit(1);
+    .from(facturas);
 
-  let nextNumber = 1000;
-  if (lastInvoice.length > 0) {
-    const match = lastInvoice[0].numeroFactura.match(/INV-(\d+)/);
-    if (match) nextNumber = parseInt(match[1]) + 1;
+  let maxNumber = 1000;
+  for (const row of allNumbers) {
+    const match = row.numeroFactura.match(/INV-(\d+)/);
+    if (match) {
+      const n = parseInt(match[1]);
+      if (n >= maxNumber) maxNumber = n + 1;
+    }
   }
-  const invoiceNumber = `INV-${nextNumber}`;
+  const invoiceNumber = `INV-${maxNumber}`;
+  console.log('[Invoice] Assigned invoice number:', invoiceNumber, '(scanned', allNumbers.length, 'existing invoices)');
 
   const { data, anuncioCount } = await buildInvoiceData(anuncioIds, {
     title,
@@ -711,29 +714,41 @@ export async function generateInvoiceFromAnuncios(
 
   const { url } = await storagePut(fileName, pdfBuffer, contentType);
 
-  try {
-    await db.insert(facturas).values({
-      numeroFactura: invoiceNumber,
-      cliente: data.clientName,
-      titulo: data.invoiceTitle,
-      descripcion: description || null,
-      subtotal: data.subtotalAnuncios.toString(),
-      costoProduccion: productionCost ? productionCost.toString() : null,
-      otrosServiciosDescripcion: otherServicesDescription || null,
-      otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
-      total: data.finalTotal.toString(),
-      vendedor: salespersonName || null,
-      pdfUrl: url,
-      cantidadAnuncios: anuncioCount,
-      anuncioIdsJson: JSON.stringify(anuncioIds),
-      createdBy: createdByUserId ?? undefined,
-    });
-  } catch (insertErr: any) {
-    console.error('[Invoice] INSERT failed. invoiceNumber:', invoiceNumber, 'createdBy:', createdByUserId);
-    console.error('[Invoice] INSERT error code:', insertErr?.code, 'errno:', insertErr?.errno);
-    console.error('[Invoice] INSERT error message:', insertErr?.message);
-    console.error('[Invoice] INSERT sqlMessage:', insertErr?.sqlMessage);
-    throw insertErr;
+  // Insert with retry on duplicate key (race condition safety)
+  let finalInvoiceNumber = invoiceNumber;
+  let retryCount = 0;
+  while (retryCount <= 10) {
+    try {
+      await db.insert(facturas).values({
+        numeroFactura: finalInvoiceNumber,
+        cliente: data.clientName,
+        titulo: data.invoiceTitle,
+        descripcion: description || null,
+        subtotal: data.subtotalAnuncios.toString(),
+        costoProduccion: productionCost ? productionCost.toString() : null,
+        otrosServiciosDescripcion: otherServicesDescription || null,
+        otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
+        total: data.finalTotal.toString(),
+        vendedor: salespersonName || null,
+        pdfUrl: url,
+        cantidadAnuncios: anuncioCount,
+        anuncioIdsJson: JSON.stringify(anuncioIds),
+        createdBy: createdByUserId ?? undefined,
+      });
+      break; // success
+    } catch (insertErr: any) {
+      const isDuplicate = insertErr?.message?.includes('Duplicate entry') || insertErr?.cause?.message?.includes('Duplicate entry');
+      if (isDuplicate && retryCount < 10) {
+        retryCount++;
+        const newNum = maxNumber + retryCount;
+        finalInvoiceNumber = `INV-${newNum}`;
+        console.warn(`[Invoice] Duplicate key on ${finalInvoiceNumber.replace(`-${newNum}`, `-${newNum - 1}`)}, retrying with ${finalInvoiceNumber}`);
+      } else {
+        console.error('[Invoice] INSERT failed. invoiceNumber:', finalInvoiceNumber, 'createdBy:', createdByUserId);
+        console.error('[Invoice] INSERT cause:', insertErr?.cause?.message || insertErr?.message);
+        throw insertErr;
+      }
+    }
   }
 
   console.log("[Invoice] Generated:", invoiceNumber, "→", url);
