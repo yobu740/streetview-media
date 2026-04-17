@@ -459,20 +459,9 @@ export default function Anuncios() {
       {
         onSuccess: (data: any) => {
           const url: string = data.pdfUrl;
-          if (url.endsWith('.pdf')) {
-            // Real PDF binary — trigger a direct download
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop() || 'factura.pdf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            toast.success("Factura generada y descargada como PDF.");
-          } else {
-            // Fallback HTML — open in new tab so user can print to PDF
-            window.open(url, '_blank');
-            toast.success("Factura generada. Se abrió en una nueva pestaña — usa el botón \"Imprimir / Guardar como PDF\" para descargarla.");
-          }
+          // Always open in a new tab — avoids navigating away from the current page
+          window.open(url, '_blank', 'noopener,noreferrer');
+          toast.success("Factura generada. Se abrió en una nueva pestaña.");
           setIsInvoiceDialogOpen(false);
           setInvoiceTitle("");
           setInvoiceDescription("");
