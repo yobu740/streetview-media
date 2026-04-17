@@ -608,8 +608,11 @@ export const appRouter = router({
             });
           }
           const entry = productMap.get(key)!;
-          // Deduplicate by cobertizoId (physical stop — I+O of same stop = 1)
-          entry.cobertizoIds.add(row.cobertizoId);
+          // Normalize cobertizoId: strip trailing letter suffix so that
+          // 671A and 671B (two display faces of the same physical stop) count as 1.
+          // e.g. "671A" → "671", "671B" → "671", "671" → "671"
+          const normalizedId = row.cobertizoId.replace(/[A-Za-z]+$/, '').trim();
+          entry.cobertizoIds.add(normalizedId || row.cobertizoId);
           // Sum cost only for Fijo type
           if (row.tipo === 'Fijo') {
             entry.totalFacturado += parseFloat(row.costoPorUnidad ?? '0') || 0;

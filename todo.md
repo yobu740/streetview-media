@@ -1599,3 +1599,6 @@
 - [x] Incluir anuncios con estado "Finalizado" en el reporte (además de Activo/Programado)
 - [x] Eliminar columna "Cliente" de la tabla del reporte
 - [x] Eliminar columna "Diferencia" de la tabla del reporte y del CSV
+
+## Bug Fix: Deduplicación de paradas con sufijo de letra
+- [x] Normalizar cobertizoId antes de deduplicar: "671A" y "671B" → "671" (mismo cobertizo físico) — 8 tests pasando

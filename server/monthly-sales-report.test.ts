@@ -6,6 +6,8 @@
 import { describe, it, expect } from "vitest";
 
 // ─── Replicated logic from routers.ts monthlySalesReport ─────────────────────
+// NOTE: keep this in sync with the normalization in routers.ts
+const normalizeCobertizoId = (id: string) => id.replace(/[A-Za-z]+$/, '').trim() || id;
 
 type ReportRow = {
   id: number;
@@ -42,7 +44,8 @@ function buildSalesReport(rows: ReportRow[]) {
       });
     }
     const entry = productMap.get(key)!;
-    entry.cobertizoIds.add(row.cobertizoId);
+    // Normalize: strip trailing letter suffix (671A, 671B → 671)
+    entry.cobertizoIds.add(normalizeCobertizoId(row.cobertizoId));
     if (row.tipo === "Fijo") {
       entry.totalFacturado += parseFloat(row.costoPorUnidad ?? "0") || 0;
     }
@@ -200,6 +203,48 @@ describe("monthlySalesReport – deduplication logic", () => {
 
   it("returns empty array when no rows provided", () => {
     expect(buildSalesReport([])).toHaveLength(0);
+  });
+
+  it("treats 671A and 671B as the same physical stop (letter-suffix normalization)", () => {
+    const rows: ReportRow[] = [
+      {
+        id: 1,
+        paradaId: 10,
+        producto: "Taco Bell",
+        cliente: "Taco Bell PR",
+        tipo: "Fijo",
+        costoPorUnidad: "600",
+        estado: "Activo",
+        cobertizoId: "671A", // display face A
+      },
+      {
+        id: 2,
+        paradaId: 11,
+        producto: "Taco Bell",
+        cliente: "Taco Bell PR",
+        tipo: "Fijo",
+        costoPorUnidad: "600",
+        estado: "Activo",
+        cobertizoId: "671B", // display face B — same physical stop
+      },
+      {
+        id: 3,
+        paradaId: 12,
+        producto: "Taco Bell",
+        cliente: "Taco Bell PR",
+        tipo: "Fijo",
+        costoPorUnidad: "600",
+        estado: "Activo",
+        cobertizoId: "672", // a genuinely different stop
+      },
+    ];
+
+    const result = buildSalesReport(rows);
+    expect(result).toHaveLength(1);
+    // 671A + 671B = 1 physical stop, plus 672 = 2 total
+    expect(result[0].paradasActivas).toBe(2);
+    expect(result[0].pagoParadas).toBe(50); // 2 × $25
+    expect(result[0].totalFacturado).toBe(1800); // 3 ads × $600
   });
 
   it("calculates pagoParadas as paradasActivas × 25", () => {
