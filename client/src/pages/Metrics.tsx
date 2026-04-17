@@ -87,14 +87,12 @@ export default function Metrics() {
   };
 
   const exportSalesReportToCSV = (report: typeof generatedReports[0]) => {
-    const headers = ['Cliente', 'Producto', 'Paradas Activas', 'Total Facturado', 'Pago Paradas', 'Diferencia'];
+    const headers = ['Producto', 'Paradas Activas', 'Total Facturado', 'Pago Paradas'];
     const rows = report.rows.map(r => [
-      r.cliente,
       r.producto,
       r.paradasActivas,
       r.totalFacturado.toFixed(2),
       r.pagoParadas.toFixed(2),
-      (r.totalFacturado - r.pagoParadas).toFixed(2),
     ]);
     // Totals row
     const totals = report.rows.reduce((acc, r) => ({
@@ -102,7 +100,7 @@ export default function Metrics() {
       totalFacturado: acc.totalFacturado + r.totalFacturado,
       pagoParadas: acc.pagoParadas + r.pagoParadas,
     }), { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 });
-    rows.push(['TOTAL', '', totals.paradasActivas, totals.totalFacturado.toFixed(2), totals.pagoParadas.toFixed(2), (totals.totalFacturado - totals.pagoParadas).toFixed(2)]);
+    rows.push(['TOTAL', totals.paradasActivas, totals.totalFacturado.toFixed(2), totals.pagoParadas.toFixed(2)]);
     const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -723,19 +721,16 @@ export default function Metrics() {
                           <Table>
                             <TableHeader>
                               <TableRow className="bg-gray-50">
-                                <TableHead className="font-semibold">Cliente</TableHead>
                                 <TableHead className="font-semibold">Producto</TableHead>
                                 <TableHead className="font-semibold text-center">Paradas Activas</TableHead>
                                 <TableHead className="font-semibold text-right">Total Facturado</TableHead>
                                 <TableHead className="font-semibold text-right">Pago Paradas</TableHead>
-                                <TableHead className="font-semibold text-right">Diferencia</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
                               {report.rows.map((row, idx) => (
                                 <TableRow key={idx} className="hover:bg-gray-50">
-                                  <TableCell className="font-medium">{row.cliente}</TableCell>
-                                  <TableCell>{row.producto}</TableCell>
+                                  <TableCell className="font-medium">{row.producto}</TableCell>
                                   <TableCell className="text-center">
                                     <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#1a4d3c]/10 text-[#1a4d3c] font-bold text-sm">
                                       {row.paradasActivas}
@@ -747,29 +742,19 @@ export default function Metrics() {
                                   <TableCell className="text-right font-mono text-orange-600">
                                     ${row.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
                                   </TableCell>
-                                  <TableCell className={`text-right font-mono font-semibold ${
-                                    row.totalFacturado - row.pagoParadas >= 0 ? 'text-green-700' : 'text-red-600'
-                                  }`}>
-                                    ${(row.totalFacturado - row.pagoParadas).toLocaleString('es-PR', { minimumFractionDigits: 2 })}
-                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
                             {/* Totals footer */}
                             <tfoot>
                               <tr className="border-t-2 border-[#1a4d3c] bg-[#1a4d3c]/5 font-bold">
-                                <td className="px-4 py-3 text-[#1a4d3c]" colSpan={2}>TOTAL</td>
+                                <td className="px-4 py-3 text-[#1a4d3c]">TOTAL</td>
                                 <td className="px-4 py-3 text-center text-[#1a4d3c]">{totals.paradasActivas}</td>
                                 <td className="px-4 py-3 text-right font-mono text-[#1a4d3c]">
                                   ${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
                                 </td>
                                 <td className="px-4 py-3 text-right font-mono text-orange-700">
                                   ${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}
-                                </td>
-                                <td className={`px-4 py-3 text-right font-mono ${
-                                  totals.totalFacturado - totals.pagoParadas >= 0 ? 'text-green-700' : 'text-red-600'
-                                }`}>
-                                  ${(totals.totalFacturado - totals.pagoParadas).toLocaleString('es-PR', { minimumFractionDigits: 2 })}
                                 </td>
                               </tr>
                             </tfoot>

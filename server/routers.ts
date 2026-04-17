@@ -581,7 +581,7 @@ export const appRouter = router({
               ne(anunciosTable.tipo, 'Holder'),
               ne(anunciosTable.tipo, 'Bonificación'),
               ne(anunciosTable.estado, 'Inactivo'),
-              ne(anunciosTable.estado, 'Finalizado'),
+              // Include Finalizado: ads that ran during the month but have since ended
               lte(anunciosTable.fechaInicio, monthEnd),
               gteOp(anunciosTable.fechaFin, monthStart),
             )

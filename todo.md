@@ -1594,3 +1594,8 @@
 - [x] Mostrar historial de reportes generados debajo del botón (colapsables)
 - [x] Exportar reporte a CSV
 - [x] Tests unitarios para la lógica de deduplicación y cálculo (7 tests pasando)
+
+## Refinamiento Reporte Mensual de Ventas
+- [x] Incluir anuncios con estado "Finalizado" en el reporte (además de Activo/Programado)
+- [x] Eliminar columna "Cliente" de la tabla del reporte
+- [x] Eliminar columna "Diferencia" de la tabla del reporte y del CSV
