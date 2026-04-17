@@ -46,6 +46,7 @@ const STRATEGIC_TAGS = [
   "Cadenas de Comida Rápida",
   "Restaurantes y Cafés",
   "Gasolineras",
+  "Comunidad Dominicana",
 ];
 
 const DEFAULT_PRICE = 350;

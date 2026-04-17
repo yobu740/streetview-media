@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Building2, Home, Palmtree, ShoppingCart, GraduationCap, Landmark, Pill, ShoppingBag, Building, Theater, Utensils, Fuel, UtensilsCrossed } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, Calendar, Printer, Eye, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, FileSpreadsheet, BarChart3, Bell, X, Check, Menu, Megaphone, Building2, Home, Palmtree, ShoppingCart, GraduationCap, Landmark, Pill, ShoppingBag, Building, Theater, Utensils, Fuel, UtensilsCrossed, Users } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
@@ -1588,6 +1588,7 @@ export default function Admin() {
                           { value: "Cadenas de Comida Rápida", icon: <UtensilsCrossed className="w-4 h-4 text-red-500" /> },
                           { value: "Restaurantes y Cafés", icon: <Utensils className="w-4 h-4 text-yellow-600" /> },
                           { value: "Gasolineras", icon: <Fuel className="w-4 h-4 text-gray-500" /> },
+                          { value: "Comunidad Dominicana", icon: <Users className="w-4 h-4 text-green-600" /> },
                         ].map(({ value, icon }) => (
                           <label
                             key={value}
@@ -2696,6 +2697,7 @@ export default function Admin() {
                   "Cadenas de Comida Rápida",
                   "Restaurantes y Cafés",
                   "Gasolineras",
+                  "Comunidad Dominicana",
                 ].map((tag) => (
                   <label
                     key={tag}

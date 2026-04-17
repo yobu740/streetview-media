@@ -1575,3 +1575,4 @@
 - [ ] Seguimientos: botón "Crear Reserva" en propuestas aprobadas con modal pre-llenado
 - [x] Fix error 500 al generar factura (createdBy hardcodeado a 1 — ahora usa el ID del usuario autenticado)
 - [x] Fix error al enviar factura con múltiples emails de facturación (normalizar emails separados por coma/punto y coma)
+- [x] Agregar punto estratégico "Comunidad Dominicana" al sistema de tags y asignar a 337 paradas (Av. Ponce de León, Hato Rey Norte, Santurce, Río Piedras)
