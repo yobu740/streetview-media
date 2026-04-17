@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { SV_LOGO_BASE64 } from "@/lib/svLogo";
 
 export default function Metrics() {
   const { user, loading: authLoading, isAuthenticated } = useAuth();
@@ -121,9 +122,7 @@ export default function Metrics() {
       { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 }
     );
 
-    const LOGO_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png';
-
-    const buildPDF = (logoDataUrl?: string) => {
+    const buildPDF = () => {
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
       const pageW = doc.internal.pageSize.getWidth();
       const margin = 15;
@@ -132,23 +131,14 @@ export default function Metrics() {
       doc.setFillColor(26, 77, 60); // #1a4d3c
       doc.rect(0, 0, pageW, 28, 'F');
 
-      // Logo image (if loaded successfully)
-      if (logoDataUrl) {
-        // Place logo on the left side of the header, vertically centered
-        doc.addImage(logoDataUrl, 'PNG', margin, 3, 45, 22);
-      } else {
-        // Fallback: text company name
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(18);
-        doc.setTextColor(255, 255, 255);
-        doc.text('STREETVIEW MEDIA', margin, 12);
-      }
+      // Logo image — bundled as base64, no CORS issues
+      doc.addImage(SV_LOGO_BASE64, 'PNG', margin, 3, 45, 22);
 
-      // Report title (below logo area, or left if no logo)
+      // Report title
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(200, 230, 210);
-      doc.text('Reporte de Ventas por Mes', logoDataUrl ? margin : margin, logoDataUrl ? 26 : 19);
+      doc.text('Reporte de Ventas por Mes', margin, 26);
 
       // Month label (right-aligned)
       doc.setFont('helvetica', 'bold');
@@ -230,23 +220,8 @@ export default function Metrics() {
       doc.save(`reporte-ventas-${report.label.replace(/\s+/g, '-').toLowerCase()}.pdf`);
     }; // end buildPDF
 
-    // Load logo as base64 via canvas, then build the PDF
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        buildPDF(canvas.toDataURL('image/png'));
-      } else {
-        buildPDF();
-      }
-    };
-    img.onerror = () => buildPDF(); // fallback: no logo
-    img.src = LOGO_URL;
+    // Logo is bundled as base64 in svLogo.ts — no CORS issues
+    buildPDF();
   };
 
   if (authLoading) {

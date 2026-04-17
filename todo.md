@@ -1610,3 +1610,6 @@
 
 ## Logo en PDF del Reporte de Ventas
 - [x] Cargar el logo de Streetview Media como base64 (via canvas) y embebido en el encabezado del PDF; fallback a texto si la imagen no carga
+
+## Bug Fix: Logo no aparece en PDF del Reporte
+- [x] Reemplazar enfoque canvas (bloqueado por CORS) con logo embebido como base64 en client/src/lib/svLogo.ts — jsPDF lo carga directamente sin CORS
