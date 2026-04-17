@@ -121,102 +121,132 @@ export default function Metrics() {
       { paradasActivas: 0, totalFacturado: 0, pagoParadas: 0 }
     );
 
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
-    const pageW = doc.internal.pageSize.getWidth();
-    const margin = 15;
+    const LOGO_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663148968393/YbohNlnEDVQCkCgw.png';
 
-    // ── Header bar ──────────────────────────────────────────────────────────
-    doc.setFillColor(26, 77, 60); // #1a4d3c
-    doc.rect(0, 0, pageW, 28, 'F');
+    const buildPDF = (logoDataUrl?: string) => {
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const margin = 15;
 
-    // Company name
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.setTextColor(255, 255, 255);
-    doc.text('STREETVIEW MEDIA', margin, 12);
+      // ── Header bar ──────────────────────────────────────────────────────────
+      doc.setFillColor(26, 77, 60); // #1a4d3c
+      doc.rect(0, 0, pageW, 28, 'F');
 
-    // Report title
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Reporte de Ventas por Mes', margin, 19);
+      // Logo image (if loaded successfully)
+      if (logoDataUrl) {
+        // Place logo on the left side of the header, vertically centered
+        doc.addImage(logoDataUrl, 'PNG', margin, 3, 45, 22);
+      } else {
+        // Fallback: text company name
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(255, 255, 255);
+        doc.text('STREETVIEW MEDIA', margin, 12);
+      }
 
-    // Month label (right-aligned)
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13);
-    doc.text(report.label.toUpperCase(), pageW - margin, 16, { align: 'right' });
-
-    // ── Meta line ───────────────────────────────────────────────────────────
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Generado: ${new Date().toLocaleString('es-PR')}`, margin, 34);
-    doc.text(`Total de productos: ${report.rows.length}`, pageW - margin, 34, { align: 'right' });
-
-    // ── Summary chips ───────────────────────────────────────────────────────
-    const chipY = 40;
-    const chipData = [
-      { label: 'Paradas Activas', value: String(totals.paradasActivas), color: [26, 77, 60] as [number,number,number] },
-      { label: 'Total Facturado', value: `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [22, 101, 52] as [number,number,number] },
-      { label: 'Pago Paradas', value: `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [194, 65, 12] as [number,number,number] },
-    ];
-    const chipW = (pageW - margin * 2 - 8) / 3;
-    chipData.forEach((chip, i) => {
-      const x = margin + i * (chipW + 4);
-      doc.setFillColor(...chip.color);
-      doc.roundedRect(x, chipY, chipW, 14, 2, 2, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text(chip.value, x + chipW / 2, chipY + 6, { align: 'center' });
+      // Report title (below logo area, or left if no logo)
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      doc.text(chip.label, x + chipW / 2, chipY + 11, { align: 'center' });
-    });
+      doc.setTextColor(200, 230, 210);
+      doc.text('Reporte de Ventas por Mes', logoDataUrl ? margin : margin, logoDataUrl ? 26 : 19);
 
-    // ── Table ───────────────────────────────────────────────────────────────
-    const tableRows = report.rows.map((r, idx) => [
-      idx + 1,
-      r.producto,
-      r.paradasActivas,
-      `$${r.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
-      `$${r.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
-    ]);
+      // Month label (right-aligned)
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(255, 255, 255);
+      doc.text(report.label.toUpperCase(), pageW - margin, 16, { align: 'right' });
 
-    autoTable(doc, {
-      startY: chipY + 20,
-      margin: { left: margin, right: margin },
-      head: [['#', 'Producto', 'Paradas', 'Total Facturado', 'Pago Paradas']],
-      body: tableRows,
-      foot: [['', 'TOTAL', totals.paradasActivas,
-        `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
-        `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
-      ]],
-      showFoot: 'lastPage',
-      headStyles: { fillColor: [26, 77, 60], textColor: 255, fontStyle: 'bold', fontSize: 9 },
-      footStyles: { fillColor: [240, 240, 240], textColor: [26, 77, 60], fontStyle: 'bold', fontSize: 9 },
-      bodyStyles: { fontSize: 8.5, textColor: [40, 40, 40] },
-      alternateRowStyles: { fillColor: [248, 250, 248] },
-      columnStyles: {
-        0: { cellWidth: 8, halign: 'center' },
-        1: { cellWidth: 'auto' },
-        2: { cellWidth: 22, halign: 'center' },
-        3: { cellWidth: 35, halign: 'right' },
-        4: { cellWidth: 35, halign: 'right' },
-      },
-      didDrawPage: (data) => {
-        // Footer on every page
-        const pageH = doc.internal.pageSize.getHeight();
+      // ── Meta line ───────────────────────────────────────────────────────────
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generado: ${new Date().toLocaleString('es-PR')}`, margin, 34);
+      doc.text(`Total de productos: ${report.rows.length}`, pageW - margin, 34, { align: 'right' });
+
+      // ── Summary chips ───────────────────────────────────────────────────────
+      const chipY = 40;
+      const chipData = [
+        { label: 'Paradas Activas', value: String(totals.paradasActivas), color: [26, 77, 60] as [number,number,number] },
+        { label: 'Total Facturado', value: `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [22, 101, 52] as [number,number,number] },
+        { label: 'Pago Paradas', value: `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [194, 65, 12] as [number,number,number] },
+      ];
+      const chipW = (pageW - margin * 2 - 8) / 3;
+      chipData.forEach((chip, i) => {
+        const x = margin + i * (chipW + 4);
+        doc.setFillColor(...chip.color);
+        doc.roundedRect(x, chipY, chipW, 14, 2, 2, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(chip.value, x + chipW / 2, chipY + 6, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
         doc.setFontSize(7);
-        doc.setTextColor(150, 150, 150);
-        doc.text('Streetview Media • streetviewmediapr.com', margin, pageH - 8);
-        doc.text(
-          `Página ${(doc.internal as any).getCurrentPageInfo().pageNumber}`,
-          pageW - margin, pageH - 8, { align: 'right' }
-        );
-      },
-    });
+        doc.text(chip.label, x + chipW / 2, chipY + 11, { align: 'center' });
+      });
 
-    doc.save(`reporte-ventas-${report.label.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+      // ── Table ───────────────────────────────────────────────────────────────
+      const tableRows = report.rows.map((r, idx) => [
+        idx + 1,
+        r.producto,
+        r.paradasActivas,
+        `$${r.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+        `$${r.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+      ]);
+
+      autoTable(doc, {
+        startY: chipY + 20,
+        margin: { left: margin, right: margin },
+        head: [['#', 'Producto', 'Paradas', 'Total Facturado', 'Pago Paradas']],
+        body: tableRows,
+        foot: [['', 'TOTAL', totals.paradasActivas,
+          `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+          `$${totals.pagoParadas.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`,
+        ]],
+        showFoot: 'lastPage',
+        headStyles: { fillColor: [26, 77, 60], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+        footStyles: { fillColor: [240, 240, 240], textColor: [26, 77, 60], fontStyle: 'bold', fontSize: 9 },
+        bodyStyles: { fontSize: 8.5, textColor: [40, 40, 40] },
+        alternateRowStyles: { fillColor: [248, 250, 248] },
+        columnStyles: {
+          0: { cellWidth: 8, halign: 'center' },
+          1: { cellWidth: 'auto' },
+          2: { cellWidth: 22, halign: 'center' },
+          3: { cellWidth: 35, halign: 'right' },
+          4: { cellWidth: 35, halign: 'right' },
+        },
+        didDrawPage: () => {
+          // Footer on every page
+          const pageH = doc.internal.pageSize.getHeight();
+          doc.setFontSize(7);
+          doc.setTextColor(150, 150, 150);
+          doc.text('Streetview Media • streetviewmediapr.com', margin, pageH - 8);
+          doc.text(
+            `Página ${(doc.internal as any).getCurrentPageInfo().pageNumber}`,
+            pageW - margin, pageH - 8, { align: 'right' }
+          );
+        },
+      });
+
+      doc.save(`reporte-ventas-${report.label.replace(/\s+/g, '-').toLowerCase()}.pdf`);
+    }; // end buildPDF
+
+    // Load logo as base64 via canvas, then build the PDF
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        buildPDF(canvas.toDataURL('image/png'));
+      } else {
+        buildPDF();
+      }
+    };
+    img.onerror = () => buildPDF(); // fallback: no logo
+    img.src = LOGO_URL;
   };
 
   if (authLoading) {

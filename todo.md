@@ -1607,3 +1607,6 @@
 - [x] Instalar jsPDF y jspdf-autotable
 - [x] Implementar función exportSalesReportToPDF en Metrics.tsx con encabezado verde, chips de totales, tabla con filas alternas y pie de página
 - [x] Agregar botón PDF (rojo) junto al botón CSV en cada reporte generado
+
+## Logo en PDF del Reporte de Ventas
+- [x] Cargar el logo de Streetview Media como base64 (via canvas) y embebido en el encabezado del PDF; fallback a texto si la imagen no carga
