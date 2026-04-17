@@ -711,22 +711,30 @@ export async function generateInvoiceFromAnuncios(
 
   const { url } = await storagePut(fileName, pdfBuffer, contentType);
 
-  await db.insert(facturas).values({
-    numeroFactura: invoiceNumber,
-    cliente: data.clientName,
-    titulo: data.invoiceTitle,
-    descripcion: description || null,
-    subtotal: data.subtotalAnuncios.toString(),
-    costoProduccion: productionCost ? productionCost.toString() : null,
-    otrosServiciosDescripcion: otherServicesDescription || null,
-    otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
-    total: data.finalTotal.toString(),
-    vendedor: salespersonName || null,
-    pdfUrl: url,
-    cantidadAnuncios: anuncioCount,
-    anuncioIdsJson: JSON.stringify(anuncioIds),
-    createdBy: createdByUserId ?? 1,
-  });
+  try {
+    await db.insert(facturas).values({
+      numeroFactura: invoiceNumber,
+      cliente: data.clientName,
+      titulo: data.invoiceTitle,
+      descripcion: description || null,
+      subtotal: data.subtotalAnuncios.toString(),
+      costoProduccion: productionCost ? productionCost.toString() : null,
+      otrosServiciosDescripcion: otherServicesDescription || null,
+      otrosServiciosCosto: otherServicesCost ? otherServicesCost.toString() : null,
+      total: data.finalTotal.toString(),
+      vendedor: salespersonName || null,
+      pdfUrl: url,
+      cantidadAnuncios: anuncioCount,
+      anuncioIdsJson: JSON.stringify(anuncioIds),
+      createdBy: createdByUserId ?? undefined,
+    });
+  } catch (insertErr: any) {
+    console.error('[Invoice] INSERT failed. invoiceNumber:', invoiceNumber, 'createdBy:', createdByUserId);
+    console.error('[Invoice] INSERT error code:', insertErr?.code, 'errno:', insertErr?.errno);
+    console.error('[Invoice] INSERT error message:', insertErr?.message);
+    console.error('[Invoice] INSERT sqlMessage:', insertErr?.sqlMessage);
+    throw insertErr;
+  }
 
   console.log("[Invoice] Generated:", invoiceNumber, "→", url);
   return url;

@@ -1,0 +1,1 @@
+ALTER TABLE `facturas` MODIFY COLUMN `created_by` int;

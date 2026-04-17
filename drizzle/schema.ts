@@ -160,7 +160,7 @@ export const facturas = mysqlTable("facturas", {
   fechaPago: timestamp("fecha_pago"), // Payment date (null if not paid)
   archivada: int("archivada").default(0).notNull(), // 1 = archived, 0 = active
   anuncioIdsJson: text("anuncio_ids_json"), // JSON array of anuncio IDs for regeneration
-  createdBy: int("created_by").notNull(), // FK to users - who created the invoice
+  createdBy: int("created_by"), // FK to users - who created the invoice (nullable)
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
