@@ -1111,7 +1111,7 @@ export const appRouter = router({
         clienteNombre: z.string().optional(),
         billingPeriodStart: z.string().optional(), // "YYYY-MM"
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         try {
           console.log("[Invoice Router] Received request with", input.anuncioIds.length, "anuncios");
           const { generateInvoiceFromAnuncios } = await import("./invoice-generator");
@@ -1124,7 +1124,8 @@ export const appRouter = router({
             input.otherServicesCost,
             input.salespersonName,
             input.clienteNombre,
-            input.billingPeriodStart
+            input.billingPeriodStart,
+            ctx.user.id
           );
           console.log("[Invoice Router] Generated PDF:", pdfUrl);
           return { pdfUrl };
@@ -1589,7 +1590,7 @@ export const appRouter = router({
     sendByEmail: adminProcedure
       .input(z.object({
         facturaId: z.number(),
-        to: z.string().email(),
+        to: z.string().min(1), // accepts single or multiple emails (comma/semicolon separated)
         cc: z.string().optional(),
         subject: z.string(),
         message: z.string(),
@@ -3104,9 +3105,85 @@ export const appRouter = router({
           totalCampana,
           paradasCount: input.paradas.length,
           pdfUrl: url,
+          paradasData: JSON.stringify(input.paradas),
+          estado: 'Pendiente',
         });
 
+        // Notify admin about new proposal
+        try {
+          const { notifyOwner } = await import('./_core/notification');
+          await notifyOwner({
+            title: `Nueva propuesta: ${input.empresa}`,
+            content: `${ctx.user.name ?? 'Un vendedor'} generó la propuesta ${cotizacionNumber} para ${input.empresa} (${input.paradas.length} paradas, $${totalCampana.toLocaleString()} campaña). Pendiente de aprobación.`,
+          });
+        } catch {}
+
         return { url, filename, cotizacionNumber };
+      }),
+
+    // Approve a cotizacion (admin only)
+    approve: adminProcedure
+      .input(z.object({
+        id: z.number().int(),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { cotizaciones } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+        await db.update(cotizaciones)
+          .set({
+            estado: 'Aprobada',
+            adminComment: input.comment ?? null,
+            approvedAt: new Date(),
+            approvedBy: ctx.user.id,
+          })
+          .where(eq(cotizaciones.id, input.id));
+        return { success: true };
+      }),
+
+    // Reject a cotizacion (admin only)
+    reject: adminProcedure
+      .input(z.object({
+        id: z.number().int(),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { cotizaciones } = await import('../drizzle/schema');
+        const { eq } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+        await db.update(cotizaciones)
+          .set({
+            estado: 'Rechazada',
+            adminComment: input.comment ?? null,
+            approvedAt: new Date(),
+            approvedBy: ctx.user.id,
+          })
+          .where(eq(cotizaciones.id, input.id));
+        return { success: true };
+      }),
+
+    // Delete a cotizacion (admin or the vendor who created it, only if Pendiente)
+    delete: protectedProcedure
+      .input(z.object({ id: z.number().int() }))
+      .mutation(async ({ input, ctx }) => {
+        const { cotizaciones } = await import('../drizzle/schema');
+        const { eq, and } = await import('drizzle-orm');
+        const db = await getDb();
+        if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+        // Check ownership
+        const [cot] = await db.select().from(cotizaciones).where(eq(cotizaciones.id, input.id)).limit(1);
+        if (!cot) throw new TRPCError({ code: 'NOT_FOUND', message: 'Propuesta no encontrada' });
+        if (ctx.user.role !== 'admin' && cot.vendedorId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'No tienes permiso para borrar esta propuesta' });
+        }
+        if (cot.estado === 'Aprobada') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'No se puede borrar una propuesta aprobada' });
+        }
+        await db.delete(cotizaciones).where(eq(cotizaciones.id, input.id));
+        return { success: true };
       }),
   }),
 });

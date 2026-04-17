@@ -1565,3 +1565,13 @@
 - [x] Calculadora: quitar filtro activa para mostrar las mismas 573 paradas disponibles que el panel principal
 - [x] Calculadora: corregir conteo — agregar filtro displayPublicidad='No' para excluir paradas Sin Display (igual que panel principal)
 - [x] Facturación: descarga bulk de facturas PDF en ZIP con checkboxes
+
+## Nuevas Features (Apr 17)
+- [ ] Panel Paradas: agregar tipo "Holder" al selector de tipo de anuncio (actualmente solo Fija/Bonificación)
+- [ ] Cotizaciones DB: agregar campo estado (Pendiente/Aprobada/Rechazada) + comentario admin
+- [ ] Seguimientos: flujo de aprobación admin (botones Aprobar/Rechazar, notificación al vendedor)
+- [ ] Seguimientos: editar propuesta (abrir calculadora pre-cargada)
+- [ ] Seguimientos: borrar propuesta (con confirmación, solo si no está aprobada/convertida)
+- [ ] Seguimientos: botón "Crear Reserva" en propuestas aprobadas con modal pre-llenado
+- [x] Fix error 500 al generar factura (createdBy hardcodeado a 1 — ahora usa el ID del usuario autenticado)
+- [x] Fix error al enviar factura con múltiples emails de facturación (normalizar emails separados por coma/punto y coma)

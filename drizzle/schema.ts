@@ -392,6 +392,11 @@ export const cotizaciones = mysqlTable("cotizaciones", {
   totalCampana: int("total_campana").default(0),                   // Campaign total in cents
   paradasCount: int("paradas_count").default(0),                   // Number of stops in proposal
   pdfUrl: text("pdf_url"),                                          // S3 URL of the generated PDF
+  paradasData: text("paradas_data"),                                  // JSON array of parada IDs and details for reserva creation
+  estado: mysqlEnum("estado", ["Pendiente", "Aprobada", "Rechazada"]).default("Pendiente").notNull(), // Approval status
+  adminComment: text("admin_comment"),                               // Admin comment on approval/rejection
+  approvedAt: timestamp("approved_at"),                              // When admin approved/rejected
+  approvedBy: int("approved_by"),                                    // Admin user ID
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 export type Cotizacion = typeof cotizaciones.$inferSelect;

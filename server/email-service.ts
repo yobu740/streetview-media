@@ -213,12 +213,16 @@ export async function sendInvoiceEmail(data: InvoiceEmailData): Promise<void> {
 </body></html>
   `;
 
+  // Normalize multiple emails: split by comma or semicolon, trim, rejoin with comma
+  const normalizeEmails = (raw: string) =>
+    raw.split(/[,;]+/).map(e => e.trim()).filter(Boolean).join(', ');
+
   // Outlook/Microsoft 365 requires From to exactly match the authenticated SMTP_USER
   // Using a different From address causes silent rejection
   const senderEmail = process.env.SMTP_USER;
   const mailOptions: any = {
     from: `"Streetview Media PR" <${senderEmail}>`,
-    to: data.to,
+    to: normalizeEmails(data.to),
     subject: data.subject,
     html: emailHtml,
     attachments: [

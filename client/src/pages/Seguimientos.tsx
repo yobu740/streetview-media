@@ -14,7 +14,8 @@ import { trpc } from "@/lib/trpc";
 import { formatDateDisplay } from "@/lib/dateUtils";
 import {
   Loader2, Phone, Mail, Calendar, MessageSquare, CheckCircle, XCircle, Clock,
-  Plus, UserPlus, Trash2, Archive, UserCheck, Pencil, ArchiveRestore, FileText, Download, ExternalLink
+  Plus, UserPlus, Trash2, Archive, UserCheck, Pencil, ArchiveRestore, FileText, Download, ExternalLink,
+  ThumbsUp, ThumbsDown, CalendarPlus
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -64,8 +65,14 @@ export default function Seguimientos() {
   // Assign vendor state
   const [assignVendorId, setAssignVendorId] = useState("");
 
+  // Cotizacion approval state
+  const [approvalDialog, setApprovalDialog] = useState<{ open: boolean; cot: any; action: 'approve' | 'reject' } | null>(null);
+  const [approvalComment, setApprovalComment] = useState("");
+  const [deleteConfirmCot, setDeleteConfirmCot] = useState<any>(null);
+  const [reservaDialog, setReservaDialog] = useState<any>(null);
+
   // Queries
-  const { data: cotizaciones, isLoading: isLoadingCotizaciones } = trpc.cotizaciones.listAll.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: cotizaciones, isLoading: isLoadingCotizaciones, refetch: refetchCotizaciones } = trpc.cotizaciones.listAll.useQuery(undefined, { enabled: isAuthenticated });
   const { data: seguimientos, isLoading } = trpc.seguimientos.listAll.useQuery(undefined, { enabled: isAuthenticated });
   const { data: archivedSeguimientos, isLoading: isLoadingArchived } = trpc.seguimientos.archived.useQuery(undefined, { enabled: isAuthenticated && showArchived });
   const { data: pending } = trpc.seguimientos.pending.useQuery(undefined, { enabled: isAuthenticated });
@@ -83,6 +90,18 @@ export default function Seguimientos() {
   const assignVendor = trpc.seguimientos.assignVendor.useMutation();
   const deleteSeguimiento = trpc.seguimientos.deleteSeguimiento.useMutation();
   const archiveSeguimiento = trpc.seguimientos.archiveSeguimiento.useMutation();
+  const approveCotizacion = trpc.cotizaciones.approve.useMutation({
+    onSuccess: () => { refetchCotizaciones(); toast.success('Propuesta aprobada'); setApprovalDialog(null); setApprovalComment(''); },
+    onError: (e) => toast.error(e.message),
+  });
+  const rejectCotizacion = trpc.cotizaciones.reject.useMutation({
+    onSuccess: () => { refetchCotizaciones(); toast.success('Propuesta rechazada'); setApprovalDialog(null); setApprovalComment(''); },
+    onError: (e) => toast.error(e.message),
+  });
+  const deleteCotizacion = trpc.cotizaciones.delete.useMutation({
+    onSuccess: () => { refetchCotizaciones(); toast.success('Propuesta eliminada'); setDeleteConfirmCot(null); },
+    onError: (e) => toast.error(e.message),
+  });
   const utils = trpc.useUtils();
 
   if (authLoading) {
@@ -528,70 +547,132 @@ export default function Seguimientos() {
                       <TableRow>
                         <TableHead>N° Cotización</TableHead>
                         <TableHead>Empresa / Cliente</TableHead>
-                        <TableHead>Contacto</TableHead>
                         <TableHead>Vendedor</TableHead>
                         <TableHead>Período</TableHead>
                         <TableHead>Paradas</TableHead>
                         <TableHead>Total Campaña</TableHead>
+                        <TableHead>Estado</TableHead>
                         <TableHead>Fecha</TableHead>
-                        <TableHead className="text-right">PDF</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {cotizaciones.map((cot) => (
-                        <TableRow key={cot.id} className="hover:bg-[#f5f5f5]">
-                          <TableCell>
-                            <span className="font-mono text-xs bg-[#1a4d3c]/10 text-[#1a4d3c] px-2 py-1 rounded">
-                              {cot.cotizacionNumber}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <div className="font-semibold">{cot.empresa}</div>
-                            {cot.email && (
-                              <div className="text-xs text-[#2a2a2a]/60 flex items-center gap-1">
-                                <Mail className="h-3 w-3" />{cot.email}
+                      {cotizaciones.map((cot) => {
+                        const estado = (cot as any).estado ?? 'Pendiente';
+                        const estadoBadge = estado === 'Aprobada'
+                          ? <Badge className="bg-green-600 text-white text-xs">Aprobada</Badge>
+                          : estado === 'Rechazada'
+                          ? <Badge className="bg-red-600 text-white text-xs">Rechazada</Badge>
+                          : <Badge className="bg-amber-500 text-white text-xs">Pendiente</Badge>;
+                        return (
+                          <TableRow key={cot.id} className={`hover:bg-[#f5f5f5] ${estado === 'Aprobada' ? 'bg-green-50/30' : estado === 'Rechazada' ? 'bg-red-50/30' : ''}`}>
+                            <TableCell>
+                              <div className="font-mono text-xs bg-[#1a4d3c]/10 text-[#1a4d3c] px-2 py-1 rounded inline-block">
+                                {cot.cotizacionNumber}
                               </div>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm">{cot.contacto}</TableCell>
-                          <TableCell className="text-sm text-[#2a2a2a]/70">{cot.vendedorName || `ID ${cot.vendedorId}`}</TableCell>
-                          <TableCell className="text-sm">
-                            {cot.fechaInicio && cot.fechaFin ? (
-                              <div className="text-xs">
-                                <div>{formatDateDisplay(cot.fechaInicio)}</div>
-                                <div className="text-[#2a2a2a]/50">→ {formatDateDisplay(cot.fechaFin)}</div>
+                              {(cot as any).adminComment && (
+                                <div className="text-xs text-gray-500 mt-1 max-w-[140px] truncate" title={(cot as any).adminComment}>
+                                  💬 {(cot as any).adminComment}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="font-semibold">{cot.empresa}</div>
+                              <div className="text-xs text-[#2a2a2a]/60">{cot.contacto}</div>
+                              {cot.email && (
+                                <div className="text-xs text-[#2a2a2a]/50 flex items-center gap-1">
+                                  <Mail className="h-3 w-3" />{cot.email}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm text-[#2a2a2a]/70">{cot.vendedorName || `ID ${cot.vendedorId}`}</TableCell>
+                            <TableCell className="text-sm">
+                              {cot.fechaInicio && cot.fechaFin ? (
+                                <div className="text-xs">
+                                  <div>{formatDateDisplay(cot.fechaInicio)}</div>
+                                  <div className="text-[#2a2a2a]/50">→ {formatDateDisplay(cot.fechaFin)}</div>
+                                </div>
+                              ) : '-'}
+                            </TableCell>
+                            <TableCell>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-300">
+                                {cot.paradasCount} paradas
+                              </span>
+                            </TableCell>
+                            <TableCell className="font-semibold text-[#1a4d3c]">
+                              ${(cot.totalCampana || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </TableCell>
+                            <TableCell>{estadoBadge}</TableCell>
+                            <TableCell className="text-sm text-[#2a2a2a]/70">
+                              {new Date(cot.createdAt).toLocaleDateString('es-PR')}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                {/* PDF */}
+                                {cot.pdfUrl && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <a href={cot.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                        <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-[#1a4d3c] hover:bg-[#1a4d3c]/10">
+                                          <ExternalLink className="h-3 w-3" />
+                                        </Button>
+                                      </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Ver PDF</TooltipContent>
+                                  </Tooltip>
+                                )}
+                                {/* Admin: Approve/Reject if Pendiente */}
+                                {user?.role === 'admin' && estado === 'Pendiente' && (
+                                  <>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-green-600 hover:bg-green-50 border-green-300"
+                                          onClick={() => { setApprovalDialog({ open: true, cot, action: 'approve' }); setApprovalComment(''); }}>
+                                          <ThumbsUp className="h-3 w-3" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>Aprobar</TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-red-600 hover:bg-red-50 border-red-300"
+                                          onClick={() => { setApprovalDialog({ open: true, cot, action: 'reject' }); setApprovalComment(''); }}>
+                                          <ThumbsDown className="h-3 w-3" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>Rechazar</TooltipContent>
+                                    </Tooltip>
+                                  </>
+                                )}
+                                {/* Create Reserva if Aprobada */}
+                                {estado === 'Aprobada' && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-[#053951] hover:bg-[#053951]/10 border-[#053951]/30"
+                                        onClick={() => setReservaDialog(cot)}>
+                                        <CalendarPlus className="h-3 w-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Crear Reserva</TooltipContent>
+                                  </Tooltip>
+                                )}
+                                {/* Delete if not Aprobada */}
+                                {(user?.role === 'admin' || (cot.vendedorId === user?.id && estado !== 'Aprobada')) && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-red-500 hover:bg-red-50 border-red-200"
+                                        onClick={() => setDeleteConfirmCot(cot)}>
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Eliminar</TooltipContent>
+                                  </Tooltip>
+                                )}
                               </div>
-                            ) : '-'}
-                          </TableCell>
-                          <TableCell>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-300">
-                              {cot.paradasCount} paradas
-                            </span>
-                          </TableCell>
-                          <TableCell className="font-semibold text-[#1a4d3c]">
-                            ${(cot.totalCampana || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell className="text-sm text-[#2a2a2a]/70">
-                            {new Date(cot.createdAt).toLocaleDateString('es-PR')}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {cot.pdfUrl ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <a href={cot.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                    <Button size="sm" variant="outline" className="h-8 w-8 p-0 text-[#1a4d3c] hover:bg-[#1a4d3c]/10">
-                                      <ExternalLink className="h-3.5 w-3.5" />
-                                    </Button>
-                                  </a>
-                                </TooltipTrigger>
-                                <TooltipContent>Ver PDF</TooltipContent>
-                              </Tooltip>
-                            ) : (
-                              <span className="text-xs text-[#2a2a2a]/40">N/A</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
@@ -874,6 +955,119 @@ export default function Seguimientos() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Approval Dialog ─── */}
+      <Dialog open={!!approvalDialog?.open} onOpenChange={(open) => { if (!open) setApprovalDialog(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className={approvalDialog?.action === 'approve' ? 'text-green-700' : 'text-red-700'}>
+              {approvalDialog?.action === 'approve' ? '✅ Aprobar Propuesta' : '❌ Rechazar Propuesta'}
+            </DialogTitle>
+            <DialogDescription>
+              {approvalDialog?.cot?.cotizacionNumber} — {approvalDialog?.cot?.empresa}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Label>Comentario (opcional)</Label>
+            <Textarea
+              placeholder={approvalDialog?.action === 'approve' ? 'Ej: Aprobada, proceder con reserva...' : 'Ej: Revisar precios, ajustar fechas...'}
+              value={approvalComment}
+              onChange={(e) => setApprovalComment(e.target.value)}
+              rows={3}
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setApprovalDialog(null)}>Cancelar</Button>
+            <Button
+              className={approvalDialog?.action === 'approve' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+              disabled={approveCotizacion.isPending || rejectCotizacion.isPending}
+              onClick={() => {
+                if (!approvalDialog) return;
+                if (approvalDialog.action === 'approve') {
+                  approveCotizacion.mutate({ id: approvalDialog.cot.id, comment: approvalComment || undefined });
+                } else {
+                  rejectCotizacion.mutate({ id: approvalDialog.cot.id, comment: approvalComment || undefined });
+                }
+              }}
+            >
+              {(approveCotizacion.isPending || rejectCotizacion.isPending) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {approvalDialog?.action === 'approve' ? 'Aprobar' : 'Rechazar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Delete Cotizacion Confirm ─── */}
+      <Dialog open={!!deleteConfirmCot} onOpenChange={(open) => { if (!open) setDeleteConfirmCot(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-red-700">Eliminar Propuesta</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la propuesta <strong>{deleteConfirmCot?.cotizacionNumber}</strong> para <strong>{deleteConfirmCot?.empresa}</strong>? Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteConfirmCot(null)}>Cancelar</Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={deleteCotizacion.isPending}
+              onClick={() => deleteConfirmCot && deleteCotizacion.mutate({ id: deleteConfirmCot.id })}
+            >
+              {deleteCotizacion.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── Crear Reserva Dialog ─── */}
+      <Dialog open={!!reservaDialog} onOpenChange={(open) => { if (!open) setReservaDialog(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-[#053951]">📅 Crear Reserva desde Propuesta</DialogTitle>
+            <DialogDescription>
+              La propuesta <strong>{reservaDialog?.cotizacionNumber}</strong> ha sido aprobada. Ve al área de Reservas para crear la reserva con los datos pre-llenados.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="bg-[#053951]/5 rounded-lg p-4 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Cliente:</span>
+                <span className="font-semibold">{reservaDialog?.empresa}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Contacto:</span>
+                <span>{reservaDialog?.contacto}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Período:</span>
+                <span>{reservaDialog?.fechaInicio && reservaDialog?.fechaFin ? `${formatDateDisplay(reservaDialog.fechaInicio)} → ${formatDateDisplay(reservaDialog.fechaFin)}` : '-'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Paradas:</span>
+                <span className="font-semibold text-blue-700">{reservaDialog?.paradasCount} paradas</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#2a2a2a]/60">Total Campaña:</span>
+                <span className="font-bold text-[#1a4d3c]">${(reservaDialog?.totalCampana || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+            <p className="text-xs text-[#2a2a2a]/60">
+              💡 Ve al área de <strong>Reservas</strong> y usa el botón "Nueva Reserva" — los datos del cliente y fechas ya están guardados en la propuesta aprobada para referencia.
+            </p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setReservaDialog(null)}>Cerrar</Button>
+            <Button
+              className="bg-[#053951] hover:bg-[#053951]/80 text-white"
+              onClick={() => { setReservaDialog(null); window.location.href = '/reservas'; }}
+            >
+              <CalendarPlus className="h-4 w-4 mr-2" />
+              Ir a Reservas
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

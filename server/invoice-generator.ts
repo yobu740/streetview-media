@@ -654,7 +654,8 @@ export async function generateInvoiceFromAnuncios(
   otherServicesCost?: number,
   salespersonName?: string,
   clienteNombre?: string,
-  billingPeriodStart?: string // "YYYY-MM"
+  billingPeriodStart?: string, // "YYYY-MM"
+  createdByUserId?: number
 ): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -724,7 +725,7 @@ export async function generateInvoiceFromAnuncios(
     pdfUrl: url,
     cantidadAnuncios: anuncioCount,
     anuncioIdsJson: JSON.stringify(anuncioIds),
-    createdBy: 1,
+    createdBy: createdByUserId ?? 1,
   });
 
   console.log("[Invoice] Generated:", invoiceNumber, "→", url);

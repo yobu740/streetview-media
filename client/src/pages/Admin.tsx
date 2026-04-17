@@ -2306,6 +2306,7 @@ export default function Admin() {
                 <SelectContent>
                   <SelectItem value="Fijo">Fijo</SelectItem>
                   <SelectItem value="Bonificación">Bonificación</SelectItem>
+                  <SelectItem value="Holder">Holder</SelectItem>
                 </SelectContent>
               </Select>
             </div>
