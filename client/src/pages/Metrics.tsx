@@ -129,32 +129,33 @@ export default function Metrics() {
 
       // ── Header bar ──────────────────────────────────────────────────────────
       doc.setFillColor(26, 77, 60); // #1a4d3c
-      doc.rect(0, 0, pageW, 28, 'F');
+      doc.rect(0, 0, pageW, 32, 'F');
 
-      // Logo image — bundled as base64, no CORS issues
-      doc.addImage(SV_LOGO_BASE64, 'PNG', margin, 3, 45, 22);
+      // Logo image — white version, 2048×462 px (aspect 4.43:1)
+      // width=70mm, height=70/4.43≈15.8mm, top-offset=8mm to center in 32mm bar
+      doc.addImage(SV_LOGO_BASE64, 'PNG', margin, 8, 70, 15.8);
 
-      // Report title
+      // Report title (right side, vertically centered)
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(200, 230, 210);
-      doc.text('Reporte de Ventas por Mes', margin, 26);
+      doc.text('Reporte de Ventas por Mes', pageW - margin, 14, { align: 'right' });
 
       // Month label (right-aligned)
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
       doc.setTextColor(255, 255, 255);
-      doc.text(report.label.toUpperCase(), pageW - margin, 16, { align: 'right' });
+      doc.text(report.label.toUpperCase(), pageW - margin, 26, { align: 'right' });
 
-      // ── Meta line ───────────────────────────────────────────────────────────
+      // ── Meta line ──────────────────────────────────────────────────────────
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Generado: ${new Date().toLocaleString('es-PR')}`, margin, 34);
-      doc.text(`Total de productos: ${report.rows.length}`, pageW - margin, 34, { align: 'right' });
+      doc.text(`Generado: ${new Date().toLocaleString('es-PR')}`, margin, 38);
+      doc.text(`Total de productos: ${report.rows.length}`, pageW - margin, 38, { align: 'right' });
 
-      // ── Summary chips ───────────────────────────────────────────────────────
-      const chipY = 40;
+      // ── Summary chips ──────────────────────────────────────────────────────────
+      const chipY = 44;
       const chipData = [
         { label: 'Paradas Activas', value: String(totals.paradasActivas), color: [26, 77, 60] as [number,number,number] },
         { label: 'Total Facturado', value: `$${totals.totalFacturado.toLocaleString('es-PR', { minimumFractionDigits: 2 })}`, color: [22, 101, 52] as [number,number,number] },
